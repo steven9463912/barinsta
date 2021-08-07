@@ -22,7 +22,7 @@ For documentation, visit [Barinsta.AustinHuang.me](https://barinsta.austinhuang.
 
 <a href="https://f-droid.org/en/packages/me.austinhuang.instagrabber/"><img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" height="75"></a>
 
-Version status: ![F-Droid](https://img.shields.io/f-droid/v/me.austinhuang.instagrabber.svg) vs. ![GitHub](https://img.shields.io/github/release/austinhuang0131/barinsta.svg?logo=github)
+Version status: ![F-Droid](https://img.shields.io/f-droid/v/me.austinhuang.instagrabber.svg)
 
 ## Screenshots
 
