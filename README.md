@@ -8,11 +8,11 @@
 [![Open Source Love](https://badges.frapsoft.com/os/v3/open-source.svg?v=103)](https://github.com/ellerbrock/open-source-badges/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://makeapullrequest.com)
 [![GPLv3 license](https://img.shields.io/badge/License-GPLv3-blue.svg)](./LICENSE)
-[![GitHub stars](https://img.shields.io/github/stars/austinhuang0131/instagrabber.svg?style=social&label=Star)](https://GitHub.com/austinhuang0131/barinsta/stargazers/)<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-51-orange.svg)](#contributors)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
-Instagram client; previously known as InstaGrabber.
+Instagram client; previously known as InstaGrabber. Now hosted by @avalos on Codeberg.
 
 For documentation, visit [Barinsta.AustinHuang.me](https://barinsta.austinhuang.me).
 
@@ -40,14 +40,14 @@ To speed up development, we need more hands on deck. If you are proficient in Ja
 
 ## Contact us
 
-* Use [GitHub issues](https://github.com/austinhuang0131/instagrabber/issues) when possible.
-* Email: [Barinsta@AustinHuang.me](mailto:barinsta@austinhuang.me?body=Please%20note%20that%20your%20email%20address%20and%20the%20entire%20content%20will%20be%20published%20onto%20GitHub%20issues.%20If%20you%20do%20not%20wish%20to%20do%20that%2C%20use%20other%20contact%20methods%20instead.) (Synced to GitHub issues)
+* Use [Codeberg issues](https://codeberg.org/avalos/barinsta/issues) when possible.
+* Email: [avalos@disroot.org](mailto:avalos@disroot.org)
 * Reddit: [![r/Barinsta](https://img.shields.io/reddit/subreddit-subscribers/Barinsta?style=social)](https://reddit.com/r/barinsta)
 * Chat (Bridged to each other): [![Matrix](https://img.shields.io/badge/Matrix-%23Barinsta:matrix.org-000000?logo=matrix)](https://matrix.to/#/#barinsta:matrix.org) [![Telegram](https://img.shields.io/badge/Telegram-@Barinsta__App-2CA5E0?logo=telegram)](https://t.me/barinsta_app) [![Discord](https://img.shields.io/badge/Discord-YtEDzN2-7289da?logo=discord&logoColor=white)](https://discord.gg/YtEDzN2)
 
 ## Contributors
 
-Prominent contributors are listed here in the [all-contributors](https://allcontributors.org/) specifications, see [emoji key](https://allcontributors.org/docs/en/emoji-key). [Want to contribute to Barinsta?](https://github.com/austinhuang0131/barinsta/blob/master/.github/CONTRIBUTING.md)
+Prominent contributors are listed here in the [all-contributors](https://allcontributors.org/) specifications, see [emoji key](https://allcontributors.org/docs/en/emoji-key). [Want to contribute to Barinsta?](https://codeberg.org/avalos/barinsta/src/branch/master/.github/CONTRIBUTING.md)
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
