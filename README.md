@@ -41,6 +41,7 @@ To speed up development, we need more hands on deck. If you are proficient in Ja
 
 * Use [Codeberg issues](https://codeberg.org/avalos/barinsta/issues) when possible.
 * Email: [avalos@disroot.org](mailto:avalos@disroot.org)
+* Lemmy: [https://lemmy.ml/c/barinsta](c/barinsta)
 * Reddit: [![r/Barinsta](https://img.shields.io/reddit/subreddit-subscribers/Barinsta?style=social)](https://reddit.com/r/barinsta)
 * Chat (Bridged to each other): [![Matrix](https://img.shields.io/badge/Matrix-%23Barinsta:matrix.org-000000?logo=matrix)](https://matrix.to/#/#barinsta:matrix.org) [![Telegram](https://img.shields.io/badge/Telegram-@Barinsta__App-2CA5E0?logo=telegram)](https://t.me/barinsta_app) [![Discord](https://img.shields.io/badge/Discord-YtEDzN2-7289da?logo=discord&logoColor=white)](https://discord.gg/YtEDzN2)
 
