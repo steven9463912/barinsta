@@ -21,7 +21,6 @@ For documentation, visit [Barinsta.AustinHuang.me](https://barinsta.austinhuang.
 **By installing, you indicate your acceptance of [Terms of Service](https://barinsta.austinhuang.me/en/latest/tos.html) and [Privacy Policy](https://barinsta.austinhuang.me/en/latest/privacy.html).**
 
 <a href="https://f-droid.org/en/packages/me.austinhuang.instagrabber/"><img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" height="75"></a>
-<a href="https://github.com/austinhuang0131/barinsta/releases/latest"><img src="https://raw.githubusercontent.com/andOTP/andOTP/master/assets/badges/get-it-on-github.png" height="75"></a>
 
 Version status: ![F-Droid](https://img.shields.io/f-droid/v/me.austinhuang.instagrabber.svg) vs. ![GitHub](https://img.shields.io/github/release/austinhuang0131/barinsta.svg?logo=github)
 
