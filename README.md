@@ -14,8 +14,6 @@
 
 Instagram client; previously known as InstaGrabber. Now hosted by @avalos on Codeberg.
 
-For documentation, visit [Barinsta.AustinHuang.me](https://barinsta.austinhuang.me).
-
 ## Download
 
 **By installing, you indicate your acceptance of [Terms of Service](https://barinsta.austinhuang.me/en/latest/tos.html) and [Privacy Policy](https://barinsta.austinhuang.me/en/latest/privacy.html).**
@@ -26,12 +24,12 @@ Version status: ![F-Droid](https://img.shields.io/f-droid/v/me.austinhuang.insta
 
 ## Screenshots
 
-<a href="https://github.com/austinhuang0131/instagrabber/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/1.png"><img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" alt="Profile" width="15%"/></a>
-<a href="https://github.com/austinhuang0131/instagrabber/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/2.png"><img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" alt="Post" width="15%"/></a>
-<a href="https://github.com/austinhuang0131/instagrabber/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/3.png"><img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/3.png" alt="Comments" width="15%"/></a>
-<a href="https://github.com/austinhuang0131/instagrabber/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/4.png"><img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/4.png" alt="Story" width="15%"/></a>
-<a href="https://github.com/austinhuang0131/instagrabber/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/5.png"><img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/5.png" alt="Hashtag" width="15%"/></a>
-<a href="https://github.com/austinhuang0131/instagrabber/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/6.png"><img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/6.png" alt="Discover Topics" width="15%"/></a>
+<a href="https://codeberg.org/avalos/barinsta/src/branch/master/fastlane/metadata/android/en-US/images/phoneScreenshots/1.png"><img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" alt="Profile" width="15%"/></a>
+<a href="https://codeberg.org/avalos/barinsta/src/branch/master/fastlane/metadata/android/en-US/images/phoneScreenshots/2.png"><img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" alt="Post" width="15%"/></a>
+<a href="https://codeberg.org/avalos/barinsta/src/branch/master/fastlane/metadata/android/en-US/images/phoneScreenshots/3.png"><img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/3.png" alt="Comments" width="15%"/></a>
+<a href="https://codeberg.org/avalos/barinsta/src/branch/master/fastlane/metadata/android/en-US/images/phoneScreenshots/4.png"><img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/4.png" alt="Story" width="15%"/></a>
+<a href="https://codeberg.org/avalos/barinsta/src/branch/master/fastlane/metadata/android/en-US/images/phoneScreenshots/5.png"><img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/5.png" alt="Hashtag" width="15%"/></a>
+<a href="https://codeberg.org/avalos/barinsta/src/branch/master/fastlane/metadata/android/en-US/images/phoneScreenshots/6.png"><img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/6.png" alt="Discover Topics" width="15%"/></a>
 
 ## We need maintainers!
 
