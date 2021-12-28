@@ -36,8 +36,6 @@ object CrashReporterHelper {
     fun getReportContent(exception: Throwable): String {
         var reportContent =
             """
-                IMPORTANT: If sending by email, your email address and the entire content will be made public at https://github.com/austinhuang0131/barinsta/issues.
-
                 When possible, please describe the steps leading to this crash. Thank you for your cooperation.
 
                 Error report collected on: ${LocalDateTime.now()}

@@ -1,7 +1,7 @@
 package awais.instagrabber.utils
 
 object Constants {
-    const val CRASH_REPORT_EMAIL = "barinsta@austinhuang.me"
+    const val CRASH_REPORT_EMAIL = "avalos@disroot.org"
 
     // int prefs, do not export
     const val PREV_INSTALL_VERSION = "prevVersion"
