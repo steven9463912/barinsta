@@ -10,7 +10,7 @@ import awais.instagrabber.utils.TextUtils.isEmpty
 import com.google.common.collect.ImmutableMap
 import java.util.*
 
-open class FeedRepository(private val repository: FeedService) {
+open class  FeedRepository(private val repository: FeedService) {
     suspend fun fetchFeed(
         csrfToken: String,
         deviceUuid: String,
