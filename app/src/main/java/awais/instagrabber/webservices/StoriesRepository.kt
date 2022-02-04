@@ -43,7 +43,16 @@ open class StoriesRepository(private val service: StoriesService) {
                 )
             }
         }
-        if (response?.tray != null) result.addAll(response.tray)
+        if (response?.tray != null) {
+            val length = response.tray.size
+            for (i in 0 until length) {
+                if (response.tray.get(i).user == null) {
+                    continue
+                }
+                result.add(response.tray.get(i))
+            }
+        }
+        //result.addAll(response.tray)
         return sort(result.toList())
     }
 
