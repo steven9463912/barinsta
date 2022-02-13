@@ -17,7 +17,7 @@ import java.util.Random;
 import awais.instagrabber.utils.TextUtils;
 
 public class DeleteImageIntentService extends IntentService {
-    private final static String TAG = "DeleteImageIntent";
+    private static final String TAG = "DeleteImageIntent";
     private static final int DELETE_IMAGE_SERVICE_REQUEST_CODE = 9010;
     private static final Random random = new Random();
 
@@ -26,48 +26,48 @@ public class DeleteImageIntentService extends IntentService {
     public static final String DELETE_IMAGE_SERVICE = "delete_image_service";
 
     public DeleteImageIntentService() {
-        super(DELETE_IMAGE_SERVICE);
+        super(DeleteImageIntentService.DELETE_IMAGE_SERVICE);
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        startService(new Intent(this, DeleteImageIntentService.class));
+        this.startService(new Intent(this, DeleteImageIntentService.class));
     }
 
     @Override
-    protected void onHandleIntent(@Nullable Intent intent) {
-        if (intent != null && Intent.ACTION_DELETE.equals(intent.getAction()) && intent.hasExtra(EXTRA_IMAGE_PATH)) {
-            final String path = intent.getStringExtra(EXTRA_IMAGE_PATH);
+    protected void onHandleIntent(@Nullable final Intent intent) {
+        if (intent != null && Intent.ACTION_DELETE.equals(intent.getAction()) && intent.hasExtra(DeleteImageIntentService.EXTRA_IMAGE_PATH)) {
+            String path = intent.getStringExtra(DeleteImageIntentService.EXTRA_IMAGE_PATH);
             if (TextUtils.isEmpty(path)) return;
             // final File file = new File(path);
-            final Uri parse = Uri.parse(path);
+            Uri parse = Uri.parse(path);
             if (parse == null) return;
-            final DocumentFile file = DocumentFile.fromSingleUri(getApplicationContext(), parse);
-            boolean deleted;
+            DocumentFile file = DocumentFile.fromSingleUri(this.getApplicationContext(), parse);
+            final boolean deleted;
             if (file.exists()) {
                 deleted = file.delete();
                 if (!deleted) {
-                    Log.w(TAG, "onHandleIntent: file not deleted!");
+                    Log.w(DeleteImageIntentService.TAG, "onHandleIntent: file not deleted!");
                 }
             } else {
                 deleted = true;
             }
             if (deleted) {
-                final int notificationId = intent.getIntExtra(EXTRA_NOTIFICATION_ID, -1);
+                int notificationId = intent.getIntExtra(DeleteImageIntentService.EXTRA_NOTIFICATION_ID, -1);
                 NotificationManagerCompat.from(this).cancel(notificationId);
             }
         }
     }
 
     @NonNull
-    public static PendingIntent pendingIntent(@NonNull final Context context,
-                                              @NonNull final DocumentFile imagePath,
-                                              final int notificationId) {
-        final Intent intent = new Intent(context, DeleteImageIntentService.class);
+    public static PendingIntent pendingIntent(@NonNull Context context,
+                                              @NonNull DocumentFile imagePath,
+                                              int notificationId) {
+        Intent intent = new Intent(context, DeleteImageIntentService.class);
         intent.setAction(Intent.ACTION_DELETE);
-        intent.putExtra(EXTRA_IMAGE_PATH, imagePath.getUri().toString());
-        intent.putExtra(EXTRA_NOTIFICATION_ID, notificationId);
-        return PendingIntent.getService(context, random.nextInt(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        intent.putExtra(DeleteImageIntentService.EXTRA_IMAGE_PATH, imagePath.getUri().toString());
+        intent.putExtra(DeleteImageIntentService.EXTRA_NOTIFICATION_ID, notificationId);
+        return PendingIntent.getService(context, DeleteImageIntentService.random.nextInt(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 }

@@ -27,16 +27,16 @@ public abstract class AbstractAnimatedZoomableController extends DefaultZoomable
     private final Matrix mNewTransform = new Matrix();
     private final Matrix mWorkingTransform = new Matrix();
 
-    public AbstractAnimatedZoomableController(TransformGestureDetector transformGestureDetector) {
+    public AbstractAnimatedZoomableController(final TransformGestureDetector transformGestureDetector) {
         super(transformGestureDetector);
     }
 
     @Override
     public void reset() {
-        FLog.v(getLogTag(), "reset");
-        stopAnimation();
-        mWorkingTransform.reset();
-        mNewTransform.reset();
+        FLog.v(this.getLogTag(), "reset");
+        this.stopAnimation();
+        this.mWorkingTransform.reset();
+        this.mNewTransform.reset();
         super.reset();
     }
 
@@ -45,7 +45,7 @@ public abstract class AbstractAnimatedZoomableController extends DefaultZoomable
      */
     @Override
     public boolean isIdentity() {
-        return !isAnimating() && super.isIdentity();
+        return !this.isAnimating() && super.isIdentity();
     }
 
     /**
@@ -60,8 +60,8 @@ public abstract class AbstractAnimatedZoomableController extends DefaultZoomable
      * @param viewPoint  2D point in view's absolute coordinate system
      */
     @Override
-    public void zoomToPoint(float scale, PointF imagePoint, PointF viewPoint) {
-        zoomToPoint(scale, imagePoint, viewPoint, LIMIT_ALL, 0, null);
+    public void zoomToPoint(final float scale, final PointF imagePoint, final PointF viewPoint) {
+        this.zoomToPoint(scale, imagePoint, viewPoint, DefaultZoomableController.LIMIT_ALL, 0, null);
     }
 
     /**
@@ -79,15 +79,15 @@ public abstract class AbstractAnimatedZoomableController extends DefaultZoomable
      * @param onAnimationComplete code to run when the animation completes. Ignored if durationMs=0
      */
     public void zoomToPoint(
-            float scale,
-            PointF imagePoint,
-            PointF viewPoint,
-            @LimitFlag int limitFlags,
-            long durationMs,
-            @Nullable Runnable onAnimationComplete) {
-        FLog.v(getLogTag(), "zoomToPoint: duration %d ms", durationMs);
-        calculateZoomToPointTransform(mNewTransform, scale, imagePoint, viewPoint, limitFlags);
-        setTransform(mNewTransform, durationMs, onAnimationComplete);
+            final float scale,
+            final PointF imagePoint,
+            final PointF viewPoint,
+            @LimitFlag final int limitFlags,
+            final long durationMs,
+            @Nullable final Runnable onAnimationComplete) {
+        FLog.v(this.getLogTag(), "zoomToPoint: duration %d ms", durationMs);
+        this.calculateZoomToPointTransform(this.mNewTransform, scale, imagePoint, viewPoint, limitFlags);
+        this.setTransform(this.mNewTransform, durationMs, onAnimationComplete);
     }
 
     /**
@@ -101,68 +101,68 @@ public abstract class AbstractAnimatedZoomableController extends DefaultZoomable
      * @param onAnimationComplete code to run when the animation completes. Ignored if durationMs=0
      */
     public void setTransform(
-            Matrix newTransform, long durationMs, @Nullable Runnable onAnimationComplete) {
-        FLog.v(getLogTag(), "setTransform: duration %d ms", durationMs);
+            final Matrix newTransform, final long durationMs, @Nullable final Runnable onAnimationComplete) {
+        FLog.v(this.getLogTag(), "setTransform: duration %d ms", durationMs);
         if (durationMs <= 0) {
-            setTransformImmediate(newTransform);
+            this.setTransformImmediate(newTransform);
         } else {
-            setTransformAnimated(newTransform, durationMs, onAnimationComplete);
+            this.setTransformAnimated(newTransform, durationMs, onAnimationComplete);
         }
     }
 
-    private void setTransformImmediate(final Matrix newTransform) {
-        FLog.v(getLogTag(), "setTransformImmediate");
-        stopAnimation();
-        mWorkingTransform.set(newTransform);
-        super.setTransform(newTransform);
-        getDetector().restartGesture();
+    private void setTransformImmediate(Matrix newTransform) {
+        FLog.v(this.getLogTag(), "setTransformImmediate");
+        this.stopAnimation();
+        this.mWorkingTransform.set(newTransform);
+        setTransform(newTransform);
+        this.getDetector().restartGesture();
     }
 
     protected boolean isAnimating() {
-        return mIsAnimating;
+        return this.mIsAnimating;
     }
 
-    protected void setAnimating(boolean isAnimating) {
-        mIsAnimating = isAnimating;
+    protected void setAnimating(final boolean isAnimating) {
+        this.mIsAnimating = isAnimating;
     }
 
     protected float[] getStartValues() {
-        return mStartValues;
+        return this.mStartValues;
     }
 
     protected float[] getStopValues() {
-        return mStopValues;
+        return this.mStopValues;
     }
 
     protected Matrix getWorkingTransform() {
-        return mWorkingTransform;
+        return this.mWorkingTransform;
     }
 
     @Override
-    public void onGestureBegin(TransformGestureDetector detector) {
-        FLog.v(getLogTag(), "onGestureBegin");
-        stopAnimation();
+    public void onGestureBegin(final TransformGestureDetector detector) {
+        FLog.v(this.getLogTag(), "onGestureBegin");
+        this.stopAnimation();
         super.onGestureBegin(detector);
     }
 
     @Override
-    public void onGestureUpdate(TransformGestureDetector detector) {
-        FLog.v(getLogTag(), "onGestureUpdate %s", isAnimating() ? "(ignored)" : "");
-        if (isAnimating()) {
+    public void onGestureUpdate(final TransformGestureDetector detector) {
+        FLog.v(this.getLogTag(), "onGestureUpdate %s", this.isAnimating() ? "(ignored)" : "");
+        if (this.isAnimating()) {
             return;
         }
         super.onGestureUpdate(detector);
     }
 
-    protected void calculateInterpolation(Matrix outMatrix, float fraction) {
+    protected void calculateInterpolation(final Matrix outMatrix, final float fraction) {
         for (int i = 0; i < 9; i++) {
-            mCurrentValues[i] = (1 - fraction) * mStartValues[i] + fraction * mStopValues[i];
+            this.mCurrentValues[i] = (1 - fraction) * this.mStartValues[i] + fraction * this.mStopValues[i];
         }
-        outMatrix.setValues(mCurrentValues);
+        outMatrix.setValues(this.mCurrentValues);
     }
 
     public abstract void setTransformAnimated(
-            final Matrix newTransform, long durationMs, @Nullable final Runnable onAnimationComplete);
+            Matrix newTransform, long durationMs, @Nullable Runnable onAnimationComplete);
 
     protected abstract void stopAnimation();
 

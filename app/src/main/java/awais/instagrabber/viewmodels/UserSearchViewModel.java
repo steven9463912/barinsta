@@ -63,169 +63,169 @@ public class UserSearchViewModel extends ViewModel {
     private final RankedRecipientsCache rankedRecipientsCache;
 
     public UserSearchViewModel() {
-        final String cookie = settingsHelper.getString(Constants.COOKIE);
-        final String csrfToken = CookieUtils.getCsrfTokenFromCookie(cookie);
-        final long viewerId = CookieUtils.getUserIdFromCookie(cookie);
-        final String deviceUuid = settingsHelper.getString(Constants.DEVICE_UUID);
+        String cookie = settingsHelper.getString(Constants.COOKIE);
+        String csrfToken = CookieUtils.getCsrfTokenFromCookie(cookie);
+        long viewerId = CookieUtils.getUserIdFromCookie(cookie);
+        String deviceUuid = settingsHelper.getString(Constants.DEVICE_UUID);
         if (TextUtils.isEmpty(csrfToken) || viewerId <= 0 || TextUtils.isEmpty(deviceUuid)) {
             throw new IllegalArgumentException("User is not logged in!");
         }
-        userRepository = UserRepository.Companion.getInstance();
-        directMessagesRepository = DirectMessagesRepository.Companion.getInstance();
-        rankedRecipientsCache = RankedRecipientsCache.INSTANCE;
-        if ((rankedRecipientsCache.isFailed() || rankedRecipientsCache.isExpired()) && !rankedRecipientsCache.isUpdateInitiated()) {
-            updateRankedRecipientCache();
+        this.userRepository = UserRepository.Companion.getInstance();
+        this.directMessagesRepository = DirectMessagesRepository.Companion.getInstance();
+        this.rankedRecipientsCache = RankedRecipientsCache.INSTANCE;
+        if ((this.rankedRecipientsCache.isFailed() || this.rankedRecipientsCache.isExpired()) && !this.rankedRecipientsCache.isUpdateInitiated()) {
+            this.updateRankedRecipientCache();
         }
-        final Debouncer.Callback<String> searchCallback = new Debouncer.Callback<String>() {
+        Debouncer.Callback<String> searchCallback = new Debouncer.Callback<String>() {
             @Override
-            public void call(final String key) {
-                if (currentQuery != null && currentQuery.equalsIgnoreCase(prevQuery)) return;
-                sendSearchRequest();
-                prevQuery = currentQuery;
+            public void call(String key) {
+                if (UserSearchViewModel.this.currentQuery != null && UserSearchViewModel.this.currentQuery.equalsIgnoreCase(UserSearchViewModel.this.prevQuery)) return;
+                UserSearchViewModel.this.sendSearchRequest();
+                UserSearchViewModel.this.prevQuery = UserSearchViewModel.this.currentQuery;
             }
 
             @Override
-            public void onError(final Throwable t) {
-                Log.e(TAG, "onError: ", t);
+            public void onError(Throwable t) {
+                Log.e(UserSearchViewModel.TAG, "onError: ", t);
             }
         };
-        searchDebouncer = new Debouncer<>(searchCallback, 1000);
+        this.searchDebouncer = new Debouncer<>(searchCallback, 1000);
     }
 
     private void updateRankedRecipientCache() {
-        rankedRecipientsCache.setUpdateInitiated(true);
-        directMessagesRepository.rankedRecipients(
+        this.rankedRecipientsCache.setUpdateInitiated(true);
+        this.directMessagesRepository.rankedRecipients(
                 null,
                 null,
                 null,
                 CoroutineUtilsKt.getContinuation((response, throwable) -> {
                     if (throwable != null) {
-                        Log.e(TAG, "updateRankedRecipientCache: ", throwable);
-                        rankedRecipientsCache.setUpdateInitiated(false);
-                        rankedRecipientsCache.setFailed(true);
-                        continueSearchIfRequired();
+                        Log.e(UserSearchViewModel.TAG, "updateRankedRecipientCache: ", throwable);
+                        this.rankedRecipientsCache.setUpdateInitiated(false);
+                        this.rankedRecipientsCache.setFailed(true);
+                        this.continueSearchIfRequired();
                         return;
                     }
-                    rankedRecipientsCache.setResponse(response);
-                    rankedRecipientsCache.setUpdateInitiated(false);
-                    continueSearchIfRequired();
+                    this.rankedRecipientsCache.setResponse(response);
+                    this.rankedRecipientsCache.setUpdateInitiated(false);
+                    this.continueSearchIfRequired();
                 }, Dispatchers.getIO())
         );
     }
 
     private void continueSearchIfRequired() {
-        if (!waitingForCache) {
-            if (showCachedResults) {
-                recipients.postValue(Resource.success(getCachedRecipients()));
+        if (!this.waitingForCache) {
+            if (this.showCachedResults) {
+                this.recipients.postValue(Resource.success(this.getCachedRecipients()));
             }
             return;
         }
-        waitingForCache = false;
-        sendSearchRequest();
+        this.waitingForCache = false;
+        this.sendSearchRequest();
     }
 
     public LiveData<Resource<List<RankedRecipient>>> getRecipients() {
-        return recipients;
+        return this.recipients;
     }
 
-    public void search(@Nullable final String query) {
-        currentQuery = query;
+    public void search(@Nullable String query) {
+        this.currentQuery = query;
         if (TextUtils.isEmpty(query)) {
-            cancelSearch();
-            if (showCachedResults) {
-                recipients.postValue(Resource.success(getCachedRecipients()));
+            this.cancelSearch();
+            if (this.showCachedResults) {
+                this.recipients.postValue(Resource.success(this.getCachedRecipients()));
             }
             return;
         }
-        recipients.postValue(Resource.loading(getCachedRecipients()));
-        searchDebouncer.call(DEBOUNCE_KEY);
+        this.recipients.postValue(Resource.loading(this.getCachedRecipients()));
+        this.searchDebouncer.call(UserSearchViewModel.DEBOUNCE_KEY);
     }
 
     private void sendSearchRequest() {
-        if (!rankedRecipientsCache.isFailed()) { // to avoid infinite loop in case of any network issues
-            if (rankedRecipientsCache.isUpdateInitiated()) {
+        if (!this.rankedRecipientsCache.isFailed()) { // to avoid infinite loop in case of any network issues
+            if (this.rankedRecipientsCache.isUpdateInitiated()) {
                 // wait for cache first
-                waitingForCache = true;
+                this.waitingForCache = true;
                 return;
             }
-            if (rankedRecipientsCache.isExpired()) {
+            if (this.rankedRecipientsCache.isExpired()) {
                 // update cache first
-                updateRankedRecipientCache();
-                waitingForCache = true;
+                this.updateRankedRecipientCache();
+                this.waitingForCache = true;
                 return;
             }
         }
-        switch (searchMode) {
+        switch (this.searchMode) {
             case RAVEN:
             case RESHARE:
-                rankedRecipientSearch();
+                this.rankedRecipientSearch();
                 break;
             case USER_SEARCH:
             default:
-                defaultUserSearch();
+                this.defaultUserSearch();
                 break;
         }
     }
 
     private void defaultUserSearch() {
-        userRepository.search(currentQuery, CoroutineUtilsKt.getContinuation((userSearchResponse, throwable) -> {
+        this.userRepository.search(this.currentQuery, CoroutineUtilsKt.getContinuation((userSearchResponse, throwable) -> {
             if (throwable != null) {
-                Log.e(TAG, "onFailure: ", throwable);
-                recipients.postValue(Resource.error(throwable.getMessage(), getCachedRecipients()));
-                searchRequest = null;
+                Log.e(UserSearchViewModel.TAG, "onFailure: ", throwable);
+                this.recipients.postValue(Resource.error(throwable.getMessage(), this.getCachedRecipients()));
+                this.searchRequest = null;
                 return;
             }
             if (userSearchResponse == null) {
-                recipients.postValue(Resource.error(R.string.generic_null_response, getCachedRecipients()));
-                searchRequest = null;
+                this.recipients.postValue(Resource.error(R.string.generic_null_response, this.getCachedRecipients()));
+                this.searchRequest = null;
                 return;
             }
-            final List<RankedRecipient> list = userSearchResponse
+            List<RankedRecipient> list = userSearchResponse
                     .getUsers()
                     .stream()
                     .map(RankedRecipient::of)
                     .collect(Collectors.toList());
-            recipients.postValue(Resource.success(mergeResponseWithCache(list)));
-            searchRequest = null;
+            this.recipients.postValue(Resource.success(this.mergeResponseWithCache(list)));
+            this.searchRequest = null;
         }));
     }
 
     private void rankedRecipientSearch() {
-        directMessagesRepository.rankedRecipients(
-                searchMode.getMode(),
-                showGroups,
-                currentQuery,
+        this.directMessagesRepository.rankedRecipients(
+                this.searchMode.getMode(),
+                this.showGroups,
+                this.currentQuery,
                 CoroutineUtilsKt.getContinuation((response, throwable) -> {
                     if (throwable != null) {
-                        Log.e(TAG, "rankedRecipientSearch: ", throwable);
-                        recipients.postValue(Resource.error(throwable.getMessage(), getCachedRecipients()));
+                        Log.e(UserSearchViewModel.TAG, "rankedRecipientSearch: ", throwable);
+                        this.recipients.postValue(Resource.error(throwable.getMessage(), this.getCachedRecipients()));
                         return;
                     }
-                    final List<RankedRecipient> list = response.getRankedRecipients();
+                    List<RankedRecipient> list = response.getRankedRecipients();
                     if (list != null) {
-                        recipients.postValue(Resource.success(mergeResponseWithCache(list)));
+                        this.recipients.postValue(Resource.success(this.mergeResponseWithCache(list)));
                     }
                 }, Dispatchers.getIO())
         );
     }
 
-    private List<RankedRecipient> mergeResponseWithCache(@NonNull final List<RankedRecipient> list) {
-        final Iterator<RankedRecipient> iterator = list.stream()
+    private List<RankedRecipient> mergeResponseWithCache(@NonNull List<RankedRecipient> list) {
+        Iterator<RankedRecipient> iterator = list.stream()
                                                        .filter(Objects::nonNull)
                                                        .filter(this::filterValidRecipients)
                                                        .filter(this::filterOutGroups)
                                                        .filter(this::filterIdsToHide)
                                                        .iterator();
         return ImmutableList.<RankedRecipient>builder()
-                .addAll(getCachedRecipients()) // add cached results first
+                .addAll(this.getCachedRecipients()) // add cached results first
                 .addAll(iterator)
                 .build();
     }
 
     @NonNull
     private List<RankedRecipient> getCachedRecipients() {
-        final List<RankedRecipient> rankedRecipients = rankedRecipientsCache.getRankedRecipients();
-        final List<RankedRecipient> list = rankedRecipients != null ? rankedRecipients : Collections.emptyList();
+        List<RankedRecipient> rankedRecipients = this.rankedRecipientsCache.getRankedRecipients();
+        List<RankedRecipient> list = rankedRecipients != null ? rankedRecipients : Collections.emptyList();
         return list.stream()
                    .filter(Objects::nonNull)
                    .filter(this::filterValidRecipients)
@@ -235,72 +235,72 @@ public class UserSearchViewModel extends ViewModel {
                    .collect(Collectors.toList());
     }
 
-    private void handleErrorResponse(final Response<?> response, boolean updateResource) {
-        final ResponseBody errorBody = response.errorBody();
+    private void handleErrorResponse(Response<?> response, final boolean updateResource) {
+        ResponseBody errorBody = response.errorBody();
         if (errorBody == null) {
             if (updateResource) {
-                recipients.postValue(Resource.error(R.string.generic_failed_request, getCachedRecipients()));
+                this.recipients.postValue(Resource.error(R.string.generic_failed_request, this.getCachedRecipients()));
             }
             return;
         }
         String errorString;
         try {
             errorString = errorBody.string();
-            Log.e(TAG, "handleErrorResponse: " + errorString);
-        } catch (IOException e) {
-            Log.e(TAG, "handleErrorResponse: ", e);
+            Log.e(UserSearchViewModel.TAG, "handleErrorResponse: " + errorString);
+        } catch (final IOException e) {
+            Log.e(UserSearchViewModel.TAG, "handleErrorResponse: ", e);
             errorString = e.getMessage();
         }
         if (updateResource) {
-            recipients.postValue(Resource.error(errorString, getCachedRecipients()));
+            this.recipients.postValue(Resource.error(errorString, this.getCachedRecipients()));
         }
     }
 
     public void cleanup() {
-        searchDebouncer.terminate();
+        this.searchDebouncer.terminate();
     }
 
-    public void setSelectedRecipient(final RankedRecipient recipient, final boolean selected) {
+    public void setSelectedRecipient(RankedRecipient recipient, boolean selected) {
         if (selected) {
-            selectedRecipients.add(recipient);
+            this.selectedRecipients.add(recipient);
         } else {
-            selectedRecipients.remove(recipient);
+            this.selectedRecipients.remove(recipient);
         }
-        showAction.postValue(!selectedRecipients.isEmpty());
+        this.showAction.postValue(!this.selectedRecipients.isEmpty());
     }
 
     public Set<RankedRecipient> getSelectedRecipients() {
-        return selectedRecipients;
+        return this.selectedRecipients;
     }
 
     public void clearResults() {
-        recipients.postValue(Resource.success(Collections.emptyList()));
-        prevQuery = "";
+        this.recipients.postValue(Resource.success(Collections.emptyList()));
+        this.prevQuery = "";
     }
 
     public void cancelSearch() {
-        searchDebouncer.cancel(DEBOUNCE_KEY);
-        if (searchRequest != null) {
-            searchRequest.cancel();
-            searchRequest = null;
+        this.searchDebouncer.cancel(UserSearchViewModel.DEBOUNCE_KEY);
+        if (this.searchRequest != null) {
+            this.searchRequest.cancel();
+            this.searchRequest = null;
         }
     }
 
     public LiveData<Boolean> showAction() {
-        return showAction;
+        return this.showAction;
     }
 
-    public void setSearchMode(final UserSearchMode searchMode) {
+    public void setSearchMode(UserSearchMode searchMode) {
         this.searchMode = searchMode;
     }
 
-    public void setShowGroups(final boolean showGroups) {
+    public void setShowGroups(boolean showGroups) {
         this.showGroups = showGroups;
     }
 
-    public void setHideUserIds(final long[] hideUserIds) {
+    public void setHideUserIds(long[] hideUserIds) {
         if (hideUserIds != null) {
-            final long[] copy = Arrays.copyOf(hideUserIds, hideUserIds.length);
+            long[] copy = Arrays.copyOf(hideUserIds, hideUserIds.length);
             Arrays.sort(copy);
             this.hideUserIds = copy;
             return;
@@ -308,9 +308,9 @@ public class UserSearchViewModel extends ViewModel {
         this.hideUserIds = null;
     }
 
-    public void setHideThreadIds(final String[] hideThreadIds) {
+    public void setHideThreadIds(String[] hideThreadIds) {
         if (hideThreadIds != null) {
-            final String[] copy = Arrays.copyOf(hideThreadIds, hideThreadIds.length);
+            String[] copy = Arrays.copyOf(hideThreadIds, hideThreadIds.length);
             Arrays.sort(copy);
             this.hideThreadIds = copy;
             return;
@@ -318,50 +318,50 @@ public class UserSearchViewModel extends ViewModel {
         this.hideThreadIds = null;
     }
 
-    private boolean filterOutGroups(@NonNull RankedRecipient recipient) {
+    private boolean filterOutGroups(@NonNull final RankedRecipient recipient) {
         // if showGroups is false, remove groups from the list
-        if (showGroups || recipient.getThread() == null) {
+        if (this.showGroups || recipient.getThread() == null) {
             return true;
         }
         return !recipient.getThread().isGroup();
     }
 
-    private boolean filterValidRecipients(@NonNull RankedRecipient recipient) {
+    private boolean filterValidRecipients(@NonNull final RankedRecipient recipient) {
         // check if both user and thread are null
         return recipient.getUser() != null || recipient.getThread() != null;
     }
 
-    private boolean filterIdsToHide(@NonNull RankedRecipient recipient) {
-        if (hideThreadIds != null && recipient.getThread() != null) {
-            return Arrays.binarySearch(hideThreadIds, recipient.getThread().getThreadId()) < 0;
+    private boolean filterIdsToHide(@NonNull final RankedRecipient recipient) {
+        if (this.hideThreadIds != null && recipient.getThread() != null) {
+            return Arrays.binarySearch(this.hideThreadIds, recipient.getThread().getThreadId()) < 0;
         }
-        if (hideUserIds != null) {
+        if (this.hideUserIds != null) {
             long pk = -1;
             if (recipient.getUser() != null) {
                 pk = recipient.getUser().getPk();
             } else if (recipient.getThread() != null && !recipient.getThread().isGroup()) {
-                final User user = recipient.getThread().getUsers().get(0);
+                User user = recipient.getThread().getUsers().get(0);
                 pk = user.getPk();
             }
-            return Arrays.binarySearch(hideUserIds, pk) < 0;
+            return Arrays.binarySearch(this.hideUserIds, pk) < 0;
         }
         return true;
     }
 
-    private boolean filterQuery(@NonNull RankedRecipient recipient) {
-        if (TextUtils.isEmpty(currentQuery)) {
+    private boolean filterQuery(@NonNull final RankedRecipient recipient) {
+        if (TextUtils.isEmpty(this.currentQuery)) {
             return true;
         }
         if (recipient.getThread() != null) {
-            return recipient.getThread().getThreadTitle().toLowerCase().contains(currentQuery.toLowerCase());
+            return recipient.getThread().getThreadTitle().toLowerCase().contains(this.currentQuery.toLowerCase());
         }
-        return recipient.getUser().getUsername().toLowerCase().contains(currentQuery.toLowerCase())
-                || recipient.getUser().getFullName().toLowerCase().contains(currentQuery.toLowerCase());
+        return recipient.getUser().getUsername().toLowerCase().contains(this.currentQuery.toLowerCase())
+                || recipient.getUser().getFullName().toLowerCase().contains(this.currentQuery.toLowerCase());
     }
 
     public void showCachedResults() {
-        this.showCachedResults = true;
-        if (rankedRecipientsCache.isUpdateInitiated()) return;
-        recipients.postValue(Resource.success(getCachedRecipients()));
+        showCachedResults = true;
+        if (this.rankedRecipientsCache.isUpdateInitiated()) return;
+        this.recipients.postValue(Resource.success(this.getCachedRecipients()));
     }
 }

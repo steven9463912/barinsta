@@ -40,7 +40,6 @@ import java.util.stream.Collectors;
 import awais.instagrabber.adapters.FiltersAdapter;
 import awais.instagrabber.databinding.FragmentFiltersBinding;
 import awais.instagrabber.fragments.imageedit.filters.FiltersHelper;
-import awais.instagrabber.fragments.imageedit.filters.FiltersHelper.FilterType;
 import awais.instagrabber.fragments.imageedit.filters.filters.Filter;
 import awais.instagrabber.fragments.imageedit.filters.filters.FilterFactory;
 import awais.instagrabber.fragments.imageedit.filters.properties.FloatProperty;
@@ -66,7 +65,7 @@ public class FiltersFragment extends Fragment {
     private static final String ARGS_FILTER = "filter";
     private static final String ARGS_TAB = "tab";
 
-    private final Map<FilterType, Filter<?>> tuningFilters = new HashMap<>();
+    private final Map<FiltersHelper.FilterType, Filter<?>> tuningFilters = new HashMap<>();
     private final Map<Property<?>, Integer> propertySliderIdMap = new HashMap<>();
 
     private GPUImageFilterGroup filterGroup;
@@ -79,8 +78,8 @@ public class FiltersFragment extends Fragment {
     private boolean isFilterGroupSet = false;
     private FilterCallback callback;
     private FiltersAdapter filtersAdapter;
-    private HashMap<FilterType, Map<Integer, Object>> initialTuningFiltersValues;
-    private SerializablePair<FilterType, Map<Integer, Object>> initialFilter;
+    private HashMap<FiltersHelper.FilterType, Map<Integer, Object>> initialTuningFiltersValues;
+    private SerializablePair<FiltersHelper.FilterType, Map<Integer, Object>> initialFilter;
 
     @NonNull
     public static FiltersFragment newInstance(@NonNull final Uri sourceUri,
@@ -92,8 +91,8 @@ public class FiltersFragment extends Fragment {
     @NonNull
     public static FiltersFragment newInstance(@NonNull final Uri sourceUri,
                                               @NonNull final Uri destUri,
-                                              final HashMap<FilterType, Map<Integer, Object>> appliedTuningFilters,
-                                              final SerializablePair<FilterType, Map<Integer, Object>> appliedFilter,
+                                              final HashMap<FiltersHelper.FilterType, Map<Integer, Object>> appliedTuningFilters,
+                                              final SerializablePair<FiltersHelper.FilterType, Map<Integer, Object>> appliedFilter,
                                               @NonNull final ImageEditViewModel.Tab tab) {
         final Bundle args = new Bundle();
         args.putParcelable(ARGS_SOURCE_URI, sourceUri);
@@ -179,7 +178,7 @@ public class FiltersFragment extends Fragment {
         if (tuningFiltersSerializable instanceof HashMap) {
             try {
                 //noinspection unchecked
-                initialTuningFiltersValues = (HashMap<FilterType, Map<Integer, Object>>) tuningFiltersSerializable;
+                initialTuningFiltersValues = (HashMap<FiltersHelper.FilterType, Map<Integer, Object>>) tuningFiltersSerializable;
             } catch (Exception e) {
                 Log.e(TAG, "init: ", e);
             }
@@ -188,57 +187,57 @@ public class FiltersFragment extends Fragment {
         if (filterSerializable instanceof SerializablePair) {
             try {
                 //noinspection unchecked
-                initialFilter = (SerializablePair<FilterType, Map<Integer, Object>>) filterSerializable;
-            } catch (Exception e) {
-                Log.e(TAG, "init: ", e);
+                initialFilter = (SerializablePair<FiltersHelper.FilterType, Map<Integer, Object>>) filterSerializable;
+            } catch (final Exception e) {
+                Log.e(FiltersFragment.TAG, "init: ", e);
             }
         }
-        final Context context = getContext();
+        Context context = this.getContext();
         if (context == null) return;
-        binding.preview.setScaleType(GPUImage.ScaleType.CENTER_INSIDE);
-        appExecutors.getTasksThread().execute(() -> {
-            binding.preview.setImage(sourceUri);
-            setPreviewBounds();
+        this.binding.preview.setScaleType(GPUImage.ScaleType.CENTER_INSIDE);
+        this.appExecutors.getTasksThread().execute(() -> {
+            this.binding.preview.setImage(this.sourceUri);
+            this.setPreviewBounds();
         });
-        setCurrentTab(ImageEditViewModel.Tab.valueOf(savedInstanceState != null && savedInstanceState.containsKey(ARGS_TAB)
-                                                     ? savedInstanceState.getString(ARGS_TAB)
-                                                     : arguments.getString(ARGS_TAB)));
-        binding.cancel.setOnClickListener(v -> {
-            if (callback == null) return;
-            callback.onCancel();
+        this.setCurrentTab(ImageEditViewModel.Tab.valueOf(savedInstanceState != null && savedInstanceState.containsKey(FiltersFragment.ARGS_TAB)
+                                                     ? savedInstanceState.getString(FiltersFragment.ARGS_TAB)
+                                                     : arguments.getString(FiltersFragment.ARGS_TAB)));
+        this.binding.cancel.setOnClickListener(v -> {
+            if (this.callback == null) return;
+            this.callback.onCancel();
         });
-        binding.reset.setOnClickListener(v -> {
-            final ImageEditViewModel.Tab tab = viewModel.getCurrentTab().getValue();
+        this.binding.reset.setOnClickListener(v -> {
+            ImageEditViewModel.Tab tab = this.viewModel.getCurrentTab().getValue();
             if (tab == ImageEditViewModel.Tab.TUNE) {
-                final Collection<Filter<?>> filters = tuningFilters.values();
-                for (final Filter<?> filter : filters) {
+                Collection<Filter<?>> filters = this.tuningFilters.values();
+                for (Filter<?> filter : filters) {
                     if (filter == null) continue;
                     filter.reset();
                 }
-                resetSliders();
+                this.resetSliders();
             }
             if (tab == ImageEditViewModel.Tab.FILTERS) {
-                final List<GPUImageFilter> groupFilters = filterGroup.getFilters();
-                if (appliedFilter != null) {
-                    groupFilters.remove(appliedFilter.getInstance());
-                    appliedFilter = null;
+                List<GPUImageFilter> groupFilters = this.filterGroup.getFilters();
+                if (this.appliedFilter != null) {
+                    groupFilters.remove(this.appliedFilter.getInstance());
+                    this.appliedFilter = null;
                 }
-                if (filtersAdapter != null) {
-                    filtersAdapter.setSelected(0);
+                if (this.filtersAdapter != null) {
+                    this.filtersAdapter.setSelected(0);
                 }
-                binding.preview.post(() -> binding.preview.setFilter(filterGroup = new GPUImageFilterGroup(groupFilters)));
+                this.binding.preview.post(() -> this.binding.preview.setFilter(this.filterGroup = new GPUImageFilterGroup(groupFilters)));
             }
         });
-        binding.apply.setOnClickListener(v -> {
-            if (callback == null) return;
-            final List<Filter<?>> appliedTunings = getAppliedTunings();
-            appExecutors.getTasksThread().submit(() -> {
-                final Bitmap bitmap = binding.preview.getGPUImage().getBitmapWithFilterApplied();
+        this.binding.apply.setOnClickListener(v -> {
+            if (this.callback == null) return;
+            List<Filter<?>> appliedTunings = this.getAppliedTunings();
+            this.appExecutors.getTasksThread().submit(() -> {
+                Bitmap bitmap = this.binding.preview.getGPUImage().getBitmapWithFilterApplied();
                 try {
-                    BitmapUtils.convertToJpegAndSaveToUri(context, bitmap, destUri);
-                    callback.onApply(destUri, appliedTunings, appliedFilter);
-                } catch (Exception e) {
-                    Log.e(TAG, "init: ", e);
+                    BitmapUtils.convertToJpegAndSaveToUri(context, bitmap, this.destUri);
+                    this.callback.onApply(this.destUri, appliedTunings, this.appliedFilter);
+                } catch (final Exception e) {
+                    Log.e(FiltersFragment.TAG, "init: ", e);
                 }
             });
         });
@@ -246,17 +245,17 @@ public class FiltersFragment extends Fragment {
 
     @NonNull
     private List<Filter<?>> getAppliedTunings() {
-        return tuningFilters
+        return this.tuningFilters
                 .values()
                 .stream()
                 .filter(Objects::nonNull)
                 .filter(filter -> {
-                    final Map<Integer, Property<?>> propertyMap = filter.getProperties();
+                    Map<Integer, Property<?>> propertyMap = filter.getProperties();
                     if (propertyMap == null) return false;
-                    final Collection<Property<?>> properties = propertyMap.values();
+                    Collection<Property<?>> properties = propertyMap.values();
                     return properties.stream()
                                      .noneMatch(property -> {
-                                         final Object value = property.getValue();
+                                         Object value = property.getValue();
                                          if (value == null) {
                                              return false;
                                          }
@@ -267,13 +266,13 @@ public class FiltersFragment extends Fragment {
     }
 
     private void resetSliders() {
-        final Set<Map.Entry<Property<?>, Integer>> entries = propertySliderIdMap.entrySet();
-        for (final Map.Entry<Property<?>, Integer> entry : entries) {
-            final Property<?> property = entry.getKey();
-            final Integer viewId = entry.getValue();
-            final Slider slider = (Slider) binding.getRoot().findViewById(viewId);
+        Set<Map.Entry<Property<?>, Integer>> entries = this.propertySliderIdMap.entrySet();
+        for (Map.Entry<Property<?>, Integer> entry : entries) {
+            Property<?> property = entry.getKey();
+            Integer viewId = entry.getValue();
+            Slider slider = this.binding.getRoot().findViewById(viewId);
             if (slider == null) continue;
-            final Object defaultValue = property.getDefaultValue();
+            Object defaultValue = property.getDefaultValue();
             if (!(defaultValue instanceof Float)) continue;
             slider.setValue((float) defaultValue);
         }
@@ -282,45 +281,45 @@ public class FiltersFragment extends Fragment {
     private void setPreviewBounds() {
         InputStream inputStream = null;
         try {
-            final BitmapFactory.Options options = new BitmapFactory.Options();
+            BitmapFactory.Options options = new BitmapFactory.Options();
             options.inJustDecodeBounds = true;
-            final Context context = getContext();
+            Context context = this.getContext();
             if (context == null) return;
-            inputStream = context.getContentResolver().openInputStream(sourceUri);
+            inputStream = context.getContentResolver().openInputStream(this.sourceUri);
             BitmapFactory.decodeStream(inputStream, null, options);
-            final float ratio = (float) options.outWidth / options.outHeight;
-            appExecutors.getMainThread().execute(() -> {
-                final ViewGroup.LayoutParams previewLayoutParams = binding.preview.getLayoutParams();
+            float ratio = (float) options.outWidth / options.outHeight;
+            this.appExecutors.getMainThread().execute(() -> {
+                ViewGroup.LayoutParams previewLayoutParams = this.binding.preview.getLayoutParams();
                 if (options.outHeight > options.outWidth) {
-                    previewLayoutParams.width = (int) (binding.preview.getHeight() * ratio);
+                    previewLayoutParams.width = (int) (this.binding.preview.getHeight() * ratio);
                 } else {
-                    previewLayoutParams.height = (int) (binding.preview.getWidth() / ratio);
+                    previewLayoutParams.height = (int) (this.binding.preview.getWidth() / ratio);
                 }
-                binding.preview.setRatio(ratio);
-                binding.preview.requestLayout();
+                this.binding.preview.setRatio(ratio);
+                this.binding.preview.requestLayout();
             });
-        } catch (FileNotFoundException e) {
-            Log.e(TAG, "setPreviewBounds: ", e);
+        } catch (final FileNotFoundException e) {
+            Log.e(FiltersFragment.TAG, "setPreviewBounds: ", e);
         } finally {
             if (inputStream != null) {
                 try {
                     inputStream.close();
-                } catch (IOException ignored) {}
+                } catch (final IOException ignored) {}
             }
         }
     }
 
     private void setupObservers() {
-        viewModel.isLoading().observe(getViewLifecycleOwner(), loading -> {
+        this.viewModel.isLoading().observe(this.getViewLifecycleOwner(), loading -> {
 
         });
-        viewModel.getCurrentTab().observe(getViewLifecycleOwner(), tab -> {
+        this.viewModel.getCurrentTab().observe(this.getViewLifecycleOwner(), tab -> {
             switch (tab) {
                 case TUNE:
-                    setupTuning();
+                    this.setupTuning();
                     break;
                 case FILTERS:
-                    setupFilters();
+                    this.setupFilters();
                     break;
                 default:
                     break;
@@ -329,43 +328,43 @@ public class FiltersFragment extends Fragment {
     }
 
     private void setupTuning() {
-        initTuningControls();
-        binding.filters.setVisibility(View.GONE);
-        binding.tuneControlsWrapper.setVisibility(View.VISIBLE);
+        this.initTuningControls();
+        this.binding.filters.setVisibility(View.GONE);
+        this.binding.tuneControlsWrapper.setVisibility(View.VISIBLE);
     }
 
     private void initTuningControls() {
-        final Context context = getContext();
+        Context context = this.getContext();
         if (context == null) return;
-        final ConstraintLayout controlsParent = new ConstraintLayout(context);
+        ConstraintLayout controlsParent = new ConstraintLayout(context);
         controlsParent.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        final Barrier sliderBarrier = new Barrier(context);
-        sliderBarrier.setId(Barrier.generateViewId());
+        Barrier sliderBarrier = new Barrier(context);
+        sliderBarrier.setId(View.generateViewId());
         sliderBarrier.setType(Barrier.START);
         controlsParent.addView(sliderBarrier);
-        binding.tuneControlsWrapper.addView(controlsParent);
-        final int labelPadding = Utils.convertDpToPx(8);
-        final List<Filter<?>> tuneFilters = FiltersHelper.getTuneFilters();
+        this.binding.tuneControlsWrapper.addView(controlsParent);
+        int labelPadding = Utils.convertDpToPx(8);
+        List<Filter<?>> tuneFilters = FiltersHelper.getTuneFilters();
         Slider previousSlider = null;
         // Need to iterate backwards
         for (int i = tuneFilters.size() - 1; i >= 0; i--) {
-            final Filter<?> tuneFilter = tuneFilters.get(i);
+            Filter<?> tuneFilter = tuneFilters.get(i);
             if (tuneFilter.getProperties() == null || tuneFilter.getProperties().isEmpty() || tuneFilter.getProperties().size() > 1) continue;
-            final int propKey = tuneFilter.getProperties().keySet().iterator().next();
-            final Property<?> property = tuneFilter.getProperties().values().iterator().next();
+            int propKey = tuneFilter.getProperties().keySet().iterator().next();
+            Property<?> property = tuneFilter.getProperties().values().iterator().next();
             if (!(property instanceof FloatProperty)) continue;
-            final GPUImageFilter filterInstance = tuneFilter.getInstance();
-            tuningFilters.put(tuneFilter.getType(), tuneFilter);
-            filterGroup.addFilter(filterInstance);
+            GPUImageFilter filterInstance = tuneFilter.getInstance();
+            this.tuningFilters.put(tuneFilter.getType(), tuneFilter);
+            this.filterGroup.addFilter(filterInstance);
 
-            final FloatProperty floatProperty = (FloatProperty) property;
-            final Slider slider = new Slider(context);
-            final int viewId = Slider.generateViewId();
+            FloatProperty floatProperty = (FloatProperty) property;
+            Slider slider = new Slider(context);
+            int viewId = View.generateViewId();
             slider.setId(viewId);
-            propertySliderIdMap.put(floatProperty, viewId);
+            this.propertySliderIdMap.put(floatProperty, viewId);
 
-            final ConstraintLayout.LayoutParams sliderLayoutParams = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_CONSTRAINT,
-                                                                                                       ConstraintLayout.LayoutParams.WRAP_CONTENT);
+            ConstraintLayout.LayoutParams sliderLayoutParams = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_CONSTRAINT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
 
             sliderLayoutParams.startToEnd = sliderBarrier.getId();
             sliderLayoutParams.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID;
@@ -373,7 +372,7 @@ public class FiltersFragment extends Fragment {
                 sliderLayoutParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
             } else {
                 sliderLayoutParams.bottomToTop = previousSlider.getId();
-                final ConstraintLayout.LayoutParams prevSliderLayoutParams = (ConstraintLayout.LayoutParams) previousSlider.getLayoutParams();
+                ConstraintLayout.LayoutParams prevSliderLayoutParams = (ConstraintLayout.LayoutParams) previousSlider.getLayoutParams();
                 prevSliderLayoutParams.topToBottom = slider.getId();
             }
             if (i == 0) {
@@ -383,10 +382,10 @@ public class FiltersFragment extends Fragment {
             slider.setValueFrom(floatProperty.getMinValue());
             slider.setValueTo(floatProperty.getMaxValue());
             float defaultValue = floatProperty.getDefaultValue();
-            if (initialTuningFiltersValues != null && initialTuningFiltersValues.containsKey(tuneFilter.getType())) {
-                final Map<Integer, Object> valueMap = initialTuningFiltersValues.get(tuneFilter.getType());
+            if (this.initialTuningFiltersValues != null && this.initialTuningFiltersValues.containsKey(tuneFilter.getType())) {
+                Map<Integer, Object> valueMap = this.initialTuningFiltersValues.get(tuneFilter.getType());
                 if (valueMap != null) {
-                    final Object value = valueMap.get(propKey);
+                    Object value = valueMap.get(propKey);
                     if (value instanceof Float) {
                         defaultValue = (float) value;
                         tuneFilter.adjust(propKey, value);
@@ -395,16 +394,16 @@ public class FiltersFragment extends Fragment {
             }
             slider.setValue(defaultValue);
             slider.addOnChangeListener((slider1, value, fromUser) -> {
-                final Filter<?> filter = tuningFilters.get(tuneFilter.getType());
+                Filter<?> filter = this.tuningFilters.get(tuneFilter.getType());
                 if (filter != null) {
                     tuneFilter.adjust(propKey, value);
                 }
-                binding.preview.post(() -> binding.preview.requestRender());
+                this.binding.preview.post(() -> this.binding.preview.requestRender());
             });
 
-            final AppCompatTextView label = new AppCompatTextView(context);
-            label.setId(AppCompatTextView.generateViewId());
-            final ConstraintLayout.LayoutParams labelLayoutParams = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT,
+            AppCompatTextView label = new AppCompatTextView(context);
+            label.setId(View.generateViewId());
+            ConstraintLayout.LayoutParams labelLayoutParams = new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                                                                                                       ConstraintLayout.LayoutParams.MATCH_CONSTRAINT);
             labelLayoutParams.topToTop = slider.getId();
             labelLayoutParams.startToStart = ConstraintLayout.LayoutParams.PARENT_ID;
@@ -421,108 +420,108 @@ public class FiltersFragment extends Fragment {
 
             previousSlider = slider;
         }
-        addInitialFilter();
-        if (!isFilterGroupSet) {
-            isFilterGroupSet = true;
-            binding.preview.post(() -> binding.preview.setFilter(filterGroup));
+        this.addInitialFilter();
+        if (!this.isFilterGroupSet) {
+            this.isFilterGroupSet = true;
+            this.binding.preview.post(() -> this.binding.preview.setFilter(this.filterGroup));
         }
     }
 
     private void addInitialFilter() {
-        if (initialFilter == null) return;
-        final Filter<?> instance = FilterFactory.getInstance(initialFilter.first);
+        if (this.initialFilter == null) return;
+        Filter<?> instance = FilterFactory.getInstance(this.initialFilter.first);
         if (instance == null) return;
-        addFilterToGroup(instance, initialFilter.second);
-        appliedFilter = instance;
+        this.addFilterToGroup(instance, this.initialFilter.second);
+        this.appliedFilter = instance;
     }
 
     private void setupFilters() {
-        final Context context = getContext();
+        Context context = this.getContext();
         if (context == null) return;
-        addTuneFilters();
-        binding.filters.setVisibility(View.VISIBLE);
-        final RecyclerView.ItemAnimator animator = binding.filters.getItemAnimator();
+        this.addTuneFilters();
+        this.binding.filters.setVisibility(View.VISIBLE);
+        RecyclerView.ItemAnimator animator = this.binding.filters.getItemAnimator();
         if (animator instanceof SimpleItemAnimator) {
-            final SimpleItemAnimator itemAnimator = (SimpleItemAnimator) animator;
+            SimpleItemAnimator itemAnimator = (SimpleItemAnimator) animator;
             itemAnimator.setSupportsChangeAnimations(false);
         }
-        binding.tuneControlsWrapper.setVisibility(View.GONE);
-        binding.filters.setLayoutManager(new LinearLayoutManager(context, RecyclerView.HORIZONTAL, false));
-        final FiltersAdapter.OnFilterClickListener onFilterClickListener = (position, filter) -> {
-            if (appliedFilter != null && appliedFilter.equals(filter)) return;
-            final List<GPUImageFilter> filters = filterGroup.getFilters();
-            if (appliedFilter != null) {
+        this.binding.tuneControlsWrapper.setVisibility(View.GONE);
+        this.binding.filters.setLayoutManager(new LinearLayoutManager(context, RecyclerView.HORIZONTAL, false));
+        FiltersAdapter.OnFilterClickListener onFilterClickListener = (position, filter) -> {
+            if (this.appliedFilter != null && this.appliedFilter.equals(filter)) return;
+            List<GPUImageFilter> filters = this.filterGroup.getFilters();
+            if (this.appliedFilter != null) {
                 // remove applied filter from current filter list
-                filters.remove(appliedFilter.getInstance());
+                filters.remove(this.appliedFilter.getInstance());
             }
             // add the new filter
             filters.add(filter.getInstance());
-            filterGroup = new GPUImageFilterGroup(filters);
-            binding.preview.post(() -> binding.preview.setFilter(filterGroup));
-            filtersAdapter.setSelected(position);
-            appliedFilter = filter;
+            this.filterGroup = new GPUImageFilterGroup(filters);
+            this.binding.preview.post(() -> this.binding.preview.setFilter(this.filterGroup));
+            this.filtersAdapter.setSelected(position);
+            this.appliedFilter = filter;
         };
         BitmapUtils.getThumbnail(
                 context,
-                sourceUri,
-                CoroutineUtilsKt.getContinuation((bitmapResult, throwable) -> appExecutors.getMainThread().execute(() -> {
+                this.sourceUri,
+                CoroutineUtilsKt.getContinuation((bitmapResult, throwable) -> this.appExecutors.getMainThread().execute(() -> {
                     if (throwable != null) {
-                        Log.e(TAG, "setupFilters: ", throwable);
+                        Log.e(FiltersFragment.TAG, "setupFilters: ", throwable);
                         return;
                     }
                     if (bitmapResult == null || bitmapResult.getBitmap() == null) {
                         return;
                     }
-                    filtersAdapter = new FiltersAdapter(
-                            tuningFilters.values()
+                    this.filtersAdapter = new FiltersAdapter(
+                            this.tuningFilters.values()
                                          .stream()
                                          .map(Filter::getInstance)
                                          .collect(Collectors.toList()),
-                            sourceUri.toString(),
+                            this.sourceUri.toString(),
                             bitmapResult.getBitmap(),
                             onFilterClickListener
                     );
-                    binding.filters.setAdapter(filtersAdapter);
-                    filtersAdapter.submitList(FiltersHelper.getFilters(), () -> {
-                        if (appliedFilter == null) return;
-                        filtersAdapter.setSelectedFilter(appliedFilter.getInstance());
+                    this.binding.filters.setAdapter(this.filtersAdapter);
+                    this.filtersAdapter.submitList(FiltersHelper.getFilters(), () -> {
+                        if (this.appliedFilter == null) return;
+                        this.filtersAdapter.setSelectedFilter(this.appliedFilter.getInstance());
                     });
                 }), Dispatchers.getIO())
         );
-        addInitialFilter();
-        binding.preview.setFilter(filterGroup);
+        this.addInitialFilter();
+        this.binding.preview.setFilter(this.filterGroup);
     }
 
     private void addTuneFilters() {
-        if (initialTuningFiltersValues == null) return;
-        final List<Filter<?>> tuneFilters = FiltersHelper.getTuneFilters();
-        for (final Filter<?> tuneFilter : tuneFilters) {
-            if (!initialTuningFiltersValues.containsKey(tuneFilter.getType())) continue;
-            addFilterToGroup(tuneFilter, initialTuningFiltersValues.get(tuneFilter.getType()));
+        if (this.initialTuningFiltersValues == null) return;
+        List<Filter<?>> tuneFilters = FiltersHelper.getTuneFilters();
+        for (Filter<?> tuneFilter : tuneFilters) {
+            if (!this.initialTuningFiltersValues.containsKey(tuneFilter.getType())) continue;
+            this.addFilterToGroup(tuneFilter, this.initialTuningFiltersValues.get(tuneFilter.getType()));
         }
     }
 
-    private void addFilterToGroup(@NonNull final Filter<?> tuneFilter, final Map<Integer, Object> valueMap) {
-        final GPUImageFilter filter = tuneFilter.getInstance();
-        filterGroup.addFilter(filter);
+    private void addFilterToGroup(@NonNull Filter<?> tuneFilter, Map<Integer, Object> valueMap) {
+        GPUImageFilter filter = tuneFilter.getInstance();
+        this.filterGroup.addFilter(filter);
         if (valueMap == null) return;
-        final Set<Map.Entry<Integer, Object>> entries = valueMap.entrySet();
-        for (final Map.Entry<Integer, Object> entry : entries) {
+        Set<Map.Entry<Integer, Object>> entries = valueMap.entrySet();
+        for (Map.Entry<Integer, Object> entry : entries) {
             tuneFilter.adjust(entry.getKey(), entry.getValue());
         }
     }
 
-    public void setCurrentTab(final ImageEditViewModel.Tab tab) {
-        viewModel.setCurrentTab(tab);
+    public void setCurrentTab(ImageEditViewModel.Tab tab) {
+        this.viewModel.setCurrentTab(tab);
     }
 
-    public void setCallback(final FilterCallback callback) {
+    public void setCallback(FilterCallback callback) {
         if (callback == null) return;
         this.callback = callback;
     }
 
     public interface FilterCallback {
-        void onApply(final Uri uri, List<Filter<?>> tuningFilters, Filter<?> filter);
+        void onApply(Uri uri, List<Filter<?>> tuningFilters, Filter<?> filter);
 
         void onCancel();
     }

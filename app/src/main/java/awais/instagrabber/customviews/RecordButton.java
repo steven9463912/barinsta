@@ -22,86 +22,86 @@ public class RecordButton extends MaterialButton implements View.OnTouchListener
     private OnRecordClickListener onRecordClickListener;
     private OnRecordLongClickListener onRecordLongClickListener;
 
-    public RecordButton(Context context) {
+    public RecordButton(final Context context) {
         super(context);
-        init(context, null);
+        this.init(context, null);
     }
 
-    public RecordButton(Context context, AttributeSet attrs) {
+    public RecordButton(final Context context, final AttributeSet attrs) {
         super(context, attrs);
-        init(context, attrs);
+        this.init(context, attrs);
     }
 
-    public RecordButton(Context context, AttributeSet attrs, int defStyleAttr) {
+    public RecordButton(final Context context, final AttributeSet attrs, final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init(context, attrs);
+        this.init(context, attrs);
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    private void init(Context context, AttributeSet attrs) {
-        scaleAnimation = new ScaleAnimation(this);
-        this.setOnTouchListener(this);
-        this.setOnClickListener(this);
-        this.setOnLongClickListener(this);
+    private void init(final Context context, final AttributeSet attrs) {
+        this.scaleAnimation = new ScaleAnimation(this);
+        setOnTouchListener(this);
+        setOnClickListener(this);
+        setOnLongClickListener(this);
     }
 
-    public void setRecordView(RecordView recordView) {
+    public void setRecordView(final RecordView recordView) {
         this.recordView = recordView;
     }
 
     @Override
-    public boolean onTouch(View v, MotionEvent event) {
-        if (isListenForRecord()) {
+    public boolean onTouch(final View v, final MotionEvent event) {
+        if (this.isListenForRecord()) {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    recordView.onActionDown((RecordButton) v, event);
+                    this.recordView.onActionDown((RecordButton) v, event);
                     break;
                 case MotionEvent.ACTION_MOVE:
-                    recordView.onActionMove((RecordButton) v, event, false);
+                    this.recordView.onActionMove((RecordButton) v, event, false);
                     break;
                 case MotionEvent.ACTION_UP:
-                    recordView.onActionUp((RecordButton) v);
+                    this.recordView.onActionUp((RecordButton) v);
                     break;
             }
         }
-        return isListenForRecord();
+        return this.isListenForRecord();
     }
 
     protected void startScale() {
-        scaleAnimation.start();
+        this.scaleAnimation.start();
     }
 
     public void stopScale() {
-        scaleAnimation.stop();
+        this.scaleAnimation.stop();
     }
 
-    public void setListenForRecord(boolean listenForRecord) {
+    public void setListenForRecord(final boolean listenForRecord) {
         this.listenForRecord = listenForRecord;
     }
 
     public boolean isListenForRecord() {
-        return listenForRecord;
+        return this.listenForRecord;
     }
 
-    public void setOnRecordClickListener(OnRecordClickListener onRecordClickListener) {
+    public void setOnRecordClickListener(final OnRecordClickListener onRecordClickListener) {
         this.onRecordClickListener = onRecordClickListener;
     }
 
-    public void setOnRecordLongClickListener(OnRecordLongClickListener onRecordLongClickListener) {
+    public void setOnRecordLongClickListener(final OnRecordLongClickListener onRecordLongClickListener) {
         this.onRecordLongClickListener = onRecordLongClickListener;
     }
 
     @Override
-    public void onClick(View v) {
-        if (onRecordClickListener != null) {
-            onRecordClickListener.onClick(v);
+    public void onClick(final View v) {
+        if (this.onRecordClickListener != null) {
+            this.onRecordClickListener.onClick(v);
         }
     }
 
     @Override
-    public boolean onLongClick(final View v) {
-        if (onRecordLongClickListener != null) {
-            return onRecordLongClickListener.onLongClick(v);
+    public boolean onLongClick(View v) {
+        if (this.onRecordLongClickListener != null) {
+            return this.onRecordLongClickListener.onLongClick(v);
         }
         return false;
     }

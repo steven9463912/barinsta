@@ -2,6 +2,7 @@ package awais.instagrabber.adapters.viewholder.directmessages;
 
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
@@ -12,7 +13,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import java.util.List;
 
 import awais.instagrabber.R;
-import awais.instagrabber.adapters.DirectItemsAdapter.DirectItemCallback;
+import awais.instagrabber.adapters.DirectItemsAdapter;
 import awais.instagrabber.databinding.LayoutDmActionLogBinding;
 import awais.instagrabber.databinding.LayoutDmBaseBinding;
 import awais.instagrabber.repositories.responses.User;
@@ -26,41 +27,41 @@ public class DirectItemVideoCallEventViewHolder extends DirectItemViewHolder {
 
     private final LayoutDmActionLogBinding binding;
 
-    public DirectItemVideoCallEventViewHolder(@NonNull final LayoutDmBaseBinding baseBinding,
-                                              final LayoutDmActionLogBinding binding,
-                                              final User currentUser,
-                                              final DirectThread thread,
-                                              final DirectItemCallback callback) {
+    public DirectItemVideoCallEventViewHolder(@NonNull LayoutDmBaseBinding baseBinding,
+                                              LayoutDmActionLogBinding binding,
+                                              User currentUser,
+                                              DirectThread thread,
+                                              DirectItemsAdapter.DirectItemCallback callback) {
         super(baseBinding, currentUser, thread, callback);
         this.binding = binding;
-        setItemView(binding.getRoot());
+        this.setItemView(binding.getRoot());
     }
 
     @Override
-    public void bindItem(final DirectItem directItemModel, final MessageDirection messageDirection) {
-        final DirectItemVideoCallEvent videoCallEvent = directItemModel.getVideoCallEvent();
-        final String text = videoCallEvent.getDescription();
-        final SpannableStringBuilder sb = new SpannableStringBuilder(text);
-        final List<TextRange> textAttributes = videoCallEvent.getTextAttributes();
+    public void bindItem(DirectItem directItemModel, MessageDirection messageDirection) {
+        DirectItemVideoCallEvent videoCallEvent = directItemModel.getVideoCallEvent();
+        String text = videoCallEvent.getDescription();
+        SpannableStringBuilder sb = new SpannableStringBuilder(text);
+        List<TextRange> textAttributes = videoCallEvent.getTextAttributes();
         if (textAttributes != null && !textAttributes.isEmpty()) {
-            for (final TextRange textAttribute : textAttributes) {
+            for (TextRange textAttribute : textAttributes) {
                 if (!TextUtils.isEmpty(textAttribute.getColor())) {
-                    final ForegroundColorSpan colorSpan = new ForegroundColorSpan(itemView.getResources().getColor(R.color.deep_orange_400));
-                    sb.setSpan(colorSpan, textAttribute.getStart(), textAttribute.getEnd(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+                    ForegroundColorSpan colorSpan = new ForegroundColorSpan(this.itemView.getResources().getColor(R.color.deep_orange_400));
+                    sb.setSpan(colorSpan, textAttribute.getStart(), textAttribute.getEnd(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
                 }
                 if (!TextUtils.isEmpty(textAttribute.getIntent())) {
-                    final ClickableSpan clickableSpan = new ClickableSpan() {
+                    ClickableSpan clickableSpan = new ClickableSpan() {
                         @Override
-                        public void onClick(@NonNull final View widget) {
+                        public void onClick(@NonNull View widget) {
 
                         }
                     };
-                    sb.setSpan(clickableSpan, textAttribute.getStart(), textAttribute.getEnd(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+                    sb.setSpan(clickableSpan, textAttribute.getStart(), textAttribute.getEnd(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
                 }
             }
         }
-        binding.tvMessage.setMaxLines(1);
-        binding.tvMessage.setText(sb);
+        this.binding.tvMessage.setMaxLines(1);
+        this.binding.tvMessage.setText(sb);
     }
 
     @Override

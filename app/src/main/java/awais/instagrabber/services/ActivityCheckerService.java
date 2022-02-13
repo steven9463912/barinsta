@@ -35,7 +35,7 @@ public class ActivityCheckerService extends Service {
 
     private final IBinder binder = new LocalBinder();
     private final Runnable runnable = () -> {
-        newsService.fetchActivityCounts(cb);
+        this.newsService.fetchActivityCounts(this.cb);
     };
 
     public class LocalBinder extends Binder {
@@ -46,87 +46,87 @@ public class ActivityCheckerService extends Service {
 
     @Override
     public void onCreate() {
-        notificationManager = NotificationManagerCompat.from(getApplicationContext());
-        newsService = NewsService.getInstance();
-        handler = new Handler();
-        cb = new ServiceCallback<NotificationCounts>() {
+        this.notificationManager = NotificationManagerCompat.from(this.getApplicationContext());
+        this.newsService = NewsService.getInstance();
+        this.handler = new Handler();
+        this.cb = new ServiceCallback<NotificationCounts>() {
             @Override
-            public void onSuccess(final NotificationCounts result) {
+            public void onSuccess(NotificationCounts result) {
                 try {
                     if (result == null) return;
-                    final List<String> notification = getNotificationString(result);
+                    List<String> notification = ActivityCheckerService.this.getNotificationString(result);
                     if (notification == null) return;
-                    showNotification(notification);
+                    ActivityCheckerService.this.showNotification(notification);
                 } finally {
-                    handler.postDelayed(runnable, DELAY_MILLIS);
+                    ActivityCheckerService.this.handler.postDelayed(ActivityCheckerService.this.runnable, ActivityCheckerService.DELAY_MILLIS);
                 }
             }
 
             @Override
-            public void onFailure(final Throwable t) {}
+            public void onFailure(Throwable t) {}
         };
     }
 
     @Override
-    public IBinder onBind(Intent intent) {
-        startChecking();
-        return binder;
+    public IBinder onBind(final Intent intent) {
+        this.startChecking();
+        return this.binder;
     }
 
     @Override
-    public boolean onUnbind(final Intent intent) {
-        stopChecking();
+    public boolean onUnbind(Intent intent) {
+        this.stopChecking();
         return super.onUnbind(intent);
     }
 
     private void startChecking() {
-        handler.postDelayed(runnable, INITIAL_DELAY_MILLIS);
+        this.handler.postDelayed(this.runnable, ActivityCheckerService.INITIAL_DELAY_MILLIS);
     }
 
     private void stopChecking() {
-        handler.removeCallbacks(runnable);
+        this.handler.removeCallbacks(this.runnable);
     }
 
-    private List<String> getNotificationString(final NotificationCounts result) {
-        final List<String> toReturn = new ArrayList<>(2);
-        final List<String> list = new ArrayList<>();
+    private List<String> getNotificationString(NotificationCounts result) {
+        List<String> toReturn = new ArrayList<>(2);
+        List<String> list = new ArrayList<>();
         int count = 0;
         if (result.getRelationships() != 0) {
-            list.add(getString(R.string.activity_count_relationship, result.getRelationships()));
+            list.add(this.getString(R.string.activity_count_relationship, result.getRelationships()));
             count += result.getRelationships();
         }
         if (result.getRequests() != 0) {
-            list.add(getString(R.string.activity_count_requests, result.getRequests()));
+            list.add(this.getString(R.string.activity_count_requests, result.getRequests()));
             count += result.getRequests();
         }
         if (result.getUsertags() != 0) {
-            list.add(getString(R.string.activity_count_usertags, result.getUsertags()));
+            list.add(this.getString(R.string.activity_count_usertags, result.getUsertags()));
             count += result.getUsertags();
         }
         if (result.getPhotosOfYou() != 0) {
-            list.add(getString(R.string.activity_count_poy, result.getPhotosOfYou()));
+            list.add(this.getString(R.string.activity_count_poy, result.getPhotosOfYou()));
             count += result.getPhotosOfYou();
         }
         if (result.getComments() != 0) {
-            list.add(getString(R.string.activity_count_comments, result.getComments()));
+            list.add(this.getString(R.string.activity_count_comments, result.getComments()));
             count += result.getComments();
         }
         if (result.getCommentLikes() != 0) {
-            list.add(getString(R.string.activity_count_commentlikes, result.getCommentLikes()));
+            list.add(this.getString(R.string.activity_count_commentlikes, result.getCommentLikes()));
             count += result.getCommentLikes();
         }
         if (result.getLikes() != 0) {
-            list.add(getString(R.string.activity_count_likes, result.getLikes()));
+            list.add(this.getString(R.string.activity_count_likes, result.getLikes()));
             count += result.getLikes();
         }
         if (list.isEmpty()) return null;
         toReturn.add(TextUtils.join(", ", list));
-        toReturn.add(getResources().getQuantityString(R.plurals.activity_count_total, count, count));
+        toReturn.add(this.getResources().getQuantityString(R.plurals.activity_count_total, count, count));
         return toReturn;
     }
 
-    private void showNotification(final List<String> notificationString) {
-        final Notification notification = new NotificationCompat.Builder(this, Constants.ACTIVITY_CHANNEL_ID)
+    private void showNotification(List<String> notificationString) {
+        Notification notification = new NotificationCompat.Builder(this, Constants.ACTIVITY_CHANNEL_ID)
                 .setCategory(NotificationCompat.CATEGORY_STATUS)
                 .setSmallIcon(R.drawable.ic_notif)
                 .setAutoCancel(true)
@@ -135,16 +135,16 @@ public class ActivityCheckerService extends Service {
                 .setContentTitle(notificationString.get(1))
                 .setContentText(notificationString.get(0))
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(notificationString.get(0)))
-                .setContentIntent(getPendingIntent())
+                .setContentIntent(this.getPendingIntent())
                 .build();
-        notificationManager.notify(Constants.ACTIVITY_NOTIFICATION_ID, notification);
+        this.notificationManager.notify(Constants.ACTIVITY_NOTIFICATION_ID, notification);
     }
 
     @NonNull
     private PendingIntent getPendingIntent() {
-        final Intent intent = new Intent(getApplicationContext(), MainActivity.class)
+        Intent intent = new Intent(this.getApplicationContext(), MainActivity.class)
                 .setAction(Constants.ACTION_SHOW_ACTIVITY)
                 .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        return PendingIntent.getActivity(getApplicationContext(), Constants.SHOW_ACTIVITY_REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getActivity(this.getApplicationContext(), Constants.SHOW_ACTIVITY_REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 }

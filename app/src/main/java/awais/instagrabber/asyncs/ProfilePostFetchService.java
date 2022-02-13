@@ -23,16 +23,16 @@ public class ProfilePostFetchService implements PostFetcher.PostFetchService {
     private String nextMaxId;
     private boolean moreAvailable;
 
-    public ProfilePostFetchService(final User profileModel, final boolean isLoggedIn) {
+    public ProfilePostFetchService(User profileModel, boolean isLoggedIn) {
         this.profileModel = profileModel;
         this.isLoggedIn = isLoggedIn;
-        graphQLRepository = isLoggedIn ? null : GraphQLRepository.Companion.getInstance();
-        profileRepository = isLoggedIn ? ProfileRepository.Companion.getInstance() : null;
+        this.graphQLRepository = isLoggedIn ? null : GraphQLRepository.Companion.getInstance();
+        this.profileRepository = isLoggedIn ? ProfileRepository.Companion.getInstance() : null;
     }
 
     @Override
-    public void fetch(final FetchListener<List<Media>> fetchListener) {
-        final Continuation<PostsFetchResponse> cb = CoroutineUtilsKt.getContinuation((result, t) -> {
+    public void fetch(FetchListener<List<Media>> fetchListener) {
+        Continuation<PostsFetchResponse> cb = CoroutineUtilsKt.getContinuation((result, t) -> {
             if (t != null) {
                 if (fetchListener != null) {
                     fetchListener.onFailure(t);
@@ -40,29 +40,29 @@ public class ProfilePostFetchService implements PostFetcher.PostFetchService {
                 return;
             }
             if (result == null) return;
-            nextMaxId = result.getNextCursor();
-            moreAvailable = result.getHasNextPage();
+            this.nextMaxId = result.getNextCursor();
+            this.moreAvailable = result.getHasNextPage();
             if (fetchListener != null) {
                 fetchListener.onResult(result.getFeedModels());
             }
         }, Dispatchers.getIO());
-        if (isLoggedIn) profileRepository.fetchPosts(profileModel.getPk(), nextMaxId, cb);
-        else graphQLRepository.fetchProfilePosts(
-                profileModel.getPk(),
+        if (this.isLoggedIn) this.profileRepository.fetchPosts(this.profileModel.getPk(), this.nextMaxId, cb);
+        else this.graphQLRepository.fetchProfilePosts(
+                this.profileModel.getPk(),
                 30,
-                nextMaxId,
-                profileModel,
+                this.nextMaxId,
+                this.profileModel,
                 cb
         );
     }
 
     @Override
     public void reset() {
-        nextMaxId = null;
+        this.nextMaxId = null;
     }
 
     @Override
     public boolean hasNextPage() {
-        return moreAvailable;
+        return this.moreAvailable;
     }
 }

@@ -17,27 +17,27 @@ public class LoggingInterceptor implements Interceptor {
 
     @NonNull
     @Override
-    public Response intercept(Interceptor.Chain chain) throws IOException {
-        final Request request = chain.request();
-        long t1 = System.nanoTime();
-        Log.i(TAG, String.format("Sending request %s on %s%n%s",
+    public Response intercept(final Interceptor.Chain chain) throws IOException {
+        Request request = chain.request();
+        final long t1 = System.nanoTime();
+        Log.i(LoggingInterceptor.TAG, String.format("Sending request %s on %s%n%s",
                                  request.url(), chain.connection(), request.headers()));
-        final Response response = chain.proceed(request);
-        long t2 = System.nanoTime();
-        Log.i(TAG, String.format("Received response for %s in %.1fms%n%s", response.request().url(), (t2 - t1) / 1e6d, response.headers()));
-        final ResponseBody body = response.body();
+        Response response = chain.proceed(request);
+        final long t2 = System.nanoTime();
+        Log.i(LoggingInterceptor.TAG, String.format("Received response for %s in %.1fms%n%s", response.request().url(), (t2 - t1) / 1e6d, response.headers()));
+        ResponseBody body = response.body();
         MediaType contentType = null;
         String content = "";
         if (body != null) {
             contentType = body.contentType();
             try {
                 content = body.string();
-            } catch (Exception e) {
-                Log.e(TAG, "intercept: ", e);
+            } catch (final Exception e) {
+                Log.e(LoggingInterceptor.TAG, "intercept: ", e);
             }
-            Log.d(TAG, content);
+            Log.d(LoggingInterceptor.TAG, content);
         }
-        final ResponseBody wrappedBody = ResponseBody.create(contentType, content);
+        ResponseBody wrappedBody = ResponseBody.create(contentType, content);
         return response.newBuilder()
                        .body(wrappedBody)
                        .build();

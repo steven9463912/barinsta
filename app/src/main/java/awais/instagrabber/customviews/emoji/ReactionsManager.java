@@ -29,41 +29,41 @@ public class ReactionsManager {
 
     private static ReactionsManager instance;
 
-    public static ReactionsManager getInstance(@NonNull final Context context) {
-        if (instance == null) {
-            synchronized (LOCK) {
-                if (instance == null) {
-                    instance = new ReactionsManager(context);
+    public static ReactionsManager getInstance(@NonNull Context context) {
+        if (ReactionsManager.instance == null) {
+            synchronized (ReactionsManager.LOCK) {
+                if (ReactionsManager.instance == null) {
+                    ReactionsManager.instance = new ReactionsManager(context);
                 }
             }
         }
-        return instance;
+        return ReactionsManager.instance;
     }
 
-    private ReactionsManager(@NonNull final Context context) {
-        final EmojiParser emojiParser = EmojiParser.Companion.getInstance(context);
+    private ReactionsManager(@NonNull Context context) {
+        EmojiParser emojiParser = EmojiParser.Companion.getInstance(context);
         String reactionsJson = Utils.settingsHelper.getString(PREF_REACTIONS);
         if (TextUtils.isEmpty(reactionsJson)) {
-            final ImmutableList<String> list = ImmutableList.of("❤️", "\uD83D\uDE02", "\uD83D\uDE2E", "\uD83D\uDE22", "\uD83D\uDE21", "\uD83D\uDC4D");
+            ImmutableList<String> list = ImmutableList.of("❤️", "\uD83D\uDE02", "\uD83D\uDE2E", "\uD83D\uDE22", "\uD83D\uDE21", "\uD83D\uDC4D");
             reactionsJson = new JSONArray(list).toString();
         }
-        final Map<String, Emoji> allEmojis = emojiParser.getAllEmojis();
+        Map<String, Emoji> allEmojis = emojiParser.getAllEmojis();
         try {
-            final JSONArray reactionsJsonArray = new JSONArray(reactionsJson);
+            JSONArray reactionsJsonArray = new JSONArray(reactionsJson);
             for (int i = 0; i < reactionsJsonArray.length(); i++) {
-                final String emojiUnicode = reactionsJsonArray.optString(i);
+                String emojiUnicode = reactionsJsonArray.optString(i);
                 if (emojiUnicode == null) continue;
-                final Emoji emoji = allEmojis.get(emojiUnicode);
+                Emoji emoji = allEmojis.get(emojiUnicode);
                 if (emoji == null) continue;
-                reactions.add(emoji);
+                this.reactions.add(emoji);
             }
-        } catch (JSONException e) {
-            Log.e(TAG, "ReactionsManager: ", e);
+        } catch (final JSONException e) {
+            Log.e(ReactionsManager.TAG, "ReactionsManager: ", e);
         }
     }
 
     public List<Emoji> getReactions() {
-        return reactions;
+        return this.reactions;
     }
 
     // public void setVariant(final String parent, final String variant) {

@@ -24,31 +24,31 @@ import awais.instagrabber.dialogs.RestoreBackupDialogFragment;
 public class BackupPreferencesFragment extends BasePreferencesFragment {
 
     @Override
-    void setupPreferenceScreen(final PreferenceScreen screen) {
-        final Context context = getContext();
+    void setupPreferenceScreen(PreferenceScreen screen) {
+        Context context = this.getContext();
         if (context == null) {
             return;
         }
         if (Build.VERSION.SDK_INT >= 23) {
-            final PreferenceCategory autoCategory = new PreferenceCategory(context);
+            PreferenceCategory autoCategory = new PreferenceCategory(context);
             screen.addPreference(autoCategory);
             autoCategory.setTitle(R.string.auto_backup);
-            autoCategory.addPreference(getAboutPreference(context, true));
-            autoCategory.addPreference(getWarningPreference(context, true));
-            autoCategory.addPreference(getAutoBackupPreference(context));
+            autoCategory.addPreference(this.getAboutPreference(context, true));
+            autoCategory.addPreference(this.getWarningPreference(context, true));
+            autoCategory.addPreference(this.getAutoBackupPreference(context));
         }
-        final PreferenceCategory manualCategory = new PreferenceCategory(context);
+        PreferenceCategory manualCategory = new PreferenceCategory(context);
         screen.addPreference(manualCategory);
         manualCategory.setTitle(R.string.manual_backup);
-        manualCategory.addPreference(getAboutPreference(context, false));
-        manualCategory.addPreference(getWarningPreference(context, false));
-        manualCategory.addPreference(getCreatePreference(context));
-        manualCategory.addPreference(getRestorePreference(context));
+        manualCategory.addPreference(this.getAboutPreference(context, false));
+        manualCategory.addPreference(this.getWarningPreference(context, false));
+        manualCategory.addPreference(this.getCreatePreference(context));
+        manualCategory.addPreference(this.getRestorePreference(context));
     }
 
-    private Preference getAboutPreference(@NonNull final Context context,
-                                          @NonNull final boolean auto) {
-        final Preference preference = new Preference(context);
+    private Preference getAboutPreference(@NonNull Context context,
+                                          @NonNull boolean auto) {
+        Preference preference = new Preference(context);
         preference.setSummary(auto ? R.string.auto_backup_summary : R.string.backup_summary);
         preference.setEnabled(false);
         preference.setIcon(R.drawable.ic_outline_info_24);
@@ -56,9 +56,9 @@ public class BackupPreferencesFragment extends BasePreferencesFragment {
         return preference;
     }
 
-    private Preference getWarningPreference(@NonNull final Context context,
-                                            @NonNull final boolean auto) {
-        final Preference preference = new Preference(context);
+    private Preference getWarningPreference(@NonNull Context context,
+                                            @NonNull boolean auto) {
+        Preference preference = new Preference(context);
         preference.setSummary(auto ? R.string.auto_backup_warning : R.string.backup_warning);
         preference.setEnabled(false);
         preference.setIcon(R.drawable.ic_warning);
@@ -66,22 +66,22 @@ public class BackupPreferencesFragment extends BasePreferencesFragment {
         return preference;
     }
 
-    private Preference getAutoBackupPreference(@NonNull final Context context) {
-        final SwitchPreferenceCompat preference = new SwitchPreferenceCompat(context);
+    private Preference getAutoBackupPreference(@NonNull Context context) {
+        SwitchPreferenceCompat preference = new SwitchPreferenceCompat(context);
         preference.setKey(PreferenceKeys.PREF_AUTO_BACKUP_ENABLED);
         preference.setTitle(R.string.auto_backup_setting);
         preference.setIconSpaceReserved(false);
         return preference;
     }
 
-    private Preference getCreatePreference(@NonNull final Context context) {
-        final Preference preference = new Preference(context);
+    private Preference getCreatePreference(@NonNull Context context) {
+        Preference preference = new Preference(context);
         preference.setTitle(R.string.create_backup);
         preference.setIconSpaceReserved(false);
         preference.setOnPreferenceClickListener(preference1 -> {
-            final FragmentManager fragmentManager = getParentFragmentManager();
-            final CreateBackupDialogFragment fragment = new CreateBackupDialogFragment(result -> {
-                final View view = getView();
+            FragmentManager fragmentManager = this.getParentFragmentManager();
+            CreateBackupDialogFragment fragment = new CreateBackupDialogFragment(result -> {
+                View view = this.getView();
                 if (view != null) {
                     Snackbar.make(view,
                                   result ? R.string.dialog_export_success
@@ -98,7 +98,7 @@ public class BackupPreferencesFragment extends BasePreferencesFragment {
                                Toast.LENGTH_LONG)
                      .show();
             });
-            final FragmentTransaction ft = fragmentManager.beginTransaction();
+            FragmentTransaction ft = fragmentManager.beginTransaction();
             ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
               .add(fragment, "createBackup")
               .commit();
@@ -107,14 +107,14 @@ public class BackupPreferencesFragment extends BasePreferencesFragment {
         return preference;
     }
 
-    private Preference getRestorePreference(@NonNull final Context context) {
-        final Preference preference = new Preference(context);
+    private Preference getRestorePreference(@NonNull Context context) {
+        Preference preference = new Preference(context);
         preference.setTitle(R.string.restore_backup);
         preference.setIconSpaceReserved(false);
         preference.setOnPreferenceClickListener(preference1 -> {
-            final FragmentManager fragmentManager = getParentFragmentManager();
-            final RestoreBackupDialogFragment fragment = new RestoreBackupDialogFragment(result -> {
-                final View view = getView();
+            FragmentManager fragmentManager = this.getParentFragmentManager();
+            RestoreBackupDialogFragment fragment = new RestoreBackupDialogFragment(result -> {
+                View view = this.getView();
                 if (view != null) {
                     Snackbar.make(view,
                                   result ? R.string.dialog_import_success
@@ -124,16 +124,16 @@ public class BackupPreferencesFragment extends BasePreferencesFragment {
                             .setAction(R.string.ok, v -> {})
                             .addCallback(new BaseTransientBottomBar.BaseCallback<Snackbar>() {
                                 @Override
-                                public void onDismissed(final Snackbar transientBottomBar, final int event) {
-                                    recreateActivity(result);
+                                public void onDismissed(Snackbar transientBottomBar, int event) {
+                                    BackupPreferencesFragment.this.recreateActivity(result);
                                 }
                             })
                             .show();
                     return;
                 }
-                recreateActivity(result);
+                this.recreateActivity(result);
             });
-            final FragmentTransaction ft = fragmentManager.beginTransaction();
+            FragmentTransaction ft = fragmentManager.beginTransaction();
             ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
               .add(fragment, "restoreBackup")
               .commit();
@@ -142,9 +142,9 @@ public class BackupPreferencesFragment extends BasePreferencesFragment {
         return preference;
     }
 
-    private void recreateActivity(final boolean result) {
+    private void recreateActivity(boolean result) {
         if (!result) return;
-        final FragmentActivity activity = getActivity();
+        FragmentActivity activity = this.getActivity();
         if (activity == null) return;
         activity.recreate();
     }

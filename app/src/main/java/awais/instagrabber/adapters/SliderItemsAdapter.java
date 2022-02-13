@@ -25,49 +25,49 @@ public final class SliderItemsAdapter extends ListAdapter<Media, SliderItemViewH
 
     private static final DiffUtil.ItemCallback<Media> DIFF_CALLBACK = new DiffUtil.ItemCallback<Media>() {
         @Override
-        public boolean areItemsTheSame(@NonNull final Media oldItem, @NonNull final Media newItem) {
+        public boolean areItemsTheSame(@NonNull Media oldItem, @NonNull Media newItem) {
             return oldItem.getPk().equals(newItem.getPk());
         }
 
         @Override
-        public boolean areContentsTheSame(@NonNull final Media oldItem, @NonNull final Media newItem) {
+        public boolean areContentsTheSame(@NonNull Media oldItem, @NonNull Media newItem) {
             return oldItem.getPk().equals(newItem.getPk());
         }
     };
 
-    public SliderItemsAdapter(final boolean loadVideoOnItemClick,
-                              final SliderCallback sliderCallback) {
-        super(DIFF_CALLBACK);
+    public SliderItemsAdapter(boolean loadVideoOnItemClick,
+                              SliderCallback sliderCallback) {
+        super(SliderItemsAdapter.DIFF_CALLBACK);
         this.loadVideoOnItemClick = loadVideoOnItemClick;
         this.sliderCallback = sliderCallback;
     }
 
     @NonNull
     @Override
-    public SliderItemViewHolder onCreateViewHolder(@NonNull final ViewGroup parent, final int viewType) {
-        final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        final MediaItemType mediaItemType = MediaItemType.valueOf(viewType);
+    public SliderItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        MediaItemType mediaItemType = MediaItemType.valueOf(viewType);
         switch (mediaItemType) {
             case MEDIA_TYPE_VIDEO: {
-                final LayoutVideoPlayerWithThumbnailBinding binding = LayoutVideoPlayerWithThumbnailBinding.inflate(inflater, parent, false);
-                return new SliderVideoViewHolder(binding, loadVideoOnItemClick);
+                LayoutVideoPlayerWithThumbnailBinding binding = LayoutVideoPlayerWithThumbnailBinding.inflate(inflater, parent, false);
+                return new SliderVideoViewHolder(binding, this.loadVideoOnItemClick);
             }
             case MEDIA_TYPE_IMAGE:
             default:
-                final ItemSliderPhotoBinding binding = ItemSliderPhotoBinding.inflate(inflater, parent, false);
+                ItemSliderPhotoBinding binding = ItemSliderPhotoBinding.inflate(inflater, parent, false);
                 return new SliderPhotoViewHolder(binding);
         }
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final SliderItemViewHolder holder, final int position) {
-        final Media media = getItem(position);
-        holder.bind(media, position, sliderCallback);
+    public void onBindViewHolder(@NonNull SliderItemViewHolder holder, int position) {
+        Media media = this.getItem(position);
+        holder.bind(media, position, this.sliderCallback);
     }
 
     @Override
-    public int getItemViewType(final int position) {
-        final Media media = getItem(position);
+    public int getItemViewType(int position) {
+        Media media = this.getItem(position);
         return media.getType().getId();
     }
 
@@ -138,7 +138,7 @@ public final class SliderItemsAdapter extends ListAdapter<Media, SliderItemViewH
     public interface SliderCallback {
         void onThumbnailLoaded(int position);
 
-        void onItemClicked(int position, final Media media, final View view);
+        void onItemClicked(int position, Media media, View view);
 
         void onPlayerPlay(int position);
 
@@ -146,7 +146,7 @@ public final class SliderItemsAdapter extends ListAdapter<Media, SliderItemViewH
 
         void onPlayerRelease(int position);
 
-        void onFullScreenModeChanged(boolean isFullScreen, final StyledPlayerView playerView);
+        void onFullScreenModeChanged(boolean isFullScreen, StyledPlayerView playerView);
 
         boolean isInFullScreen();
     }

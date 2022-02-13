@@ -23,44 +23,44 @@ public class DMSyncAlarmReceiver extends BroadcastReceiver {
     private static final String TAG = DMSyncAlarmReceiver.class.getSimpleName();
 
     @Override
-    public void onReceive(final Context context, final Intent intent) {
-        final boolean enabled = settingsHelper.getBoolean(PreferenceKeys.PREF_ENABLE_DM_AUTO_REFRESH);
+    public void onReceive(Context context, Intent intent) {
+        boolean enabled = settingsHelper.getBoolean(PreferenceKeys.PREF_ENABLE_DM_AUTO_REFRESH);
         if (!enabled) {
             // If somehow the alarm was triggered even when auto refresh is disabled
-            cancelAlarm(context);
+            DMSyncAlarmReceiver.cancelAlarm(context);
             return;
         }
         try {
-            final Context applicationContext = context.getApplicationContext();
+            Context applicationContext = context.getApplicationContext();
             ContextCompat.startForegroundService(applicationContext, new Intent(applicationContext, DMSyncService.class));
-        } catch (Exception e) {
-            Log.e(TAG, "onReceive: ", e);
+        } catch (final Exception e) {
+            Log.e(DMSyncAlarmReceiver.TAG, "onReceive: ", e);
         }
     }
 
-    public static void setAlarm(@NonNull final Context context) {
-        Log.d(TAG, "setting DMSyncService Alarm");
-        final AlarmManager alarmManager = getAlarmManager(context);
+    public static void setAlarm(@NonNull Context context) {
+        Log.d(DMSyncAlarmReceiver.TAG, "setting DMSyncService Alarm");
+        AlarmManager alarmManager = DMSyncAlarmReceiver.getAlarmManager(context);
         if (alarmManager == null) return;
-        final PendingIntent pendingIntent = getPendingIntent(context);
-        alarmManager.setInexactRepeating(AlarmManager.RTC, System.currentTimeMillis(), getIntervalMillis(), pendingIntent);
+        PendingIntent pendingIntent = DMSyncAlarmReceiver.getPendingIntent(context);
+        alarmManager.setInexactRepeating(AlarmManager.RTC, System.currentTimeMillis(), DMSyncAlarmReceiver.getIntervalMillis(), pendingIntent);
     }
 
-    public static void cancelAlarm(@NonNull final Context context) {
-        Log.d(TAG, "cancelling DMSyncService Alarm");
-        final AlarmManager alarmManager = getAlarmManager(context);
+    public static void cancelAlarm(@NonNull Context context) {
+        Log.d(DMSyncAlarmReceiver.TAG, "cancelling DMSyncService Alarm");
+        AlarmManager alarmManager = DMSyncAlarmReceiver.getAlarmManager(context);
         if (alarmManager == null) return;
-        final PendingIntent pendingIntent = getPendingIntent(context);
+        PendingIntent pendingIntent = DMSyncAlarmReceiver.getPendingIntent(context);
         alarmManager.cancel(pendingIntent);
     }
 
-    private static AlarmManager getAlarmManager(@NonNull final Context context) {
+    private static AlarmManager getAlarmManager(@NonNull Context context) {
         return (AlarmManager) context.getApplicationContext().getSystemService(Context.ALARM_SERVICE);
     }
 
-    private static PendingIntent getPendingIntent(@NonNull final Context context) {
-        final Context applicationContext = context.getApplicationContext();
-        final Intent intent = new Intent(applicationContext, DMSyncAlarmReceiver.class);
+    private static PendingIntent getPendingIntent(@NonNull Context context) {
+        Context applicationContext = context.getApplicationContext();
+        Intent intent = new Intent(applicationContext, DMSyncAlarmReceiver.class);
         return PendingIntent.getBroadcast(applicationContext,
                                           Constants.DM_SYNC_SERVICE_REQUEST_CODE,
                                           intent,
@@ -72,8 +72,8 @@ public class DMSyncAlarmReceiver extends BroadcastReceiver {
         if (amount <= 0) {
             amount = 30;
         }
-        final String unit = settingsHelper.getString(PreferenceKeys.PREF_ENABLE_DM_AUTO_REFRESH_FREQ_UNIT);
-        final TemporalUnit temporalUnit;
+        String unit = settingsHelper.getString(PreferenceKeys.PREF_ENABLE_DM_AUTO_REFRESH_FREQ_UNIT);
+        TemporalUnit temporalUnit;
         switch (unit) {
             case "mins":
                 temporalUnit = ChronoUnit.MINUTES;

@@ -39,128 +39,128 @@ public final class TimeSettingsDialog extends DialogFragment implements AdapterV
     private final boolean swapDateTimeEnabled;
     private final OnConfirmListener onConfirmListener;
 
-    public TimeSettingsDialog(final boolean customDateTimeFormatEnabled,
-                              final String customDateTimeFormat,
-                              final String dateTimeSelection,
-                              final boolean swapDateTimeEnabled,
-                              final OnConfirmListener onConfirmListener) {
+    public TimeSettingsDialog(boolean customDateTimeFormatEnabled,
+                              String customDateTimeFormat,
+                              String dateTimeSelection,
+                              boolean swapDateTimeEnabled,
+                              OnConfirmListener onConfirmListener) {
         this.customDateTimeFormatEnabled = customDateTimeFormatEnabled;
         this.customDateTimeFormat = customDateTimeFormat;
         this.dateTimeSelection = dateTimeSelection;
         this.swapDateTimeEnabled = swapDateTimeEnabled;
         this.onConfirmListener = onConfirmListener;
-        magicDate = LocalDateTime.ofInstant(
+        this.magicDate = LocalDateTime.ofInstant(
                 Instant.now(),
                 ZoneId.systemDefault()
         );
     }
 
     @Override
-    public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable final Bundle savedInstanceState) {
-        binding = DialogTimeSettingsBinding.inflate(inflater, container, false);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        this.binding = DialogTimeSettingsBinding.inflate(inflater, container, false);
 
-        binding.cbCustomFormat.setOnCheckedChangeListener(this);
-        binding.cbCustomFormat.setChecked(customDateTimeFormatEnabled);
-        binding.cbSwapTimeDate.setChecked(swapDateTimeEnabled);
-        binding.customFormatEditText.setText(customDateTimeFormat);
+        this.binding.cbCustomFormat.setOnCheckedChangeListener(this);
+        this.binding.cbCustomFormat.setChecked(this.customDateTimeFormatEnabled);
+        this.binding.cbSwapTimeDate.setChecked(this.swapDateTimeEnabled);
+        this.binding.customFormatEditText.setText(this.customDateTimeFormat);
 
-        final String[] dateTimeFormat = dateTimeSelection.split(";"); // output = time;separator;date
-        binding.spTimeFormat.setSelection(Integer.parseInt(dateTimeFormat[0]));
-        binding.spSeparator.setSelection(Integer.parseInt(dateTimeFormat[1]));
-        binding.spDateFormat.setSelection(Integer.parseInt(dateTimeFormat[2]));
+        String[] dateTimeFormat = this.dateTimeSelection.split(";"); // output = time;separator;date
+        this.binding.spTimeFormat.setSelection(Integer.parseInt(dateTimeFormat[0]));
+        this.binding.spSeparator.setSelection(Integer.parseInt(dateTimeFormat[1]));
+        this.binding.spDateFormat.setSelection(Integer.parseInt(dateTimeFormat[2]));
 
-        binding.cbSwapTimeDate.setOnCheckedChangeListener(this);
+        this.binding.cbSwapTimeDate.setOnCheckedChangeListener(this);
 
-        refreshTimeFormat();
+        this.refreshTimeFormat();
 
-        binding.spTimeFormat.setOnItemSelectedListener(this);
-        binding.spDateFormat.setOnItemSelectedListener(this);
-        binding.spSeparator.setOnItemSelectedListener(this);
+        this.binding.spTimeFormat.setOnItemSelectedListener(this);
+        this.binding.spDateFormat.setOnItemSelectedListener(this);
+        this.binding.spSeparator.setOnItemSelectedListener(this);
 
-        binding.customFormatEditText.addTextChangedListener(this);
-        binding.btnConfirm.setOnClickListener(this);
-        binding.customFormatField.setEndIconOnClickListener(this);
+        this.binding.customFormatEditText.addTextChangedListener(this);
+        this.binding.btnConfirm.setOnClickListener(this);
+        this.binding.customFormatField.setEndIconOnClickListener(this);
 
-        return binding.getRoot();
+        return this.binding.getRoot();
     }
 
     private void refreshTimeFormat() {
-        final boolean isCustom = binding.cbCustomFormat.isChecked();
+        boolean isCustom = this.binding.cbCustomFormat.isChecked();
         if (isCustom) {
-            final Editable text = binding.customFormatEditText.getText();
+            Editable text = this.binding.customFormatEditText.getText();
             if (text != null) {
-                selectedFormat = text.toString();
+                this.selectedFormat = text.toString();
             }
         } else {
-            final String sepStr = String.valueOf(binding.spSeparator.getSelectedItem());
-            final String timeStr = String.valueOf(binding.spTimeFormat.getSelectedItem());
-            final String dateStr = String.valueOf(binding.spDateFormat.getSelectedItem());
+            String sepStr = String.valueOf(this.binding.spSeparator.getSelectedItem());
+            String timeStr = String.valueOf(this.binding.spTimeFormat.getSelectedItem());
+            String dateStr = String.valueOf(this.binding.spDateFormat.getSelectedItem());
 
-            final boolean isSwapTime = binding.cbSwapTimeDate.isChecked();
-            final boolean isBlankSeparator = binding.spSeparator.getSelectedItemPosition() <= 0;
+            boolean isSwapTime = this.binding.cbSwapTimeDate.isChecked();
+            boolean isBlankSeparator = this.binding.spSeparator.getSelectedItemPosition() <= 0;
 
-            selectedFormat = (isSwapTime ? dateStr : timeStr)
+            this.selectedFormat = (isSwapTime ? dateStr : timeStr)
                     + (isBlankSeparator ? " " : " '" + sepStr + "' ")
                     + (isSwapTime ? timeStr : dateStr);
         }
 
-        binding.btnConfirm.setEnabled(true);
+        this.binding.btnConfirm.setEnabled(true);
         try {
-            currentFormat = DateTimeFormatter.ofPattern(selectedFormat, LocaleUtils.getCurrentLocale());
+            this.currentFormat = DateTimeFormatter.ofPattern(this.selectedFormat, LocaleUtils.getCurrentLocale());
             if (isCustom) {
-                final boolean valid = !TextUtils.isEmpty(selectedFormat) && DateUtils.checkFormatterValid(currentFormat);
-                binding.customFormatField.setError(valid ? null :getString(R.string.invalid_format));
+                boolean valid = !TextUtils.isEmpty(this.selectedFormat) && DateUtils.checkFormatterValid(this.currentFormat);
+                this.binding.customFormatField.setError(valid ? null : this.getString(R.string.invalid_format));
                 if (!valid) {
-                    binding.btnConfirm.setEnabled(false);
+                    this.binding.btnConfirm.setEnabled(false);
                 }
             }
-            binding.timePreview.setText(magicDate.format(currentFormat));
-        } catch (Exception e) {
-            binding.btnConfirm.setEnabled(false);
-            binding.timePreview.setText(null);
+            this.binding.timePreview.setText(this.magicDate.format(this.currentFormat));
+        } catch (final Exception e) {
+            this.binding.btnConfirm.setEnabled(false);
+            this.binding.timePreview.setText(null);
         }
     }
 
     @Override
-    public void onItemSelected(final AdapterView<?> p, final View v, final int pos, final long id) {
-        refreshTimeFormat();
+    public void onItemSelected(AdapterView<?> p, View v, int pos, long id) {
+        this.refreshTimeFormat();
     }
 
     @Override
-    public void onCheckedChanged(final CompoundButton buttonView, final boolean isChecked) {
-        if (buttonView == binding.cbCustomFormat) {
-            binding.customFormatField.setVisibility(isChecked ? View.VISIBLE : View.GONE);
-            binding.customFormatField.setEnabled(isChecked);
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        if (buttonView == this.binding.cbCustomFormat) {
+            this.binding.customFormatField.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+            this.binding.customFormatField.setEnabled(isChecked);
 
-            binding.spTimeFormat.setEnabled(!isChecked);
-            binding.spDateFormat.setEnabled(!isChecked);
-            binding.spSeparator.setEnabled(!isChecked);
-            binding.cbSwapTimeDate.setEnabled(!isChecked);
+            this.binding.spTimeFormat.setEnabled(!isChecked);
+            this.binding.spDateFormat.setEnabled(!isChecked);
+            this.binding.spSeparator.setEnabled(!isChecked);
+            this.binding.cbSwapTimeDate.setEnabled(!isChecked);
         }
-        refreshTimeFormat();
+        this.refreshTimeFormat();
     }
 
     @Override
-    public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
-        refreshTimeFormat();
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+        this.refreshTimeFormat();
     }
 
     @Override
-    public void onClick(final View v) {
-        if (v == binding.btnConfirm) {
-            if (onConfirmListener != null) {
-                onConfirmListener.onConfirm(
-                        binding.cbCustomFormat.isChecked(),
-                        binding.spTimeFormat.getSelectedItemPosition(),
-                        binding.spSeparator.getSelectedItemPosition(),
-                        binding.spDateFormat.getSelectedItemPosition(),
-                        selectedFormat,
-                        binding.cbSwapTimeDate.isChecked());
+    public void onClick(View v) {
+        if (v == this.binding.btnConfirm) {
+            if (this.onConfirmListener != null) {
+                this.onConfirmListener.onConfirm(
+                        this.binding.cbCustomFormat.isChecked(),
+                        this.binding.spTimeFormat.getSelectedItemPosition(),
+                        this.binding.spSeparator.getSelectedItemPosition(),
+                        this.binding.spDateFormat.getSelectedItemPosition(),
+                        this.selectedFormat,
+                        this.binding.cbSwapTimeDate.isChecked());
             }
-            dismiss();
-        } else if (v == binding.customFormatField.findViewById(R.id.text_input_end_icon)) {
-            binding.customPanel.setVisibility(
-                    binding.customPanel.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE
+            this.dismiss();
+        } else if (v == this.binding.customFormatField.findViewById(R.id.text_input_end_icon)) {
+            this.binding.customPanel.setVisibility(
+                    this.binding.customPanel.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE
             );
 
         }
@@ -171,27 +171,27 @@ public final class TimeSettingsDialog extends DialogFragment implements AdapterV
                        int spTimeFormatSelectedItemPosition,
                        int spSeparatorSelectedItemPosition,
                        int spDateFormatSelectedItemPosition,
-                       final String selectedFormat,
-                       final boolean swapDateTime);
+                       String selectedFormat,
+                       boolean swapDateTime);
     }
 
     @Override
-    public void onNothingSelected(final AdapterView<?> parent) { }
+    public void onNothingSelected(AdapterView<?> parent) { }
 
     @Override
-    public void beforeTextChanged(final CharSequence s, final int start, final int count, final int after) { }
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
 
     @Override
-    public void afterTextChanged(final Editable s) { }
+    public void afterTextChanged(Editable s) { }
 
     @Override
     public void onResume() {
         super.onResume();
-        final Dialog dialog = getDialog();
+        Dialog dialog = this.getDialog();
         if (dialog == null) return;
-        final Window window = dialog.getWindow();
+        Window window = dialog.getWindow();
         if (window == null) return;
-        final WindowManager.LayoutParams params = window.getAttributes();
+        WindowManager.LayoutParams params = window.getAttributes();
         params.width = ViewGroup.LayoutParams.MATCH_PARENT;
         params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
         window.setAttributes(params);

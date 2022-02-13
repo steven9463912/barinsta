@@ -11,8 +11,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.RecyclerView;
 
 import awais.instagrabber.R;
-import awais.instagrabber.adapters.DirectPendingUsersAdapter.PendingUser;
-import awais.instagrabber.adapters.DirectPendingUsersAdapter.PendingUserCallback;
+import awais.instagrabber.adapters.DirectPendingUsersAdapter;
 import awais.instagrabber.customviews.VerticalImageSpan;
 import awais.instagrabber.databinding.LayoutDmPendingUserItemBinding;
 import awais.instagrabber.repositories.responses.User;
@@ -22,20 +21,20 @@ public class DirectPendingUserViewHolder extends RecyclerView.ViewHolder {
     private static final String TAG = DirectPendingUserViewHolder.class.getSimpleName();
 
     private final LayoutDmPendingUserItemBinding binding;
-    private final PendingUserCallback callback;
+    private final DirectPendingUsersAdapter.PendingUserCallback callback;
     private final int drawableSize;
 
     private VerticalImageSpan verifiedSpan;
 
     public DirectPendingUserViewHolder(@NonNull final LayoutDmPendingUserItemBinding binding,
-                                       final PendingUserCallback callback) {
+                                       final DirectPendingUsersAdapter.PendingUserCallback callback) {
         super(binding.getRoot());
         this.binding = binding;
         this.callback = callback;
-        drawableSize = Utils.convertDpToPx(24);
+        this.drawableSize = Utils.convertDpToPx(24);
     }
 
-    public void bind(final int position, final PendingUser pendingUser) {
+    public void bind(int position, DirectPendingUsersAdapter.PendingUser pendingUser) {
         if (pendingUser == null) return;
         binding.getRoot().setOnClickListener(v -> {
             if (callback == null) return;
@@ -63,27 +62,27 @@ public class DirectPendingUserViewHolder extends RecyclerView.ViewHolder {
         });
     }
 
-    private void setUsername(final PendingUser pendingUser) {
-        final User user = pendingUser.getUser();
-        final SpannableStringBuilder sb = new SpannableStringBuilder(user.getUsername());
+    private void setUsername(final DirectPendingUsersAdapter.PendingUser pendingUser) {
+        User user = pendingUser.getUser();
+        SpannableStringBuilder sb = new SpannableStringBuilder(user.getUsername());
         if (user.isVerified()) {
-            if (verifiedSpan == null) {
-                final Drawable verifiedDrawable = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.verified);
+            if (this.verifiedSpan == null) {
+                Drawable verifiedDrawable = AppCompatResources.getDrawable(this.itemView.getContext(), R.drawable.verified);
                 if (verifiedDrawable != null) {
-                    final Drawable drawable = verifiedDrawable.mutate();
-                    drawable.setBounds(0, 0, drawableSize, drawableSize);
-                    verifiedSpan = new VerticalImageSpan(drawable);
+                    Drawable drawable = verifiedDrawable.mutate();
+                    drawable.setBounds(0, 0, this.drawableSize, this.drawableSize);
+                    this.verifiedSpan = new VerticalImageSpan(drawable);
                 }
             }
             try {
-                if (verifiedSpan != null) {
+                if (this.verifiedSpan != null) {
                     sb.append("  ");
-                    sb.setSpan(verifiedSpan, sb.length() - 1, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    sb.setSpan(this.verifiedSpan, sb.length() - 1, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 }
-            } catch (Exception e) {
-                Log.e(TAG, "bind: ", e);
+            } catch (final Exception e) {
+                Log.e(DirectPendingUserViewHolder.TAG, "bind: ", e);
             }
         }
-        binding.username.setText(sb);
+        this.binding.username.setText(sb);
     }
 }

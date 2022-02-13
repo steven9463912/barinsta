@@ -9,7 +9,7 @@ import com.facebook.drawee.drawable.ScalingUtils;
 import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
 import com.facebook.drawee.generic.RoundingParams;
 
-import awais.instagrabber.adapters.DirectItemsAdapter.DirectItemCallback;
+import awais.instagrabber.adapters.DirectItemsAdapter;
 import awais.instagrabber.databinding.LayoutDmBaseBinding;
 import awais.instagrabber.databinding.LayoutDmMediaBinding;
 import awais.instagrabber.models.enums.MediaItemType;
@@ -27,46 +27,46 @@ public class DirectItemMediaViewHolder extends DirectItemViewHolder {
     private final RoundingParams incomingRoundingParams;
     private final RoundingParams outgoingRoundingParams;
 
-    public DirectItemMediaViewHolder(@NonNull final LayoutDmBaseBinding baseBinding,
-                                     @NonNull final LayoutDmMediaBinding binding,
-                                     final User currentUser,
-                                     final DirectThread thread,
-                                     final DirectItemCallback callback) {
+    public DirectItemMediaViewHolder(@NonNull LayoutDmBaseBinding baseBinding,
+                                     @NonNull LayoutDmMediaBinding binding,
+                                     User currentUser,
+                                     DirectThread thread,
+                                     DirectItemsAdapter.DirectItemCallback callback) {
         super(baseBinding, currentUser, thread, callback);
         this.binding = binding;
-        incomingRoundingParams = RoundingParams.fromCornersRadii(dmRadiusSmall, dmRadius, dmRadius, dmRadius);
-        outgoingRoundingParams = RoundingParams.fromCornersRadii(dmRadius, dmRadiusSmall, dmRadius, dmRadius);
-        setItemView(binding.getRoot());
+        this.incomingRoundingParams = RoundingParams.fromCornersRadii(this.dmRadiusSmall, this.dmRadius, this.dmRadius, this.dmRadius);
+        this.outgoingRoundingParams = RoundingParams.fromCornersRadii(this.dmRadius, this.dmRadiusSmall, this.dmRadius, this.dmRadius);
+        this.setItemView(binding.getRoot());
     }
 
     @Override
-    public void bindItem(final DirectItem directItemModel, final MessageDirection messageDirection) {
-        final RoundingParams roundingParams = messageDirection == MessageDirection.INCOMING ? incomingRoundingParams : outgoingRoundingParams;
-        binding.mediaPreview.setHierarchy(new GenericDraweeHierarchyBuilder(itemView.getResources())
+    public void bindItem(DirectItem directItemModel, MessageDirection messageDirection) {
+        RoundingParams roundingParams = messageDirection == MessageDirection.INCOMING ? this.incomingRoundingParams : this.outgoingRoundingParams;
+        this.binding.mediaPreview.setHierarchy(new GenericDraweeHierarchyBuilder(this.itemView.getResources())
                                                   .setRoundingParams(roundingParams)
                                                   .setActualImageScaleType(ScalingUtils.ScaleType.CENTER_CROP)
                                                   .build());
-        final Media media = directItemModel.getMedia();
-        itemView.setOnClickListener(v -> openMedia(media, -1));
-        final MediaItemType modelMediaType = media.getType();
-        binding.typeIcon.setVisibility(modelMediaType == MediaItemType.MEDIA_TYPE_VIDEO || modelMediaType == MediaItemType.MEDIA_TYPE_SLIDER
+        Media media = directItemModel.getMedia();
+        this.itemView.setOnClickListener(v -> this.openMedia(media, -1));
+        MediaItemType modelMediaType = media.getType();
+        this.binding.typeIcon.setVisibility(modelMediaType == MediaItemType.MEDIA_TYPE_VIDEO || modelMediaType == MediaItemType.MEDIA_TYPE_SLIDER
                                        ? View.VISIBLE
                                        : View.GONE);
-        final NullSafePair<Integer, Integer> widthHeight = NumberUtils.calculateWidthHeight(
+        NullSafePair<Integer, Integer> widthHeight = NumberUtils.calculateWidthHeight(
                 media.getOriginalHeight(),
                 media.getOriginalWidth(),
-                mediaImageMaxHeight,
-                mediaImageMaxWidth
+                this.mediaImageMaxHeight,
+                this.mediaImageMaxWidth
         );
-        final ViewGroup.LayoutParams layoutParams = binding.mediaPreview.getLayoutParams();
-        final int width = widthHeight.first;
+        ViewGroup.LayoutParams layoutParams = this.binding.mediaPreview.getLayoutParams();
+        int width = widthHeight.first;
         layoutParams.width = width;
         layoutParams.height = widthHeight.second;
-        binding.mediaPreview.requestLayout();
-        binding.bgTime.getLayoutParams().width = width;
-        binding.bgTime.requestLayout();
-        final String thumbUrl = ResponseBodyUtils.getThumbUrl(media);
-        binding.mediaPreview.setImageURI(thumbUrl);
+        this.binding.mediaPreview.requestLayout();
+        this.binding.bgTime.getLayoutParams().width = width;
+        this.binding.bgTime.requestLayout();
+        String thumbUrl = ResponseBodyUtils.getThumbUrl(media);
+        this.binding.mediaPreview.setImageURI(thumbUrl);
     }
 
 }

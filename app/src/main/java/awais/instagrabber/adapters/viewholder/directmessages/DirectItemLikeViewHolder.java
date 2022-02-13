@@ -3,7 +3,7 @@ package awais.instagrabber.adapters.viewholder.directmessages;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.ItemTouchHelper;
 
-import awais.instagrabber.adapters.DirectItemsAdapter.DirectItemCallback;
+import awais.instagrabber.adapters.DirectItemsAdapter;
 import awais.instagrabber.databinding.LayoutDmBaseBinding;
 import awais.instagrabber.databinding.LayoutDmLikeBinding;
 import awais.instagrabber.repositories.responses.User;
@@ -12,17 +12,17 @@ import awais.instagrabber.repositories.responses.directmessages.DirectThread;
 
 public class DirectItemLikeViewHolder extends DirectItemViewHolder {
 
-    public DirectItemLikeViewHolder(@NonNull final LayoutDmBaseBinding baseBinding,
-                                    @NonNull final LayoutDmLikeBinding binding,
-                                    final User currentUser,
-                                    final DirectThread thread,
-                                    final DirectItemCallback callback) {
+    public DirectItemLikeViewHolder(@NonNull LayoutDmBaseBinding baseBinding,
+                                    @NonNull LayoutDmLikeBinding binding,
+                                    User currentUser,
+                                    DirectThread thread,
+                                    DirectItemsAdapter.DirectItemCallback callback) {
         super(baseBinding, currentUser, thread, callback);
-        setItemView(binding.getRoot());
+        this.setItemView(binding.getRoot());
     }
 
     @Override
-    public void bindItem(final DirectItem directItemModel, final MessageDirection messageDirection) {}
+    public void bindItem(DirectItem directItemModel, MessageDirection messageDirection) {}
 
     @Override
     protected boolean canForward() {

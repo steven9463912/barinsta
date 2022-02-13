@@ -22,17 +22,17 @@ public class VerticalDragHelper {
     private final GestureDetector.OnGestureListener gestureListener = new GestureDetector.SimpleOnGestureListener() {
 
         @Override
-        public boolean onSingleTapConfirmed(final MotionEvent e) {
-            view.performClick();
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+            VerticalDragHelper.this.view.performClick();
             return true;
         }
 
         @Override
-        public boolean onFling(final MotionEvent e1, final MotionEvent e2, final float velocityX, final float velocityY) {
-            double yDir = e1.getY() - e2.getY();
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            final double yDir = e1.getY() - e2.getY();
             // Log.d(TAG, "onFling: yDir: " + yDir);
-            if (yDir < -SWIPE_THRESHOLD_VELOCITY || yDir > SWIPE_THRESHOLD_VELOCITY) {
-                flingVelocity = yDir;
+            if (yDir < -VerticalDragHelper.SWIPE_THRESHOLD_VELOCITY || yDir > VerticalDragHelper.SWIPE_THRESHOLD_VELOCITY) {
+                VerticalDragHelper.this.flingVelocity = yDir;
             }
             return super.onFling(e1, e2, velocityX, velocityY);
         }
@@ -44,27 +44,27 @@ public class VerticalDragHelper {
     private float dX;
     private float prevDY;
 
-    public VerticalDragHelper(@NonNull final View view) {
+    public VerticalDragHelper(@NonNull View view) {
         this.view = view;
-        final Context context = view.getContext();
+        Context context = view.getContext();
         if (context == null) return;
         this.context = context;
-        init();
+        this.init();
     }
 
-    public void setOnVerticalDragListener(@NonNull final OnVerticalDragListener onVerticalDragListener) {
+    public void setOnVerticalDragListener(@NonNull OnVerticalDragListener onVerticalDragListener) {
         this.onVerticalDragListener = onVerticalDragListener;
     }
 
     protected void init() {
-        gestureDetector = new GestureDetector(context, gestureListener);
+        this.gestureDetector = new GestureDetector(this.context, this.gestureListener);
     }
 
-    public boolean onDragTouch(final MotionEvent event) {
-        if (onVerticalDragListener == null) {
+    public boolean onDragTouch(MotionEvent event) {
+        if (this.onVerticalDragListener == null) {
             return false;
         }
-        if (gestureDetector.onTouchEvent(event)) {
+        if (this.gestureDetector.onTouchEvent(event)) {
             return true;
         }
         switch (event.getAction()) {
@@ -72,45 +72,45 @@ public class VerticalDragHelper {
                 return true;
             case MotionEvent.ACTION_MOVE:
                 boolean handled = false;
-                final float rawY = event.getRawY();
-                final float dY = rawY - prevRawY;
-                if (!isDragging) {
-                    final float rawX = event.getRawX();
-                    if (prevRawX != 0) {
-                        dX = rawX - prevRawX;
+                float rawY = event.getRawY();
+                float dY = rawY - this.prevRawY;
+                if (!this.isDragging) {
+                    float rawX = event.getRawX();
+                    if (this.prevRawX != 0) {
+                        this.dX = rawX - this.prevRawX;
                     }
-                    prevRawX = rawX;
-                    if (prevRawY != 0) {
-                        final float dYAbs = Math.abs(dY - prevDY);
-                        if (!isDragging && dYAbs < 50) {
-                            final float abs = Math.abs(dY) - Math.abs(dX);
+                    this.prevRawX = rawX;
+                    if (this.prevRawY != 0) {
+                        float dYAbs = Math.abs(dY - this.prevDY);
+                        if (!this.isDragging && dYAbs < 50) {
+                            float abs = Math.abs(dY) - Math.abs(this.dX);
                             if (abs > 0) {
-                                isDragging = true;
+                                this.isDragging = true;
                             }
                         }
                     }
                 }
-                if (isDragging) {
-                    final ViewParent parent = view.getParent();
+                if (this.isDragging) {
+                    ViewParent parent = this.view.getParent();
                     parent.requestDisallowInterceptTouchEvent(true);
-                    onVerticalDragListener.onDrag(dY);
+                    this.onVerticalDragListener.onDrag(dY);
                     handled = true;
                 }
-                prevDY = dY;
-                prevRawY = rawY;
+                this.prevDY = dY;
+                this.prevRawY = rawY;
                 return handled;
             case MotionEvent.ACTION_UP:
                 // Log.d(TAG, "onDragTouch: reset prevRawY");
-                prevRawY = 0;
-                if (flingVelocity != 0) {
-                    onVerticalDragListener.onFling(flingVelocity);
-                    flingVelocity = 0;
-                    isDragging = false;
+                this.prevRawY = 0;
+                if (this.flingVelocity != 0) {
+                    this.onVerticalDragListener.onFling(this.flingVelocity);
+                    this.flingVelocity = 0;
+                    this.isDragging = false;
                     return true;
                 }
-                if (isDragging) {
-                    onVerticalDragListener.onDragEnd();
-                    isDragging = false;
+                if (this.isDragging) {
+                    this.onVerticalDragListener.onDragEnd();
+                    this.isDragging = false;
                     return true;
                 }
                 return false;
@@ -120,18 +120,18 @@ public class VerticalDragHelper {
     }
 
     public boolean isDragging() {
-        return isDragging;
+        return this.isDragging;
     }
 
-    public boolean onGestureTouchEvent(final MotionEvent event) {
-        return gestureDetector.onTouchEvent(event);
+    public boolean onGestureTouchEvent(MotionEvent event) {
+        return this.gestureDetector.onTouchEvent(event);
     }
 
     public interface OnVerticalDragListener {
-        void onDrag(final float dY);
+        void onDrag(float dY);
 
         void onDragEnd();
 
-        void onFling(final double flingVelocity);
+        void onFling(double flingVelocity);
     }
 }

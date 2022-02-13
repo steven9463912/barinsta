@@ -15,72 +15,68 @@ import static androidx.viewpager2.widget.ViewPager2.ORIENTATION_HORIZONTAL;
 
 public class NestedScrollableHost extends FrameLayout {
 
-    private int touchSlop;
-    private float initialX = 0f;
-    private float initialY = 0f;
+    private final int touchSlop;
+    private float initialX;
+    private float initialY;
 
-    public NestedScrollableHost(@NonNull final Context context) {
+    public NestedScrollableHost(@NonNull Context context) {
         this(context, null);
     }
 
-    public NestedScrollableHost(@NonNull final Context context, @Nullable final AttributeSet attrs) {
+    public NestedScrollableHost(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        touchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
+        this.touchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
     }
 
     @Override
-    public boolean onInterceptTouchEvent(final MotionEvent ev) {
-        handleInterceptTouchEvent(ev);
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        this.handleInterceptTouchEvent(ev);
         return super.onInterceptTouchEvent(ev);
     }
 
-    private void handleInterceptTouchEvent(final MotionEvent e) {
-        if (getParentViewPager() == null) return;
-        final int orientation = getParentViewPager().getOrientation();
+    private void handleInterceptTouchEvent(MotionEvent e) {
+        if (this.getParentViewPager() == null) return;
+        int orientation = this.getParentViewPager().getOrientation();
         // Early return if child can't scroll in same direction as parent
-        if (!canChildScroll(orientation, -1f) && !canChildScroll(orientation, 1f)) return;
+        if (!this.canChildScroll(orientation, -1f) && !this.canChildScroll(orientation, 1f)) return;
 
         if (e.getAction() == MotionEvent.ACTION_DOWN) {
-            initialX = e.getX();
-            initialY = e.getY();
-            getParent().requestDisallowInterceptTouchEvent(true);
+            this.initialX = e.getX();
+            this.initialY = e.getY();
+            this.getParent().requestDisallowInterceptTouchEvent(true);
         } else if (e.getAction() == MotionEvent.ACTION_MOVE) {
-            final float dx = e.getX() - initialX;
-            final float dy = e.getY() - initialY;
-            final boolean isVpHorizontal = orientation == ORIENTATION_HORIZONTAL;
+            float dx = e.getX() - this.initialX;
+            float dy = e.getY() - this.initialY;
+            boolean isVpHorizontal = orientation == ORIENTATION_HORIZONTAL;
 
             // assuming ViewPager2 touch-slop is 2x touch-slop of child
-            final float scaledDx = Math.abs(dx) * (isVpHorizontal ? .5f : 1f);
-            final float scaledDy = Math.abs(dy) * (isVpHorizontal ? 1f : .5f);
+            float scaledDx = Math.abs(dx) * (isVpHorizontal ? .5f : 1f);
+            float scaledDy = Math.abs(dy) * (isVpHorizontal ? 1f : .5f);
 
-            if (scaledDx > touchSlop || scaledDy > touchSlop) {
+            if (scaledDx > this.touchSlop || scaledDy > this.touchSlop) {
                 if (isVpHorizontal == (scaledDy > scaledDx)) {
                     // Gesture is perpendicular, allow all parents to intercept
-                    getParent().requestDisallowInterceptTouchEvent(false);
+                    this.getParent().requestDisallowInterceptTouchEvent(false);
                 } else {
                     // Gesture is parallel, query child if movement in that direction is possible
-                    if (canChildScroll(orientation, (isVpHorizontal ? dx : dy))) {
-                        // Child can scroll, disallow all parents to intercept
-                        getParent().requestDisallowInterceptTouchEvent(true);
-                    } else {
-                        // Child cannot scroll, allow all parents to intercept
-                        getParent().requestDisallowInterceptTouchEvent(false);
-                    }
+                    // Child can scroll, disallow all parents to intercept
+                    // Child cannot scroll, allow all parents to intercept
+                    this.getParent().requestDisallowInterceptTouchEvent(this.canChildScroll(orientation, (isVpHorizontal ? dx : dy)));
                 }
             }
         }
     }
 
-    private boolean canChildScroll(final int orientation, final float delta) {
-        final int direction = -(int) Math.signum(delta);
-        final View child = getChild();
+    private boolean canChildScroll(int orientation, float delta) {
+        int direction = -(int) Math.signum(delta);
+        View child = this.getChild();
         if (child == null) return false;
         ViewPager2 viewPagerChild = null;
         if (child instanceof ViewPager2) {
             viewPagerChild = (ViewPager2) child;
         }
 
-        boolean canScroll;
+        final boolean canScroll;
         switch (orientation) {
             case 0:
                 canScroll = child.canScrollHorizontally(direction);
@@ -99,7 +95,7 @@ public class NestedScrollableHost extends FrameLayout {
     }
 
     public ViewPager2 getParentViewPager() {
-        View v = (View) getParent();
+        View v = (View) this.getParent();
         while (v != null && !(v instanceof ViewPager2)) {
             v = (View) v.getParent();
         }
@@ -107,6 +103,6 @@ public class NestedScrollableHost extends FrameLayout {
     }
 
     public View getChild() {
-        return getChildCount() > 0 ? getChildAt(0) : null;
+        return this.getChildCount() > 0 ? this.getChildAt(0) : null;
     }
 }

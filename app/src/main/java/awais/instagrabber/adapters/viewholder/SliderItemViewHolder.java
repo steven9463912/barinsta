@@ -11,11 +11,11 @@ import awais.instagrabber.repositories.responses.Media;
 public abstract class SliderItemViewHolder extends RecyclerView.ViewHolder {
     private static final String TAG = "FeedSliderItemViewHolder";
 
-    public SliderItemViewHolder(@NonNull final View itemView) {
+    public SliderItemViewHolder(@NonNull View itemView) {
         super(itemView);
     }
 
-    public abstract void bind(final Media media,
-                              final int position,
-                              final SliderItemsAdapter.SliderCallback sliderCallback);
+    public abstract void bind(Media media,
+                              int position,
+                              SliderItemsAdapter.SliderCallback sliderCallback);
 }

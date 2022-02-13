@@ -16,41 +16,41 @@ import awais.instagrabber.utils.Constants;
 import awais.instagrabber.utils.LocaleUtils;
 
 public abstract class BasePreferencesFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
-    private boolean shouldRecreate = false;
+    private boolean shouldRecreate;
 
     @Override
-    public void onCreatePreferences(final Bundle savedInstanceState, final String rootKey) {
-        final PreferenceManager preferenceManager = getPreferenceManager();
+    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+        PreferenceManager preferenceManager = this.getPreferenceManager();
         preferenceManager.setSharedPreferencesName(Constants.SHARED_PREFERENCES_NAME);
         preferenceManager.getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
-        final Context context = getContext();
+        Context context = this.getContext();
         if (context == null) return;
-        final PreferenceScreen screen = preferenceManager.createPreferenceScreen(context);
-        setupPreferenceScreen(screen);
-        setPreferenceScreen(screen);
+        PreferenceScreen screen = preferenceManager.createPreferenceScreen(context);
+        this.setupPreferenceScreen(screen);
+        this.setPreferenceScreen(screen);
     }
 
     abstract void setupPreferenceScreen(PreferenceScreen screen);
 
     protected void shouldRecreate() {
-        this.shouldRecreate = true;
+        shouldRecreate = true;
     }
 
     @Override
-    public void onSharedPreferenceChanged(final SharedPreferences sharedPreferences, final String key) {
-        if (!shouldRecreate) return;
-        final MainActivity activity = (MainActivity) getActivity();
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (!this.shouldRecreate) return;
+        MainActivity activity = (MainActivity) this.getActivity();
         if (activity == null) return;
         if (key.equals(PreferenceKeys.APP_LANGUAGE)) {
             LocaleUtils.setLocale(activity.getBaseContext());
         }
-        shouldRecreate = false;
+        this.shouldRecreate = false;
         activity.recreate();
     }
 
     @NonNull
-    protected Preference getDivider(final Context context) {
-        final Preference divider = new Preference(context);
+    protected Preference getDivider(Context context) {
+        Preference divider = new Preference(context);
         divider.setLayoutResource(R.layout.item_pref_divider);
         return divider;
     }

@@ -23,50 +23,50 @@ public final class ProfilePicView extends CircularImageView {
     private Size size;
     private int dimensionPixelSize;
 
-    public ProfilePicView(Context context, GenericDraweeHierarchy hierarchy) {
+    public ProfilePicView(final Context context, final GenericDraweeHierarchy hierarchy) {
         super(context);
-        setHierarchy(hierarchy);
-        size = Size.REGULAR;
-        updateLayout();
+        this.setHierarchy(hierarchy);
+        this.size = Size.REGULAR;
+        this.updateLayout();
     }
 
-    public ProfilePicView(final Context context) {
+    public ProfilePicView(Context context) {
         super(context);
-        size = Size.REGULAR;
-        updateLayout();
+        this.size = Size.REGULAR;
+        this.updateLayout();
     }
 
-    public ProfilePicView(final Context context, final AttributeSet attrs) {
+    public ProfilePicView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        parseAttrs(context, attrs);
-        updateLayout();
+        this.parseAttrs(context, attrs);
+        this.updateLayout();
     }
 
-    public ProfilePicView(final Context context,
-                          final AttributeSet attrs,
-                          final int defStyleAttr) {
+    public ProfilePicView(Context context,
+                          AttributeSet attrs,
+                          int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        parseAttrs(context, attrs);
-        updateLayout();
+        this.parseAttrs(context, attrs);
+        this.updateLayout();
     }
 
-    private void parseAttrs(final Context context, final AttributeSet attrs) {
-        final TypedArray a = context.getTheme().obtainStyledAttributes(
+    private void parseAttrs(Context context, AttributeSet attrs) {
+        TypedArray a = context.getTheme().obtainStyledAttributes(
                 attrs,
                 R.styleable.ProfilePicView,
                 0,
                 0);
         try {
-            final int sizeValue = a.getInt(R.styleable.ProfilePicView_size, Size.REGULAR.getValue());
-            size = Size.valueOf(sizeValue);
+            int sizeValue = a.getInt(R.styleable.ProfilePicView_size, Size.REGULAR.getValue());
+            this.size = Size.valueOf(sizeValue);
         } finally {
             a.recycle();
         }
     }
 
     private void updateLayout() {
-        @DimenRes final int dimenRes;
-        switch (size) {
+        @DimenRes int dimenRes;
+        switch (this.size) {
             case SMALL:
                 dimenRes = R.dimen.profile_pic_size_small;
                 break;
@@ -84,32 +84,32 @@ public final class ProfilePicView extends CircularImageView {
                 dimenRes = R.dimen.profile_pic_size_regular;
                 break;
         }
-        ViewGroup.LayoutParams layoutParams = getLayoutParams();
+        ViewGroup.LayoutParams layoutParams = this.getLayoutParams();
         if (layoutParams == null) {
             layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         }
-        dimensionPixelSize = getResources().getDimensionPixelSize(dimenRes);
-        layoutParams.width = dimensionPixelSize;
-        layoutParams.height = dimensionPixelSize;
+        this.dimensionPixelSize = this.getResources().getDimensionPixelSize(dimenRes);
+        layoutParams.width = this.dimensionPixelSize;
+        layoutParams.height = this.dimensionPixelSize;
 
         // invalidate();
         // requestLayout();
     }
 
-    public void setSize(final Size size) {
+    public void setSize(Size size) {
         this.size = size;
-        updateLayout();
+        this.updateLayout();
     }
 
     public void setStoriesBorder() {
         // private final int borderSize = 8;
         final int color = Color.GREEN;
-        RoundingParams roundingParams = getHierarchy().getRoundingParams();
+        RoundingParams roundingParams = this.getHierarchy().getRoundingParams();
         if (roundingParams == null) {
             roundingParams = RoundingParams.asCircle().setRoundingMethod(RoundingParams.RoundingMethod.BITMAP_ONLY);
         }
         roundingParams.setBorder(color, 5.0f);
-        getHierarchy().setRoundingParams(roundingParams);
+        this.getHierarchy().setRoundingParams(roundingParams);
     }
 
     public enum Size {
@@ -123,29 +123,29 @@ public final class ProfilePicView extends CircularImageView {
         private static final Map<Integer, Size> map = new HashMap<>();
 
         static {
-            for (Size size : Size.values()) {
-                map.put(size.value, size);
+            for (final Size size : values()) {
+                Size.map.put(size.value, size);
             }
         }
 
-        Size(final int value) {
+        Size(int value) {
             this.value = value;
         }
 
         @NonNull
-        public static Size valueOf(final int value) {
-            final Size size = map.get(value);
-            return size != null ? size : Size.REGULAR;
+        public static Size valueOf(int value) {
+            Size size = Size.map.get(value);
+            return size != null ? size : REGULAR;
         }
 
         public int getValue() {
-            return value;
+            return this.value;
         }
     }
 
     @Override
-    protected void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec) {
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        setMeasuredDimension(dimensionPixelSize, dimensionPixelSize);
+        this.setMeasuredDimension(this.dimensionPixelSize, this.dimensionPixelSize);
     }
 }

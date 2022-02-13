@@ -16,30 +16,30 @@ import java.io.FileDescriptor;
 public final class MediaUtils {
     private static final String TAG = MediaUtils.class.getSimpleName();
 
-    public static void getVideoInfo(@NonNull final ContentResolver contentResolver,
-                                    @NonNull final Uri uri,
-                                    @NonNull final OnInfoLoadListener<VideoInfo> listener) {
-        getInfo(contentResolver, uri, listener, true);
+    public static void getVideoInfo(@NonNull ContentResolver contentResolver,
+                                    @NonNull Uri uri,
+                                    @NonNull OnInfoLoadListener<VideoInfo> listener) {
+        MediaUtils.getInfo(contentResolver, uri, listener, true);
     }
 
-    public static void getVoiceInfo(@NonNull final ContentResolver contentResolver,
-                                    @NonNull final Uri uri,
-                                    @NonNull final OnInfoLoadListener<VideoInfo> listener) {
-        getInfo(contentResolver, uri, listener, false);
+    public static void getVoiceInfo(@NonNull ContentResolver contentResolver,
+                                    @NonNull Uri uri,
+                                    @NonNull OnInfoLoadListener<VideoInfo> listener) {
+        MediaUtils.getInfo(contentResolver, uri, listener, false);
     }
 
-    private static void getInfo(@NonNull final ContentResolver contentResolver,
-                                @NonNull final Uri uri,
-                                @NonNull final OnInfoLoadListener<VideoInfo> listener,
-                                @NonNull final Boolean isVideo) {
+    private static void getInfo(@NonNull ContentResolver contentResolver,
+                                @NonNull Uri uri,
+                                @NonNull OnInfoLoadListener<VideoInfo> listener,
+                                @NonNull Boolean isVideo) {
         AppExecutors.INSTANCE.getTasksThread().submit(() -> {
-            try (ParcelFileDescriptor parcelFileDescriptor = contentResolver.openFileDescriptor(uri, "r")) {
+            try (final ParcelFileDescriptor parcelFileDescriptor = contentResolver.openFileDescriptor(uri, "r")) {
                 if (parcelFileDescriptor == null) {
                     listener.onLoad(null);
                     return;
                 }
-                final FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
-                final MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
+                FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
+                MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
                 mediaMetadataRetriever.setDataSource(fileDescriptor);
                 String duration = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
                 if (TextUtils.isEmpty(duration)) duration = "0";
@@ -48,9 +48,9 @@ public final class MediaUtils {
                     if (TextUtils.isEmpty(width)) width = "1";
                     String height = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT);
                     if (TextUtils.isEmpty(height)) height = "1";
-                    final Cursor cursor = contentResolver.query(uri, new String[]{MediaStore.Video.Media.SIZE}, null, null, null);
+                    Cursor cursor = contentResolver.query(uri, new String[]{MediaStore.MediaColumns.SIZE}, null, null, null);
                     cursor.moveToFirst();
-                    final long fileSize = cursor.getLong(0);
+                    long fileSize = cursor.getLong(0);
                     cursor.close();
                     listener.onLoad(new VideoInfo(
                             Long.parseLong(duration),
@@ -66,8 +66,8 @@ public final class MediaUtils {
                         0,
                         0
                 ));
-            } catch (Exception e) {
-                Log.e(TAG, "getInfo: ", e);
+            } catch (final Exception e) {
+                Log.e(MediaUtils.TAG, "getInfo: ", e);
                 listener.onFailure(e);
             }
         });
@@ -79,7 +79,7 @@ public final class MediaUtils {
         public int height;
         public long size;
 
-        public VideoInfo(final long duration, final int width, final int height, final long size) {
+        public VideoInfo(long duration, int width, int height, long size) {
             this.duration = duration;
             this.width = width;
             this.height = height;

@@ -16,12 +16,12 @@ import retrofit2.http.Query;
 public interface NewsRepository {
     @GET("/api/v1/news/inbox/")
     Call<NewsInboxResponse> appInbox(@Query(value = "mark_as_seen", encoded = true) boolean markAsSeen,
-                                     @Header(value = "x-ig-app-id") String xIgAppId);
+                                     @Header("x-ig-app-id") String xIgAppId);
 
     @FormUrlEncoded
     @POST("/api/v1/discover/ayml/")
-    Call<AymlResponse> getAyml(@FieldMap final Map<String, String> form);
+    Call<AymlResponse> getAyml(@FieldMap Map<String, String> form);
 
     @GET("/api/v1/discover/chaining/")
-    Call<UserSearchResponse> getChaining(@Query(value = "target_id") long targetId);
+    Call<UserSearchResponse> getChaining(@Query("target_id") long targetId);
 }

@@ -13,12 +13,12 @@ public class One977Filter extends Filter<GPUImage1977Filter> {
 
     public One977Filter() {
         super(FiltersHelper.FilterType.ONE977, R.string.one977);
-        filter = new GPUImage1977Filter();
+        this.filter = new GPUImage1977Filter();
     }
 
     @Override
     public GPUImage1977Filter getInstance() {
-        return filter;
+        return this.filter;
     }
 
     @Override

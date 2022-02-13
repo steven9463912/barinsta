@@ -10,7 +10,7 @@ import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
 import com.facebook.drawee.generic.RoundingParams;
 
 import awais.instagrabber.R;
-import awais.instagrabber.adapters.DirectItemsAdapter.DirectItemCallback;
+import awais.instagrabber.adapters.DirectItemsAdapter;
 import awais.instagrabber.databinding.LayoutDmBaseBinding;
 import awais.instagrabber.databinding.LayoutDmRavenMediaBinding;
 import awais.instagrabber.models.enums.MediaItemType;
@@ -30,27 +30,27 @@ public class DirectItemRavenMediaViewHolder extends DirectItemViewHolder {
     private final LayoutDmRavenMediaBinding binding;
     private final int maxWidth;
 
-    public DirectItemRavenMediaViewHolder(@NonNull final LayoutDmBaseBinding baseBinding,
-                                          @NonNull final LayoutDmRavenMediaBinding binding,
-                                          final User currentUser,
-                                          final DirectThread thread,
-                                          final DirectItemCallback callback) {
+    public DirectItemRavenMediaViewHolder(@NonNull LayoutDmBaseBinding baseBinding,
+                                          @NonNull LayoutDmRavenMediaBinding binding,
+                                          User currentUser,
+                                          DirectThread thread,
+                                          DirectItemsAdapter.DirectItemCallback callback) {
         super(baseBinding, currentUser, thread, callback);
         this.binding = binding;
-        maxWidth = windowWidth - margin - dmRadiusSmall;
-        setItemView(binding.getRoot());
+        this.maxWidth = this.windowWidth - this.margin - this.dmRadiusSmall;
+        this.setItemView(binding.getRoot());
     }
 
     @Override
-    public void bindItem(final DirectItem directItemModel, final MessageDirection messageDirection) {
-        final DirectItemVisualMedia visualMedia = directItemModel.getVisualMedia();
-        final Media media = visualMedia.getMedia();
+    public void bindItem(DirectItem directItemModel, MessageDirection messageDirection) {
+        DirectItemVisualMedia visualMedia = directItemModel.getVisualMedia();
+        Media media = visualMedia.getMedia();
         if (media == null) return;
-        setExpiryInfo(visualMedia);
-        setPreview(visualMedia, messageDirection);
-        final boolean expired = TextUtils.isEmpty(media.getId());
+        this.setExpiryInfo(visualMedia);
+        this.setPreview(visualMedia, messageDirection);
+        boolean expired = TextUtils.isEmpty(media.getId());
         if (expired) return;
-        itemView.setOnClickListener(v -> openMedia(media, -1));
+        this.itemView.setOnClickListener(v -> this.openMedia(media, -1));
         /*final boolean isExpired = visualMedia == null || (mediaModel = visualMedia.getMedia()) == null ||
                 TextUtils.isEmpty(mediaModel.getThumbUrl()) && mediaModel.getPk() < 1;
 
@@ -113,13 +113,13 @@ public class DirectItemRavenMediaViewHolder extends DirectItemViewHolder {
         }*/
     }
 
-    private void setExpiryInfo(final DirectItemVisualMedia visualMedia) {
-        final Media media = visualMedia.getMedia();
-        final RavenMediaViewMode viewMode = visualMedia.getViewMode();
+    private void setExpiryInfo(DirectItemVisualMedia visualMedia) {
+        Media media = visualMedia.getMedia();
+        RavenMediaViewMode viewMode = visualMedia.getViewMode();
         if (viewMode != RavenMediaViewMode.PERMANENT) {
-            final MediaItemType mediaType = media.getType();
-            final boolean expired = TextUtils.isEmpty(media.getId());
-            final int info;
+            MediaItemType mediaType = media.getType();
+            boolean expired = TextUtils.isEmpty(media.getId());
+            int info;
             switch (mediaType) {
                 case MEDIA_TYPE_IMAGE:
                     if (expired) {
@@ -143,45 +143,45 @@ public class DirectItemRavenMediaViewHolder extends DirectItemViewHolder {
                     info = R.string.raven_msg_info;
                     break;
             }
-            binding.expiryInfo.setVisibility(View.VISIBLE);
-            binding.expiryInfo.setText(info);
+            this.binding.expiryInfo.setVisibility(View.VISIBLE);
+            this.binding.expiryInfo.setText(info);
             return;
         }
-        binding.expiryInfo.setVisibility(View.GONE);
+        this.binding.expiryInfo.setVisibility(View.GONE);
     }
 
-    private void setPreview(final DirectItemVisualMedia visualMedia,
-                            final MessageDirection messageDirection) {
-        final Media media = visualMedia.getMedia();
-        final boolean expired = TextUtils.isEmpty(media.getId());
+    private void setPreview(DirectItemVisualMedia visualMedia,
+                            MessageDirection messageDirection) {
+        Media media = visualMedia.getMedia();
+        boolean expired = TextUtils.isEmpty(media.getId());
         if (expired) {
-            binding.preview.setVisibility(View.GONE);
-            binding.typeIcon.setVisibility(View.GONE);
+            this.binding.preview.setVisibility(View.GONE);
+            this.binding.typeIcon.setVisibility(View.GONE);
             return;
         }
-        final RoundingParams roundingParams = messageDirection == MessageDirection.INCOMING
-                                              ? RoundingParams.fromCornersRadii(dmRadiusSmall, dmRadius, dmRadius, dmRadius)
-                                              : RoundingParams.fromCornersRadii(dmRadius, dmRadiusSmall, dmRadius, dmRadius);
-        binding.preview.setHierarchy(new GenericDraweeHierarchyBuilder(itemView.getResources())
+        RoundingParams roundingParams = messageDirection == MessageDirection.INCOMING
+                                              ? RoundingParams.fromCornersRadii(this.dmRadiusSmall, this.dmRadius, this.dmRadius, this.dmRadius)
+                                              : RoundingParams.fromCornersRadii(this.dmRadius, this.dmRadiusSmall, this.dmRadius, this.dmRadius);
+        this.binding.preview.setHierarchy(new GenericDraweeHierarchyBuilder(this.itemView.getResources())
                                              .setRoundingParams(roundingParams)
                                              .setActualImageScaleType(ScalingUtils.ScaleType.CENTER_CROP)
                                              .build());
-        final MediaItemType modelMediaType = media.getType();
-        binding.typeIcon.setVisibility(modelMediaType == MediaItemType.MEDIA_TYPE_VIDEO || modelMediaType == MediaItemType.MEDIA_TYPE_SLIDER
+        MediaItemType modelMediaType = media.getType();
+        this.binding.typeIcon.setVisibility(modelMediaType == MediaItemType.MEDIA_TYPE_VIDEO || modelMediaType == MediaItemType.MEDIA_TYPE_SLIDER
                                        ? View.VISIBLE
                                        : View.GONE);
-        final NullSafePair<Integer, Integer> widthHeight = NumberUtils.calculateWidthHeight(
+        NullSafePair<Integer, Integer> widthHeight = NumberUtils.calculateWidthHeight(
                 media.getOriginalHeight(),
                 media.getOriginalWidth(),
-                mediaImageMaxHeight,
-                maxWidth
+                this.mediaImageMaxHeight,
+                this.maxWidth
         );
-        final ViewGroup.LayoutParams layoutParams = binding.preview.getLayoutParams();
+        ViewGroup.LayoutParams layoutParams = this.binding.preview.getLayoutParams();
         layoutParams.width = widthHeight.first;
         layoutParams.height = widthHeight.second;
-        binding.preview.requestLayout();
-        final String thumbUrl = ResponseBodyUtils.getThumbUrl(media);
-        binding.preview.setImageURI(thumbUrl);
+        this.binding.preview.requestLayout();
+        String thumbUrl = ResponseBodyUtils.getThumbUrl(media);
+        this.binding.preview.setImageURI(thumbUrl);
     }
 
     @Override

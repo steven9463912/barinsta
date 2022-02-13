@@ -15,11 +15,11 @@ import okhttp3.Response;
 public class AddCookiesInterceptor implements Interceptor {
     @NonNull
     @Override
-    public Response intercept(@NonNull final Chain chain) throws IOException {
-        final Request request = chain.request();
-        final Request.Builder builder = request.newBuilder();
-        final String cookie = Utils.settingsHelper.getString(Constants.COOKIE);
-        final boolean hasCookie = !TextUtils.isEmpty(cookie);
+    public Response intercept(@NonNull Chain chain) throws IOException {
+        Request request = chain.request();
+        Request.Builder builder = request.newBuilder();
+        String cookie = Utils.settingsHelper.getString(Constants.COOKIE);
+        boolean hasCookie = !TextUtils.isEmpty(cookie);
         if (hasCookie) {
             builder.addHeader("Cookie", cookie);
         }
@@ -31,7 +31,7 @@ public class AddCookiesInterceptor implements Interceptor {
         if (request.header(languageHeader) == null) {
             builder.addHeader(languageHeader, LocaleUtils.getCurrentLocale().getLanguage() + ",en-US;q=0.8");
         }
-        final Request updatedRequest = builder.build();
+        Request updatedRequest = builder.build();
         return chain.proceed(updatedRequest);
     }
 }

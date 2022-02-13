@@ -16,34 +16,34 @@ import retrofit2.http.QueryMap;
 
 public interface CommentRepository {
     @GET("/api/v1/media/{mediaId}/comments/")
-    Call<CommentsFetchResponse> fetchComments(@Path("mediaId") final String mediaId,
-                                              @QueryMap final Map<String, String> queryMap);
+    Call<CommentsFetchResponse> fetchComments(@Path("mediaId") String mediaId,
+                                              @QueryMap Map<String, String> queryMap);
 
     @GET("/api/v1/media/{mediaId}/comments/{commentId}/inline_child_comments/")
-    Call<ChildCommentsFetchResponse> fetchChildComments(@Path("mediaId") final String mediaId,
-                                                        @Path("commentId") final String commentId,
-                                                        @QueryMap final Map<String, String> queryMap);
+    Call<ChildCommentsFetchResponse> fetchChildComments(@Path("mediaId") String mediaId,
+                                                        @Path("commentId") String commentId,
+                                                        @QueryMap Map<String, String> queryMap);
 
     @FormUrlEncoded
     @POST("/api/v1/media/{mediaId}/comment/")
-    Call<String> comment(@Path("mediaId") final String mediaId,
-                         @FieldMap final Map<String, String> signedForm);
+    Call<String> comment(@Path("mediaId") String mediaId,
+                         @FieldMap Map<String, String> signedForm);
 
     @FormUrlEncoded
     @POST("/api/v1/media/{mediaId}/comment/bulk_delete/")
-    Call<String> commentsBulkDelete(@Path("mediaId") final String mediaId,
-                                    @FieldMap final Map<String, String> signedForm);
+    Call<String> commentsBulkDelete(@Path("mediaId") String mediaId,
+                                    @FieldMap Map<String, String> signedForm);
 
     @FormUrlEncoded
     @POST("/api/v1/media/{commentId}/comment_like/")
-    Call<String> commentLike(@Path("commentId") final String commentId,
-                             @FieldMap final Map<String, String> signedForm);
+    Call<String> commentLike(@Path("commentId") String commentId,
+                             @FieldMap Map<String, String> signedForm);
 
     @FormUrlEncoded
     @POST("/api/v1/media/{commentId}/comment_unlike/")
-    Call<String> commentUnlike(@Path("commentId") final String commentId,
-                               @FieldMap final Map<String, String> signedForm);
+    Call<String> commentUnlike(@Path("commentId") String commentId,
+                               @FieldMap Map<String, String> signedForm);
 
     @GET("/api/v1/language/translate/")
-    Call<String> translate(@QueryMap final Map<String, String> form);
+    Call<String> translate(@QueryMap Map<String, String> form);
 }

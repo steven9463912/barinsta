@@ -11,11 +11,11 @@ public class FeedFetchResponse {
     private final String nextMaxId;
     private final String status;
 
-    public FeedFetchResponse(final List<Media> items,
-                             final int numResults,
-                             final boolean moreAvailable,
-                             final String nextMaxId,
-                             final String status) {
+    public FeedFetchResponse(List<Media> items,
+                             int numResults,
+                             boolean moreAvailable,
+                             String nextMaxId,
+                             String status) {
         this.items = items;
         this.numResults = numResults;
         this.moreAvailable = moreAvailable;
@@ -24,22 +24,22 @@ public class FeedFetchResponse {
     }
 
     public List<Media> getItems() {
-        return items;
+        return this.items;
     }
 
     public int getNumResults() {
-        return numResults;
+        return this.numResults;
     }
 
     public boolean isMoreAvailable() {
-        return moreAvailable;
+        return this.moreAvailable;
     }
 
     public String getNextMaxId() {
-        return nextMaxId;
+        return this.nextMaxId;
     }
 
     public String getStatus() {
-        return status;
+        return this.status;
     }
 }

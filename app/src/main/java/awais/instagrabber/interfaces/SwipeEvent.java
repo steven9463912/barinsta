@@ -1,5 +1,5 @@
 package awais.instagrabber.interfaces;
 
 public interface SwipeEvent {
-    void onSwipe(final boolean isRight);
+    void onSwipe(boolean isRight);
 }

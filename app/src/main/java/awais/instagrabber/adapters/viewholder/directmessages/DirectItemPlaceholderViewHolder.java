@@ -5,7 +5,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.ItemTouchHelper;
 
-import awais.instagrabber.adapters.DirectItemsAdapter.DirectItemCallback;
+import awais.instagrabber.adapters.DirectItemsAdapter;
 import awais.instagrabber.databinding.LayoutDmBaseBinding;
 import awais.instagrabber.databinding.LayoutDmStoryShareBinding;
 import awais.instagrabber.repositories.responses.User;
@@ -16,23 +16,23 @@ public class DirectItemPlaceholderViewHolder extends DirectItemViewHolder {
 
     private final LayoutDmStoryShareBinding binding;
 
-    public DirectItemPlaceholderViewHolder(@NonNull final LayoutDmBaseBinding baseBinding,
-                                           final LayoutDmStoryShareBinding binding,
-                                           final User currentUser,
-                                           final DirectThread thread,
-                                           final DirectItemCallback callback) {
+    public DirectItemPlaceholderViewHolder(@NonNull LayoutDmBaseBinding baseBinding,
+                                           LayoutDmStoryShareBinding binding,
+                                           User currentUser,
+                                           DirectThread thread,
+                                           DirectItemsAdapter.DirectItemCallback callback) {
         super(baseBinding, currentUser, thread, callback);
         this.binding = binding;
-        setItemView(binding.getRoot());
+        this.setItemView(binding.getRoot());
     }
 
     @Override
-    public void bindItem(final DirectItem directItemModel, final MessageDirection messageDirection) {
-        binding.shareInfo.setText(directItemModel.getPlaceholder().getTitle());
-        binding.text.setVisibility(View.VISIBLE);
-        binding.text.setText(directItemModel.getPlaceholder().getMessage());
-        binding.ivMediaPreview.setVisibility(View.GONE);
-        binding.typeIcon.setVisibility(View.GONE);
+    public void bindItem(DirectItem directItemModel, MessageDirection messageDirection) {
+        this.binding.shareInfo.setText(directItemModel.getPlaceholder().getTitle());
+        this.binding.text.setVisibility(View.VISIBLE);
+        this.binding.text.setText(directItemModel.getPlaceholder().getMessage());
+        this.binding.ivMediaPreview.setVisibility(View.GONE);
+        this.binding.typeIcon.setVisibility(View.GONE);
     }
 
     @Override

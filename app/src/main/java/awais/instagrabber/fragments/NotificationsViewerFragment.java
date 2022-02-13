@@ -29,7 +29,6 @@ import java.util.List;
 
 import awais.instagrabber.R;
 import awais.instagrabber.adapters.NotificationsAdapter;
-import awais.instagrabber.adapters.NotificationsAdapter.OnNotificationClickListener;
 import awais.instagrabber.databinding.FragmentNotificationsViewerBinding;
 import awais.instagrabber.models.enums.NotificationType;
 import awais.instagrabber.repositories.requests.StoryViewerOptions;
@@ -68,60 +67,60 @@ public final class NotificationsViewerFragment extends Fragment implements Swipe
 
     private final ServiceCallback<List<Notification>> cb = new ServiceCallback<List<Notification>>() {
         @Override
-        public void onSuccess(final List<Notification> notificationModels) {
-            binding.swipeRefreshLayout.setRefreshing(false);
-            notificationViewModel.getList().postValue(notificationModels);
+        public void onSuccess(List<Notification> notificationModels) {
+            NotificationsViewerFragment.this.binding.swipeRefreshLayout.setRefreshing(false);
+            NotificationsViewerFragment.this.notificationViewModel.getList().postValue(notificationModels);
         }
 
         @Override
-        public void onFailure(final Throwable t) {
+        public void onFailure(Throwable t) {
             try {
-                binding.swipeRefreshLayout.setRefreshing(false);
-                Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
-            } catch (Throwable ignored) {}
+                NotificationsViewerFragment.this.binding.swipeRefreshLayout.setRefreshing(false);
+                Toast.makeText(NotificationsViewerFragment.this.getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+            } catch (final Throwable ignored) {}
         }
     };
 
-    private final OnNotificationClickListener clickListener = new OnNotificationClickListener() {
+    private final NotificationsAdapter.OnNotificationClickListener clickListener = new NotificationsAdapter.OnNotificationClickListener() {
         @Override
-        public void onProfileClick(final String username) {
-            openProfile(username);
+        public void onProfileClick(String username) {
+            NotificationsViewerFragment.this.openProfile(username);
         }
 
         @Override
-        public void onPreviewClick(final Notification model) {
-            final NotificationImage notificationImage = model.getArgs().getMedia().get(0);
-            final long mediaId = Long.parseLong(notificationImage.getId().split("_")[0]);
+        public void onPreviewClick(Notification model) {
+            NotificationImage notificationImage = model.getArgs().getMedia().get(0);
+            long mediaId = Long.parseLong(notificationImage.getId().split("_")[0]);
             if (model.getType() == NotificationType.RESPONDED_STORY) {
-                final StoryViewerOptions options = StoryViewerOptions.forStory(
+                StoryViewerOptions options = StoryViewerOptions.forStory(
                         mediaId,
                         model.getArgs().getUsername()
                 );
                 try {
-                    final NavDirections action = NotificationsViewerFragmentDirections.actionToStory(options);
+                    NavDirections action = NotificationsViewerFragmentDirections.actionToStory(options);
                     NavHostFragment.findNavController(NotificationsViewerFragment.this).navigate(action);
-                } catch (Exception e) {
-                    Log.e(TAG, "onPreviewClick: ", e);
+                } catch (final Exception e) {
+                    Log.e(NotificationsViewerFragment.TAG, "onPreviewClick: ", e);
                 }
             } else {
-                final AlertDialog alertDialog = new AlertDialog.Builder(context)
+                AlertDialog alertDialog = new AlertDialog.Builder(NotificationsViewerFragment.this.context)
                         .setCancelable(false)
                         .setView(R.layout.dialog_opening_post)
                         .create();
                 alertDialog.show();
-                mediaRepository.fetch(
+                NotificationsViewerFragment.this.mediaRepository.fetch(
                         mediaId,
                         CoroutineUtilsKt.getContinuation((media, throwable) -> AppExecutors.INSTANCE.getMainThread().execute(() -> {
                             if (throwable != null) {
                                 alertDialog.dismiss();
-                                Toast.makeText(context, R.string.downloader_unknown_error, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(NotificationsViewerFragment.this.context, R.string.downloader_unknown_error, Toast.LENGTH_SHORT).show();
                                 return;
                             }
                             try {
-                                final NavDirections action = NotificationsViewerFragmentDirections.actionToPost(media, 0);
+                                NavDirections action = NotificationsViewerFragmentDirections.actionToPost(media, 0);
                                 NavHostFragment.findNavController(NotificationsViewerFragment.this).navigate(action);
-                            } catch (Exception e) {
-                                Log.e(TAG, "onSuccess: ", e);
+                            } catch (final Exception e) {
+                                Log.e(NotificationsViewerFragment.TAG, "onSuccess: ", e);
                             } finally {
                                 alertDialog.dismiss();
                             }
@@ -131,75 +130,75 @@ public final class NotificationsViewerFragment extends Fragment implements Swipe
         }
 
         @Override
-        public void onNotificationClick(final Notification model) {
+        public void onNotificationClick(Notification model) {
             if (model == null) return;
-            final NotificationArgs args = model.getArgs();
-            final String username = args.getUsername();
+            NotificationArgs args = model.getArgs();
+            String username = args.getUsername();
             if (model.getType() == NotificationType.FOLLOW || model.getType() == NotificationType.AYML) {
-                openProfile(username);
+                NotificationsViewerFragment.this.openProfile(username);
             } else {
-                final SpannableString title = new SpannableString(username + (TextUtils.isEmpty(args.getText()) ? "" : (":\n" + args.getText())));
+                SpannableString title = new SpannableString(username + (TextUtils.isEmpty(args.getText()) ? "" : (":\n" + args.getText())));
                 title.setSpan(new RelativeSizeSpan(1.23f), 0, username.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
 
-                String[] commentDialogList;
+                final String[] commentDialogList;
                 if (model.getType() == NotificationType.RESPONDED_STORY) {
                     commentDialogList = new String[]{
-                            getString(R.string.open_profile),
-                            getString(R.string.view_story)
+                            NotificationsViewerFragment.this.getString(R.string.open_profile),
+                            NotificationsViewerFragment.this.getString(R.string.view_story)
                     };
                 } else if (args.getMedia() != null) {
                     commentDialogList = new String[]{
-                            getString(R.string.open_profile),
-                            getString(R.string.view_post)
+                            NotificationsViewerFragment.this.getString(R.string.open_profile),
+                            NotificationsViewerFragment.this.getString(R.string.view_post)
                     };
                 } else if (model.getType() == NotificationType.REQUEST) {
                     commentDialogList = new String[]{
-                            getString(R.string.open_profile),
-                            getString(R.string.request_approve),
-                            getString(R.string.request_reject)
+                            NotificationsViewerFragment.this.getString(R.string.open_profile),
+                            NotificationsViewerFragment.this.getString(R.string.request_approve),
+                            NotificationsViewerFragment.this.getString(R.string.request_reject)
                     };
                 } else commentDialogList = null; // shouldn't happen
-                final Context context = getContext();
+                Context context = NotificationsViewerFragment.this.getContext();
                 if (context == null) return;
-                final DialogInterface.OnClickListener profileDialogListener = (dialog, which) -> {
+                DialogInterface.OnClickListener profileDialogListener = (dialog, which) -> {
                     switch (which) {
                         case 0:
-                            openProfile(username);
+                            NotificationsViewerFragment.this.openProfile(username);
                             break;
                         case 1:
                             if (model.getType() == NotificationType.REQUEST) {
-                                friendshipRepository.approve(
-                                        csrfToken,
-                                        userId,
-                                        deviceUuid,
+                                NotificationsViewerFragment.this.friendshipRepository.approve(
+                                        NotificationsViewerFragment.this.csrfToken,
+                                        NotificationsViewerFragment.this.userId,
+                                        NotificationsViewerFragment.this.deviceUuid,
                                         args.getUserId(),
                                         CoroutineUtilsKt.getContinuation(
                                                 (response, throwable) -> AppExecutors.INSTANCE.getMainThread().execute(() -> {
                                                     if (throwable != null) {
-                                                        Log.e(TAG, "approve: onFailure: ", throwable);
+                                                        Log.e(NotificationsViewerFragment.TAG, "approve: onFailure: ", throwable);
                                                         return;
                                                     }
-                                                    onRefresh();
+                                                    NotificationsViewerFragment.this.onRefresh();
                                                 }),
                                                 Dispatchers.getIO()
                                         )
                                 );
                                 return;
                             }
-                            clickListener.onPreviewClick(model);
+                            NotificationsViewerFragment.this.clickListener.onPreviewClick(model);
                             break;
                         case 2:
-                            friendshipRepository.ignore(
-                                    csrfToken,
-                                    userId,
-                                    deviceUuid,
+                            NotificationsViewerFragment.this.friendshipRepository.ignore(
+                                    NotificationsViewerFragment.this.csrfToken,
+                                    NotificationsViewerFragment.this.userId,
+                                    NotificationsViewerFragment.this.deviceUuid,
                                     args.getUserId(),
                                     CoroutineUtilsKt.getContinuation((response, throwable) -> AppExecutors.INSTANCE.getMainThread().execute(() -> {
                                         if (throwable != null) {
-                                            Log.e(TAG, "approve: onFailure: ", throwable);
+                                            Log.e(NotificationsViewerFragment.TAG, "approve: onFailure: ", throwable);
                                             return;
                                         }
-                                        onRefresh();
+                                        NotificationsViewerFragment.this.onRefresh();
                                     }), Dispatchers.getIO())
                             );
                             break;
@@ -215,84 +214,84 @@ public final class NotificationsViewerFragment extends Fragment implements Swipe
     };
 
     @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        fragmentActivity = (AppCompatActivity) requireActivity();
-        context = getContext();
-        if (context == null) return;
-        NotificationManagerCompat.from(context.getApplicationContext()).cancel(Constants.ACTIVITY_NOTIFICATION_ID);
-        final String cookie = Utils.settingsHelper.getString(Constants.COOKIE);
+        this.fragmentActivity = (AppCompatActivity) this.requireActivity();
+        this.context = this.getContext();
+        if (this.context == null) return;
+        NotificationManagerCompat.from(this.context.getApplicationContext()).cancel(Constants.ACTIVITY_NOTIFICATION_ID);
+        String cookie = Utils.settingsHelper.getString(Constants.COOKIE);
         if (TextUtils.isEmpty(cookie)) {
-            Toast.makeText(context, R.string.activity_notloggedin, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this.context, R.string.activity_notloggedin, Toast.LENGTH_SHORT).show();
         }
-        userId = CookieUtils.getUserIdFromCookie(cookie);
-        deviceUuid = Utils.settingsHelper.getString(Constants.DEVICE_UUID);
-        csrfToken = CookieUtils.getCsrfTokenFromCookie(cookie);
-        friendshipRepository = FriendshipRepository.Companion.getInstance();
-        mediaRepository = MediaRepository.Companion.getInstance();
-        newsService = NewsService.getInstance();
+        this.userId = CookieUtils.getUserIdFromCookie(cookie);
+        this.deviceUuid = Utils.settingsHelper.getString(Constants.DEVICE_UUID);
+        this.csrfToken = CookieUtils.getCsrfTokenFromCookie(cookie);
+        this.friendshipRepository = FriendshipRepository.Companion.getInstance();
+        this.mediaRepository = MediaRepository.Companion.getInstance();
+        this.newsService = NewsService.getInstance();
     }
 
     @NonNull
     @Override
-    public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable final Bundle savedInstanceState) {
-        if (root != null) {
-            shouldRefresh = false;
-            return root;
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        if (this.root != null) {
+            this.shouldRefresh = false;
+            return this.root;
         }
-        binding = FragmentNotificationsViewerBinding.inflate(getLayoutInflater());
-        root = binding.getRoot();
-        return root;
+        this.binding = FragmentNotificationsViewerBinding.inflate(this.getLayoutInflater());
+        this.root = this.binding.getRoot();
+        return this.root;
     }
 
     @Override
-    public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
-        if (!shouldRefresh) return;
-        init();
-        shouldRefresh = false;
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        if (!this.shouldRefresh) return;
+        this.init();
+        this.shouldRefresh = false;
     }
 
     private void init() {
-        final NotificationsViewerFragmentArgs fragmentArgs = NotificationsViewerFragmentArgs.fromBundle(getArguments());
-        type = fragmentArgs.getType();
-        targetId = fragmentArgs.getTargetId();
-        final Context context = getContext();
+        NotificationsViewerFragmentArgs fragmentArgs = NotificationsViewerFragmentArgs.fromBundle(this.getArguments());
+        this.type = fragmentArgs.getType();
+        this.targetId = fragmentArgs.getTargetId();
+        Context context = this.getContext();
         CookieUtils.setupCookies(Utils.settingsHelper.getString(Constants.COOKIE));
-        binding.swipeRefreshLayout.setOnRefreshListener(this);
-        notificationViewModel = new ViewModelProvider(this).get(NotificationViewModel.class);
-        final NotificationsAdapter adapter = new NotificationsAdapter(clickListener);
-        binding.rvComments.setLayoutManager(new LinearLayoutManager(context));
-        binding.rvComments.setAdapter(adapter);
-        notificationViewModel.getList().observe(getViewLifecycleOwner(), adapter::submitList);
-        onRefresh();
+        this.binding.swipeRefreshLayout.setOnRefreshListener(this);
+        this.notificationViewModel = new ViewModelProvider(this).get(NotificationViewModel.class);
+        NotificationsAdapter adapter = new NotificationsAdapter(this.clickListener);
+        this.binding.rvComments.setLayoutManager(new LinearLayoutManager(context));
+        this.binding.rvComments.setAdapter(adapter);
+        this.notificationViewModel.getList().observe(this.getViewLifecycleOwner(), adapter::submitList);
+        this.onRefresh();
     }
 
     @Override
     public void onRefresh() {
-        binding.swipeRefreshLayout.setRefreshing(true);
-        final ActionBar actionBar = fragmentActivity.getSupportActionBar();
-        switch (type) {
+        this.binding.swipeRefreshLayout.setRefreshing(true);
+        ActionBar actionBar = this.fragmentActivity.getSupportActionBar();
+        switch (this.type) {
             case "notif":
                 if (actionBar != null) actionBar.setTitle(R.string.action_notif);
-                newsService.fetchAppInbox(true, cb);
+                this.newsService.fetchAppInbox(true, this.cb);
                 break;
             case "ayml":
                 if (actionBar != null) actionBar.setTitle(R.string.action_ayml);
-                newsService.fetchSuggestions(csrfToken, deviceUuid, cb);
+                this.newsService.fetchSuggestions(this.csrfToken, this.deviceUuid, this.cb);
                 break;
             case "chaining":
                 if (actionBar != null) actionBar.setTitle(R.string.action_ayml);
-                newsService.fetchChaining(targetId, cb);
+                this.newsService.fetchChaining(this.targetId, this.cb);
                 break;
         }
     }
 
-    private void openProfile(final String username) {
+    private void openProfile(String username) {
         try {
-            final NavDirections action = NotificationsViewerFragmentDirections.actionToProfile().setUsername(username);
+            NavDirections action = NotificationsViewerFragmentDirections.actionToProfile().setUsername(username);
             NavHostFragment.findNavController(this).navigate(action);
-        } catch (Exception e) {
-            Log.e(TAG, "openProfile: ", e);
+        } catch (final Exception e) {
+            Log.e(NotificationsViewerFragment.TAG, "openProfile: ", e);
         }
     }
 }

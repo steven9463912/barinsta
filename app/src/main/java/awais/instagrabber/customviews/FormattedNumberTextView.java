@@ -24,141 +24,141 @@ public class FormattedNumberTextView extends AppCompatTextView {
 
     private long number = Long.MIN_VALUE;
     private boolean showAbbreviation = true;
-    private boolean animateChanges = false;
+    private boolean animateChanges;
     private boolean toggleOnClick = true;
     private boolean autoToggleToAbbreviation = true;
     private long autoToggleTimeoutMs = Duration.ofSeconds(2).toMillis();
-    private boolean initDone = false;
+    private boolean initDone;
 
     static {
-        final TransitionSet transitionSet = new TransitionSet();
-        final ChangeText changeText = new ChangeText().setChangeBehavior(ChangeText.CHANGE_BEHAVIOR_OUT_IN);
+        TransitionSet transitionSet = new TransitionSet();
+        ChangeText changeText = new ChangeText().setChangeBehavior(ChangeText.CHANGE_BEHAVIOR_OUT_IN);
         transitionSet.addTransition(changeText).addTransition(new ChangeBounds());
         TRANSITION = transitionSet;
     }
 
 
-    public FormattedNumberTextView(@NonNull final Context context) {
+    public FormattedNumberTextView(@NonNull Context context) {
         super(context);
-        init();
+        this.init();
     }
 
-    public FormattedNumberTextView(@NonNull final Context context, @Nullable final AttributeSet attrs) {
+    public FormattedNumberTextView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        init();
+        this.init();
     }
 
-    public FormattedNumberTextView(@NonNull final Context context, @Nullable final AttributeSet attrs, final int defStyleAttr) {
+    public FormattedNumberTextView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init();
+        this.init();
     }
 
     private void init() {
-        if (initDone) return;
-        setupClickToggle();
-        initDone = true;
+        if (this.initDone) return;
+        this.setupClickToggle();
+        this.initDone = true;
     }
 
     private void setupClickToggle() {
-        setOnClickListener(null);
+        this.setOnClickListener(null);
     }
 
-    private OnClickListener getWrappedClickListener(@Nullable final OnClickListener l) {
-        if (!toggleOnClick) {
+    private OnClickListener getWrappedClickListener(@Nullable OnClickListener l) {
+        if (!this.toggleOnClick) {
             return l;
         }
         return v -> {
-            toggleAbbreviation();
+            this.toggleAbbreviation();
             if (l != null) {
                 l.onClick(this);
             }
         };
     }
 
-    public void setNumber(final long number) {
+    public void setNumber(long number) {
         if (this.number == number) return;
         this.number = number;
-        format();
+        this.format();
     }
 
     public void clearNumber() {
-        if (number == Long.MIN_VALUE) return;
-        number = Long.MIN_VALUE;
-        format();
+        if (this.number == Long.MIN_VALUE) return;
+        this.number = Long.MIN_VALUE;
+        this.format();
     }
 
-    public void setShowAbbreviation(final boolean showAbbreviation) {
+    public void setShowAbbreviation(boolean showAbbreviation) {
         if (this.showAbbreviation && showAbbreviation) return;
         this.showAbbreviation = showAbbreviation;
-        format();
+        this.format();
     }
 
     public boolean isShowAbbreviation() {
-        return showAbbreviation;
+        return this.showAbbreviation;
     }
 
     private void toggleAbbreviation() {
-        if (number == Long.MIN_VALUE) return;
-        setShowAbbreviation(!showAbbreviation);
+        if (this.number == Long.MIN_VALUE) return;
+        this.setShowAbbreviation(!this.showAbbreviation);
     }
 
-    public void setToggleOnClick(final boolean toggleOnClick) {
+    public void setToggleOnClick(boolean toggleOnClick) {
         this.toggleOnClick = toggleOnClick;
     }
 
     public boolean isToggleOnClick() {
-        return toggleOnClick;
+        return this.toggleOnClick;
     }
 
-    public void setAutoToggleToAbbreviation(final boolean autoToggleToAbbreviation) {
+    public void setAutoToggleToAbbreviation(boolean autoToggleToAbbreviation) {
         this.autoToggleToAbbreviation = autoToggleToAbbreviation;
     }
 
     public boolean isAutoToggleToAbbreviation() {
-        return autoToggleToAbbreviation;
+        return this.autoToggleToAbbreviation;
     }
 
-    public void setAutoToggleTimeoutMs(final long autoToggleTimeoutMs) {
+    public void setAutoToggleTimeoutMs(long autoToggleTimeoutMs) {
         this.autoToggleTimeoutMs = autoToggleTimeoutMs;
     }
 
     public long getAutoToggleTimeoutMs() {
-        return autoToggleTimeoutMs;
+        return this.autoToggleTimeoutMs;
     }
 
-    public void setAnimateChanges(final boolean animateChanges) {
+    public void setAnimateChanges(boolean animateChanges) {
         this.animateChanges = animateChanges;
     }
 
     public boolean isAnimateChanges() {
-        return animateChanges;
+        return this.animateChanges;
     }
 
     @Override
-    public void setOnClickListener(@Nullable final OnClickListener l) {
-        super.setOnClickListener(getWrappedClickListener(l));
+    public void setOnClickListener(@Nullable OnClickListener l) {
+        super.setOnClickListener(this.getWrappedClickListener(l));
     }
 
     private void format() {
-        post(() -> {
-            if (animateChanges) {
+        this.post(() -> {
+            if (this.animateChanges) {
                 try {
-                    TransitionManager.beginDelayedTransition((ViewGroup) getParent(), TRANSITION);
-                } catch (Exception e) {
-                    Log.e(TAG, "format: ", e);
+                    TransitionManager.beginDelayedTransition((ViewGroup) this.getParent(), FormattedNumberTextView.TRANSITION);
+                } catch (final Exception e) {
+                    Log.e(FormattedNumberTextView.TAG, "format: ", e);
                 }
             }
-            if (number == Long.MIN_VALUE) {
-                setText(null);
+            if (this.number == Long.MIN_VALUE) {
+                this.setText(null);
                 return;
             }
-            if (showAbbreviation) {
-                setText(NumberUtils.abbreviate(number, null));
+            if (this.showAbbreviation) {
+                this.setText(NumberUtils.abbreviate(this.number, null));
                 return;
             }
-            setText(String.valueOf(number));
-            if (autoToggleToAbbreviation) {
-                getHandler().postDelayed(() -> setShowAbbreviation(true), autoToggleTimeoutMs);
+            this.setText(String.valueOf(this.number));
+            if (this.autoToggleToAbbreviation) {
+                this.getHandler().postDelayed(() -> this.setShowAbbreviation(true), this.autoToggleTimeoutMs);
             }
         });
     }

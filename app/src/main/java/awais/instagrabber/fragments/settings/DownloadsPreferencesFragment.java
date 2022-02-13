@@ -38,66 +38,66 @@ public class DownloadsPreferencesFragment extends BasePreferencesFragment {
     private Preference dirPreference;
 
     @Override
-    void setupPreferenceScreen(final PreferenceScreen screen) {
-        final Context context = getContext();
+    void setupPreferenceScreen(PreferenceScreen screen) {
+        Context context = this.getContext();
         if (context == null) return;
-        screen.addPreference(getDownloadUserFolderPreference(context));
-        screen.addPreference(getSaveToCustomFolderPreference(context));
-        screen.addPreference(getPrependUsernameToFilenamePreference(context));
+        screen.addPreference(this.getDownloadUserFolderPreference(context));
+        screen.addPreference(this.getSaveToCustomFolderPreference(context));
+        screen.addPreference(this.getPrependUsernameToFilenamePreference(context));
     }
 
-    private Preference getDownloadUserFolderPreference(@NonNull final Context context) {
-        final SwitchPreferenceCompat preference = new SwitchPreferenceCompat(context);
+    private Preference getDownloadUserFolderPreference(@NonNull Context context) {
+        SwitchPreferenceCompat preference = new SwitchPreferenceCompat(context);
         preference.setKey(PreferenceKeys.DOWNLOAD_USER_FOLDER);
         preference.setTitle(R.string.download_user_folder);
         preference.setIconSpaceReserved(false);
         return preference;
     }
 
-    private Preference getSaveToCustomFolderPreference(@NonNull final Context context) {
-        dirPreference = new Preference(context);
-        dirPreference.setIconSpaceReserved(false);
-        dirPreference.setTitle(R.string.barinsta_folder);
-        final String currentValue = settingsHelper.getString(PreferenceKeys.PREF_BARINSTA_DIR_URI);
-        if (TextUtils.isEmpty(currentValue)) dirPreference.setSummary("");
+    private Preference getSaveToCustomFolderPreference(@NonNull Context context) {
+        this.dirPreference = new Preference(context);
+        this.dirPreference.setIconSpaceReserved(false);
+        this.dirPreference.setTitle(R.string.barinsta_folder);
+        String currentValue = settingsHelper.getString(PreferenceKeys.PREF_BARINSTA_DIR_URI);
+        if (TextUtils.isEmpty(currentValue)) this.dirPreference.setSummary("");
         else {
             String path;
             try {
                 path = URLDecoder.decode(currentValue, StandardCharsets.UTF_8.toString());
-            } catch (UnsupportedEncodingException e) {
+            } catch (final UnsupportedEncodingException e) {
                 path = currentValue;
             }
-            dirPreference.setSummary(path);
+            this.dirPreference.setSummary(path);
         }
-        dirPreference.setOnPreferenceClickListener(p -> {
-            openDirectoryChooser(DownloadUtils.getRootDirUri());
+        this.dirPreference.setOnPreferenceClickListener(p -> {
+            this.openDirectoryChooser(DownloadUtils.getRootDirUri());
             return true;
         });
-        return dirPreference;
+        return this.dirPreference;
     }
 
-    private void openDirectoryChooser(final Uri initialUri) {
-        final Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+    private void openDirectoryChooser(Uri initialUri) {
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && initialUri != null) {
             intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, initialUri);
         }
         try {
-            startActivityForResult(intent, SELECT_DIR_REQUEST_CODE);
-        } catch (ActivityNotFoundException e) {
-            Log.e(TAG, "openDirectoryChooser: ", e);
-            showErrorDialog(getString(R.string.no_directory_picker_activity));
-        } catch (Exception e) {
-            Log.e(TAG, "openDirectoryChooser: ", e);
+            this.startActivityForResult(intent, SELECT_DIR_REQUEST_CODE);
+        } catch (final ActivityNotFoundException e) {
+            Log.e(DownloadsPreferencesFragment.TAG, "openDirectoryChooser: ", e);
+            this.showErrorDialog(this.getString(R.string.no_directory_picker_activity));
+        } catch (final Exception e) {
+            Log.e(DownloadsPreferencesFragment.TAG, "openDirectoryChooser: ", e);
         }
     }
 
     @SuppressLint("StringFormatInvalid")
     @Override
-    public void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode != SELECT_DIR_REQUEST_CODE) return;
         if (resultCode != RESULT_OK) return;
         if (data == null || data.getData() == null) return;
-        final Context context = getContext();
+        Context context = this.getContext();
         if (context == null) return;
         AppExecutors.INSTANCE.getMainThread().execute(() -> {
             try {
@@ -105,28 +105,28 @@ public class DownloadsPreferencesFragment extends BasePreferencesFragment {
                 String path;
                 try {
                     path = URLDecoder.decode(data.getData().toString(), StandardCharsets.UTF_8.name());
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     path = data.getData().toString();
                 }
-                dirPreference.setSummary(path);
-            } catch (Exception e) {
+                this.dirPreference.setSummary(path);
+            } catch (final Exception e) {
                 // Should not come to this point.
                 // If it does, we have to show this error to the user so that they can report it.
-                try (final StringWriter sw = new StringWriter();
-                     final PrintWriter pw = new PrintWriter(sw)) {
+                try (StringWriter sw = new StringWriter();
+                     PrintWriter pw = new PrintWriter(sw)) {
                     e.printStackTrace(pw);
-                    showErrorDialog("com.android.externalstorage.documents".equals(data.getData().getAuthority())
-                                    ? "Please report this error to the developers:\n\n" + sw.toString()
-                                    : getString(R.string.dir_select_no_download_folder, data.getData().getAuthority()));
-                } catch (IOException ioException) {
-                    Log.e(TAG, "onActivityResult: ", ioException);
+                    this.showErrorDialog("com.android.externalstorage.documents".equals(data.getData().getAuthority())
+                                    ? "Please report this error to the developers:\n\n" + sw
+                                    : this.getString(R.string.dir_select_no_download_folder, data.getData().getAuthority()));
+                } catch (final IOException ioException) {
+                    Log.e(DownloadsPreferencesFragment.TAG, "onActivityResult: ", ioException);
                 }
             }
         }, 500);
     }
 
-    private void showErrorDialog(final String message) {
-        final ConfirmDialogFragment dialogFragment = ConfirmDialogFragment.newInstance(
+    private void showErrorDialog(String message) {
+        ConfirmDialogFragment dialogFragment = ConfirmDialogFragment.newInstance(
                 123,
                 R.string.error,
                 message,
@@ -134,11 +134,11 @@ public class DownloadsPreferencesFragment extends BasePreferencesFragment {
                 0,
                 0
         );
-        dialogFragment.show(getChildFragmentManager(), ConfirmDialogFragment.class.getSimpleName());
+        dialogFragment.show(this.getChildFragmentManager(), ConfirmDialogFragment.class.getSimpleName());
     }
 
-    private Preference getPrependUsernameToFilenamePreference(@NonNull final Context context) {
-        final SwitchPreferenceCompat preference = new SwitchPreferenceCompat(context);
+    private Preference getPrependUsernameToFilenamePreference(@NonNull Context context) {
+        SwitchPreferenceCompat preference = new SwitchPreferenceCompat(context);
         preference.setKey(PreferenceKeys.DOWNLOAD_PREPEND_USER_NAME);
         preference.setTitle(R.string.download_prepend_username);
         preference.setIconSpaceReserved(false);

@@ -21,39 +21,39 @@ public class HeaderItemDecoration extends RecyclerView.ItemDecoration {
 
     private final HeaderItemDecorationCallback callback;
 
-    private boolean layoutReversed = false;
+    private boolean layoutReversed;
     private Pair<Integer, RecyclerView.ViewHolder> currentHeader;
 
-    public HeaderItemDecoration(@NonNull RecyclerView parent,
-                                @NonNull HeaderItemDecorationCallback callback) {
+    public HeaderItemDecoration(@NonNull final RecyclerView parent,
+                                @NonNull final HeaderItemDecorationCallback callback) {
         this.callback = callback;
-        final RecyclerView.LayoutManager layoutManager = parent.getLayoutManager();
+        RecyclerView.LayoutManager layoutManager = parent.getLayoutManager();
         if (layoutManager instanceof LinearLayoutManager) {
-            layoutReversed = ((LinearLayoutManager) layoutManager).getReverseLayout();
+            this.layoutReversed = ((LinearLayoutManager) layoutManager).getReverseLayout();
         }
         //noinspection rawtypes
-        final RecyclerView.Adapter adapter = parent.getAdapter();
+        RecyclerView.Adapter adapter = parent.getAdapter();
         if (adapter == null) return;
         adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onChanged() {
                 // clear saved header as it can be outdated now
-                Log.d(TAG, "registerAdapterDataObserver");
-                currentHeader = null;
+                Log.d(HeaderItemDecoration.TAG, "registerAdapterDataObserver");
+                HeaderItemDecoration.this.currentHeader = null;
             }
         });
         parent.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
             // clear saved layout as it may need layout update
-            Log.d(TAG, "addOnLayoutChangeListener");
-            currentHeader = null;
+            Log.d(HeaderItemDecoration.TAG, "addOnLayoutChangeListener");
+            this.currentHeader = null;
         });
         parent.addOnItemTouchListener(new RecyclerView.SimpleOnItemTouchListener() {
             @Override
-            public boolean onInterceptTouchEvent(@NonNull final RecyclerView rv, @NonNull final MotionEvent e) {
-                if (e.getAction() == MotionEvent.ACTION_DOWN && currentHeader != null) {
-                    final RecyclerView.ViewHolder viewHolder = currentHeader.second;
+            public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
+                if (e.getAction() == MotionEvent.ACTION_DOWN && HeaderItemDecoration.this.currentHeader != null) {
+                    RecyclerView.ViewHolder viewHolder = HeaderItemDecoration.this.currentHeader.second;
                     if (viewHolder != null && viewHolder.itemView != null) {
-                        final int bottom = viewHolder.itemView.getBottom();
+                        int bottom = viewHolder.itemView.getBottom();
                         return e.getY() <= bottom;
                     }
                 }
@@ -63,40 +63,40 @@ public class HeaderItemDecoration extends RecyclerView.ItemDecoration {
     }
 
     @Override
-    public void onDrawOver(@NonNull final Canvas c, @NonNull final RecyclerView parent, @NonNull final RecyclerView.State state) {
+    public void onDrawOver(@NonNull Canvas c, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
         super.onDrawOver(c, parent, state);
-        final View topChild = parent.findChildViewUnder(
+        View topChild = parent.findChildViewUnder(
                 parent.getPaddingLeft(),
                 parent.getPaddingTop()
         );
         if (topChild == null) {
             return;
         }
-        final int topChildPosition = parent.getChildAdapterPosition(topChild);
+        int topChildPosition = parent.getChildAdapterPosition(topChild);
         if (topChildPosition == RecyclerView.NO_POSITION) {
             return;
         }
-        final View headerView = getHeaderViewForItem(topChildPosition, parent);
+        View headerView = this.getHeaderViewForItem(topChildPosition, parent);
         if (headerView == null) {
             return;
         }
-        final int contactPoint = headerView.getBottom() + parent.getPaddingTop();
-        final View childInContact = getChildInContact(parent, contactPoint);
-        if (childInContact != null && callback.isHeader(parent.getChildAdapterPosition(childInContact))) {
-            moveHeader(c, headerView, childInContact, parent.getPaddingTop());
+        int contactPoint = headerView.getBottom() + parent.getPaddingTop();
+        View childInContact = this.getChildInContact(parent, contactPoint);
+        if (childInContact != null && this.callback.isHeader(parent.getChildAdapterPosition(childInContact))) {
+            this.moveHeader(c, headerView, childInContact, parent.getPaddingTop());
             return;
         }
-        drawHeader(c, headerView, parent.getPaddingTop());
+        this.drawHeader(c, headerView, parent.getPaddingTop());
     }
 
-    private void drawHeader(@NonNull final Canvas c, @NonNull final View header, final int paddingTop) {
+    private void drawHeader(@NonNull Canvas c, @NonNull View header, int paddingTop) {
         c.save();
         c.translate(0f, paddingTop);
         header.draw(c);
         c.restore();
     }
 
-    private void moveHeader(@NonNull final Canvas c, @NonNull final View currentHeader, @NonNull final View nextHeader, final int paddingTop) {
+    private void moveHeader(@NonNull Canvas c, @NonNull View currentHeader, @NonNull View nextHeader, int paddingTop) {
         c.save();
         c.translate(0f, nextHeader.getTop() - currentHeader.getHeight() /*+ paddingTop*/);
         currentHeader.draw(c);
@@ -104,12 +104,12 @@ public class HeaderItemDecoration extends RecyclerView.ItemDecoration {
     }
 
     @Nullable
-    private View getChildInContact(@NonNull final RecyclerView parent, final int contactPoint) {
+    private View getChildInContact(@NonNull RecyclerView parent, int contactPoint) {
         View childInContact = null;
-        final int childCount = parent.getChildCount();
+        int childCount = parent.getChildCount();
         for (int i = 0; i < childCount; i++) {
-            final View child = parent.getChildAt(i);
-            final Rect mBounds = new Rect();
+            View child = parent.getChildAt(i);
+            Rect mBounds = new Rect();
             parent.getDecoratedBoundsWithMargins(child, mBounds);
             if (mBounds.bottom > contactPoint) {
                 if (mBounds.top <= contactPoint) {
@@ -123,42 +123,42 @@ public class HeaderItemDecoration extends RecyclerView.ItemDecoration {
     }
 
     @Nullable
-    private View getHeaderViewForItem(final int itemPosition, @NonNull final RecyclerView parent) {
+    private View getHeaderViewForItem(int itemPosition, @NonNull RecyclerView parent) {
         if (parent.getAdapter() == null) {
             return null;
         }
-        final int headerPosition = getHeaderPositionForItem(itemPosition, parent.getAdapter());
+        int headerPosition = this.getHeaderPositionForItem(itemPosition, parent.getAdapter());
         if (headerPosition == RecyclerView.NO_POSITION) return null;
-        final int headerType = parent.getAdapter().getItemViewType(headerPosition);
+        int headerType = parent.getAdapter().getItemViewType(headerPosition);
         // if match reuse viewHolder
-        if (currentHeader != null
-                && currentHeader.first == headerPosition
-                && currentHeader.second.getItemViewType() == headerType) {
-            return currentHeader.second.itemView;
+        if (this.currentHeader != null
+                && this.currentHeader.first == headerPosition
+                && this.currentHeader.second.getItemViewType() == headerType) {
+            return this.currentHeader.second.itemView;
         }
-        final RecyclerView.ViewHolder headerHolder = parent.getAdapter().createViewHolder(parent, headerType);
+        RecyclerView.ViewHolder headerHolder = parent.getAdapter().createViewHolder(parent, headerType);
         if (headerHolder != null) {
             //noinspection unchecked
             parent.getAdapter().onBindViewHolder(headerHolder, headerPosition);
-            fixLayoutSize(parent, headerHolder.itemView);
+            this.fixLayoutSize(parent, headerHolder.itemView);
             // save for next draw
-            currentHeader = new Pair<>(headerPosition, headerHolder);
+            this.currentHeader = new Pair<>(headerPosition, headerHolder);
             return headerHolder.itemView;
         }
         return null;
     }
 
     @SuppressWarnings("rawtypes")
-    private int getHeaderPositionForItem(final int itemPosition, final RecyclerView.Adapter adapter) {
+    private int getHeaderPositionForItem(int itemPosition, RecyclerView.Adapter adapter) {
         int headerPosition = RecyclerView.NO_POSITION;
         int currentPosition = itemPosition;
         do {
-            if (callback.isHeader(currentPosition)) {
+            if (this.callback.isHeader(currentPosition)) {
                 headerPosition = currentPosition;
                 break;
             }
-            currentPosition += layoutReversed ? 1 : -1;
-        } while (layoutReversed ? currentPosition < adapter.getItemCount() : currentPosition >= 0);
+            currentPosition += this.layoutReversed ? 1 : -1;
+        } while (this.layoutReversed ? currentPosition < adapter.getItemCount() : currentPosition >= 0);
         return headerPosition;
     }
 
@@ -167,19 +167,19 @@ public class HeaderItemDecoration extends RecyclerView.ItemDecoration {
      *
      * @param parent ViewGroup: RecyclerView in this case.
      */
-    private void fixLayoutSize(@NonNull final ViewGroup parent, @NonNull final View view) {
+    private void fixLayoutSize(@NonNull ViewGroup parent, @NonNull View view) {
 
         // Specs for parent (RecyclerView)
-        final int widthSpec = View.MeasureSpec.makeMeasureSpec(parent.getWidth(), View.MeasureSpec.EXACTLY);
-        final int heightSpec = View.MeasureSpec.makeMeasureSpec(parent.getHeight(), View.MeasureSpec.UNSPECIFIED);
+        int widthSpec = View.MeasureSpec.makeMeasureSpec(parent.getWidth(), View.MeasureSpec.EXACTLY);
+        int heightSpec = View.MeasureSpec.makeMeasureSpec(parent.getHeight(), View.MeasureSpec.UNSPECIFIED);
 
         // Specs for children (headers)
-        final int childWidthSpec = ViewGroup.getChildMeasureSpec(
+        int childWidthSpec = ViewGroup.getChildMeasureSpec(
                 widthSpec,
                 parent.getPaddingLeft() + parent.getPaddingRight(),
                 view.getLayoutParams().width
         );
-        final int childHeightSpec = ViewGroup.getChildMeasureSpec(
+        int childHeightSpec = ViewGroup.getChildMeasureSpec(
                 heightSpec,
                 parent.getPaddingTop() + parent.getPaddingBottom(),
                 view.getLayoutParams().height
@@ -190,7 +190,7 @@ public class HeaderItemDecoration extends RecyclerView.ItemDecoration {
     }
 
     public View getCurrentHeader() {
-        return currentHeader == null ? null : currentHeader.second.itemView;
+        return this.currentHeader == null ? null : this.currentHeader.second.itemView;
     }
 
     public interface HeaderItemDecorationCallback {

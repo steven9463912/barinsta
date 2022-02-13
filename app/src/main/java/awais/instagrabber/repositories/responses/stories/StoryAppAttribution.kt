@@ -12,7 +12,7 @@ data class StoryAppAttribution(
     val url: String?
         get() {
             val uri = Uri.parse(contentUrl)
-            return if (uri.getHost().equals("open.spotify.com")) contentUrl?.split("?")?.get(0)
+            return if (uri.host.equals("open.spotify.com")) contentUrl?.split("?")?.get(0)
                    else contentUrl
         }
 }

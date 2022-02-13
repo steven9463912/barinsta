@@ -22,16 +22,16 @@ public class LocationPostFetchService implements PostFetcher.PostFetchService {
     private boolean moreAvailable;
     private final boolean isLoggedIn;
 
-    public LocationPostFetchService(final Location locationModel, final boolean isLoggedIn) {
+    public LocationPostFetchService(Location locationModel, boolean isLoggedIn) {
         this.locationModel = locationModel;
         this.isLoggedIn = isLoggedIn;
-        locationRepository = isLoggedIn ? LocationRepository.Companion.getInstance() : null;
-        graphQLRepository = isLoggedIn ? null : GraphQLRepository.Companion.getInstance();
+        this.locationRepository = isLoggedIn ? LocationRepository.Companion.getInstance() : null;
+        this.graphQLRepository = isLoggedIn ? null : GraphQLRepository.Companion.getInstance();
     }
 
     @Override
-    public void fetch(final FetchListener<List<Media>> fetchListener) {
-        final Continuation<PostsFetchResponse> cb = CoroutineUtilsKt.getContinuation((result, t) -> {
+    public void fetch(FetchListener<List<Media>> fetchListener) {
+        Continuation<PostsFetchResponse> cb = CoroutineUtilsKt.getContinuation((result, t) -> {
             if (t != null) {
                 if (fetchListener != null) {
                     fetchListener.onFailure(t);
@@ -39,27 +39,27 @@ public class LocationPostFetchService implements PostFetcher.PostFetchService {
                 return;
             }
             if (result == null) return;
-            nextMaxId = result.getNextCursor();
-            moreAvailable = result.getHasNextPage();
+            this.nextMaxId = result.getNextCursor();
+            this.moreAvailable = result.getHasNextPage();
             if (fetchListener != null) {
                 fetchListener.onResult(result.getFeedModels());
             }
         }, Dispatchers.getIO());
-        if (isLoggedIn) locationRepository.fetchPosts(locationModel.getPk(), nextMaxId, cb);
-        else graphQLRepository.fetchLocationPosts(
-                locationModel.getPk(),
-                nextMaxId,
+        if (this.isLoggedIn) this.locationRepository.fetchPosts(this.locationModel.getPk(), this.nextMaxId, cb);
+        else this.graphQLRepository.fetchLocationPosts(
+                this.locationModel.getPk(),
+                this.nextMaxId,
                 cb
         );
     }
 
     @Override
     public void reset() {
-        nextMaxId = null;
+        this.nextMaxId = null;
     }
 
     @Override
     public boolean hasNextPage() {
-        return moreAvailable;
+        return this.moreAvailable;
     }
 }

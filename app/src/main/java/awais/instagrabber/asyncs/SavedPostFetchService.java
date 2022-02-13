@@ -24,18 +24,18 @@ public class SavedPostFetchService implements PostFetcher.PostFetchService {
     private final String collectionId;
     private boolean moreAvailable;
 
-    public SavedPostFetchService(final long profileId, final PostItemType type, final boolean isLoggedIn, final String collectionId) {
+    public SavedPostFetchService(long profileId, PostItemType type, boolean isLoggedIn, String collectionId) {
         this.profileId = profileId;
         this.type = type;
         this.isLoggedIn = isLoggedIn;
         this.collectionId = collectionId;
-        graphQLRepository = isLoggedIn ? null : GraphQLRepository.Companion.getInstance();
-        profileRepository = isLoggedIn ? ProfileRepository.Companion.getInstance() : null;
+        this.graphQLRepository = isLoggedIn ? null : GraphQLRepository.Companion.getInstance();
+        this.profileRepository = isLoggedIn ? ProfileRepository.Companion.getInstance() : null;
     }
 
     @Override
-    public void fetch(final FetchListener<List<Media>> fetchListener) {
-        final Continuation<PostsFetchResponse> callback = CoroutineUtilsKt.getContinuation((result, t) -> {
+    public void fetch(FetchListener<List<Media>> fetchListener) {
+        Continuation<PostsFetchResponse> callback = CoroutineUtilsKt.getContinuation((result, t) -> {
             if (t != null) {
                 if (fetchListener != null) {
                     fetchListener.onFailure(t);
@@ -43,39 +43,39 @@ public class SavedPostFetchService implements PostFetcher.PostFetchService {
                 return;
             }
             if (result == null) return;
-            nextMaxId = result.getNextCursor();
-            moreAvailable = result.getHasNextPage();
+            this.nextMaxId = result.getNextCursor();
+            this.moreAvailable = result.getHasNextPage();
             if (fetchListener != null) {
                 fetchListener.onResult(result.getFeedModels());
             }
         }, Dispatchers.getIO());
-        switch (type) {
+        switch (this.type) {
             case LIKED:
-                profileRepository.fetchLiked(nextMaxId, callback);
+                this.profileRepository.fetchLiked(this.nextMaxId, callback);
                 break;
             case TAGGED:
-                if (isLoggedIn) profileRepository.fetchTagged(profileId, nextMaxId, callback);
-                else graphQLRepository.fetchTaggedPosts(
-                        profileId,
+                if (this.isLoggedIn) this.profileRepository.fetchTagged(this.profileId, this.nextMaxId, callback);
+                else this.graphQLRepository.fetchTaggedPosts(
+                        this.profileId,
                         30,
-                        nextMaxId,
+                        this.nextMaxId,
                         callback
                 );
                 break;
             case COLLECTION:
             case SAVED:
-                profileRepository.fetchSaved(nextMaxId, collectionId, callback);
+                this.profileRepository.fetchSaved(this.nextMaxId, this.collectionId, callback);
                 break;
         }
     }
 
     @Override
     public void reset() {
-        nextMaxId = null;
+        this.nextMaxId = null;
     }
 
     @Override
     public boolean hasNextPage() {
-        return moreAvailable;
+        return this.moreAvailable;
     }
 }

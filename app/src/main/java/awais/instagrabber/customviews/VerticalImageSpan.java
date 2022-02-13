@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 
 public class VerticalImageSpan extends ImageSpan {
 
-    public VerticalImageSpan(final Drawable drawable) {
+    public VerticalImageSpan(Drawable drawable) {
         super(drawable);
     }
 
@@ -18,18 +18,18 @@ public class VerticalImageSpan extends ImageSpan {
      * update the text line height
      */
     @Override
-    public int getSize(@NonNull Paint paint,
-                       CharSequence text,
-                       int start,
-                       int end,
-                       Paint.FontMetricsInt fontMetricsInt) {
-        Drawable drawable = getDrawable();
-        Rect rect = drawable.getBounds();
+    public int getSize(@NonNull final Paint paint,
+                       final CharSequence text,
+                       final int start,
+                       final int end,
+                       final Paint.FontMetricsInt fontMetricsInt) {
+        final Drawable drawable = this.getDrawable();
+        final Rect rect = drawable.getBounds();
         if (fontMetricsInt != null) {
-            Paint.FontMetricsInt fmPaint = paint.getFontMetricsInt();
-            int fontHeight = fmPaint.descent - fmPaint.ascent;
-            int drHeight = rect.bottom - rect.top;
-            int centerY = fmPaint.ascent + fontHeight / 2;
+            final Paint.FontMetricsInt fmPaint = paint.getFontMetricsInt();
+            final int fontHeight = fmPaint.descent - fmPaint.ascent;
+            final int drHeight = rect.bottom - rect.top;
+            final int centerY = fmPaint.ascent + fontHeight / 2;
 
             fontMetricsInt.ascent = centerY - drHeight / 2;
             fontMetricsInt.top = fontMetricsInt.ascent;
@@ -53,21 +53,21 @@ public class VerticalImageSpan extends ImageSpan {
      * @param paint  the work paint
      */
     @Override
-    public void draw(Canvas canvas,
-                     CharSequence text,
-                     int start,
-                     int end,
-                     float x,
-                     int top,
-                     int y,
-                     int bottom,
-                     Paint paint) {
-        Drawable drawable = getDrawable();
+    public void draw(final Canvas canvas,
+                     final CharSequence text,
+                     final int start,
+                     final int end,
+                     final float x,
+                     final int top,
+                     final int y,
+                     final int bottom,
+                     final Paint paint) {
+        final Drawable drawable = this.getDrawable();
         canvas.save();
-        Paint.FontMetricsInt fmPaint = paint.getFontMetricsInt();
-        int fontHeight = fmPaint.descent - fmPaint.ascent;
-        int centerY = y + fmPaint.descent - fontHeight / 2;
-        int transY = centerY - (drawable.getBounds().bottom - drawable.getBounds().top) / 2;
+        final Paint.FontMetricsInt fmPaint = paint.getFontMetricsInt();
+        final int fontHeight = fmPaint.descent - fmPaint.ascent;
+        final int centerY = y + fmPaint.descent - fontHeight / 2;
+        final int transY = centerY - (drawable.getBounds().bottom - drawable.getBounds().top) / 2;
         canvas.translate(x, transY);
         drawable.draw(canvas);
         canvas.restore();

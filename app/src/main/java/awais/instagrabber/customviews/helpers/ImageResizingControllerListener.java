@@ -13,31 +13,31 @@ import awais.instagrabber.utils.NumberUtils;
 public class ImageResizingControllerListener<T extends DraweeView<GenericDraweeHierarchy>> extends BaseControllerListener<ImageInfo> {
     private static final String TAG = "ImageResizingController";
 
-    private T imageView;
+    private final T imageView;
     private final int requiredWidth;
 
-    public ImageResizingControllerListener(final T imageView, final int requiredWidth) {
+    public ImageResizingControllerListener(T imageView, int requiredWidth) {
         this.imageView = imageView;
         this.requiredWidth = requiredWidth;
     }
 
     @Override
-    public void onIntermediateImageSet(final String id, final ImageInfo imageInfo) {
+    public void onIntermediateImageSet(String id, ImageInfo imageInfo) {
         super.onIntermediateImageSet(id, imageInfo);
     }
 
-    public void onFinalImageSet(String id, ImageInfo imageInfo, Animatable animatable) {
+    public void onFinalImageSet(final String id, final ImageInfo imageInfo, final Animatable animatable) {
         if (imageInfo != null) {
             // updateViewSize(imageInfo);
-            final int height = imageInfo.getHeight();
-            final int width = imageInfo.getWidth();
+            int height = imageInfo.getHeight();
+            int width = imageInfo.getWidth();
             // final float aspectRatio = ((float) width) / height;
-            final ViewGroup.LayoutParams layoutParams = imageView.getLayoutParams();
+            ViewGroup.LayoutParams layoutParams = this.imageView.getLayoutParams();
             // final int deviceWidth = Utils.displayMetrics.widthPixels;
-            final int resultingHeight = NumberUtils.getResultingHeight(requiredWidth, height, width);
-            layoutParams.width = requiredWidth;
+            int resultingHeight = NumberUtils.getResultingHeight(this.requiredWidth, height, width);
+            layoutParams.width = this.requiredWidth;
             layoutParams.height = resultingHeight;
-            imageView.requestLayout();
+            this.imageView.requestLayout();
         }
     }
 }

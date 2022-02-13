@@ -22,55 +22,55 @@ public class ReactionEmojiTextView extends EmojiAppCompatTextView {
     private SpannableString ellipsisSpannable;
     private String distinctEmojis;
 
-    public ReactionEmojiTextView(final Context context) {
+    public ReactionEmojiTextView(Context context) {
         super(context);
-        init();
+        this.init();
     }
 
-    public ReactionEmojiTextView(final Context context, final AttributeSet attrs) {
+    public ReactionEmojiTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init();
+        this.init();
     }
 
-    public ReactionEmojiTextView(final Context context, final AttributeSet attrs, final int defStyleAttr) {
+    public ReactionEmojiTextView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init();
+        this.init();
     }
 
     private void init() {
-        ellipsisSpannable = new SpannableString(count);
+        this.ellipsisSpannable = new SpannableString(this.count);
     }
 
     @SuppressLint("SetTextI18n")
-    public void setEmojis(@NonNull final List<String> emojis) {
-        count = String.valueOf(emojis.size());
-        distinctEmojis = emojis.stream()
+    public void setEmojis(@NonNull List<String> emojis) {
+        this.count = String.valueOf(emojis.size());
+        this.distinctEmojis = emojis.stream()
                                .distinct()
                                .collect(Collectors.joining());
-        ellipsisSpannable = new SpannableString(count);
-        setText(distinctEmojis + (emojis.size() > 1 ? count : ""));
+        this.ellipsisSpannable = new SpannableString(this.count);
+        this.setText(this.distinctEmojis + (emojis.size() > 1 ? this.count : ""));
     }
 
     @Override
-    protected void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec) {
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        final CharSequence text = getText();
+        CharSequence text = this.getText();
         if (text == null) return;
-        final int measuredWidth = getMeasuredWidth();
-        float availableTextWidth = measuredWidth - getCompoundPaddingLeft() - getCompoundPaddingRight();
-        CharSequence ellipsizedText = TextUtils.ellipsize(text, getPaint(), availableTextWidth, getEllipsize());
+        int measuredWidth = this.getMeasuredWidth();
+        float availableTextWidth = measuredWidth - this.getCompoundPaddingLeft() - this.getCompoundPaddingRight();
+        CharSequence ellipsizedText = TextUtils.ellipsize(text, this.getPaint(), availableTextWidth, this.getEllipsize());
         if (!ellipsizedText.toString().equals(text.toString())) {
             // If the ellipsizedText is different than the original text, this means that it didn't fit and got indeed ellipsized.
             // Calculate the new availableTextWidth by taking into consideration the size of the custom ellipsis, too.
-            availableTextWidth = (availableTextWidth - getPaint().measureText(count));
-            ellipsizedText = TextUtils.ellipsize(text, getPaint(), availableTextWidth, getEllipsize());
-            final int defaultEllipsisStart = ellipsizedText.toString().indexOf(getDefaultEllipsis());
-            final int defaultEllipsisEnd = defaultEllipsisStart + 1;
-            spannableStringBuilder.clear();
+            availableTextWidth = (availableTextWidth - this.getPaint().measureText(this.count));
+            ellipsizedText = TextUtils.ellipsize(text, this.getPaint(), availableTextWidth, this.getEllipsize());
+            int defaultEllipsisStart = ellipsizedText.toString().indexOf(this.getDefaultEllipsis());
+            int defaultEllipsisEnd = defaultEllipsisStart + 1;
+            this.spannableStringBuilder.clear();
             // Update the text with the ellipsized version and replace the default ellipsis with the custom one.
-            final SpannableStringBuilder replace = spannableStringBuilder.append(ellipsizedText)
-                                                                         .replace(defaultEllipsisStart, defaultEllipsisEnd, ellipsisSpannable);
-            setText(replace);
+            SpannableStringBuilder replace = this.spannableStringBuilder.append(ellipsizedText)
+                                                                         .replace(defaultEllipsisStart, defaultEllipsisEnd, this.ellipsisSpannable);
+            this.setText(replace);
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         }
     }

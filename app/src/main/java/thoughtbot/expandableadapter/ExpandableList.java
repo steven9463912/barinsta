@@ -10,30 +10,30 @@ public final class ExpandableList {
     public final ArrayList<ExpandableGroup> groups;
     public final boolean[] expandedGroupIndexes;
 
-    public ExpandableList(@NonNull final ArrayList<ExpandableGroup> groups) {
+    public ExpandableList(@NonNull ArrayList<ExpandableGroup> groups) {
         this.groups = groups;
-        this.groupsSize = groups.size();
-        this.expandedGroupIndexes = new boolean[groupsSize];
+        groupsSize = groups.size();
+        expandedGroupIndexes = new boolean[this.groupsSize];
     }
 
-    public ExpandableList(@NonNull final ArrayList<ExpandableGroup> groups,
-                          @Nullable final boolean[] expandedGroupIndexes) {
+    public ExpandableList(@NonNull ArrayList<ExpandableGroup> groups,
+                          @Nullable boolean[] expandedGroupIndexes) {
         this.groups = groups;
-        this.groupsSize = groups.size();
+        groupsSize = groups.size();
         this.expandedGroupIndexes = expandedGroupIndexes;
     }
 
     public int getVisibleItemCount() {
         int count = 0;
-        for (int i = 0; i < groupsSize; i++) count = count + numberOfVisibleItemsInGroup(i);
+        for (int i = 0; i < this.groupsSize; i++) count = count + this.numberOfVisibleItemsInGroup(i);
         return count;
     }
 
     @NonNull
-    public ExpandableListPosition getUnflattenedPosition(final int flPos) {
+    public ExpandableListPosition getUnflattenedPosition(int flPos) {
         int adapted = flPos;
-        for (int i = 0; i < groupsSize; i++) {
-            final int groupItemCount = numberOfVisibleItemsInGroup(i);
+        for (int i = 0; i < this.groupsSize; i++) {
+            int groupItemCount = this.numberOfVisibleItemsInGroup(i);
             if (adapted == 0)
                 return ExpandableListPosition.obtain(ExpandableListPosition.GROUP, i, -1, flPos);
             else if (adapted < groupItemCount)
@@ -43,17 +43,17 @@ public final class ExpandableList {
         throw new RuntimeException("Unknown state");
     }
 
-    private int numberOfVisibleItemsInGroup(final int group) {
-        return expandedGroupIndexes[group] ? groups.get(group).getItemCount() + 1 : 1;
+    private int numberOfVisibleItemsInGroup(int group) {
+        return this.expandedGroupIndexes[group] ? this.groups.get(group).getItemCount() + 1 : 1;
     }
 
-    public int getFlattenedGroupIndex(@NonNull final ExpandableListPosition listPosition) {
+    public int getFlattenedGroupIndex(@NonNull ExpandableListPosition listPosition) {
         int runningTotal = 0;
-        for (int i = 0; i < listPosition.groupPos; i++) runningTotal = runningTotal + numberOfVisibleItemsInGroup(i);
+        for (int i = 0; i < listPosition.groupPos; i++) runningTotal = runningTotal + this.numberOfVisibleItemsInGroup(i);
         return runningTotal;
     }
 
-    public ExpandableGroup getExpandableGroup(@NonNull ExpandableListPosition listPosition) {
-        return groups.get(listPosition.groupPos);
+    public ExpandableGroup getExpandableGroup(@NonNull final ExpandableListPosition listPosition) {
+        return this.groups.get(listPosition.groupPos);
     }
 }

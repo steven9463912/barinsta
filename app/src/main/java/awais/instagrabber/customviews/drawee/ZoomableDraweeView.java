@@ -52,21 +52,21 @@ public class ZoomableDraweeView extends DraweeView<GenericDraweeHierarchy>
     private DraweeController mHugeImageController;
     private ZoomableController mZoomableController;
     private GestureDetector mTapGestureDetector;
-    private boolean mAllowTouchInterceptionWhileZoomed = false;
+    private boolean mAllowTouchInterceptionWhileZoomed;
 
-    private boolean mIsDialtoneEnabled = false;
+    private boolean mIsDialtoneEnabled;
     private boolean mZoomingEnabled = true;
 
     private final ControllerListener mControllerListener =
             new BaseControllerListener<Object>() {
                 @Override
                 public void onFinalImageSet(
-                        String id, @Nullable Object imageInfo, @Nullable Animatable animatable) {
+                        final String id, @Nullable final Object imageInfo, @Nullable final Animatable animatable) {
                     ZoomableDraweeView.this.onFinalImageSet();
                 }
 
                 @Override
-                public void onRelease(String id) {
+                public void onRelease(final String id) {
                     ZoomableDraweeView.this.onRelease();
                 }
             };
@@ -74,70 +74,70 @@ public class ZoomableDraweeView extends DraweeView<GenericDraweeHierarchy>
     private final ZoomableController.Listener mZoomableListener =
             new ZoomableController.Listener() {
                 @Override
-                public void onTransformBegin(Matrix transform) {
+                public void onTransformBegin(final Matrix transform) {
                     ZoomableDraweeView.this.onTransformBegin(transform);
                 }
 
                 @Override
-                public void onTransformChanged(Matrix transform) {
+                public void onTransformChanged(final Matrix transform) {
                     ZoomableDraweeView.this.onTransformChanged(transform);
                 }
 
                 @Override
-                public void onTransformEnd(Matrix transform) {
+                public void onTransformEnd(final Matrix transform) {
                     ZoomableDraweeView.this.onTransformEnd(transform);
                 }
 
                 @Override
-                public void onTranslationLimited(final float offsetLeft, final float offsetTop) {
+                public void onTranslationLimited(float offsetLeft, float offsetTop) {
                     ZoomableDraweeView.this.onTranslationLimited(offsetLeft, offsetTop);
                 }
             };
 
     private final GestureListenerWrapper mTapListenerWrapper = new GestureListenerWrapper();
 
-    public ZoomableDraweeView(Context context, GenericDraweeHierarchy hierarchy) {
+    public ZoomableDraweeView(final Context context, final GenericDraweeHierarchy hierarchy) {
         super(context);
-        setHierarchy(hierarchy);
-        init();
+        this.setHierarchy(hierarchy);
+        this.init();
     }
 
-    public ZoomableDraweeView(Context context) {
+    public ZoomableDraweeView(final Context context) {
         super(context);
-        inflateHierarchy(context, null);
-        init();
+        this.inflateHierarchy(context, null);
+        this.init();
     }
 
-    public ZoomableDraweeView(Context context, AttributeSet attrs) {
+    public ZoomableDraweeView(final Context context, final AttributeSet attrs) {
         super(context, attrs);
-        inflateHierarchy(context, attrs);
-        init();
+        this.inflateHierarchy(context, attrs);
+        this.init();
     }
 
-    public ZoomableDraweeView(Context context, AttributeSet attrs, int defStyle) {
+    public ZoomableDraweeView(final Context context, final AttributeSet attrs, final int defStyle) {
         super(context, attrs, defStyle);
-        inflateHierarchy(context, attrs);
-        init();
+        this.inflateHierarchy(context, attrs);
+        this.init();
     }
 
-    protected void inflateHierarchy(Context context, @Nullable AttributeSet attrs) {
-        Resources resources = context.getResources();
-        GenericDraweeHierarchyBuilder builder =
+    protected void inflateHierarchy(final Context context, @Nullable final AttributeSet attrs) {
+        final Resources resources = context.getResources();
+        final GenericDraweeHierarchyBuilder builder =
                 new GenericDraweeHierarchyBuilder(resources)
                         .setActualImageScaleType(ScalingUtils.ScaleType.FIT_CENTER);
         GenericDraweeHierarchyInflater.updateBuilder(builder, context, attrs);
-        setAspectRatio(builder.getDesiredAspectRatio());
-        setHierarchy(builder.build());
+        this.setAspectRatio(builder.getDesiredAspectRatio());
+        this.setHierarchy(builder.build());
     }
 
     private void init() {
-        mZoomableController = createZoomableController();
-        mZoomableController.setListener(mZoomableListener);
-        mTapGestureDetector = new GestureDetector(getContext(), mTapListenerWrapper);
+        this.mZoomableController = this.createZoomableController();
+        this.mZoomableController.setListener(this.mZoomableListener);
+        this.mTapGestureDetector = new GestureDetector(this.getContext(), this.mTapListenerWrapper);
     }
 
-    public void setIsDialtoneEnabled(boolean isDialtoneEnabled) {
-        mIsDialtoneEnabled = isDialtoneEnabled;
+    public void setIsDialtoneEnabled(final boolean isDialtoneEnabled) {
+        this.mIsDialtoneEnabled = isDialtoneEnabled;
     }
 
     /**
@@ -153,8 +153,8 @@ public class ZoomableDraweeView extends DraweeView<GenericDraweeHierarchy>
      * hierarchy scaling (e.g. FIT_CENTER), this underlying change will not affect this view nor the
      * zoomable transformation in any way.
      */
-    protected void getImageBounds(RectF outBounds) {
-        getHierarchy().getActualImageBounds(outBounds);
+    protected void getImageBounds(final RectF outBounds) {
+        this.getHierarchy().getActualImageBounds(outBounds);
     }
 
     /**
@@ -167,18 +167,18 @@ public class ZoomableDraweeView extends DraweeView<GenericDraweeHierarchy>
      *
      * <p>Unless overridden by a subclass, these bounds are same as the view bounds.
      */
-    protected void getLimitBounds(RectF outBounds) {
-        outBounds.set(0, 0, getWidth(), getHeight());
+    protected void getLimitBounds(final RectF outBounds) {
+        outBounds.set(0, 0, this.getWidth(), this.getHeight());
     }
 
     /**
      * Sets a custom zoomable controller, instead of using the default one.
      */
-    public void setZoomableController(ZoomableController zoomableController) {
+    public void setZoomableController(final ZoomableController zoomableController) {
         Preconditions.checkNotNull(zoomableController);
-        mZoomableController.setListener(null);
-        mZoomableController = zoomableController;
-        mZoomableController.setListener(mZoomableListener);
+        this.mZoomableController.setListener(null);
+        this.mZoomableController = zoomableController;
+        this.mZoomableController.setListener(this.mZoomableListener);
     }
 
     /**
@@ -188,7 +188,7 @@ public class ZoomableDraweeView extends DraweeView<GenericDraweeHierarchy>
      * coordinates for instance.
      */
     public ZoomableController getZoomableController() {
-        return mZoomableController;
+        return this.mZoomableController;
     }
 
     /**
@@ -198,7 +198,7 @@ public class ZoomableDraweeView extends DraweeView<GenericDraweeHierarchy>
      * @return true if touch events can be intercepted
      */
     public boolean allowsTouchInterceptionWhileZoomed() {
-        return mAllowTouchInterceptionWhileZoomed;
+        return this.mAllowTouchInterceptionWhileZoomed;
     }
 
     /**
@@ -207,36 +207,36 @@ public class ZoomableDraweeView extends DraweeView<GenericDraweeHierarchy>
      *
      * @param allowTouchInterceptionWhileZoomed true if the parent needs to intercept touches
      */
-    public void setAllowTouchInterceptionWhileZoomed(boolean allowTouchInterceptionWhileZoomed) {
-        mAllowTouchInterceptionWhileZoomed = allowTouchInterceptionWhileZoomed;
+    public void setAllowTouchInterceptionWhileZoomed(final boolean allowTouchInterceptionWhileZoomed) {
+        this.mAllowTouchInterceptionWhileZoomed = allowTouchInterceptionWhileZoomed;
     }
 
     /**
      * Sets the tap listener.
      */
-    public void setTapListener(GestureDetector.SimpleOnGestureListener tapListener) {
-        mTapListenerWrapper.setListener(tapListener);
+    public void setTapListener(final GestureDetector.SimpleOnGestureListener tapListener) {
+        this.mTapListenerWrapper.setListener(tapListener);
     }
 
     /**
      * Sets whether long-press tap detection is enabled. Unfortunately, long-press conflicts with
      * onDoubleTapEvent.
      */
-    public void setIsLongpressEnabled(boolean enabled) {
-        mTapGestureDetector.setIsLongpressEnabled(enabled);
+    public void setIsLongpressEnabled(final boolean enabled) {
+        this.mTapGestureDetector.setIsLongpressEnabled(enabled);
     }
 
-    public void setZoomingEnabled(boolean zoomingEnabled) {
-        mZoomingEnabled = zoomingEnabled;
-        mZoomableController.setEnabled(zoomingEnabled);
+    public void setZoomingEnabled(final boolean zoomingEnabled) {
+        this.mZoomingEnabled = zoomingEnabled;
+        this.mZoomableController.setEnabled(zoomingEnabled);
     }
 
     /**
      * Sets the image controller.
      */
     @Override
-    public void setController(@Nullable DraweeController controller) {
-        setControllers(controller, null);
+    public void setController(@Nullable final DraweeController controller) {
+        this.setControllers(controller, null);
     }
 
     /**
@@ -251,52 +251,52 @@ public class ZoomableDraweeView extends DraweeView<GenericDraweeHierarchy>
      * @param hugeImageController controller to be used after the client starts zooming-in
      */
     public void setControllers(
-            @Nullable DraweeController controller, @Nullable DraweeController hugeImageController) {
-        setControllersInternal(null, null);
-        mZoomableController.setEnabled(false);
-        setControllersInternal(controller, hugeImageController);
+            @Nullable final DraweeController controller, @Nullable final DraweeController hugeImageController) {
+        this.setControllersInternal(null, null);
+        this.mZoomableController.setEnabled(false);
+        this.setControllersInternal(controller, hugeImageController);
     }
 
     private void setControllersInternal(
-            @Nullable DraweeController controller, @Nullable DraweeController hugeImageController) {
-        removeControllerListener(getController());
-        addControllerListener(controller);
-        mHugeImageController = hugeImageController;
+            @Nullable final DraweeController controller, @Nullable final DraweeController hugeImageController) {
+        this.removeControllerListener(this.getController());
+        this.addControllerListener(controller);
+        this.mHugeImageController = hugeImageController;
         super.setController(controller);
     }
 
     private void maybeSetHugeImageController() {
-        if (mHugeImageController != null
-                && mZoomableController.getScaleFactor() > HUGE_IMAGE_SCALE_FACTOR_THRESHOLD) {
-            setControllersInternal(mHugeImageController, null);
+        if (this.mHugeImageController != null
+                && this.mZoomableController.getScaleFactor() > ZoomableDraweeView.HUGE_IMAGE_SCALE_FACTOR_THRESHOLD) {
+            this.setControllersInternal(this.mHugeImageController, null);
         }
     }
 
-    private void removeControllerListener(DraweeController controller) {
+    private void removeControllerListener(final DraweeController controller) {
         if (controller instanceof AbstractDraweeController) {
-            ((AbstractDraweeController) controller).removeControllerListener(mControllerListener);
+            ((AbstractDraweeController) controller).removeControllerListener(this.mControllerListener);
         }
     }
 
-    private void addControllerListener(DraweeController controller) {
+    private void addControllerListener(final DraweeController controller) {
         if (controller instanceof AbstractDraweeController) {
-            ((AbstractDraweeController) controller).addControllerListener(mControllerListener);
+            ((AbstractDraweeController) controller).addControllerListener(this.mControllerListener);
         }
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
-        int saveCount = canvas.save();
-        canvas.concat(mZoomableController.getTransform());
+    protected void onDraw(final Canvas canvas) {
+        final int saveCount = canvas.save();
+        canvas.concat(this.mZoomableController.getTransform());
         try {
             super.onDraw(canvas);
-        } catch (Exception e) {
-            DraweeController controller = getController();
+        } catch (final Exception e) {
+            final DraweeController controller = this.getController();
             if (controller != null && controller instanceof AbstractDraweeController) {
-                Object callerContext = ((AbstractDraweeController) controller).getCallerContext();
+                final Object callerContext = ((AbstractDraweeController) controller).getCallerContext();
                 if (callerContext != null) {
                     throw new RuntimeException(
-                            String.format("Exception in onDraw, callerContext=%s", callerContext.toString()), e);
+                            String.format("Exception in onDraw, callerContext=%s", callerContext), e);
                 }
             }
             throw e;
@@ -305,31 +305,31 @@ public class ZoomableDraweeView extends DraweeView<GenericDraweeHierarchy>
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        int a = event.getActionMasked();
-        FLog.v(getLogTag(), "onTouchEvent: %d, view %x, received", a, this.hashCode());
-        if (!mIsDialtoneEnabled && mTapGestureDetector.onTouchEvent(event)) {
-            FLog.v(getLogTag(),
+    public boolean onTouchEvent(final MotionEvent event) {
+        final int a = event.getActionMasked();
+        FLog.v(this.getLogTag(), "onTouchEvent: %d, view %x, received", a, hashCode());
+        if (!this.mIsDialtoneEnabled && this.mTapGestureDetector.onTouchEvent(event)) {
+            FLog.v(this.getLogTag(),
                    "onTouchEvent: %d, view %x, handled by tap gesture detector",
                    a,
-                   this.hashCode());
+                    hashCode());
             return true;
         }
 
-        if (!mIsDialtoneEnabled && mZoomableController.onTouchEvent(event)) {
+        if (!this.mIsDialtoneEnabled && this.mZoomableController.onTouchEvent(event)) {
             FLog.v(
-                    getLogTag(),
+                    this.getLogTag(),
                     "onTouchEvent: %d, view %x, handled by zoomable controller",
                     a,
-                    this.hashCode());
-            if (!mAllowTouchInterceptionWhileZoomed && !mZoomableController.isIdentity()) {
-                final ViewParent parent = getParent();
+                    hashCode());
+            if (!this.mAllowTouchInterceptionWhileZoomed && !this.mZoomableController.isIdentity()) {
+                ViewParent parent = this.getParent();
                 parent.requestDisallowInterceptTouchEvent(true);
             }
             return true;
         }
         if (super.onTouchEvent(event)) {
-            FLog.v(getLogTag(), "onTouchEvent: %d, view %x, handled by the super", a, this.hashCode());
+            FLog.v(this.getLogTag(), "onTouchEvent: %d, view %x, handled by the super", a, hashCode());
             return true;
         }
         // None of our components reported that they handled the touch event. Upon returning false
@@ -337,91 +337,91 @@ public class ZoomableDraweeView extends DraweeView<GenericDraweeHierarchy>
         // some components may have started a delayed action, such as a long-press timer, and since we
         // won't receive an ACTION_UP that would cancel that timer, a false event may be triggered.
         // To prevent that we explicitly send one last cancel event when returning false.
-        MotionEvent cancelEvent = MotionEvent.obtain(event);
+        final MotionEvent cancelEvent = MotionEvent.obtain(event);
         cancelEvent.setAction(MotionEvent.ACTION_CANCEL);
-        mTapGestureDetector.onTouchEvent(cancelEvent);
-        mZoomableController.onTouchEvent(cancelEvent);
+        this.mTapGestureDetector.onTouchEvent(cancelEvent);
+        this.mZoomableController.onTouchEvent(cancelEvent);
         cancelEvent.recycle();
         return false;
     }
 
     @Override
     public int computeHorizontalScrollRange() {
-        return mZoomableController.computeHorizontalScrollRange();
+        return this.mZoomableController.computeHorizontalScrollRange();
     }
 
     @Override
     public int computeHorizontalScrollOffset() {
-        return mZoomableController.computeHorizontalScrollOffset();
+        return this.mZoomableController.computeHorizontalScrollOffset();
     }
 
     @Override
     public int computeHorizontalScrollExtent() {
-        return mZoomableController.computeHorizontalScrollExtent();
+        return this.mZoomableController.computeHorizontalScrollExtent();
     }
 
     @Override
     public int computeVerticalScrollRange() {
-        return mZoomableController.computeVerticalScrollRange();
+        return this.mZoomableController.computeVerticalScrollRange();
     }
 
     @Override
     public int computeVerticalScrollOffset() {
-        return mZoomableController.computeVerticalScrollOffset();
+        return this.mZoomableController.computeVerticalScrollOffset();
     }
 
     @Override
     public int computeVerticalScrollExtent() {
-        return mZoomableController.computeVerticalScrollExtent();
+        return this.mZoomableController.computeVerticalScrollExtent();
     }
 
     @Override
-    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        FLog.v(getLogTag(), "onLayout: view %x", this.hashCode());
+    protected void onLayout(final boolean changed, final int left, final int top, final int right, final int bottom) {
+        FLog.v(this.getLogTag(), "onLayout: view %x", hashCode());
         super.onLayout(changed, left, top, right, bottom);
-        updateZoomableControllerBounds();
+        this.updateZoomableControllerBounds();
     }
 
     private void onFinalImageSet() {
-        FLog.v(getLogTag(), "onFinalImageSet: view %x", this.hashCode());
-        if (!mZoomableController.isEnabled() && mZoomingEnabled) {
-            mZoomableController.setEnabled(true);
-            updateZoomableControllerBounds();
+        FLog.v(this.getLogTag(), "onFinalImageSet: view %x", hashCode());
+        if (!this.mZoomableController.isEnabled() && this.mZoomingEnabled) {
+            this.mZoomableController.setEnabled(true);
+            this.updateZoomableControllerBounds();
         }
     }
 
     private void onRelease() {
-        FLog.v(getLogTag(), "onRelease: view %x", this.hashCode());
-        mZoomableController.setEnabled(false);
+        FLog.v(this.getLogTag(), "onRelease: view %x", hashCode());
+        this.mZoomableController.setEnabled(false);
     }
 
-    protected void onTransformBegin(final Matrix transform) {}
+    protected void onTransformBegin(Matrix transform) {}
 
-    protected void onTransformChanged(Matrix transform) {
-        FLog.v(getLogTag(), "onTransformChanged: view %x, transform: %s", this.hashCode(), transform);
-        maybeSetHugeImageController();
-        invalidate();
+    protected void onTransformChanged(final Matrix transform) {
+        FLog.v(this.getLogTag(), "onTransformChanged: view %x, transform: %s", hashCode(), transform);
+        this.maybeSetHugeImageController();
+        this.invalidate();
     }
 
-    protected void onTransformEnd(final Matrix transform) {}
+    protected void onTransformEnd(Matrix transform) {}
 
-    protected void onTranslationLimited(final float offsetLeft, final float offsetTop) {}
+    protected void onTranslationLimited(float offsetLeft, float offsetTop) {}
 
     protected void updateZoomableControllerBounds() {
-        getImageBounds(mImageBounds);
-        getLimitBounds(mViewBounds);
+        this.getImageBounds(this.mImageBounds);
+        this.getLimitBounds(this.mViewBounds);
         // Log.d(TAG.getSimpleName(), "updateZoomableControllerBounds: mImageBounds: " + mImageBounds);
-        mZoomableController.setImageBounds(mImageBounds);
-        mZoomableController.setViewBounds(mViewBounds);
-        FLog.v(getLogTag(),
+        this.mZoomableController.setImageBounds(this.mImageBounds);
+        this.mZoomableController.setViewBounds(this.mViewBounds);
+        FLog.v(this.getLogTag(),
                "updateZoomableControllerBounds: view %x, view bounds: %s, image bounds: %s",
-               this.hashCode(),
-               mViewBounds,
-               mImageBounds);
+                hashCode(),
+                this.mViewBounds,
+                this.mImageBounds);
     }
 
     protected Class<?> getLogTag() {
-        return TAG;
+        return ZoomableDraweeView.TAG;
     }
 
     protected ZoomableController createZoomableController() {

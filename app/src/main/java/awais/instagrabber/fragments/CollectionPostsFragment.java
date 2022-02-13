@@ -81,120 +81,120 @@ public class CollectionPostsFragment extends Fragment implements SwipeRefreshLay
     private final OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(false) {
         @Override
         public void handleOnBackPressed() {
-            binding.posts.endSelection();
+            CollectionPostsFragment.this.binding.posts.endSelection();
         }
     };
     private final PrimaryActionModeCallback multiSelectAction = new PrimaryActionModeCallback(
             R.menu.saved_collection_select_menu, new PrimaryActionModeCallback.CallbacksHelper() {
         @Override
-        public void onDestroy(final ActionMode mode) {
-            binding.posts.endSelection();
+        public void onDestroy(ActionMode mode) {
+            CollectionPostsFragment.this.binding.posts.endSelection();
         }
 
         @Override
-        public boolean onActionItemClicked(final ActionMode mode,
-                                           final MenuItem item) {
+        public boolean onActionItemClicked(ActionMode mode,
+                                           MenuItem item) {
             if (item.getItemId() == R.id.action_download) {
-                if (CollectionPostsFragment.this.selectedFeedModels == null) return false;
-                final Context context = getContext();
+                if (selectedFeedModels == null) return false;
+                Context context = CollectionPostsFragment.this.getContext();
                 if (context == null) return false;
-                DownloadUtils.download(context, ImmutableList.copyOf(CollectionPostsFragment.this.selectedFeedModels));
-                binding.posts.endSelection();
+                DownloadUtils.download(context, ImmutableList.copyOf(selectedFeedModels));
+                CollectionPostsFragment.this.binding.posts.endSelection();
             }
             return false;
         }
     });
     private final FeedAdapterV2.FeedItemCallback feedItemCallback = new FeedAdapterV2.FeedItemCallback() {
         @Override
-        public void onPostClick(final Media feedModel) {
-            openPostDialog(feedModel, -1);
+        public void onPostClick(Media feedModel) {
+            this.openPostDialog(feedModel, -1);
         }
 
         @Override
-        public void onSliderClick(final Media feedModel, final int position) {
-            openPostDialog(feedModel, position);
+        public void onSliderClick(Media feedModel, int position) {
+            this.openPostDialog(feedModel, position);
         }
 
         @Override
-        public void onCommentsClick(final Media feedModel) {
-            final User user = feedModel.getUser();
+        public void onCommentsClick(Media feedModel) {
+            User user = feedModel.getUser();
             if (user == null) return;
             try {
-                final NavDirections commentsAction = CollectionPostsFragmentDirections.actionToComments(
+                NavDirections commentsAction = CollectionPostsFragmentDirections.actionToComments(
                         feedModel.getCode(),
                         feedModel.getPk(),
                         user.getPk()
                 );
                 NavHostFragment.findNavController(CollectionPostsFragment.this).navigate(commentsAction);
-            } catch (Exception e) {
-                Log.e(TAG, "onCommentsClick: ", e);
+            } catch (final Exception e) {
+                Log.e(CollectionPostsFragment.TAG, "onCommentsClick: ", e);
             }
         }
 
         @Override
-        public void onDownloadClick(final Media feedModel, final int childPosition, final View popupLocation) {
-            final Context context = getContext();
+        public void onDownloadClick(Media feedModel, int childPosition, View popupLocation) {
+            Context context = CollectionPostsFragment.this.getContext();
             if (context == null) return;
             DownloadUtils.showDownloadDialog(context, feedModel, childPosition, popupLocation);
         }
 
         @Override
-        public void onHashtagClick(final String hashtag) {
+        public void onHashtagClick(String hashtag) {
             try {
-                final NavDirections action = CollectionPostsFragmentDirections.actionToHashtag(hashtag);
+                NavDirections action = CollectionPostsFragmentDirections.actionToHashtag(hashtag);
                 NavHostFragment.findNavController(CollectionPostsFragment.this).navigate(action);
-            } catch (Exception e) {
-                Log.e(TAG, "onHashtagClick: ", e);
+            } catch (final Exception e) {
+                Log.e(CollectionPostsFragment.TAG, "onHashtagClick: ", e);
             }
         }
 
         @Override
-        public void onLocationClick(final Media feedModel) {
-            final Location location = feedModel.getLocation();
+        public void onLocationClick(Media feedModel) {
+            Location location = feedModel.getLocation();
             if (location == null) return;
             try {
-                final NavDirections action = CollectionPostsFragmentDirections.actionToLocation(location.getPk());
+                NavDirections action = CollectionPostsFragmentDirections.actionToLocation(location.getPk());
                 NavHostFragment.findNavController(CollectionPostsFragment.this).navigate(action);
-            } catch (Exception e) {
-                Log.e(TAG, "onLocationClick: ", e);
+            } catch (final Exception e) {
+                Log.e(CollectionPostsFragment.TAG, "onLocationClick: ", e);
             }
         }
 
         @Override
-        public void onMentionClick(final String mention) {
-            navigateToProfile(mention.trim());
+        public void onMentionClick(String mention) {
+            CollectionPostsFragment.this.navigateToProfile(mention.trim());
         }
 
         @Override
-        public void onNameClick(final Media feedModel) {
-            final User user = feedModel.getUser();
+        public void onNameClick(Media feedModel) {
+            User user = feedModel.getUser();
             if (user == null) return;
-            navigateToProfile("@" + user.getUsername());
+            CollectionPostsFragment.this.navigateToProfile("@" + user.getUsername());
         }
 
         @Override
-        public void onProfilePicClick(final Media feedModel) {
-            final User user = feedModel.getUser();
+        public void onProfilePicClick(Media feedModel) {
+            User user = feedModel.getUser();
             if (user == null) return;
-            navigateToProfile("@" + user.getUsername());
+            CollectionPostsFragment.this.navigateToProfile("@" + user.getUsername());
         }
 
         @Override
-        public void onURLClick(final String url) {
-            Utils.openURL(getContext(), url);
+        public void onURLClick(String url) {
+            Utils.openURL(CollectionPostsFragment.this.getContext(), url);
         }
 
         @Override
-        public void onEmailClick(final String emailId) {
-            Utils.openEmailAddress(getContext(), emailId);
+        public void onEmailClick(String emailId) {
+            Utils.openEmailAddress(CollectionPostsFragment.this.getContext(), emailId);
         }
 
-        private void openPostDialog(final Media feedModel, final int position) {
+        private void openPostDialog(Media feedModel, int position) {
             try {
-                final NavDirections action = CollectionPostsFragmentDirections.actionToPost(feedModel, position);
+                NavDirections action = CollectionPostsFragmentDirections.actionToPost(feedModel, position);
                 NavHostFragment.findNavController(CollectionPostsFragment.this).navigate(action);
-            } catch (Exception e) {
-                Log.e(TAG, "openPostDialog: ", e);
+            } catch (final Exception e) {
+                Log.e(CollectionPostsFragment.TAG, "openPostDialog: ", e);
             }
         }
     };
@@ -202,148 +202,148 @@ public class CollectionPostsFragment extends Fragment implements SwipeRefreshLay
 
         @Override
         public void onSelectionStart() {
-            if (!onBackPressedCallback.isEnabled()) {
-                final OnBackPressedDispatcher onBackPressedDispatcher = fragmentActivity.getOnBackPressedDispatcher();
-                onBackPressedCallback.setEnabled(true);
-                onBackPressedDispatcher.addCallback(getViewLifecycleOwner(), onBackPressedCallback);
+            if (!CollectionPostsFragment.this.onBackPressedCallback.isEnabled()) {
+                OnBackPressedDispatcher onBackPressedDispatcher = CollectionPostsFragment.this.fragmentActivity.getOnBackPressedDispatcher();
+                CollectionPostsFragment.this.onBackPressedCallback.setEnabled(true);
+                onBackPressedDispatcher.addCallback(CollectionPostsFragment.this.getViewLifecycleOwner(), CollectionPostsFragment.this.onBackPressedCallback);
             }
-            if (actionMode == null) {
-                actionMode = fragmentActivity.startActionMode(multiSelectAction);
+            if (CollectionPostsFragment.this.actionMode == null) {
+                CollectionPostsFragment.this.actionMode = CollectionPostsFragment.this.fragmentActivity.startActionMode(CollectionPostsFragment.this.multiSelectAction);
             }
         }
 
         @Override
-        public void onSelectionChange(final Set<Media> selectedFeedModels) {
-            final String title = getString(R.string.number_selected, selectedFeedModels.size());
-            if (actionMode != null) {
-                actionMode.setTitle(title);
+        public void onSelectionChange(Set<Media> selectedFeedModels) {
+            String title = CollectionPostsFragment.this.getString(R.string.number_selected, selectedFeedModels.size());
+            if (CollectionPostsFragment.this.actionMode != null) {
+                CollectionPostsFragment.this.actionMode.setTitle(title);
             }
             CollectionPostsFragment.this.selectedFeedModels = selectedFeedModels;
         }
 
         @Override
         public void onSelectionEnd() {
-            if (onBackPressedCallback.isEnabled()) {
-                onBackPressedCallback.setEnabled(false);
-                onBackPressedCallback.remove();
+            if (CollectionPostsFragment.this.onBackPressedCallback.isEnabled()) {
+                CollectionPostsFragment.this.onBackPressedCallback.setEnabled(false);
+                CollectionPostsFragment.this.onBackPressedCallback.remove();
             }
-            if (actionMode != null) {
-                actionMode.finish();
-                actionMode = null;
+            if (CollectionPostsFragment.this.actionMode != null) {
+                CollectionPostsFragment.this.actionMode.finish();
+                CollectionPostsFragment.this.actionMode = null;
             }
         }
     };
 
     @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        fragmentActivity = (MainActivity) requireActivity();
-        final TransitionSet transitionSet = new TransitionSet();
-        final Context context = getContext();
+        this.fragmentActivity = (MainActivity) this.requireActivity();
+        TransitionSet transitionSet = new TransitionSet();
+        Context context = this.getContext();
         if (context == null) return;
         transitionSet.addTransition(new ChangeBounds())
                      .addTransition(TransitionInflater.from(context).inflateTransition(android.R.transition.move))
                      .setDuration(200);
-        setSharedElementEnterTransition(transitionSet);
-        postponeEnterTransition();
-        setHasOptionsMenu(true);
-        final String cookie = Utils.settingsHelper.getString(Constants.COOKIE);
-        final long userId = CookieUtils.getUserIdFromCookie(cookie);
-        final String deviceUuid = Utils.settingsHelper.getString(Constants.DEVICE_UUID);
-        final String csrfToken = CookieUtils.getCsrfTokenFromCookie(cookie);
-        collectionService = CollectionService.getInstance(deviceUuid, csrfToken, userId);
+        this.setSharedElementEnterTransition(transitionSet);
+        this.postponeEnterTransition();
+        this.setHasOptionsMenu(true);
+        String cookie = Utils.settingsHelper.getString(Constants.COOKIE);
+        long userId = CookieUtils.getUserIdFromCookie(cookie);
+        String deviceUuid = Utils.settingsHelper.getString(Constants.DEVICE_UUID);
+        String csrfToken = CookieUtils.getCsrfTokenFromCookie(cookie);
+        this.collectionService = CollectionService.getInstance(deviceUuid, csrfToken, userId);
     }
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull final LayoutInflater inflater,
-                             @Nullable final ViewGroup container,
-                             @Nullable final Bundle savedInstanceState) {
-        if (root != null) {
-            shouldRefresh = false;
-            return root;
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        if (this.root != null) {
+            this.shouldRefresh = false;
+            return this.root;
         }
-        binding = FragmentCollectionPostsBinding.inflate(inflater, container, false);
-        root = binding.getRoot();
-        return root;
+        this.binding = FragmentCollectionPostsBinding.inflate(inflater, container, false);
+        this.root = this.binding.getRoot();
+        return this.root;
     }
 
     @Override
-    public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
-        if (!shouldRefresh) return;
-        binding.swipeRefreshLayout.setOnRefreshListener(this);
-        init();
-        shouldRefresh = false;
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        if (!this.shouldRefresh) return;
+        this.binding.swipeRefreshLayout.setOnRefreshListener(this);
+        this.init();
+        this.shouldRefresh = false;
     }
 
     @Override
-    public void onCreateOptionsMenu(@NonNull final Menu menu, @NonNull final MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.collection_posts_menu, menu);
-        final MenuItem deleteMenu = menu.findItem(R.id.delete);
+        MenuItem deleteMenu = menu.findItem(R.id.delete);
         if (deleteMenu != null)
-            deleteMenu.setVisible(savedCollection.getCollectionType().equals("MEDIA"));
-        final MenuItem editMenu = menu.findItem(R.id.edit);
+            deleteMenu.setVisible(this.savedCollection.getCollectionType().equals("MEDIA"));
+        MenuItem editMenu = menu.findItem(R.id.edit);
         if (editMenu != null)
-            editMenu.setVisible(savedCollection.getCollectionType().equals("MEDIA"));
+            editMenu.setVisible(this.savedCollection.getCollectionType().equals("MEDIA"));
     }
 
     @Override
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.layout) {
-            showPostsLayoutPreferences();
+            this.showPostsLayoutPreferences();
             return true;
         } else if (item.getItemId() == R.id.delete) {
-            final Context context = getContext();
+            Context context = this.getContext();
             if (context == null) return false;
             new AlertDialog.Builder(context)
                     .setTitle(R.string.are_you_sure)
                     .setMessage(R.string.delete_collection_note)
-                    .setPositiveButton(R.string.confirm, (d, w) -> collectionService.deleteCollection(
-                            savedCollection.getCollectionId(),
+                    .setPositiveButton(R.string.confirm, (d, w) -> this.collectionService.deleteCollection(
+                            this.savedCollection.getCollectionId(),
                             new ServiceCallback<String>() {
                                 @Override
-                                public void onSuccess(final String result) {
+                                public void onSuccess(String result) {
                                     SavedCollectionsFragment.pleaseRefresh = true;
                                     NavHostFragment.findNavController(CollectionPostsFragment.this).navigateUp();
                                 }
 
                                 @Override
-                                public void onFailure(final Throwable t) {
-                                    Log.e(TAG, "Error deleting collection", t);
+                                public void onFailure(Throwable t) {
+                                    Log.e(CollectionPostsFragment.TAG, "Error deleting collection", t);
                                     try {
-                                        final Context context = getContext();
+                                        Context context = CollectionPostsFragment.this.getContext();
                                         if (context == null) return;
                                         Toast.makeText(context, t.getMessage(), Toast.LENGTH_SHORT).show();
-                                    } catch (final Throwable ignored) {}
+                                    } catch (Throwable ignored) {}
                                 }
                             }))
                     .setNegativeButton(R.string.cancel, null)
                     .show();
         } else if (item.getItemId() == R.id.edit) {
-            final Context context = getContext();
+            Context context = this.getContext();
             if (context == null) return false;
-            final EditText input = new EditText(context);
+            EditText input = new EditText(context);
             new AlertDialog.Builder(context)
                     .setTitle(R.string.edit_collection)
                     .setView(input)
-                    .setPositiveButton(R.string.confirm, (d, w) -> collectionService.editCollectionName(
-                            savedCollection.getCollectionId(),
+                    .setPositiveButton(R.string.confirm, (d, w) -> this.collectionService.editCollectionName(
+                            this.savedCollection.getCollectionId(),
                             input.getText().toString(),
                             new ServiceCallback<String>() {
                                 @Override
-                                public void onSuccess(final String result) {
-                                    binding.collapsingToolbarLayout.setTitle(input.getText().toString());
+                                public void onSuccess(String result) {
+                                    CollectionPostsFragment.this.binding.collapsingToolbarLayout.setTitle(input.getText().toString());
                                     SavedCollectionsFragment.pleaseRefresh = true;
                                 }
 
                                 @Override
-                                public void onFailure(final Throwable t) {
-                                    Log.e(TAG, "Error editing collection", t);
+                                public void onFailure(Throwable t) {
+                                    Log.e(CollectionPostsFragment.TAG, "Error editing collection", t);
                                     try {
-                                        final Context context = getContext();
+                                        Context context = CollectionPostsFragment.this.getContext();
                                         if (context == null) return;
                                         Toast.makeText(context, t.getMessage(), Toast.LENGTH_SHORT).show();
-                                    } catch (final Throwable ignored) {}
+                                    } catch (Throwable ignored) {}
                                 }
                             }))
                     .setNegativeButton(R.string.cancel, null)
@@ -355,126 +355,126 @@ public class CollectionPostsFragment extends Fragment implements SwipeRefreshLay
     @Override
     public void onResume() {
         super.onResume();
-        fragmentActivity.setToolbar(binding.toolbar, this);
+        this.fragmentActivity.setToolbar(this.binding.toolbar, this);
     }
 
     @Override
     public void onRefresh() {
-        binding.posts.refresh();
+        this.binding.posts.refresh();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        fragmentActivity.resetToolbar(this);
+        this.fragmentActivity.resetToolbar(this);
     }
 
     private void init() {
-        if (getArguments() == null) return;
-        final CollectionPostsFragmentArgs fragmentArgs = CollectionPostsFragmentArgs.fromBundle(getArguments());
-        savedCollection = fragmentArgs.getSavedCollection();
-        setupToolbar(fragmentArgs.getTitleColor(), fragmentArgs.getBackgroundColor());
-        setupPosts();
+        if (this.getArguments() == null) return;
+        CollectionPostsFragmentArgs fragmentArgs = CollectionPostsFragmentArgs.fromBundle(this.getArguments());
+        this.savedCollection = fragmentArgs.getSavedCollection();
+        this.setupToolbar(fragmentArgs.getTitleColor(), fragmentArgs.getBackgroundColor());
+        this.setupPosts();
     }
 
-    private void setupToolbar(final int titleColor, final int backgroundColor) {
-        if (savedCollection == null) {
+    private void setupToolbar(int titleColor, int backgroundColor) {
+        if (this.savedCollection == null) {
             return;
         }
-        binding.cover.setTransitionName("collection-" + savedCollection.getCollectionId());
-        fragmentActivity.setToolbar(binding.toolbar, this);
-        binding.collapsingToolbarLayout.setTitle(savedCollection.getCollectionName());
-        final int collapsedTitleTextColor = ColorUtils.setAlphaComponent(titleColor, 0xFF);
-        final int expandedTitleTextColor = ColorUtils.setAlphaComponent(titleColor, 0x99);
-        binding.collapsingToolbarLayout.setExpandedTitleColor(expandedTitleTextColor);
-        binding.collapsingToolbarLayout.setCollapsedTitleTextColor(collapsedTitleTextColor);
-        binding.collapsingToolbarLayout.setContentScrimColor(backgroundColor);
-        final Drawable navigationIcon = binding.toolbar.getNavigationIcon();
-        final Drawable overflowIcon = binding.toolbar.getOverflowIcon();
+        this.binding.cover.setTransitionName("collection-" + this.savedCollection.getCollectionId());
+        this.fragmentActivity.setToolbar(this.binding.toolbar, this);
+        this.binding.collapsingToolbarLayout.setTitle(this.savedCollection.getCollectionName());
+        int collapsedTitleTextColor = ColorUtils.setAlphaComponent(titleColor, 0xFF);
+        int expandedTitleTextColor = ColorUtils.setAlphaComponent(titleColor, 0x99);
+        this.binding.collapsingToolbarLayout.setExpandedTitleColor(expandedTitleTextColor);
+        this.binding.collapsingToolbarLayout.setCollapsedTitleTextColor(collapsedTitleTextColor);
+        this.binding.collapsingToolbarLayout.setContentScrimColor(backgroundColor);
+        Drawable navigationIcon = this.binding.toolbar.getNavigationIcon();
+        Drawable overflowIcon = this.binding.toolbar.getOverflowIcon();
         if (navigationIcon != null && overflowIcon != null) {
-            final Drawable navDrawable = navigationIcon.mutate();
-            final Drawable overflowDrawable = overflowIcon.mutate();
+            Drawable navDrawable = navigationIcon.mutate();
+            Drawable overflowDrawable = overflowIcon.mutate();
             navDrawable.setAlpha(0xFF);
             overflowDrawable.setAlpha(0xFF);
-            final ArgbEvaluator argbEvaluator = new ArgbEvaluator();
-            binding.appBarLayout.addOnOffsetChangedListener((appBarLayout, verticalOffset) -> {
-                final int totalScrollRange = appBarLayout.getTotalScrollRange();
-                final float current = totalScrollRange + verticalOffset;
-                final float fraction = current / totalScrollRange;
-                final int tempColor = (int) argbEvaluator.evaluate(fraction, collapsedTitleTextColor, expandedTitleTextColor);
+            ArgbEvaluator argbEvaluator = new ArgbEvaluator();
+            this.binding.appBarLayout.addOnOffsetChangedListener((appBarLayout, verticalOffset) -> {
+                int totalScrollRange = appBarLayout.getTotalScrollRange();
+                float current = totalScrollRange + verticalOffset;
+                float fraction = current / totalScrollRange;
+                int tempColor = (int) argbEvaluator.evaluate(fraction, collapsedTitleTextColor, expandedTitleTextColor);
                 navDrawable.setColorFilter(tempColor, PorterDuff.Mode.SRC_ATOP);
                 overflowDrawable.setColorFilter(tempColor, PorterDuff.Mode.SRC_ATOP);
 
             });
         }
-        final GradientDrawable gd = new GradientDrawable(
+        GradientDrawable gd = new GradientDrawable(
                 GradientDrawable.Orientation.TOP_BOTTOM,
                 new int[]{Color.TRANSPARENT, backgroundColor});
-        binding.background.setBackground(gd);
-        setupCover();
+        this.binding.background.setBackground(gd);
+        this.setupCover();
     }
 
     private void setupCover() {
-        final Media coverMedia = savedCollection.getCoverMediaList() == null
-                ? savedCollection.getCoverMedia()
-                : savedCollection.getCoverMediaList().get(0);
-        final String coverUrl = ResponseBodyUtils.getImageUrl(coverMedia);
-        final DraweeController controller = Fresco
+        Media coverMedia = this.savedCollection.getCoverMediaList() == null
+                ? this.savedCollection.getCoverMedia()
+                : this.savedCollection.getCoverMediaList().get(0);
+        String coverUrl = ResponseBodyUtils.getImageUrl(coverMedia);
+        DraweeController controller = Fresco
                 .newDraweeControllerBuilder()
-                .setOldController(binding.cover.getController())
+                .setOldController(this.binding.cover.getController())
                 .setUri(coverUrl)
                 .setControllerListener(new BaseControllerListener<ImageInfo>() {
 
                     @Override
-                    public void onFailure(final String id, final Throwable throwable) {
+                    public void onFailure(String id, Throwable throwable) {
                         super.onFailure(id, throwable);
-                        startPostponedEnterTransition();
+                        CollectionPostsFragment.this.startPostponedEnterTransition();
                     }
 
                     @Override
-                    public void onFinalImageSet(final String id,
-                                                @Nullable final ImageInfo imageInfo,
-                                                @Nullable final Animatable animatable) {
-                        startPostponedEnterTransition();
+                    public void onFinalImageSet(String id,
+                                                @Nullable ImageInfo imageInfo,
+                                                @Nullable Animatable animatable) {
+                        CollectionPostsFragment.this.startPostponedEnterTransition();
                     }
                 })
                 .build();
-        binding.cover.setController(controller);
+        this.binding.cover.setController(controller);
     }
 
     private void setupPosts() {
-        binding.posts.setViewModelStoreOwner(this)
+        this.binding.posts.setViewModelStoreOwner(this)
                      .setLifeCycleOwner(this)
-                     .setPostFetchService(new SavedPostFetchService(0, PostItemType.COLLECTION, true, savedCollection.getCollectionId()))
-                     .setLayoutPreferences(layoutPreferences)
-                     .addFetchStatusChangeListener(fetching -> updateSwipeRefreshState())
-                     .setFeedItemCallback(feedItemCallback)
-                     .setSelectionModeCallback(selectionModeCallback)
+                     .setPostFetchService(new SavedPostFetchService(0, PostItemType.COLLECTION, true, this.savedCollection.getCollectionId()))
+                     .setLayoutPreferences(this.layoutPreferences)
+                     .addFetchStatusChangeListener(fetching -> this.updateSwipeRefreshState())
+                     .setFeedItemCallback(this.feedItemCallback)
+                     .setSelectionModeCallback(this.selectionModeCallback)
                      .init();
     }
 
     private void updateSwipeRefreshState() {
         AppExecutors.INSTANCE.getMainThread().execute(() ->
-            binding.swipeRefreshLayout.setRefreshing(binding.posts.isFetching())
+                this.binding.swipeRefreshLayout.setRefreshing(this.binding.posts.isFetching())
         );
     }
 
-    private void navigateToProfile(final String username) {
+    private void navigateToProfile(String username) {
         try {
-            final NavDirections action = CollectionPostsFragmentDirections.actionToProfile().setUsername(username);
+            NavDirections action = CollectionPostsFragmentDirections.actionToProfile().setUsername(username);
             NavHostFragment.findNavController(this).navigate(action);
-        } catch (Exception e) {
-            Log.e(TAG, "navigateToProfile: ", e);
+        } catch (final Exception e) {
+            Log.e(CollectionPostsFragment.TAG, "navigateToProfile: ", e);
         }
     }
 
     private void showPostsLayoutPreferences() {
-        final PostsLayoutPreferencesDialogFragment fragment = new PostsLayoutPreferencesDialogFragment(
+        PostsLayoutPreferencesDialogFragment fragment = new PostsLayoutPreferencesDialogFragment(
                 Constants.PREF_SAVED_POSTS_LAYOUT,
                 preferences -> {
-                    layoutPreferences = preferences;
-                    new Handler().postDelayed(() -> binding.posts.setLayoutPreferences(preferences), 200);
+                    this.layoutPreferences = preferences;
+                    new Handler().postDelayed(() -> this.binding.posts.setLayoutPreferences(preferences), 200);
                 });
-        fragment.show(getChildFragmentManager(), "posts_layout_preferences");
+        fragment.show(this.getChildFragmentManager(), "posts_layout_preferences");
     }
 }

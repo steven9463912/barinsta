@@ -22,7 +22,7 @@ public class VideoPlayerCallbackAdapter implements VideoPlayerViewHelper.VideoPl
     public void onRelease() {}
 
     @Override
-    public void onFullScreenModeChanged(final boolean isFullScreen, final StyledPlayerView playerView) {}
+    public void onFullScreenModeChanged(boolean isFullScreen, StyledPlayerView playerView) {}
 
     @Override
     public boolean isInFullScreen() {

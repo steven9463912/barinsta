@@ -9,39 +9,39 @@ public class GiphyGifResults {
     private final List<GiphyGif> giphyGifs;
     private final List<GiphyGif> giphy;
 
-    public GiphyGifResults(final List<GiphyGif> giphyGifs, final List<GiphyGif> giphy) {
+    public GiphyGifResults(List<GiphyGif> giphyGifs, List<GiphyGif> giphy) {
         this.giphyGifs = giphyGifs;
         this.giphy = giphy;
     }
 
     public List<GiphyGif> getGiphyGifs() {
-        return giphyGifs;
+        return this.giphyGifs;
     }
 
     public List<GiphyGif> getGiphy() {
-        return giphy;
+        return this.giphy;
     }
 
     @Override
-    public boolean equals(final Object o) {
+    public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        final GiphyGifResults that = (GiphyGifResults) o;
-        return Objects.equals(giphyGifs, that.giphyGifs) &&
-                Objects.equals(giphy, that.giphy);
+        if (o == null || this.getClass() != o.getClass()) return false;
+        GiphyGifResults that = (GiphyGifResults) o;
+        return Objects.equals(this.giphyGifs, that.giphyGifs) &&
+                Objects.equals(this.giphy, that.giphy);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(giphyGifs, giphy);
+        return Objects.hash(this.giphyGifs, this.giphy);
     }
 
     @NonNull
     @Override
     public String toString() {
         return "GiphyGifResults{" +
-                "giphyGifs=" + giphyGifs +
-                ", giphy=" + giphy +
+                "giphyGifs=" + this.giphyGifs +
+                ", giphy=" + this.giphy +
                 '}';
     }
 }

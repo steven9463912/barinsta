@@ -44,7 +44,7 @@ import static awais.instagrabber.utils.Utils.settingsHelper;
 
 public class SavedCollectionsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     private static final String TAG = SavedCollectionsFragment.class.getSimpleName();
-    public static boolean pleaseRefresh = false;
+    public static boolean pleaseRefresh;
 
     private MainActivity fragmentActivity;
     private CoordinatorLayout root;
@@ -56,69 +56,69 @@ public class SavedCollectionsFragment extends Fragment implements SwipeRefreshLa
     private SavedCollectionsAdapter adapter;
 
     @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        fragmentActivity = (MainActivity) requireActivity();
-        profileRepository = ProfileRepository.Companion.getInstance();
-        savedCollectionsViewModel = new ViewModelProvider(fragmentActivity).get(SavedCollectionsViewModel.class);
-        setHasOptionsMenu(true);
+        this.fragmentActivity = (MainActivity) this.requireActivity();
+        this.profileRepository = ProfileRepository.Companion.getInstance();
+        this.savedCollectionsViewModel = new ViewModelProvider(this.fragmentActivity).get(SavedCollectionsViewModel.class);
+        this.setHasOptionsMenu(true);
     }
 
     @Override
-    public View onCreateView(@NonNull final LayoutInflater inflater,
-                             final ViewGroup container,
-                             final Bundle savedInstanceState) {
-        if (root != null) {
-            shouldRefresh = false;
-            return root;
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             ViewGroup container,
+                             Bundle savedInstanceState) {
+        if (this.root != null) {
+            this.shouldRefresh = false;
+            return this.root;
         }
-        binding = FragmentSavedCollectionsBinding.inflate(inflater, container, false);
-        root = binding.getRoot();
-        return root;
+        this.binding = FragmentSavedCollectionsBinding.inflate(inflater, container, false);
+        this.root = this.binding.getRoot();
+        return this.root;
     }
 
     @Override
-    public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
-        setupObservers();
-        if (!shouldRefresh) return;
-        binding.swipeRefreshLayout.setOnRefreshListener(this);
-        init();
-        shouldRefresh = false;
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        this.setupObservers();
+        if (!this.shouldRefresh) return;
+        this.binding.swipeRefreshLayout.setOnRefreshListener(this);
+        this.init();
+        this.shouldRefresh = false;
     }
 
     @Override
-    public void onCreateOptionsMenu(@NonNull final Menu menu, @NonNull final MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.saved_collection_menu, menu);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (pleaseRefresh) onRefresh();
+        if (SavedCollectionsFragment.pleaseRefresh) this.onRefresh();
     }
 
     @Override
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.add) {
-            final Context context = getContext();
-            final EditText input = new EditText(context);
+            Context context = this.getContext();
+            EditText input = new EditText(context);
             new AlertDialog.Builder(context)
                     .setTitle(R.string.saved_create_collection)
                     .setView(input)
                     .setPositiveButton(R.string.confirm, (d, w) -> {
-                        final String cookie = settingsHelper.getString(Constants.COOKIE);
-                        profileRepository.createCollection(
+                        String cookie = settingsHelper.getString(Constants.COOKIE);
+                        this.profileRepository.createCollection(
                                 input.getText().toString(),
                                 settingsHelper.getString(Constants.DEVICE_UUID),
                                 CookieUtils.getUserIdFromCookie(cookie),
                                 CookieUtils.getCsrfTokenFromCookie(cookie),
                                 CoroutineUtilsKt.getContinuation((result, t) -> {
                                     if (t != null) {
-                                        Log.e(TAG, "Error creating collection", t);
+                                        Log.e(SavedCollectionsFragment.TAG, "Error creating collection", t);
                                         Toast.makeText(context, t.getMessage(), Toast.LENGTH_SHORT).show();
                                         return;
                                     }
-                                    onRefresh();
+                                    this.onRefresh();
                                 })
                         );
                     })
@@ -130,64 +130,64 @@ public class SavedCollectionsFragment extends Fragment implements SwipeRefreshLa
     }
 
     private void init() {
-        setupTopics();
-        fetchTopics(null);
-        final SavedCollectionsFragmentArgs fragmentArgs = SavedCollectionsFragmentArgs.fromBundle(getArguments());
-        isSaving = fragmentArgs.getIsSaving();
+        this.setupTopics();
+        this.fetchTopics(null);
+        SavedCollectionsFragmentArgs fragmentArgs = SavedCollectionsFragmentArgs.fromBundle(this.getArguments());
+        this.isSaving = fragmentArgs.getIsSaving();
     }
 
     @Override
     public void onRefresh() {
-        fetchTopics(null);
+        this.fetchTopics(null);
     }
 
     public void setupTopics() {
-        binding.topicsRecyclerView.addItemDecoration(new GridSpacingItemDecoration(Utils.convertDpToPx(2)));
-        adapter = new SavedCollectionsAdapter((topicCluster, root, cover, title, titleColor, backgroundColor) -> {
-            final NavController navController = NavHostFragment.findNavController(this);
-            if (isSaving) {
-                setNavControllerResult(navController, topicCluster.getCollectionId());
+        this.binding.topicsRecyclerView.addItemDecoration(new GridSpacingItemDecoration(Utils.convertDpToPx(2)));
+        this.adapter = new SavedCollectionsAdapter((topicCluster, root, cover, title, titleColor, backgroundColor) -> {
+            NavController navController = NavHostFragment.findNavController(this);
+            if (this.isSaving) {
+                this.setNavControllerResult(navController, topicCluster.getCollectionId());
                 navController.navigateUp();
             } else {
                 try {
-                    final FragmentNavigator.Extras.Builder builder = new FragmentNavigator.Extras.Builder()
+                    FragmentNavigator.Extras.Builder builder = new FragmentNavigator.Extras.Builder()
                             .addSharedElement(cover, "collection-" + topicCluster.getCollectionId());
-                    final NavDirections action = SavedCollectionsFragmentDirections
+                    NavDirections action = SavedCollectionsFragmentDirections
                             .actionToCollectionPosts(topicCluster, titleColor, backgroundColor);
                     navController.navigate(action, builder.build());
-                } catch (Exception e) {
-                    Log.e(TAG, "setupTopics: ", e);
+                } catch (final Exception e) {
+                    Log.e(SavedCollectionsFragment.TAG, "setupTopics: ", e);
                 }
             }
         });
-        binding.topicsRecyclerView.setAdapter(adapter);
+        this.binding.topicsRecyclerView.setAdapter(this.adapter);
     }
 
     private void setupObservers() {
-        savedCollectionsViewModel.getList().observe(getViewLifecycleOwner(), list -> {
-            if (adapter == null) return;
-            adapter.submitList(list);
+        this.savedCollectionsViewModel.getList().observe(this.getViewLifecycleOwner(), list -> {
+            if (this.adapter == null) return;
+            this.adapter.submitList(list);
         });
     }
 
-    private void fetchTopics(final String maxId) {
-        binding.swipeRefreshLayout.setRefreshing(true);
-        profileRepository.fetchCollections(maxId, CoroutineUtilsKt.getContinuation((result, t) -> {
+    private void fetchTopics(String maxId) {
+        this.binding.swipeRefreshLayout.setRefreshing(true);
+        this.profileRepository.fetchCollections(maxId, CoroutineUtilsKt.getContinuation((result, t) -> {
             if (t != null) {
-                Log.e(TAG, "onFailure", t);
-                binding.swipeRefreshLayout.setRefreshing(false);
+                Log.e(SavedCollectionsFragment.TAG, "onFailure", t);
+                this.binding.swipeRefreshLayout.setRefreshing(false);
                 return;
             }
             if (result == null) return;
-            savedCollectionsViewModel.getList().postValue(result.getItems());
-            binding.swipeRefreshLayout.setRefreshing(false);
+            this.savedCollectionsViewModel.getList().postValue(result.getItems());
+            this.binding.swipeRefreshLayout.setRefreshing(false);
         }));
     }
 
-    private void setNavControllerResult(@NonNull final NavController navController, final String result) {
-        final NavBackStackEntry navBackStackEntry = navController.getPreviousBackStackEntry();
+    private void setNavControllerResult(@NonNull NavController navController, String result) {
+        NavBackStackEntry navBackStackEntry = navController.getPreviousBackStackEntry();
         if (navBackStackEntry == null) return;
-        final SavedStateHandle savedStateHandle = navBackStackEntry.getSavedStateHandle();
+        SavedStateHandle savedStateHandle = navBackStackEntry.getSavedStateHandle();
         savedStateHandle.set("collection", result);
     }
 }

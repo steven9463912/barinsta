@@ -46,10 +46,10 @@ public class SearchCategoryFragment extends Fragment {
     private String prevQuery;
 
     @NonNull
-    public static SearchCategoryFragment newInstance(@NonNull final FavoriteType type) {
-        final SearchCategoryFragment fragment = new SearchCategoryFragment();
-        final Bundle args = new Bundle();
-        args.putSerializable(ARG_TYPE, type);
+    public static SearchCategoryFragment newInstance(@NonNull FavoriteType type) {
+        SearchCategoryFragment fragment = new SearchCategoryFragment();
+        Bundle args = new Bundle();
+        args.putSerializable(SearchCategoryFragment.ARG_TYPE, type);
         fragment.setArguments(args);
         return fragment;
     }
@@ -57,116 +57,116 @@ public class SearchCategoryFragment extends Fragment {
     public SearchCategoryFragment() {}
 
     @Override
-    public void onAttach(@NonNull final Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        final Fragment parentFragment = getParentFragment();
+        Fragment parentFragment = this.getParentFragment();
         if (!(parentFragment instanceof OnSearchItemClickListener)) return;
-        onSearchItemClickListener = (OnSearchItemClickListener) parentFragment;
+        this.onSearchItemClickListener = (OnSearchItemClickListener) parentFragment;
     }
 
     @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final FragmentActivity fragmentActivity = getActivity();
+        FragmentActivity fragmentActivity = this.getActivity();
         if (fragmentActivity == null) return;
-        viewModel = new ViewModelProvider(fragmentActivity).get(SearchFragmentViewModel.class);
-        final Bundle args = getArguments();
+        this.viewModel = new ViewModelProvider(fragmentActivity).get(SearchFragmentViewModel.class);
+        Bundle args = this.getArguments();
         if (args == null) {
-            Log.e(TAG, "onCreate: arguments are null");
+            Log.e(SearchCategoryFragment.TAG, "onCreate: arguments are null");
             return;
         }
-        final Serializable typeSerializable = args.getSerializable(ARG_TYPE);
+        Serializable typeSerializable = args.getSerializable(SearchCategoryFragment.ARG_TYPE);
         if (!(typeSerializable instanceof FavoriteType)) {
-            Log.e(TAG, "onCreate: type not a FavoriteType");
+            Log.e(SearchCategoryFragment.TAG, "onCreate: type not a FavoriteType");
             return;
         }
-        type = (FavoriteType) typeSerializable;
+        this.type = (FavoriteType) typeSerializable;
     }
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable final Bundle savedInstanceState) {
-        final Context context = getContext();
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        Context context = this.getContext();
         if (context == null) return null;
-        skipViewRefresh = false;
-        if (swipeRefreshLayout != null) {
-            skipViewRefresh = true;
-            return swipeRefreshLayout;
+        this.skipViewRefresh = false;
+        if (this.swipeRefreshLayout != null) {
+            this.skipViewRefresh = true;
+            return this.swipeRefreshLayout;
         }
-        swipeRefreshLayout = new SwipeRefreshLayout(context);
-        swipeRefreshLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        list = new RecyclerView(context);
-        list.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        swipeRefreshLayout.addView(list);
-        return swipeRefreshLayout;
+        this.swipeRefreshLayout = new SwipeRefreshLayout(context);
+        this.swipeRefreshLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        this.list = new RecyclerView(context);
+        this.list.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        this.swipeRefreshLayout.addView(this.list);
+        return this.swipeRefreshLayout;
     }
 
     @Override
-    public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
-        if (skipViewRefresh) return;
-        setupList();
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        if (this.skipViewRefresh) return;
+        this.setupList();
     }
 
     @Override
     public void onResume() {
         super.onResume();
         // Log.d(TAG, "onResume: type: " + type);
-        setupObservers();
-        final String currentQuery = viewModel.getQuery().getValue();
-        if (prevQuery != null && currentQuery != null && !Objects.equals(prevQuery, currentQuery)) {
-            viewModel.search(currentQuery, type);
+        this.setupObservers();
+        String currentQuery = this.viewModel.getQuery().getValue();
+        if (this.prevQuery != null && currentQuery != null && !Objects.equals(this.prevQuery, currentQuery)) {
+            this.viewModel.search(currentQuery, this.type);
         }
-        prevQuery = null;
+        this.prevQuery = null;
     }
 
     private void setupList() {
-        if (list == null || swipeRefreshLayout == null) return;
-        final Context context = getContext();
+        if (this.list == null || this.swipeRefreshLayout == null) return;
+        Context context = this.getContext();
         if (context == null) return;
-        list.setLayoutManager(new LinearLayoutManager(context));
-        searchItemsAdapter = new SearchItemsAdapter(onSearchItemClickListener);
-        list.setAdapter(searchItemsAdapter);
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            String currentQuery = viewModel.getQuery().getValue();
+        this.list.setLayoutManager(new LinearLayoutManager(context));
+        this.searchItemsAdapter = new SearchItemsAdapter(this.onSearchItemClickListener);
+        this.list.setAdapter(this.searchItemsAdapter);
+        this.swipeRefreshLayout.setOnRefreshListener(() -> {
+            String currentQuery = this.viewModel.getQuery().getValue();
             if (currentQuery == null) currentQuery = "";
-            viewModel.search(currentQuery, type);
+            this.viewModel.search(currentQuery, this.type);
         });
     }
 
     private void setupObservers() {
-        viewModel.getQuery().observe(getViewLifecycleOwner(), q -> {
-            if (!isVisible() || Objects.equals(prevQuery, q)) return;
-            viewModel.search(q, type);
-            prevQuery = q;
+        this.viewModel.getQuery().observe(this.getViewLifecycleOwner(), q -> {
+            if (!this.isVisible() || Objects.equals(this.prevQuery, q)) return;
+            this.viewModel.search(q, this.type);
+            this.prevQuery = q;
         });
-        final LiveData<Resource<List<SearchItem>>> resultsLiveData = getResultsLiveData();
+        LiveData<Resource<List<SearchItem>>> resultsLiveData = this.getResultsLiveData();
         if (resultsLiveData != null) {
-            resultsLiveData.observe(getViewLifecycleOwner(), this::onResults);
+            resultsLiveData.observe(this.getViewLifecycleOwner(), this::onResults);
         }
     }
 
-    private void onResults(final Resource<List<SearchItem>> listResource) {
+    private void onResults(Resource<List<SearchItem>> listResource) {
         if (listResource == null) return;
         switch (listResource.status) {
             case SUCCESS:
-                if (searchItemsAdapter != null) {
-                    searchItemsAdapter.submitList(listResource.data);
+                if (this.searchItemsAdapter != null) {
+                    this.searchItemsAdapter.submitList(listResource.data);
                 }
-                if (swipeRefreshLayout != null) {
-                    swipeRefreshLayout.setRefreshing(false);
+                if (this.swipeRefreshLayout != null) {
+                    this.swipeRefreshLayout.setRefreshing(false);
                 }
                 break;
             case ERROR:
-                if (searchItemsAdapter != null) {
-                    searchItemsAdapter.submitList(Collections.emptyList());
+                if (this.searchItemsAdapter != null) {
+                    this.searchItemsAdapter.submitList(Collections.emptyList());
                 }
-                if (swipeRefreshLayout != null) {
-                    swipeRefreshLayout.setRefreshing(false);
+                if (this.swipeRefreshLayout != null) {
+                    this.swipeRefreshLayout.setRefreshing(false);
                 }
                 break;
             case LOADING:
-                if (swipeRefreshLayout != null) {
-                    swipeRefreshLayout.setRefreshing(true);
+                if (this.swipeRefreshLayout != null) {
+                    this.swipeRefreshLayout.setRefreshing(true);
                 }
                 break;
             default:
@@ -176,15 +176,15 @@ public class SearchCategoryFragment extends Fragment {
 
     @Nullable
     private LiveData<Resource<List<SearchItem>>> getResultsLiveData() {
-        switch (type) {
+        switch (this.type) {
             case TOP:
-                return viewModel.getTopResults();
+                return this.viewModel.getTopResults();
             case USER:
-                return viewModel.getUserResults();
+                return this.viewModel.getUserResults();
             case HASHTAG:
-                return viewModel.getHashtagResults();
+                return this.viewModel.getHashtagResults();
             case LOCATION:
-                return viewModel.getLocationResults();
+                return this.viewModel.getLocationResults();
         }
         return null;
     }

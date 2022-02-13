@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import awais.instagrabber.adapters.DirectUsersAdapter.OnDirectUserClickListener;
 import awais.instagrabber.adapters.viewholder.directmessages.DirectUserViewHolder;
 import awais.instagrabber.adapters.viewholder.directmessages.RecipientThreadViewHolder;
 import awais.instagrabber.databinding.LayoutDmUserItemBinding;
@@ -24,10 +23,10 @@ public final class UserSearchResultsAdapter extends ListAdapter<RankedRecipient,
     private static final int VIEW_TYPE_THREAD = 1;
     private static final DiffUtil.ItemCallback<RankedRecipient> DIFF_CALLBACK = new DiffUtil.ItemCallback<RankedRecipient>() {
         @Override
-        public boolean areItemsTheSame(@NonNull final RankedRecipient oldItem, @NonNull final RankedRecipient newItem) {
-            final boolean bothUsers = oldItem.getUser() != null && newItem.getUser() != null;
+        public boolean areItemsTheSame(@NonNull RankedRecipient oldItem, @NonNull RankedRecipient newItem) {
+            boolean bothUsers = oldItem.getUser() != null && newItem.getUser() != null;
             if (!bothUsers) return false;
-            final boolean bothThreads = oldItem.getThread() != null && newItem.getThread() != null;
+            boolean bothThreads = oldItem.getThread() != null && newItem.getThread() != null;
             if (!bothThreads) return false;
             if (bothUsers) {
                 return oldItem.getUser().getPk() == newItem.getUser().getPk();
@@ -36,8 +35,8 @@ public final class UserSearchResultsAdapter extends ListAdapter<RankedRecipient,
         }
 
         @Override
-        public boolean areContentsTheSame(@NonNull final RankedRecipient oldItem, @NonNull final RankedRecipient newItem) {
-            final boolean bothUsers = oldItem.getUser() != null && newItem.getUser() != null;
+        public boolean areContentsTheSame(@NonNull RankedRecipient oldItem, @NonNull RankedRecipient newItem) {
+            boolean bothUsers = oldItem.getUser() != null && newItem.getUser() != null;
             if (bothUsers) {
                 return Objects.equals(oldItem.getUser().getUsername(), newItem.getUser().getUsername()) &&
                         Objects.equals(oldItem.getUser().getFullName(), newItem.getUser().getFullName());
@@ -48,60 +47,60 @@ public final class UserSearchResultsAdapter extends ListAdapter<RankedRecipient,
 
     private final boolean showSelection;
     private final Set<RankedRecipient> selectedRecipients;
-    private final OnDirectUserClickListener onUserClickListener;
+    private final DirectUsersAdapter.OnDirectUserClickListener onUserClickListener;
     private final OnRecipientClickListener onRecipientClickListener;
 
-    public UserSearchResultsAdapter(final boolean showSelection,
-                                    final OnRecipientClickListener onRecipientClickListener) {
-        super(DIFF_CALLBACK);
+    public UserSearchResultsAdapter(boolean showSelection,
+                                    OnRecipientClickListener onRecipientClickListener) {
+        super(UserSearchResultsAdapter.DIFF_CALLBACK);
         this.showSelection = showSelection;
-        selectedRecipients = showSelection ? new HashSet<>() : null;
+        this.selectedRecipients = showSelection ? new HashSet<>() : null;
         this.onRecipientClickListener = onRecipientClickListener;
-        this.onUserClickListener = (position, user, selected) -> {
+        onUserClickListener = (position, user, selected) -> {
             if (onRecipientClickListener != null) {
                 onRecipientClickListener.onClick(position, RankedRecipient.of(user), selected);
             }
         };
-        setHasStableIds(true);
+        this.setHasStableIds(true);
     }
 
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull final ViewGroup parent, final int viewType) {
-        final LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        final LayoutDmUserItemBinding binding = LayoutDmUserItemBinding.inflate(layoutInflater, parent, false);
-        if (viewType == VIEW_TYPE_USER) {
-            return new DirectUserViewHolder(binding, onUserClickListener, null);
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+        LayoutDmUserItemBinding binding = LayoutDmUserItemBinding.inflate(layoutInflater, parent, false);
+        if (viewType == UserSearchResultsAdapter.VIEW_TYPE_USER) {
+            return new DirectUserViewHolder(binding, this.onUserClickListener, null);
         }
-        return new RecipientThreadViewHolder(binding, onRecipientClickListener);
+        return new RecipientThreadViewHolder(binding, this.onRecipientClickListener);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position) {
-        final RankedRecipient recipient = getItem(position);
-        final int itemViewType = getItemViewType(position);
-        if (itemViewType == VIEW_TYPE_USER) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        RankedRecipient recipient = this.getItem(position);
+        int itemViewType = this.getItemViewType(position);
+        if (itemViewType == UserSearchResultsAdapter.VIEW_TYPE_USER) {
             boolean isSelected = false;
-            if (selectedRecipients != null) {
-                isSelected = selectedRecipients.stream()
+            if (this.selectedRecipients != null) {
+                isSelected = this.selectedRecipients.stream()
                                                .anyMatch(rankedRecipient -> rankedRecipient.getUser() != null
                                                        && rankedRecipient.getUser().getPk() == recipient.getUser().getPk());
             }
-            ((DirectUserViewHolder) holder).bind(position, recipient.getUser(), false, false, showSelection, isSelected);
+            ((DirectUserViewHolder) holder).bind(position, recipient.getUser(), false, false, this.showSelection, isSelected);
             return;
         }
         boolean isSelected = false;
-        if (selectedRecipients != null) {
-            isSelected = selectedRecipients.stream()
+        if (this.selectedRecipients != null) {
+            isSelected = this.selectedRecipients.stream()
                                            .anyMatch(rankedRecipient -> rankedRecipient.getThread() != null
                                                    && Objects.equals(rankedRecipient.getThread().getThreadId(), recipient.getThread().getThreadId()));
         }
-        ((RecipientThreadViewHolder) holder).bind(position, recipient.getThread(), showSelection, isSelected);
+        ((RecipientThreadViewHolder) holder).bind(position, recipient.getThread(), this.showSelection, isSelected);
     }
 
     @Override
-    public long getItemId(final int position) {
-        final RankedRecipient recipient = getItem(position);
+    public long getItemId(int position) {
+        RankedRecipient recipient = this.getItem(position);
         if (recipient.getUser() != null) {
             return recipient.getUser().getPk();
         }
@@ -112,18 +111,18 @@ public final class UserSearchResultsAdapter extends ListAdapter<RankedRecipient,
     }
 
     @Override
-    public int getItemViewType(final int position) {
-        final RankedRecipient recipient = getItem(position);
-        return recipient.getUser() != null ? VIEW_TYPE_USER : VIEW_TYPE_THREAD;
+    public int getItemViewType(int position) {
+        RankedRecipient recipient = this.getItem(position);
+        return recipient.getUser() != null ? UserSearchResultsAdapter.VIEW_TYPE_USER : UserSearchResultsAdapter.VIEW_TYPE_THREAD;
     }
 
-    public void setSelectedRecipient(final RankedRecipient recipient, final boolean selected) {
-        if (selectedRecipients == null || recipient == null || (recipient.getUser() == null && recipient.getThread() == null)) return;
-        final boolean isUser = recipient.getUser() != null;
+    public void setSelectedRecipient(RankedRecipient recipient, boolean selected) {
+        if (this.selectedRecipients == null || recipient == null || (recipient.getUser() == null && recipient.getThread() == null)) return;
+        boolean isUser = recipient.getUser() != null;
         int position = -1;
-        final List<RankedRecipient> currentList = getCurrentList();
+        List<RankedRecipient> currentList = this.getCurrentList();
         for (int i = 0; i < currentList.size(); i++) {
-            final RankedRecipient temp = currentList.get(i);
+            RankedRecipient temp = currentList.get(i);
             if (isUser) {
                 if (temp.getUser() != null && temp.getUser().getPk() == recipient.getUser().getPk()) {
                     position = i;
@@ -138,14 +137,14 @@ public final class UserSearchResultsAdapter extends ListAdapter<RankedRecipient,
         }
         if (position < 0) return;
         if (selected) {
-            selectedRecipients.add(recipient);
+            this.selectedRecipients.add(recipient);
         } else {
-            selectedRecipients.remove(recipient);
+            this.selectedRecipients.remove(recipient);
         }
-        notifyItemChanged(position);
+        this.notifyItemChanged(position);
     }
 
     public interface OnRecipientClickListener {
-        void onClick(int position, RankedRecipient recipient, final boolean isSelected);
+        void onClick(int position, RankedRecipient recipient, boolean isSelected);
     }
 }

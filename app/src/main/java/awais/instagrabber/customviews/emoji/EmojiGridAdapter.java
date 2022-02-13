@@ -17,7 +17,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
-import awais.instagrabber.customviews.emoji.EmojiPicker.OnEmojiClickListener;
 import awais.instagrabber.databinding.ItemEmojiGridBinding;
 import awais.instagrabber.utils.AppExecutors;
 import awais.instagrabber.utils.emoji.EmojiParser;
@@ -27,25 +26,25 @@ public class EmojiGridAdapter extends RecyclerView.Adapter<EmojiGridAdapter.Emoj
 
     private static final DiffUtil.ItemCallback<Emoji> diffCallback = new DiffUtil.ItemCallback<Emoji>() {
         @Override
-        public boolean areItemsTheSame(@NonNull final Emoji oldItem, @NonNull final Emoji newItem) {
+        public boolean areItemsTheSame(@NonNull Emoji oldItem, @NonNull Emoji newItem) {
             return oldItem.equals(newItem);
         }
 
         @Override
-        public boolean areContentsTheSame(@NonNull final Emoji oldItem, @NonNull final Emoji newItem) {
+        public boolean areContentsTheSame(@NonNull Emoji oldItem, @NonNull Emoji newItem) {
             return oldItem.equals(newItem);
         }
     };
 
     private final AsyncListDiffer<Emoji> differ;
     private final OnEmojiLongClickListener onEmojiLongClickListener;
-    private final OnEmojiClickListener onEmojiClickListener;
+    private final EmojiPicker.OnEmojiClickListener onEmojiClickListener;
     private final EmojiVariantManager emojiVariantManager;
     private final AppExecutors appExecutors;
 
     public EmojiGridAdapter(@NonNull final EmojiParser emojiParser,
                             final EmojiCategoryType emojiCategoryType,
-                            final OnEmojiClickListener onEmojiClickListener,
+                            final EmojiPicker.OnEmojiClickListener onEmojiClickListener,
                             final OnEmojiLongClickListener onEmojiLongClickListener) {
         this.onEmojiClickListener = onEmojiClickListener;
         this.onEmojiLongClickListener = onEmojiLongClickListener;
@@ -112,31 +111,31 @@ public class EmojiGridAdapter extends RecyclerView.Adapter<EmojiGridAdapter.Emoj
     public static class EmojiViewHolder extends RecyclerView.ViewHolder {
         // private final AppExecutors appExecutors = AppExecutors.getInstance();
         private final ItemEmojiGridBinding binding;
-        private final OnEmojiClickListener onEmojiClickListener;
+        private final EmojiPicker.OnEmojiClickListener onEmojiClickListener;
         private final OnEmojiLongClickListener onEmojiLongClickListener;
 
         public EmojiViewHolder(@NonNull final ItemEmojiGridBinding binding,
-                               final OnEmojiClickListener onEmojiClickListener,
-                               final OnEmojiLongClickListener onEmojiLongClickListener) {
+                               final EmojiPicker.OnEmojiClickListener onEmojiClickListener,
+                               OnEmojiLongClickListener onEmojiLongClickListener) {
             super(binding.getRoot());
             this.binding = binding;
             this.onEmojiClickListener = onEmojiClickListener;
             this.onEmojiLongClickListener = onEmojiLongClickListener;
         }
 
-        public void bind(final int position, final Emoji emoji, final Emoji parent) {
-            binding.image.setImageDrawable(null);
-            binding.indicator.setVisibility(View.GONE);
-            itemView.setOnLongClickListener(null);
+        public void bind(int position, Emoji emoji, Emoji parent) {
+            this.binding.image.setImageDrawable(null);
+            this.binding.indicator.setVisibility(View.GONE);
+            this.itemView.setOnLongClickListener(null);
             // itemView.post(() -> {
-            binding.image.setImageDrawable(emoji.getDrawable());
-            final boolean hasVariants = !parent.getVariants().isEmpty();
-            binding.indicator.setVisibility(hasVariants ? View.VISIBLE : View.GONE);
-            if (onEmojiClickListener != null) {
-                itemView.setOnClickListener(v -> onEmojiClickListener.onClick(v, emoji));
+            this.binding.image.setImageDrawable(emoji.getDrawable());
+            boolean hasVariants = !parent.getVariants().isEmpty();
+            this.binding.indicator.setVisibility(hasVariants ? View.VISIBLE : View.GONE);
+            if (this.onEmojiClickListener != null) {
+                this.itemView.setOnClickListener(v -> this.onEmojiClickListener.onClick(v, emoji));
             }
-            if (hasVariants && onEmojiLongClickListener != null) {
-                itemView.setOnLongClickListener(v -> onEmojiLongClickListener.onLongClick(position, v, parent));
+            if (hasVariants && this.onEmojiLongClickListener != null) {
+                this.itemView.setOnLongClickListener(v -> this.onEmojiLongClickListener.onLongClick(position, v, parent));
             }
             // });
         }

@@ -34,7 +34,6 @@ import androidx.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import awais.instagrabber.customviews.emoji.EmojiPicker.OnEmojiClickListener;
 import awais.instagrabber.databinding.ItemEmojiGridBinding;
 import awais.instagrabber.databinding.LayoutEmojiVariantPopupBinding;
 import awais.instagrabber.utils.AppExecutors;
@@ -45,7 +44,7 @@ public final class EmojiVariantPopup {
     private static final int DO_NOT_UPDATE_FLAG = -1;
 
     private final View rootView;
-    private final OnEmojiClickListener listener;
+    private final EmojiPicker.OnEmojiClickListener listener;
 
     private PopupWindow popupWindow;
     private View rootImageView;
@@ -53,68 +52,68 @@ public final class EmojiVariantPopup {
     private final AppExecutors appExecutors;
 
     public EmojiVariantPopup(@NonNull final View rootView,
-                             final OnEmojiClickListener listener) {
+                             final EmojiPicker.OnEmojiClickListener listener) {
         this.rootView = rootView;
         this.listener = listener;
-        emojiVariantManager = EmojiVariantManager.getInstance();
-        appExecutors = AppExecutors.INSTANCE;
+        this.emojiVariantManager = EmojiVariantManager.getInstance();
+        this.appExecutors = AppExecutors.INSTANCE;
     }
 
-    public void show(@NonNull final View view, @NonNull final Emoji emoji) {
-        dismiss();
+    public void show(@NonNull View view, @NonNull Emoji emoji) {
+        this.dismiss();
 
-        rootImageView = view;
+        this.rootImageView = view;
 
-        final View content = initView(view.getContext(), emoji, view.getWidth());
+        View content = this.initView(view.getContext(), emoji, view.getWidth());
 
-        popupWindow = new PopupWindow(content, WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
-        popupWindow.setFocusable(true);
-        popupWindow.setOutsideTouchable(true);
-        popupWindow.setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
-        popupWindow.setBackgroundDrawable(new BitmapDrawable(view.getContext().getResources(), (Bitmap) null));
+        this.popupWindow = new PopupWindow(content, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        this.popupWindow.setFocusable(true);
+        this.popupWindow.setOutsideTouchable(true);
+        this.popupWindow.setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
+        this.popupWindow.setBackgroundDrawable(new BitmapDrawable(view.getContext().getResources(), (Bitmap) null));
 
         content.measure(makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED), makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
 
-        final Point location = locationOnScreen(view);
-        final Point desiredLocation = new Point(
+        Point location = this.locationOnScreen(view);
+        Point desiredLocation = new Point(
                 location.x - content.getMeasuredWidth() / 2 + view.getWidth() / 2,
                 location.y - content.getMeasuredHeight()
         );
 
-        popupWindow.showAtLocation(rootView, Gravity.NO_GRAVITY, desiredLocation.x, desiredLocation.y);
-        rootImageView.getParent().requestDisallowInterceptTouchEvent(true);
-        fixPopupLocation(popupWindow, desiredLocation);
+        this.popupWindow.showAtLocation(this.rootView, Gravity.NO_GRAVITY, desiredLocation.x, desiredLocation.y);
+        this.rootImageView.getParent().requestDisallowInterceptTouchEvent(true);
+        this.fixPopupLocation(this.popupWindow, desiredLocation);
     }
 
     public void dismiss() {
-        rootImageView = null;
+        this.rootImageView = null;
 
-        if (popupWindow != null) {
-            popupWindow.dismiss();
-            popupWindow = null;
+        if (this.popupWindow != null) {
+            this.popupWindow.dismiss();
+            this.popupWindow = null;
         }
     }
 
-    private View initView(@NonNull final Context context, @NonNull final Emoji emoji, final int width) {
-        final LayoutInflater layoutInflater = LayoutInflater.from(context);
-        final LayoutEmojiVariantPopupBinding binding = LayoutEmojiVariantPopupBinding.inflate(layoutInflater, null, false);
-        final List<Emoji> variants = new ArrayList<>(emoji.getVariants());
+    private View initView(@NonNull Context context, @NonNull Emoji emoji, int width) {
+        LayoutInflater layoutInflater = LayoutInflater.from(context);
+        LayoutEmojiVariantPopupBinding binding = LayoutEmojiVariantPopupBinding.inflate(layoutInflater, null, false);
+        List<Emoji> variants = new ArrayList<>(emoji.getVariants());
         // Add parent at start of list
         // variants.add(0, emoji);
-        for (final Emoji variant : variants) {
-            final ItemEmojiGridBinding itemBinding = ItemEmojiGridBinding.inflate(layoutInflater, binding.container, false);
-            final ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) itemBinding.image.getLayoutParams();
+        for (Emoji variant : variants) {
+            ItemEmojiGridBinding itemBinding = ItemEmojiGridBinding.inflate(layoutInflater, binding.container, false);
+            ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) itemBinding.image.getLayoutParams();
             // Use the same size for Emojis as in the picker.
             layoutParams.width = width;
             itemBinding.image.setImageDrawable(variant.getDrawable());
             itemBinding.image.setOnClickListener(view -> {
-                if (listener != null) {
-                    if (!variant.getUnicode().equals(emojiVariantManager.getVariant(emoji.getUnicode()))) {
-                        emojiVariantManager.setVariant(emoji.getUnicode(), variant.getUnicode());
+                if (this.listener != null) {
+                    if (!variant.getUnicode().equals(this.emojiVariantManager.getVariant(emoji.getUnicode()))) {
+                        this.emojiVariantManager.setVariant(emoji.getUnicode(), variant.getUnicode());
                     }
-                    listener.onClick(view, variant);
+                    this.listener.onClick(view, variant);
                 }
-                dismiss();
+                this.dismiss();
             });
             binding.container.addView(itemBinding.getRoot());
         }
@@ -122,22 +121,22 @@ public final class EmojiVariantPopup {
     }
 
     @NonNull
-    private Point locationOnScreen(@NonNull final View view) {
-        final int[] location = new int[2];
+    private Point locationOnScreen(@NonNull View view) {
+        int[] location = new int[2];
         view.getLocationOnScreen(location);
         return new Point(location[0], location[1]);
     }
 
-    private void fixPopupLocation(@NonNull final PopupWindow popupWindow, @NonNull final Point desiredLocation) {
+    private void fixPopupLocation(@NonNull PopupWindow popupWindow, @NonNull Point desiredLocation) {
         popupWindow.getContentView().post(() -> {
-            final Point actualLocation = locationOnScreen(popupWindow.getContentView());
+            Point actualLocation = this.locationOnScreen(popupWindow.getContentView());
 
             if (!(actualLocation.x == desiredLocation.x && actualLocation.y == desiredLocation.y)) {
-                final int differenceX = actualLocation.x - desiredLocation.x;
-                final int differenceY = actualLocation.y - desiredLocation.y;
+                int differenceX = actualLocation.x - desiredLocation.x;
+                int differenceY = actualLocation.y - desiredLocation.y;
 
-                final int fixedOffsetX;
-                final int fixedOffsetY;
+                int fixedOffsetX;
+                int fixedOffsetY;
 
                 if (actualLocation.x > desiredLocation.x) {
                     fixedOffsetX = desiredLocation.x - differenceX;
@@ -151,7 +150,7 @@ public final class EmojiVariantPopup {
                     fixedOffsetY = desiredLocation.y + differenceY;
                 }
 
-                popupWindow.update(fixedOffsetX, fixedOffsetY, DO_NOT_UPDATE_FLAG, DO_NOT_UPDATE_FLAG);
+                popupWindow.update(fixedOffsetX, fixedOffsetY, EmojiVariantPopup.DO_NOT_UPDATE_FLAG, EmojiVariantPopup.DO_NOT_UPDATE_FLAG);
             }
         });
     }

@@ -13,7 +13,7 @@ import awais.instagrabber.fragments.imageedit.filters.filters.FilterFactory;
 public final class FiltersHelper {
 
     public static List<Filter<?>> getTuneFilters() {
-        return TUNING_FILTERS.stream()
+        return FiltersHelper.TUNING_FILTERS.stream()
                              .map(FilterFactory::getInstance)
                              .filter(Objects::nonNull)
                              .collect(Collectors.toList());
@@ -22,7 +22,7 @@ public final class FiltersHelper {
     public static List<Filter<?>> getFilters() {
         // Return all non-tuning filters
         return Arrays.stream(FilterType.values())
-                     .filter(filterType -> !TUNING_FILTERS.contains(filterType))
+                     .filter(filterType -> !FiltersHelper.TUNING_FILTERS.contains(filterType))
                      .map(FilterFactory::getInstance)
                      .filter(Objects::nonNull)
                      .collect(Collectors.toList());

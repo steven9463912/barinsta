@@ -14,7 +14,7 @@ import androidx.annotation.Nullable;
 public class DirectItemFrameLayout extends FrameLayout {
     private static final String TAG = DirectItemFrameLayout.class.getSimpleName();
 
-    private boolean longPressed = false;
+    private boolean longPressed;
     private float touchX;
     private float touchY;
     private OnItemLongClickListener onItemLongClickListener;
@@ -22,66 +22,66 @@ public class DirectItemFrameLayout extends FrameLayout {
 
     private final Handler handler = new Handler();
     private final Runnable longPressRunnable = () -> {
-        longPressed = true;
-        if (onItemLongClickListener != null) {
-            onItemLongClickListener.onLongClick(this, touchX, touchY);
+        this.longPressed = true;
+        if (this.onItemLongClickListener != null) {
+            this.onItemLongClickListener.onLongClick(this, this.touchX, this.touchY);
         }
     };
     private final Runnable longPressStartRunnable = () -> {
-        if (onItemLongClickListener != null) {
-            onItemLongClickListener.onLongClickStart(this);
+        if (this.onItemLongClickListener != null) {
+            this.onItemLongClickListener.onLongClickStart(this);
         }
     };
 
-    public DirectItemFrameLayout(@NonNull final Context context) {
+    public DirectItemFrameLayout(@NonNull Context context) {
         super(context);
-        init(context);
+        this.init(context);
     }
 
-    public DirectItemFrameLayout(@NonNull final Context context, @Nullable final AttributeSet attrs) {
+    public DirectItemFrameLayout(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        init(context);
+        this.init(context);
     }
 
-    public DirectItemFrameLayout(@NonNull final Context context, @Nullable final AttributeSet attrs, final int defStyleAttr) {
+    public DirectItemFrameLayout(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init(context);
+        this.init(context);
     }
 
-    public DirectItemFrameLayout(@NonNull final Context context, @Nullable final AttributeSet attrs, final int defStyleAttr, final int defStyleRes) {
+    public DirectItemFrameLayout(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        init(context);
+        this.init(context);
     }
 
-    private void init(final Context context) {
-        ViewConfiguration vc = ViewConfiguration.get(context);
-        touchSlop = vc.getScaledTouchSlop();
+    private void init(Context context) {
+        final ViewConfiguration vc = ViewConfiguration.get(context);
+        this.touchSlop = vc.getScaledTouchSlop();
     }
 
-    public void setOnItemLongClickListener(final OnItemLongClickListener onItemLongClickListener) {
+    public void setOnItemLongClickListener(OnItemLongClickListener onItemLongClickListener) {
         this.onItemLongClickListener = onItemLongClickListener;
     }
 
     @Override
-    public boolean dispatchTouchEvent(final MotionEvent ev) {
+    public boolean dispatchTouchEvent(MotionEvent ev) {
         switch (ev.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                longPressed = false;
-                handler.postDelayed(longPressRunnable, ViewConfiguration.getLongPressTimeout());
-                handler.postDelayed(longPressStartRunnable, ViewConfiguration.getTapTimeout());
-                touchX = ev.getRawX();
-                touchY = ev.getRawY();
+                this.longPressed = false;
+                this.handler.postDelayed(this.longPressRunnable, ViewConfiguration.getLongPressTimeout());
+                this.handler.postDelayed(this.longPressStartRunnable, ViewConfiguration.getTapTimeout());
+                this.touchX = ev.getRawX();
+                this.touchY = ev.getRawY();
                 break;
             case MotionEvent.ACTION_MOVE:
-                final float diffX = touchX - ev.getRawX();
-                final float diffXAbs = Math.abs(diffX);
-                final boolean isMoved = diffXAbs > touchSlop || Math.abs(touchY - ev.getRawY()) > touchSlop;
-                if (longPressed || isMoved) {
-                    handler.removeCallbacks(longPressStartRunnable);
-                    handler.removeCallbacks(longPressRunnable);
-                    if (!longPressed) {
-                        if (onItemLongClickListener != null) {
-                            onItemLongClickListener.onLongClickCancel(this);
+                float diffX = this.touchX - ev.getRawX();
+                float diffXAbs = Math.abs(diffX);
+                boolean isMoved = diffXAbs > this.touchSlop || Math.abs(this.touchY - ev.getRawY()) > this.touchSlop;
+                if (this.longPressed || isMoved) {
+                    this.handler.removeCallbacks(this.longPressStartRunnable);
+                    this.handler.removeCallbacks(this.longPressRunnable);
+                    if (!this.longPressed) {
+                        if (this.onItemLongClickListener != null) {
+                            this.onItemLongClickListener.onLongClickCancel(this);
                         }
                     }
                     // if (diffXAbs > touchSlop) {
@@ -90,24 +90,24 @@ public class DirectItemFrameLayout extends FrameLayout {
                 }
                 break;
             case MotionEvent.ACTION_UP:
-                handler.removeCallbacks(longPressRunnable);
-                handler.removeCallbacks(longPressStartRunnable);
-                if (longPressed) {
+                this.handler.removeCallbacks(this.longPressRunnable);
+                this.handler.removeCallbacks(this.longPressStartRunnable);
+                if (this.longPressed) {
                     return true;
                 }
-                if (onItemLongClickListener != null) {
-                    onItemLongClickListener.onLongClickCancel(this);
+                if (this.onItemLongClickListener != null) {
+                    this.onItemLongClickListener.onLongClickCancel(this);
                 }
                 break;
             case MotionEvent.ACTION_CANCEL:
-                handler.removeCallbacks(longPressRunnable);
-                handler.removeCallbacks(longPressStartRunnable);
-                if (onItemLongClickListener != null) {
-                    onItemLongClickListener.onLongClickCancel(this);
+                this.handler.removeCallbacks(this.longPressRunnable);
+                this.handler.removeCallbacks(this.longPressStartRunnable);
+                if (this.onItemLongClickListener != null) {
+                    this.onItemLongClickListener.onLongClickCancel(this);
                 }
                 break;
         }
-        final boolean dispatchTouchEvent = super.dispatchTouchEvent(ev);
+        boolean dispatchTouchEvent = super.dispatchTouchEvent(ev);
         if (ev.getAction() == MotionEvent.ACTION_DOWN && !dispatchTouchEvent) {
             return true;
         }

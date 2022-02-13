@@ -30,65 +30,65 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 public class EmojiPicker extends LinearLayout {
     // private static final String TAG = EmojiPicker.class.getSimpleName();
 
-    public EmojiPicker(final Context context) {
+    public EmojiPicker(Context context) {
         super(context);
-        setup();
+        this.setup();
     }
 
-    public EmojiPicker(final Context context, @Nullable final AttributeSet attrs) {
+    public EmojiPicker(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        setup();
+        this.setup();
     }
 
-    public EmojiPicker(final Context context, @Nullable final AttributeSet attrs, final int defStyleAttr) {
+    public EmojiPicker(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        setup();
+        this.setup();
     }
 
     private void setup() {
-        setLayoutParams(new ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT));
-        setOrientation(VERTICAL);
+        this.setLayoutParams(new ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT));
+        this.setOrientation(LinearLayout.VERTICAL);
     }
 
-    public void init(@NonNull final View rootView,
-                     final OnEmojiClickListener onEmojiClickListener,
-                     final OnBackspaceClickListener onBackspaceClickListener) {
-        final TabLayout tabLayout = new TabLayout(getContext());
-        final LayoutParams tabLayoutLayoutParam = new LayoutParams(MATCH_PARENT, WRAP_CONTENT);
+    public void init(@NonNull View rootView,
+                     OnEmojiClickListener onEmojiClickListener,
+                     OnBackspaceClickListener onBackspaceClickListener) {
+        TabLayout tabLayout = new TabLayout(this.getContext());
+        LayoutParams tabLayoutLayoutParam = new LayoutParams(MATCH_PARENT, WRAP_CONTENT);
         tabLayout.setLayoutParams(tabLayoutLayoutParam);
         tabLayout.setSelectedTabIndicatorGravity(TabLayout.INDICATOR_GRAVITY_TOP);
         // tabLayout.setSelectedTabIndicatorColor(Utils.getThemeAccentColor(getContext()));
-        tabLayout.setSelectedTabIndicatorColor(getResources().getColor(R.color.blue_500));
+        tabLayout.setSelectedTabIndicatorColor(this.getResources().getColor(R.color.blue_500));
 
-        final ViewPager2 viewPager2 = new ViewPager2(getContext());
-        final LayoutParams viewPagerLayoutParam = new LayoutParams(MATCH_PARENT, 0);
+        ViewPager2 viewPager2 = new ViewPager2(this.getContext());
+        LayoutParams viewPagerLayoutParam = new LayoutParams(MATCH_PARENT, 0);
         viewPagerLayoutParam.weight = 1;
         viewPager2.setLayoutParams(viewPagerLayoutParam);
         viewPager2.setAdapter(new EmojiPickerPageAdapter(rootView, onEmojiClickListener));
         viewPager2.setOffscreenPageLimit(1);
 
-        final Context context = getContext();
+        Context context = this.getContext();
         if (context == null) return;
-        final EmojiParser emojiParser = EmojiParser.Companion.getInstance(context);
-        final List<EmojiCategory> categories = emojiParser.getEmojiCategories();
+        EmojiParser emojiParser = EmojiParser.Companion.getInstance(context);
+        List<EmojiCategory> categories = emojiParser.getEmojiCategories();
 
         new TabLayoutMediator(tabLayout, viewPager2, (tab, position) -> {
             tab.view.setPadding(0, 0, 0, 0);
-            final EmojiCategory emojiCategory = categories.get(position);
+            EmojiCategory emojiCategory = categories.get(position);
             if (emojiCategory == null) return;
-            final Collection<Emoji> emojis = emojiCategory.getEmojis().values();
+            Collection<Emoji> emojis = emojiCategory.getEmojis().values();
             if (emojis.isEmpty()) return;
-            final AppCompatImageView imageView = getImageView();
+            AppCompatImageView imageView = this.getImageView();
             imageView.setImageResource(emojiCategory.getDrawableRes());
             tab.setCustomView(imageView);
         }).attach();
 
-        final TabLayout.Tab tab = tabLayout.newTab();
+        TabLayout.Tab tab = tabLayout.newTab();
         tab.view.setPadding(0, 0, 0, 0);
-        final AppCompatImageView imageView = getImageView();
+        AppCompatImageView imageView = this.getImageView();
         imageView.setImageResource(R.drawable.ic_round_backspace_24);
-        final TypedValue outValue = new TypedValue();
-        getContext().getTheme().resolveAttribute(android.R.attr.selectableItemBackground, outValue, true);
+        TypedValue outValue = new TypedValue();
+        this.getContext().getTheme().resolveAttribute(android.R.attr.selectableItemBackground, outValue, true);
         imageView.setBackgroundResource(outValue.resourceId);
         imageView.setOnClickListener(v -> {
             if (onBackspaceClickListener == null) return;
@@ -97,16 +97,16 @@ public class EmojiPicker extends LinearLayout {
         tab.setCustomView(imageView);
         tab.view.setEnabled(false);
         tabLayout.addTab(tab);
-        addView(viewPager2);
-        addView(tabLayout);
+        this.addView(viewPager2);
+        this.addView(tabLayout);
     }
 
     @NonNull
     private AppCompatImageView getImageView() {
-        final AppCompatImageView imageView = new AppCompatImageView(getContext());
+        AppCompatImageView imageView = new AppCompatImageView(this.getContext());
         imageView.setLayoutParams(new ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT));
         imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-        ImageViewCompat.setImageTintList(imageView, ContextCompat.getColorStateList(getContext(), R.color.emoji_picker_tab_color));
+        ImageViewCompat.setImageTintList(imageView, ContextCompat.getColorStateList(this.getContext(), R.color.emoji_picker_tab_color));
         return imageView;
     }
 

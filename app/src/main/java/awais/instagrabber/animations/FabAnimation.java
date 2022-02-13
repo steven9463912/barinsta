@@ -7,11 +7,11 @@ import android.view.View;
 // https://medium.com/better-programming/animated-fab-button-with-more-options-2dcf7118fff6
 
 public class FabAnimation {
-    public static boolean rotateFab(final View v, boolean rotate) {
+    public static boolean rotateFab(View v, final boolean rotate) {
         v.animate().setDuration(200)
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
-                    public void onAnimationEnd(Animator animation) {
+                    public void onAnimationEnd(final Animator animation) {
                         super.onAnimationEnd(animation);
                     }
                 })
@@ -19,7 +19,7 @@ public class FabAnimation {
         return rotate;
     }
 
-    public static void showIn(final View v) {
+    public static void showIn(View v) {
         v.setVisibility(View.VISIBLE);
         v.setAlpha(0f);
         v.setTranslationY(v.getHeight());
@@ -28,7 +28,7 @@ public class FabAnimation {
                 .translationY(0)
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
-                    public void onAnimationEnd(Animator animation) {
+                    public void onAnimationEnd(final Animator animation) {
                         super.onAnimationEnd(animation);
                     }
                 })
@@ -36,7 +36,7 @@ public class FabAnimation {
                 .start();
     }
 
-    public static void showOut(final View v) {
+    public static void showOut(View v) {
         v.setVisibility(View.VISIBLE);
         v.setAlpha(1f);
         v.setTranslationY(0);
@@ -45,7 +45,7 @@ public class FabAnimation {
                 .translationY(v.getHeight())
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
-                    public void onAnimationEnd(Animator animation) {
+                    public void onAnimationEnd(final Animator animation) {
                         v.setVisibility(View.GONE);
                         super.onAnimationEnd(animation);
                     }
@@ -53,7 +53,7 @@ public class FabAnimation {
                 .start();
     }
 
-    public static void init(final View v) {
+    public static void init(View v) {
         v.setVisibility(View.GONE);
         v.setTranslationY(v.getHeight());
         v.setAlpha(0f);

@@ -20,6 +20,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.Serializable;
@@ -46,66 +47,66 @@ public class RepliesFragment extends Fragment {
     private CommentsAdapter commentsAdapter;
 
     @NonNull
-    public static RepliesFragment newInstance(@NonNull final Comment parent,
-                                              final boolean focusInput) {
-        final Bundle args = new Bundle();
-        args.putSerializable(ARG_PARENT, parent);
-        args.putBoolean(ARG_FOCUS_INPUT, focusInput);
-        final RepliesFragment fragment = new RepliesFragment();
+    public static RepliesFragment newInstance(@NonNull Comment parent,
+                                              boolean focusInput) {
+        Bundle args = new Bundle();
+        args.putSerializable(RepliesFragment.ARG_PARENT, parent);
+        args.putBoolean(RepliesFragment.ARG_FOCUS_INPUT, focusInput);
+        RepliesFragment fragment = new RepliesFragment();
         fragment.setArguments(args);
         return fragment;
     }
 
     @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final Fragment parentFragment = getParentFragment();
+        Fragment parentFragment = this.getParentFragment();
         if (parentFragment == null) return;
-        viewModel = new ViewModelProvider(parentFragment).get(CommentsViewerViewModel.class);
-        final Bundle bundle = getArguments();
+        this.viewModel = new ViewModelProvider(parentFragment).get(CommentsViewerViewModel.class);
+        Bundle bundle = this.getArguments();
         if (bundle == null) return;
-        final Serializable serializable = bundle.getSerializable(ARG_PARENT);
+        Serializable serializable = bundle.getSerializable(RepliesFragment.ARG_PARENT);
         if (!(serializable instanceof Comment)) return;
-        viewModel.showReplies((Comment) serializable);
+        this.viewModel.showReplies((Comment) serializable);
     }
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable final Bundle savedInstanceState) {
-        binding = FragmentCommentsBinding.inflate(inflater, container, false);
-        binding.swipeRefreshLayout.setEnabled(false);
-        binding.swipeRefreshLayout.setNestedScrollingEnabled(false);
-        return binding.getRoot();
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        this.binding = FragmentCommentsBinding.inflate(inflater, container, false);
+        this.binding.swipeRefreshLayout.setEnabled(false);
+        this.binding.swipeRefreshLayout.setNestedScrollingEnabled(false);
+        return this.binding.getRoot();
     }
 
     @Override
-    public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
-        setupToolbar();
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        this.setupToolbar();
     }
 
     @Override
-    public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
+    public Animation onCreateAnimation(final int transit, final boolean enter, final int nextAnim) {
         if (!enter) {
             return super.onCreateAnimation(transit, false, nextAnim);
         }
         if (nextAnim == 0) {
-            setupList();
-            setupObservers();
-            return super.onCreateAnimation(transit, true, nextAnim);
+            this.setupList();
+            this.setupObservers();
+            return super.onCreateAnimation(transit, true, 0);
         }
-        final Animation animation = AnimationUtils.loadAnimation(getContext(), nextAnim);
+        Animation animation = AnimationUtils.loadAnimation(this.getContext(), nextAnim);
         animation.setAnimationListener(new Animation.AnimationListener() {
             @Override
-            public void onAnimationStart(Animation animation) {}
+            public void onAnimationStart(final Animation animation) {}
 
             @Override
-            public void onAnimationEnd(Animation animation) {
-                setupList();
-                setupObservers();
+            public void onAnimationEnd(final Animation animation) {
+                RepliesFragment.this.setupList();
+                RepliesFragment.this.setupObservers();
             }
 
             @Override
-            public void onAnimationRepeat(Animation animation) {}
+            public void onAnimationRepeat(final Animation animation) {}
         });
         return animation;
     }
@@ -113,120 +114,120 @@ public class RepliesFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        binding = null;
+        this.binding = null;
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (viewModel != null) {
-            viewModel.clearReplies();
+        if (this.viewModel != null) {
+            this.viewModel.clearReplies();
         }
     }
 
     private void setupObservers() {
-        if (viewModel == null) return;
-        viewModel.getCurrentUserId().observe(getViewLifecycleOwner(), currentUserId -> {
+        if (this.viewModel == null) return;
+        this.viewModel.getCurrentUserId().observe(this.getViewLifecycleOwner(), currentUserId -> {
             long userId = 0;
             if (currentUserId != null) {
                 userId = currentUserId;
             }
-            setupAdapter(userId);
+            this.setupAdapter(userId);
             if (userId == 0) return;
-            Helper.setupCommentInput(binding.commentField, binding.commentText, true, text -> {
-                final LiveData<Resource<Object>> resourceLiveData = viewModel.comment(text, true);
-                resourceLiveData.observe(getViewLifecycleOwner(), new Observer<Resource<Object>>() {
+            Helper.setupCommentInput(this.binding.commentField, this.binding.commentText, true, text -> {
+                LiveData<Resource<Object>> resourceLiveData = this.viewModel.comment(text, true);
+                resourceLiveData.observe(this.getViewLifecycleOwner(), new Observer<Resource<Object>>() {
                     @Override
-                    public void onChanged(final Resource<Object> objectResource) {
+                    public void onChanged(Resource<Object> objectResource) {
                         if (objectResource == null) return;
-                        final Context context = getContext();
+                        Context context = RepliesFragment.this.getContext();
                         if (context == null) return;
                         Helper.handleCommentResource(context,
                                                      objectResource.status,
                                                      objectResource.message,
                                                      resourceLiveData,
                                                      this,
-                                                     binding.commentField,
-                                                     binding.commentText,
-                                                     binding.comments);
+                                RepliesFragment.this.binding.commentField,
+                                RepliesFragment.this.binding.commentText,
+                                RepliesFragment.this.binding.comments);
                     }
                 });
                 return null;
             });
-            final Bundle bundle = getArguments();
+            Bundle bundle = this.getArguments();
             if (bundle == null) return;
-            final boolean focusInput = bundle.getBoolean(ARG_FOCUS_INPUT);
-            if (focusInput && viewModel.getRepliesParent() != null) {
-                viewModel.getRepliesParent().getUser();
-                binding.commentText.setText(String.format("@%s ", viewModel.getRepliesParent().getUser().getUsername()));
-                Utils.showKeyboard(binding.commentText);
+            boolean focusInput = bundle.getBoolean(RepliesFragment.ARG_FOCUS_INPUT);
+            if (focusInput && this.viewModel.getRepliesParent() != null) {
+                this.viewModel.getRepliesParent().getUser();
+                this.binding.commentText.setText(String.format("@%s ", this.viewModel.getRepliesParent().getUser().getUsername()));
+                Utils.showKeyboard(this.binding.commentText);
             }
         });
-        viewModel.getReplyList().observe(getViewLifecycleOwner(), listResource -> {
+        this.viewModel.getReplyList().observe(this.getViewLifecycleOwner(), listResource -> {
             if (listResource == null) return;
             switch (listResource.status) {
                 case SUCCESS:
-                    binding.swipeRefreshLayout.setRefreshing(false);
-                    if (commentsAdapter != null) {
-                        commentsAdapter.submitList(listResource.data);
+                    this.binding.swipeRefreshLayout.setRefreshing(false);
+                    if (this.commentsAdapter != null) {
+                        this.commentsAdapter.submitList(listResource.data);
                     }
                     break;
                 case ERROR:
-                    binding.swipeRefreshLayout.setRefreshing(false);
-                    final String message = listResource.message;
+                    this.binding.swipeRefreshLayout.setRefreshing(false);
+                    String message = listResource.message;
                     if (!TextUtils.isEmpty(message)) {
-                        Snackbar.make(binding.getRoot(), message, Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(this.binding.getRoot(), message, BaseTransientBottomBar.LENGTH_LONG).show();
                     }
                     break;
                 case LOADING:
-                    binding.swipeRefreshLayout.setRefreshing(true);
+                    this.binding.swipeRefreshLayout.setRefreshing(true);
                     break;
             }
         });
     }
 
     private void setupToolbar() {
-        binding.toolbar.setTitle(R.string.title_replies);
-        binding.toolbar.setNavigationIcon(R.drawable.ic_round_arrow_back_24);
-        binding.toolbar.setNavigationOnClickListener(v -> {
-            final FragmentManager fragmentManager = getParentFragmentManager();
+        this.binding.toolbar.setTitle(R.string.title_replies);
+        this.binding.toolbar.setNavigationIcon(R.drawable.ic_round_arrow_back_24);
+        this.binding.toolbar.setNavigationOnClickListener(v -> {
+            FragmentManager fragmentManager = this.getParentFragmentManager();
             fragmentManager.popBackStack();
         });
     }
 
-    private void setupAdapter(final long currentUserId) {
-        if (viewModel == null) return;
-        final Context context = getContext();
+    private void setupAdapter(long currentUserId) {
+        if (this.viewModel == null) return;
+        Context context = this.getContext();
         if (context == null) return;
-        commentsAdapter = new CommentsAdapter(
+        this.commentsAdapter = new CommentsAdapter(
                 currentUserId,
                 true,
                 Helper.getCommentCallback(
                         context,
-                        getViewLifecycleOwner(),
-                        getNavController(),
-                        viewModel,
+                        this.getViewLifecycleOwner(),
+                        this.getNavController(),
+                        this.viewModel,
                         (comment, focusInput) -> {
-                            viewModel.setReplyTo(comment);
-                            binding.commentText.setText(String.format("@%s ", comment.getUser().getUsername()));
-                            if (focusInput) Utils.showKeyboard(binding.commentText);
+                            this.viewModel.setReplyTo(comment);
+                            this.binding.commentText.setText(String.format("@%s ", comment.getUser().getUsername()));
+                            if (focusInput) Utils.showKeyboard(this.binding.commentText);
                             return null;
                         }
                 )
         );
-        binding.comments.setAdapter(commentsAdapter);
-        final Resource<List<Comment>> listResource = viewModel.getReplyList().getValue();
-        commentsAdapter.submitList(listResource != null ? listResource.data : Collections.emptyList());
+        this.binding.comments.setAdapter(this.commentsAdapter);
+        Resource<List<Comment>> listResource = this.viewModel.getReplyList().getValue();
+        this.commentsAdapter.submitList(listResource != null ? listResource.data : Collections.emptyList());
     }
 
     private void setupList() {
-        final Context context = getContext();
+        Context context = this.getContext();
         if (context == null) return;
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(context);
-        final RecyclerLazyLoader lazyLoader = new RecyclerLazyLoader(layoutManager, (page, totalItemsCount) -> {
-            if (viewModel != null) viewModel.fetchReplies();
+        LinearLayoutManager layoutManager = new LinearLayoutManager(context);
+        RecyclerLazyLoader lazyLoader = new RecyclerLazyLoader(layoutManager, (page, totalItemsCount) -> {
+            if (this.viewModel != null) this.viewModel.fetchReplies();
         });
-        Helper.setupList(context, binding.comments, layoutManager, lazyLoader);
+        Helper.setupList(context, this.binding.comments, layoutManager, lazyLoader);
     }
 
     @Nullable
@@ -234,8 +235,8 @@ public class RepliesFragment extends Fragment {
         NavController navController = null;
         try {
             navController = NavHostFragment.findNavController(this);
-        } catch (IllegalStateException e) {
-            Log.e(TAG, "navigateToProfile", e);
+        } catch (final IllegalStateException e) {
+            Log.e(RepliesFragment.TAG, "navigateToProfile", e);
         }
         return navController;
     }

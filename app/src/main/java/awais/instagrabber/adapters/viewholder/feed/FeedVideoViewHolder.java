@@ -52,65 +52,65 @@ public class FeedVideoViewHolder extends FeedItemViewHolder {
     //     }
     // };
 
-    public FeedVideoViewHolder(@NonNull final ItemFeedVideoBinding binding,
-                               final FeedAdapterV2.FeedItemCallback feedItemCallback) {
+    public FeedVideoViewHolder(@NonNull ItemFeedVideoBinding binding,
+                               FeedAdapterV2.FeedItemCallback feedItemCallback) {
         super(binding.getRoot(), feedItemCallback);
-        bottom = LayoutPostViewBottomBinding.bind(binding.getRoot());
+        this.bottom = LayoutPostViewBottomBinding.bind(binding.getRoot());
         this.binding = binding;
         this.feedItemCallback = feedItemCallback;
-        bottom.viewsCount.setVisibility(View.VISIBLE);
-        handler = new Handler(Looper.getMainLooper());
-        final Context context = binding.getRoot().getContext();
-        dataSourceFactory = new DefaultDataSourceFactory(context, "instagram");
-        final SimpleCache simpleCache = Utils.getSimpleCacheInstance(context);
+        this.bottom.viewsCount.setVisibility(View.VISIBLE);
+        this.handler = new Handler(Looper.getMainLooper());
+        Context context = binding.getRoot().getContext();
+        this.dataSourceFactory = new DefaultDataSourceFactory(context, "instagram");
+        SimpleCache simpleCache = Utils.getSimpleCacheInstance(context);
         if (simpleCache != null) {
-            cacheDataSourceFactory = new CacheDataSourceFactory(simpleCache, dataSourceFactory);
+            this.cacheDataSourceFactory = new CacheDataSourceFactory(simpleCache, this.dataSourceFactory);
         }
     }
 
     @Override
-    public void bindItem(final Media media) {
+    public void bindItem(Media media) {
         // Log.d(TAG, "Binding post: " + feedModel.getPostId());
         this.media = media;
-        final String viewCount = itemView.getResources().getQuantityString(R.plurals.views_count, (int) media.getViewCount(), media.getViewCount());
-        bottom.viewsCount.setText(viewCount);
-        final LayoutVideoPlayerWithThumbnailBinding videoPost =
-                LayoutVideoPlayerWithThumbnailBinding.inflate(LayoutInflater.from(itemView.getContext()), binding.getRoot(), false);
-        final ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) videoPost.getRoot().getLayoutParams();
-        final NullSafePair<Integer, Integer> widthHeight = NumberUtils.calculateWidthHeight(media.getOriginalHeight(),
+        String viewCount = this.itemView.getResources().getQuantityString(R.plurals.views_count, (int) media.getViewCount(), media.getViewCount());
+        this.bottom.viewsCount.setText(viewCount);
+        LayoutVideoPlayerWithThumbnailBinding videoPost =
+                LayoutVideoPlayerWithThumbnailBinding.inflate(LayoutInflater.from(this.itemView.getContext()), this.binding.getRoot(), false);
+        ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) videoPost.getRoot().getLayoutParams();
+        NullSafePair<Integer, Integer> widthHeight = NumberUtils.calculateWidthHeight(media.getOriginalHeight(),
                 media.getOriginalWidth(),
                 (int) (Utils.displayMetrics.heightPixels * 0.8),
                 Utils.displayMetrics.widthPixels);
-        layoutParams.width = ConstraintLayout.LayoutParams.MATCH_PARENT;
+        layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
         layoutParams.height = widthHeight.second;
-        final View postView = videoPost.getRoot();
-        binding.postContainer.addView(postView);
-        final float vol = settingsHelper.getBoolean(PreferenceKeys.MUTED_VIDEOS) ? 0f : 1f;
-        final VideoPlayerViewHelper.VideoPlayerCallback videoPlayerCallback = new VideoPlayerCallbackAdapter() {
+        View postView = videoPost.getRoot();
+        this.binding.postContainer.addView(postView);
+        float vol = settingsHelper.getBoolean(PreferenceKeys.MUTED_VIDEOS) ? 0f : 1f;
+        VideoPlayerViewHelper.VideoPlayerCallback videoPlayerCallback = new VideoPlayerCallbackAdapter() {
 
             @Override
             public void onThumbnailClick() {
-                feedItemCallback.onPostClick(media);
+                FeedVideoViewHolder.this.feedItemCallback.onPostClick(media);
             }
 
             @Override
             public void onPlayerViewLoaded() {
-                final ViewGroup.LayoutParams layoutParams = videoPost.playerView.getLayoutParams();
-                final int requiredWidth = Utils.displayMetrics.widthPixels;
-                final int resultingHeight = NumberUtils.getResultingHeight(requiredWidth, media.getOriginalHeight(), media.getOriginalWidth());
+                ViewGroup.LayoutParams layoutParams = videoPost.playerView.getLayoutParams();
+                int requiredWidth = Utils.displayMetrics.widthPixels;
+                int resultingHeight = NumberUtils.getResultingHeight(requiredWidth, media.getOriginalHeight(), media.getOriginalWidth());
                 layoutParams.width = requiredWidth;
                 layoutParams.height = resultingHeight;
                 videoPost.playerView.requestLayout();
             }
         };
-        final float aspectRatio = (float) media.getOriginalWidth() / media.getOriginalHeight();
+        float aspectRatio = (float) media.getOriginalWidth() / media.getOriginalHeight();
         String videoUrl = null;
-        final List<MediaCandidate> videoVersions = media.getVideoVersions();
+        List<MediaCandidate> videoVersions = media.getVideoVersions();
         if (videoVersions != null && !videoVersions.isEmpty()) {
-            final MediaCandidate videoVersion = videoVersions.get(0);
+            MediaCandidate videoVersion = videoVersions.get(0);
             videoUrl = videoVersion.getUrl();
         }
-        final VideoPlayerViewHelper videoPlayerViewHelper = new VideoPlayerViewHelper(binding.getRoot().getContext(),
+        VideoPlayerViewHelper videoPlayerViewHelper = new VideoPlayerViewHelper(this.binding.getRoot().getContext(),
                                                                                       videoPost,
                                                                                       videoUrl,
                                                                                       vol,
@@ -121,7 +121,7 @@ public class FeedVideoViewHolder extends FeedItemViewHolder {
                                                                                       videoPlayerCallback);
         videoPost.thumbnail.post(() -> {
             if (media.getOriginalHeight() > 0.8 * Utils.displayMetrics.heightPixels) {
-                final ViewGroup.LayoutParams tLayoutParams = videoPost.thumbnail.getLayoutParams();
+                ViewGroup.LayoutParams tLayoutParams = videoPost.thumbnail.getLayoutParams();
                 tLayoutParams.height = (int) (0.8 * Utils.displayMetrics.heightPixels);
                 videoPost.thumbnail.requestLayout();
             }
@@ -129,7 +129,7 @@ public class FeedVideoViewHolder extends FeedItemViewHolder {
     }
 
     public Media getCurrentFeedModel() {
-        return media;
+        return this.media;
     }
 
     // public void stopPlaying() {

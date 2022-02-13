@@ -6,7 +6,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import awais.instagrabber.R;
-import awais.instagrabber.adapters.DirectReactionsAdapter.OnReactionClickListener;
+import awais.instagrabber.adapters.DirectReactionsAdapter;
 import awais.instagrabber.customviews.emoji.Emoji;
 import awais.instagrabber.databinding.LayoutDmUserItemBinding;
 import awais.instagrabber.repositories.responses.User;
@@ -17,13 +17,13 @@ public class DirectReactionViewHolder extends RecyclerView.ViewHolder {
     private final LayoutDmUserItemBinding binding;
     private final long viewerId;
     private final String itemId;
-    private final OnReactionClickListener onReactionClickListener;
+    private final DirectReactionsAdapter.OnReactionClickListener onReactionClickListener;
     private final EmojiParser emojiParser;
 
     public DirectReactionViewHolder(final LayoutDmUserItemBinding binding,
                                     final long viewerId,
                                     final String itemId,
-                                    final OnReactionClickListener onReactionClickListener) {
+                                    final DirectReactionsAdapter.OnReactionClickListener onReactionClickListener) {
         super(binding.getRoot());
         this.binding = binding;
         this.viewerId = viewerId;
@@ -31,41 +31,41 @@ public class DirectReactionViewHolder extends RecyclerView.ViewHolder {
         this.onReactionClickListener = onReactionClickListener;
         binding.info.setVisibility(View.GONE);
         binding.secondaryImage.setVisibility(View.VISIBLE);
-        emojiParser = EmojiParser.Companion.getInstance(itemView.getContext());
+        this.emojiParser = EmojiParser.Companion.getInstance(this.itemView.getContext());
     }
 
-    public void bind(final DirectItemEmojiReaction reaction,
-                     @Nullable final User user) {
-        itemView.setOnClickListener(v -> {
-            if (onReactionClickListener == null) return;
-            onReactionClickListener.onReactionClick(itemId, reaction);
+    public void bind(DirectItemEmojiReaction reaction,
+                     @Nullable User user) {
+        this.itemView.setOnClickListener(v -> {
+            if (this.onReactionClickListener == null) return;
+            this.onReactionClickListener.onReactionClick(this.itemId, reaction);
         });
-        setUser(user);
-        setReaction(reaction);
+        this.setUser(user);
+        this.setReaction(reaction);
     }
 
-    private void setReaction(final DirectItemEmojiReaction reaction) {
-        final Emoji emoji = emojiParser.getEmoji(reaction.getEmoji());
+    private void setReaction(DirectItemEmojiReaction reaction) {
+        Emoji emoji = this.emojiParser.getEmoji(reaction.getEmoji());
         if (emoji == null) {
-            binding.secondaryImage.setImageDrawable(null);
+            this.binding.secondaryImage.setImageDrawable(null);
             return;
         }
-        binding.secondaryImage.setImageDrawable(emoji.getDrawable());
+        this.binding.secondaryImage.setImageDrawable(emoji.getDrawable());
     }
 
-    private void setUser(final User user) {
+    private void setUser(User user) {
         if (user == null) {
-            binding.fullName.setText("");
-            binding.username.setText("");
-            binding.profilePic.setImageURI((String) null);
+            this.binding.fullName.setText("");
+            this.binding.username.setText("");
+            this.binding.profilePic.setImageURI((String) null);
             return;
         }
-        binding.fullName.setText(user.getFullName());
-        if (user.getPk() == viewerId) {
-            binding.username.setText(R.string.tap_to_remove);
+        this.binding.fullName.setText(user.getFullName());
+        if (user.getPk() == this.viewerId) {
+            this.binding.username.setText(R.string.tap_to_remove);
         } else {
-            binding.username.setText(user.getUsername());
+            this.binding.username.setText(user.getUsername());
         }
-        binding.profilePic.setImageURI(user.getProfilePicUrl());
+        this.binding.profilePic.setImageURI(user.getProfilePicUrl());
     }
 }

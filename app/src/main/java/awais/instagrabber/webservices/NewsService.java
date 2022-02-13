@@ -31,51 +31,51 @@ public class NewsService {
     private static NewsService instance;
 
     private NewsService() {
-        repository = RetrofitFactory.INSTANCE
+        this.repository = RetrofitFactory.INSTANCE
                                     .getRetrofit()
                                     .create(NewsRepository.class);
     }
 
     public static NewsService getInstance() {
-        if (instance == null) {
-            instance = new NewsService();
+        if (NewsService.instance == null) {
+            NewsService.instance = new NewsService();
         }
-        return instance;
+        return NewsService.instance;
     }
 
-    public void fetchAppInbox(final boolean markAsSeen,
-                              final ServiceCallback<List<Notification>> callback) {
-        final Call<NewsInboxResponse> request = repository.appInbox(markAsSeen, Constants.X_IG_APP_ID);
+    public void fetchAppInbox(boolean markAsSeen,
+                              ServiceCallback<List<Notification>> callback) {
+        Call<NewsInboxResponse> request = this.repository.appInbox(markAsSeen, Constants.X_IG_APP_ID);
         request.enqueue(new Callback<NewsInboxResponse>() {
             @Override
-            public void onResponse(@NonNull final Call<NewsInboxResponse> call, @NonNull final Response<NewsInboxResponse> response) {
-                final NewsInboxResponse body = response.body();
+            public void onResponse(@NonNull Call<NewsInboxResponse> call, @NonNull Response<NewsInboxResponse> response) {
+                NewsInboxResponse body = response.body();
                 if (body == null) {
                     callback.onSuccess(null);
                     return;
                 }
-                final List<Notification> result = new ArrayList<Notification>();
-                final List<Notification> newStories = body.getNewStories();
+                List<Notification> result = new ArrayList<Notification>();
+                List<Notification> newStories = body.getNewStories();
                 if (newStories != null) result.addAll(newStories);
-                final List<Notification> oldStories = body.getOldStories();
+                List<Notification> oldStories = body.getOldStories();
                 if (oldStories != null) result.addAll(oldStories);
                 callback.onSuccess(result);
             }
 
             @Override
-            public void onFailure(@NonNull final Call<NewsInboxResponse> call, @NonNull final Throwable t) {
+            public void onFailure(@NonNull Call<NewsInboxResponse> call, @NonNull Throwable t) {
                 callback.onFailure(t);
                 // Log.e(TAG, "onFailure: ", t);
             }
         });
     }
 
-    public void fetchActivityCounts(final ServiceCallback<NotificationCounts> callback) {
-        final Call<NewsInboxResponse> request = repository.appInbox(false, null);
+    public void fetchActivityCounts(ServiceCallback<NotificationCounts> callback) {
+        Call<NewsInboxResponse> request = this.repository.appInbox(false, null);
         request.enqueue(new Callback<NewsInboxResponse>() {
             @Override
-            public void onResponse(@NonNull final Call<NewsInboxResponse> call, @NonNull final Response<NewsInboxResponse> response) {
-                final NewsInboxResponse body = response.body();
+            public void onResponse(@NonNull Call<NewsInboxResponse> call, @NonNull Response<NewsInboxResponse> response) {
+                NewsInboxResponse body = response.body();
                 if (body == null) {
                     callback.onSuccess(null);
                     return;
@@ -84,46 +84,46 @@ public class NewsService {
             }
 
             @Override
-            public void onFailure(@NonNull final Call<NewsInboxResponse> call, @NonNull final Throwable t) {
+            public void onFailure(@NonNull Call<NewsInboxResponse> call, @NonNull Throwable t) {
                 callback.onFailure(t);
                 // Log.e(TAG, "onFailure: ", t);
             }
         });
     }
 
-    public void fetchSuggestions(final String csrfToken,
-                                 final String deviceUuid,
-                                 final ServiceCallback<List<Notification>> callback) {
-        final Map<String, String> form = new HashMap<>();
+    public void fetchSuggestions(String csrfToken,
+                                 String deviceUuid,
+                                 ServiceCallback<List<Notification>> callback) {
+        Map<String, String> form = new HashMap<>();
         form.put("_uuid", UUID.randomUUID().toString());
         form.put("_csrftoken", csrfToken);
         form.put("phone_id", UUID.randomUUID().toString());
         form.put("device_id", UUID.randomUUID().toString());
         form.put("module", "discover_people");
         form.put("paginate", "false");
-        final Call<AymlResponse> request = repository.getAyml(form);
+        Call<AymlResponse> request = this.repository.getAyml(form);
         request.enqueue(new Callback<AymlResponse>() {
             @Override
-            public void onResponse(@NonNull final Call<AymlResponse> call, @NonNull final Response<AymlResponse> response) {
-                final AymlResponse body = response.body();
+            public void onResponse(@NonNull Call<AymlResponse> call, @NonNull Response<AymlResponse> response) {
+                AymlResponse body = response.body();
                 if (body == null) {
                     callback.onSuccess(null);
                     return;
                 }
-                final List<AymlUser> aymlUsers = new ArrayList<AymlUser>();
-                final List<AymlUser> newSuggestions = body.getNewSuggestedUsers().getSuggestions();
+                List<AymlUser> aymlUsers = new ArrayList<AymlUser>();
+                List<AymlUser> newSuggestions = body.getNewSuggestedUsers().getSuggestions();
                 if (newSuggestions != null) {
                     aymlUsers.addAll(newSuggestions);
                 }
-                final List<AymlUser> oldSuggestions = body.getSuggestedUsers().getSuggestions();
+                List<AymlUser> oldSuggestions = body.getSuggestedUsers().getSuggestions();
                 if (oldSuggestions != null) {
                     aymlUsers.addAll(oldSuggestions);
                 }
 
-                final List<Notification> newsItems = aymlUsers
+                List<Notification> newsItems = aymlUsers
                         .stream()
                         .map(i -> {
-                            final User u = i.getUser();
+                            User u = i.getUser();
                             return new Notification(
                                     new NotificationArgs(
                                             i.getSocialContext(),
@@ -145,25 +145,25 @@ public class NewsService {
             }
 
             @Override
-            public void onFailure(@NonNull final Call<AymlResponse> call, @NonNull final Throwable t) {
+            public void onFailure(@NonNull Call<AymlResponse> call, @NonNull Throwable t) {
                 callback.onFailure(t);
                 // Log.e(TAG, "onFailure: ", t);
             }
         });
     }
 
-    public void fetchChaining(final long targetId, final ServiceCallback<List<Notification>> callback) {
-        final Call<UserSearchResponse> request = repository.getChaining(targetId);
+    public void fetchChaining(long targetId, ServiceCallback<List<Notification>> callback) {
+        Call<UserSearchResponse> request = this.repository.getChaining(targetId);
         request.enqueue(new Callback<UserSearchResponse>() {
             @Override
-            public void onResponse(@NonNull final Call<UserSearchResponse> call, @NonNull final Response<UserSearchResponse> response) {
-                final UserSearchResponse body = response.body();
+            public void onResponse(@NonNull Call<UserSearchResponse> call, @NonNull Response<UserSearchResponse> response) {
+                UserSearchResponse body = response.body();
                 if (body == null) {
                     callback.onSuccess(null);
                     return;
                 }
 
-                final List<Notification> newsItems = body
+                List<Notification> newsItems = body
                         .getUsers()
                         .stream()
                         .map(u -> {
@@ -188,7 +188,7 @@ public class NewsService {
             }
 
             @Override
-            public void onFailure(@NonNull final Call<UserSearchResponse> call, @NonNull final Throwable t) {
+            public void onFailure(@NonNull Call<UserSearchResponse> call, @NonNull Throwable t) {
                 callback.onFailure(t);
                 // Log.e(TAG, "onFailure: ", t);
             }

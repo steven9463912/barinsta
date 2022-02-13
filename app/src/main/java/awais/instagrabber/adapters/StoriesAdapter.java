@@ -20,67 +20,67 @@ public final class StoriesAdapter extends ListAdapter<StoryMedia, StoriesAdapter
 
     private static final DiffUtil.ItemCallback<StoryMedia> diffCallback = new DiffUtil.ItemCallback<StoryMedia>() {
         @Override
-        public boolean areItemsTheSame(@NonNull final StoryMedia oldItem, @NonNull final StoryMedia newItem) {
+        public boolean areItemsTheSame(@NonNull StoryMedia oldItem, @NonNull StoryMedia newItem) {
             return oldItem.getId().equals(newItem.getId());
         }
 
         @Override
-        public boolean areContentsTheSame(@NonNull final StoryMedia oldItem, @NonNull final StoryMedia newItem) {
+        public boolean areContentsTheSame(@NonNull StoryMedia oldItem, @NonNull StoryMedia newItem) {
             return oldItem.getId().equals(newItem.getId());
         }
     };
 
-    public StoriesAdapter(final OnItemClickListener onItemClickListener) {
-        super(diffCallback);
+    public StoriesAdapter(OnItemClickListener onItemClickListener) {
+        super(StoriesAdapter.diffCallback);
         this.onItemClickListener = onItemClickListener;
     }
 
     @NonNull
     @Override
-    public StoryViewHolder onCreateViewHolder(@NonNull final ViewGroup parent, final int viewType) {
-        final LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        final ItemStoryBinding binding = ItemStoryBinding.inflate(layoutInflater, parent, false);
+    public StoryViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+        ItemStoryBinding binding = ItemStoryBinding.inflate(layoutInflater, parent, false);
         return new StoryViewHolder(binding);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final StoryViewHolder holder, final int position) {
-        final StoryMedia storyMedia = getItem(position);
-        holder.bind(storyMedia, position, onItemClickListener);
+    public void onBindViewHolder(@NonNull StoryViewHolder holder, int position) {
+        StoryMedia storyMedia = this.getItem(position);
+        holder.bind(storyMedia, position, this.onItemClickListener);
     }
 
-    public final static class StoryViewHolder extends RecyclerView.ViewHolder {
+    public static final class StoryViewHolder extends RecyclerView.ViewHolder {
         private final ItemStoryBinding binding;
 
-        public StoryViewHolder(final ItemStoryBinding binding) {
+        public StoryViewHolder(ItemStoryBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
         }
 
-        public void bind(final StoryMedia model,
-                         final int position,
-                         final OnItemClickListener clickListener) {
+        public void bind(StoryMedia model,
+                         int position,
+                         OnItemClickListener clickListener) {
             if (model == null) return;
             model.setPosition(position);
 
-            itemView.setTag(model);
-            itemView.setOnClickListener(v -> {
+            this.itemView.setTag(model);
+            this.itemView.setOnClickListener(v -> {
                 if (clickListener == null) return;
                 clickListener.onItemClick(model, position);
             });
 
-            binding.selectedView.setVisibility(model.isCurrentSlide() ? View.VISIBLE : View.GONE);
-            binding.icon.setImageURI(ResponseBodyUtils.getThumbUrl(model));
+            this.binding.selectedView.setVisibility(model.isCurrentSlide() ? View.VISIBLE : View.GONE);
+            this.binding.icon.setImageURI(ResponseBodyUtils.getThumbUrl(model));
         }
     }
 
-    public void paginate(final int newIndex) {
-        final List<StoryMedia> list = getCurrentList();
+    public void paginate(int newIndex) {
+        List<StoryMedia> list = this.getCurrentList();
         for (int i = 0; i < list.size(); i++) {
-            final StoryMedia item = list.get(i);
+            StoryMedia item = list.get(i);
             if (!item.isCurrentSlide() && i != newIndex) continue;
             item.setCurrentSlide(i == newIndex);
-            notifyItemChanged(i, item);
+            this.notifyItemChanged(i, item);
         }
     }
 

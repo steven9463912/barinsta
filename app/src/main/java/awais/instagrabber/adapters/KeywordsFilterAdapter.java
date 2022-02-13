@@ -18,25 +18,25 @@ public class KeywordsFilterAdapter extends RecyclerView.Adapter<KeywordsFilterDi
     private final Context context;
     private final ArrayList<String> items;
 
-    public KeywordsFilterAdapter(Context context, ArrayList<String> items){
+    public KeywordsFilterAdapter(final Context context, final ArrayList<String> items){
         this.context = context;
         this.items = items;
     }
 
     @NonNull
     @Override
-    public KeywordsFilterDialogViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        final View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_keyword, parent, false);
+    public KeywordsFilterDialogViewHolder onCreateViewHolder(@NonNull final ViewGroup parent, final int viewType) {
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_keyword, parent, false);
         return new KeywordsFilterDialogViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull KeywordsFilterDialogViewHolder holder, int position) {
-        holder.bind(items, position, context, this);
+    public void onBindViewHolder(@NonNull final KeywordsFilterDialogViewHolder holder, final int position) {
+        holder.bind(this.items, position, this.context, this);
     }
 
     @Override
     public int getItemCount() {
-        return items.size();
+        return this.items.size();
     }
 }

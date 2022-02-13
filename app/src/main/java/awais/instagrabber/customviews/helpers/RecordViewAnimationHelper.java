@@ -18,7 +18,7 @@ import androidx.vectordrawable.graphics.drawable.AnimatorInflaterCompat;
 
 import awais.instagrabber.R;
 import awais.instagrabber.customviews.RecordButton;
-import awais.instagrabber.customviews.RecordView.OnBasketAnimationEnd;
+import awais.instagrabber.customviews.RecordView;
 
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
@@ -30,7 +30,7 @@ public class RecordViewAnimationHelper {
     private final ImageView basketImg;
     private final ImageView smallBlinkingMic;
     private AlphaAnimation alphaAnimation;
-    private OnBasketAnimationEnd onBasketAnimationEndListener;
+    private RecordView.OnBasketAnimationEnd onBasketAnimationEndListener;
     private boolean isBasketAnimating;
     private boolean isStartRecorded = false;
     private float micX = 0;
@@ -186,20 +186,20 @@ public class RecordViewAnimationHelper {
         smallBlinkingMic.setScaleY(1.0f);
     }
 
-    public void setOnBasketAnimationEndListener(OnBasketAnimationEnd onBasketAnimationEndListener) {
+    public void setOnBasketAnimationEndListener(final RecordView.OnBasketAnimationEnd onBasketAnimationEndListener) {
         this.onBasketAnimationEndListener = onBasketAnimationEndListener;
 
     }
 
     public void onAnimationEnd() {
-        if (onBasketAnimationEndListener != null) {
-            onBasketAnimationEndListener.onAnimationEnd();
+        if (this.onBasketAnimationEndListener != null) {
+            this.onBasketAnimationEndListener.onAnimationEnd();
         }
     }
 
     //check if the user started a new Record by pressing the RecordButton
-    public void setStartRecorded(boolean startRecorded) {
-        isStartRecorded = startRecorded;
+    public void setStartRecorded(final boolean startRecorded) {
+        this.isStartRecorded = startRecorded;
     }
 
 }

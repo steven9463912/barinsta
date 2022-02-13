@@ -12,13 +12,13 @@ public class Location implements Serializable {
     private final double lng;
     private final double lat;
 
-    public Location(final long pk,
-                    final String shortName,
-                    final String name,
-                    final String address,
-                    final String city,
-                    final double lng,
-                    final double lat) {
+    public Location(long pk,
+                    String shortName,
+                    String name,
+                    String address,
+                    String city,
+                    double lng,
+                    double lat) {
         this.pk = pk;
         this.shortName = shortName;
         this.name = name;
@@ -29,51 +29,51 @@ public class Location implements Serializable {
     }
 
     public long getPk() {
-        return pk;
+        return this.pk;
     }
 
     public String getShortName() {
-        return shortName;
+        return this.shortName;
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public String getAddress() {
-        return address;
+        return this.address;
     }
 
     public String getCity() {
-        return city;
+        return this.city;
     }
 
     public double getLng() {
-        return lng;
+        return this.lng;
     }
 
     public double getLat() {
-        return lat;
+        return this.lat;
     }
 
-    public String getGeo() { return "geo:" + lat + "," + lng + "?z=17&q=" + lat + "," + lng + "(" + name + ")"; }
+    public String getGeo() { return "geo:" + this.lat + "," + this.lng + "?z=17&q=" + this.lat + "," + this.lng + "(" + this.name + ")"; }
 
     @Override
-    public boolean equals(final Object o) {
+    public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        final Location location = (Location) o;
-        return pk == location.pk &&
-                Double.compare(location.lng, lng) == 0 &&
-                Double.compare(location.lat, lat) == 0 &&
-                Objects.equals(shortName, location.shortName) &&
-                Objects.equals(name, location.name) &&
-                Objects.equals(address, location.address) &&
-                Objects.equals(city, location.city);
+        if (o == null || this.getClass() != o.getClass()) return false;
+        Location location = (Location) o;
+        return this.pk == location.pk &&
+                Double.compare(location.lng, this.lng) == 0 &&
+                Double.compare(location.lat, this.lat) == 0 &&
+                Objects.equals(this.shortName, location.shortName) &&
+                Objects.equals(this.name, location.name) &&
+                Objects.equals(this.address, location.address) &&
+                Objects.equals(this.city, location.city);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(pk, shortName, name, address, city, lng, lat);
+        return Objects.hash(this.pk, this.shortName, this.name, this.address, this.city, this.lng, this.lat);
     }
 }

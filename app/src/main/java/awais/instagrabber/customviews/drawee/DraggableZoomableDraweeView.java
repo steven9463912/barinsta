@@ -15,35 +15,34 @@ import androidx.annotation.NonNull;
 import com.facebook.drawee.generic.GenericDraweeHierarchy;
 
 import awais.instagrabber.customviews.VerticalDragHelper;
-import awais.instagrabber.customviews.VerticalDragHelper.OnVerticalDragListener;
 
 public class DraggableZoomableDraweeView extends ZoomableDraweeView {
     private static final String TAG = "DraggableZoomableDV";
 
-    private VerticalDragHelper verticalDragHelper;
+    private final VerticalDragHelper verticalDragHelper;
 
-    public DraggableZoomableDraweeView(final Context context, final GenericDraweeHierarchy hierarchy) {
+    public DraggableZoomableDraweeView(Context context, GenericDraweeHierarchy hierarchy) {
         super(context, hierarchy);
-        verticalDragHelper = new VerticalDragHelper(this);
+        this.verticalDragHelper = new VerticalDragHelper(this);
     }
 
-    public DraggableZoomableDraweeView(final Context context) {
+    public DraggableZoomableDraweeView(Context context) {
         super(context);
-        verticalDragHelper = new VerticalDragHelper(this);
+        this.verticalDragHelper = new VerticalDragHelper(this);
     }
 
-    public DraggableZoomableDraweeView(final Context context, final AttributeSet attrs) {
+    public DraggableZoomableDraweeView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        verticalDragHelper = new VerticalDragHelper(this);
+        this.verticalDragHelper = new VerticalDragHelper(this);
     }
 
-    public DraggableZoomableDraweeView(final Context context, final AttributeSet attrs, final int defStyle) {
+    public DraggableZoomableDraweeView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        verticalDragHelper = new VerticalDragHelper(this);
+        this.verticalDragHelper = new VerticalDragHelper(this);
     }
 
-    public void setOnVerticalDragListener(@NonNull final OnVerticalDragListener onVerticalDragListener) {
-        verticalDragHelper.setOnVerticalDragListener(onVerticalDragListener);
+    public void setOnVerticalDragListener(@NonNull VerticalDragHelper.OnVerticalDragListener onVerticalDragListener) {
+        this.verticalDragHelper.setOnVerticalDragListener(onVerticalDragListener);
     }
 
     private int lastPointerCount;

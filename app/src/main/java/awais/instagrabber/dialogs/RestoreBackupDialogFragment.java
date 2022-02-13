@@ -26,7 +26,7 @@ import androidx.fragment.app.DialogFragment;
 import awais.instagrabber.databinding.DialogRestoreBackupBinding;
 import awais.instagrabber.utils.AppExecutors;
 import awais.instagrabber.utils.ExportImportUtils;
-import awais.instagrabber.utils.PasswordUtils.IncorrectPasswordException;
+import awais.instagrabber.utils.PasswordUtils;
 import awais.instagrabber.utils.TextUtils;
 import awais.instagrabber.utils.Utils;
 
@@ -45,22 +45,22 @@ public class RestoreBackupDialogFragment extends DialogFragment {
 
     public RestoreBackupDialogFragment() {}
 
-    public RestoreBackupDialogFragment(final OnResultListener onResultListener) {
+    public RestoreBackupDialogFragment(OnResultListener onResultListener) {
         this.onResultListener = onResultListener;
     }
 
     @Override
-    public View onCreateView(@NonNull final LayoutInflater inflater,
-                             final ViewGroup container,
-                             final Bundle savedInstanceState) {
-        binding = DialogRestoreBackupBinding.inflate(inflater, container, false);
-        return binding.getRoot();
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             ViewGroup container,
+                             Bundle savedInstanceState) {
+        this.binding = DialogRestoreBackupBinding.inflate(inflater, container, false);
+        return this.binding.getRoot();
     }
 
     @NonNull
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Dialog dialog = super.onCreateDialog(savedInstanceState);
+    public Dialog onCreateDialog(final Bundle savedInstanceState) {
+        final Dialog dialog = super.onCreateDialog(savedInstanceState);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         return dialog;
     }
@@ -68,63 +68,63 @@ public class RestoreBackupDialogFragment extends DialogFragment {
     @Override
     public void onStart() {
         super.onStart();
-        final Dialog dialog = getDialog();
+        Dialog dialog = this.getDialog();
         if (dialog == null) return;
-        final Window window = dialog.getWindow();
+        Window window = dialog.getWindow();
         if (window == null) return;
         final int height = ViewGroup.LayoutParams.WRAP_CONTENT;
-        final int width = (int) (Utils.displayMetrics.widthPixels * 0.8);
+        int width = (int) (Utils.displayMetrics.widthPixels * 0.8);
         window.setLayout(width, height);
     }
 
     @Override
-    public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        init();
+        this.init();
     }
 
     @Override
-    public void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions, @NonNull final int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Override
-    public void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (data == null || data.getData() == null) return;
-        if (resultCode != RESULT_OK || requestCode != OPEN_FILE_REQUEST_CODE) return;
-        final Context context = getContext();
+        if (resultCode != RESULT_OK || requestCode != RestoreBackupDialogFragment.OPEN_FILE_REQUEST_CODE) return;
+        Context context = this.getContext();
         if (context == null) return;
-        isEncrypted = ExportImportUtils.isEncrypted(context, data.getData());
-        if (isEncrypted) {
-            binding.passwordGroup.setVisibility(View.VISIBLE);
-            binding.passwordGroup.post(() -> {
-                binding.etPassword.requestFocus();
-                binding.etPassword.post(() -> {
-                    final InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        this.isEncrypted = ExportImportUtils.isEncrypted(context, data.getData());
+        if (this.isEncrypted) {
+            this.binding.passwordGroup.setVisibility(View.VISIBLE);
+            this.binding.passwordGroup.post(() -> {
+                this.binding.etPassword.requestFocus();
+                this.binding.etPassword.post(() -> {
+                    InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
                     if (imm == null) return;
-                    imm.showSoftInput(binding.etPassword, InputMethodManager.SHOW_IMPLICIT);
+                    imm.showSoftInput(this.binding.etPassword, InputMethodManager.SHOW_IMPLICIT);
                 });
-                binding.btnRestore.setEnabled(!TextUtils.isEmpty(binding.etPassword.getText()));
+                this.binding.btnRestore.setEnabled(!TextUtils.isEmpty(this.binding.etPassword.getText()));
             });
         } else {
-            binding.passwordGroup.setVisibility(View.GONE);
-            binding.btnRestore.setEnabled(true);
+            this.binding.passwordGroup.setVisibility(View.GONE);
+            this.binding.btnRestore.setEnabled(true);
         }
-        uri = data.getData();
+        this.uri = data.getData();
         AppExecutors.INSTANCE.getMainThread().execute(() -> {
             Cursor c = null;
             try {
-                String[] projection = {MediaStore.Files.FileColumns.DISPLAY_NAME};
-                final ContentResolver contentResolver = context.getContentResolver();
-                c = contentResolver.query(uri, projection, null, null, null);
+                final String[] projection = {MediaStore.MediaColumns.DISPLAY_NAME};
+                ContentResolver contentResolver = context.getContentResolver();
+                c = contentResolver.query(this.uri, projection, null, null, null);
                 if (c != null) {
                     while (c.moveToNext()) {
-                        final String displayName = c.getString(0);
-                        binding.filePath.setText(displayName);
+                        String displayName = c.getString(0);
+                        this.binding.filePath.setText(displayName);
                     }
                 }
-            } catch (Exception e) {
-                Log.e(TAG, "onActivityResult: ", e);
+            } catch (final Exception e) {
+                Log.e(RestoreBackupDialogFragment.TAG, "onActivityResult: ", e);
             } finally {
                 if (c != null) {
                     c.close();
@@ -134,56 +134,56 @@ public class RestoreBackupDialogFragment extends DialogFragment {
     }
 
     private void init() {
-        final Context context = getContext();
+        Context context = this.getContext();
         if (context == null) return;
-        binding.btnRestore.setEnabled(false);
-        binding.btnRestore.setOnClickListener(v -> new Handler(Looper.getMainLooper()).post(() -> {
-            if (uri == null) return;
+        this.binding.btnRestore.setEnabled(false);
+        this.binding.btnRestore.setOnClickListener(v -> new Handler(Looper.getMainLooper()).post(() -> {
+            if (this.uri == null) return;
             int flags = 0;
-            if (binding.cbFavorites.isChecked()) {
+            if (this.binding.cbFavorites.isChecked()) {
                 flags |= ExportImportUtils.FLAG_FAVORITES;
             }
-            if (binding.cbSettings.isChecked()) {
+            if (this.binding.cbSettings.isChecked()) {
                 flags |= ExportImportUtils.FLAG_SETTINGS;
             }
-            if (binding.cbAccounts.isChecked()) {
+            if (this.binding.cbAccounts.isChecked()) {
                 flags |= ExportImportUtils.FLAG_COOKIES;
             }
-            final Editable text = binding.etPassword.getText();
-            if (isEncrypted && text == null) return;
+            Editable text = this.binding.etPassword.getText();
+            if (this.isEncrypted && text == null) return;
             try {
                 ExportImportUtils.importData(
                         context,
                         flags,
-                        uri,
-                        !isEncrypted ? null : text.toString(),
+                        this.uri,
+                        !this.isEncrypted ? null : text.toString(),
                         result -> {
-                            if (onResultListener != null) {
-                                onResultListener.onResult(result);
+                            if (this.onResultListener != null) {
+                                this.onResultListener.onResult(result);
                             }
-                            dismiss();
+                            this.dismiss();
                         }
                 );
-            } catch (IncorrectPasswordException e) {
-                binding.passwordField.setError("Incorrect password");
+            } catch (final PasswordUtils.IncorrectPasswordException e) {
+                this.binding.passwordField.setError("Incorrect password");
             }
         }));
-        binding.etPassword.addTextChangedListener(new TextWatcher() {
+        this.binding.etPassword.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(final CharSequence s, final int start, final int count, final int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
-            public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
-                binding.btnRestore.setEnabled(!TextUtils.isEmpty(s));
-                binding.passwordField.setError(null);
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                RestoreBackupDialogFragment.this.binding.btnRestore.setEnabled(!TextUtils.isEmpty(s));
+                RestoreBackupDialogFragment.this.binding.passwordField.setError(null);
             }
 
             @Override
-            public void afterTextChanged(final Editable s) {}
+            public void afterTextChanged(Editable s) {}
         });
-        final Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         intent.setType("*/*");
-        startActivityForResult(intent, OPEN_FILE_REQUEST_CODE);
+        this.startActivityForResult(intent, RestoreBackupDialogFragment.OPEN_FILE_REQUEST_CODE);
 
     }
 
