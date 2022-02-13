@@ -17,7 +17,7 @@ android {
     compileSdkVersion 30
 
     defaultConfig {
-        applicationId 'me.austinhuang.instagrabber'
+        applicationId 'me.avalos.barinsta'
 
         minSdkVersion 21
         targetSdkVersion 30

@@ -37,9 +37,9 @@ public class UpdateChecker {
     public String getLatestVersion() {
         HttpURLConnection conn = null;
         try {
-            conn = (HttpURLConnection) new URL("https://f-droid.org/api/v1/packages/me.austinhuang.instagrabber").openConnection();
+            conn = (HttpURLConnection) new URL("https://f-droid.org/api/v1/packages/me.avalos.barinsta").openConnection();
             conn.setUseCaches(false);
-            conn.setRequestProperty("User-Agent", "https://Barinsta.AustinHuang.me / mailto:Barinsta@AustinHuang.me");
+            conn.setRequestProperty("User-Agent", "https://barinsta.avalos.me / mailto:avalos@disroot.org");
             conn.connect();
             final int responseCode = conn.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
@@ -59,6 +59,6 @@ public class UpdateChecker {
     }
 
     public void onDownload(@NonNull final AppCompatActivity context) {
-        Utils.openURL(context, "https://f-droid.org/packages/me.austinhuang.instagrabber/");
+        Utils.openURL(context, "https://f-droid.org/packages/me.avalos.barinsta/");
     }
 }
