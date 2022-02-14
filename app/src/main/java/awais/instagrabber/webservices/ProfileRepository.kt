@@ -32,7 +32,7 @@ open class ProfileRepository(private val repository: ProfileService) {
         if (!maxId.isNullOrEmpty()) {
             builder.put("max_id", maxId)
         }
-        val userFeedResponse = if (collectionId.isNullOrEmpty() || collectionId == "ALL_MEDIA_AUTO_COLLECTION")
+        val userFeedResponse = if (collectionId.isEmpty() || collectionId == "ALL_MEDIA_AUTO_COLLECTION")
                 (repository.fetchSaved(builder.build()) ?: return null)
             else repository.fetchSavedCollection(collectionId, builder.build()) ?: return null
         val items = userFeedResponse.items

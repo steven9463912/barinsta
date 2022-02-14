@@ -182,7 +182,7 @@ open class GraphQLRepository(private val service: GraphQLService) {
         try {
             val body = JSONObject(
                 response
-                    .split("<script type=\"text/javascript\">window._sharedData = ").get(1)
+                    .split("<script type=\"text/javascript\">window._sharedData = ")[1]
                     .split("</script>")[0]
                     .trim().replace(Regex("\\};$"), "}")
             )
@@ -249,7 +249,7 @@ open class GraphQLRepository(private val service: GraphQLService) {
         val response = service.getTag(tag)
         val body = JSONObject(
             response
-                .split("<script type=\"text/javascript\">window._sharedData = ").get(1)
+                .split("<script type=\"text/javascript\">window._sharedData = ")[1]
                 .split("</script>")[0]
             .trim().replace(Regex("\\};$"), "}"))
             .getJSONObject("entry_data")

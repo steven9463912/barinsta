@@ -175,8 +175,8 @@ class CameraActivity : BaseLanguageActivity() {
         if (imageCapture == null) return
         val fileName = simpleDateFormat.format(System.currentTimeMillis()) + ".jpg"
         val mimeType = "image/jpg"
-        val photoFile = outputDirectory?.createFile(mimeType, fileName)?.let { it } ?: return
-        val outputStream = contentResolver.openOutputStream(photoFile.uri)?.let { it } ?: return
+        val photoFile = outputDirectory?.createFile(mimeType, fileName) ?: return
+        val outputStream = contentResolver.openOutputStream(photoFile.uri) ?: return
         val outputFileOptions = ImageCapture.OutputFileOptions.Builder(outputStream).build()
         imageCapture?.takePicture(
             outputFileOptions,

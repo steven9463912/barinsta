@@ -119,9 +119,9 @@ class DownloadWorker(context: Context, workerParams: WorkerParameters) : Corouti
         url: String,
         filePath: DocumentFile,
     ) {
-        val context = applicationContext.let { it }
-        val contentResolver = context.contentResolver?.let { it } ?: return
-        val filePathType = filePath.type?.let { it } ?: return
+        val context = applicationContext
+        val contentResolver = context.contentResolver ?: return
+        val filePathType = filePath.type ?: return
         val isJpg = filePathType.startsWith("image")
         // using temp file approach to remove IPTC so that download progress can be reported
         val outFile = if (isJpg) DownloadUtils.getTempFile(null, "jpg") else filePath

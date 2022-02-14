@@ -58,8 +58,7 @@ open class StoriesRepository(private val service: StoriesService) {
 
     open suspend fun fetchHighlights(profileId: Long): List<Story> {
         val response = service.fetchHighlights(profileId)
-        val highlightModels = response?.tray ?: listOf()
-        return highlightModels
+        return response?.tray ?: listOf()
     }
 
     suspend fun fetchArchive(maxId: String): ArchiveResponse? {
@@ -68,7 +67,7 @@ open class StoriesRepository(private val service: StoriesService) {
             "is_in_archive_home" to "true",
             "include_cover" to "1",
         )
-        if (!maxId.isNullOrEmpty()) {
+        if (!maxId.isEmpty()) {
             form["max_id"] = maxId // NOT TESTED
         }
         return service.fetchArchive(form)

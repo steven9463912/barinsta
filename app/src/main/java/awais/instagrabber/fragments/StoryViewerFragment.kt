@@ -753,7 +753,7 @@ class StoryViewerFragment : Fragment() {
         sliderView.addView(input)
         sliderView.addView(tv)
         val builder = AlertDialog.Builder(context)
-            .setTitle(if (slider.question.isNullOrEmpty()) slider.emoji else slider.question)
+            .setTitle(if (slider.question.isEmpty()) slider.emoji else slider.question)
             .setMessage(
                 resources.getQuantityString(R.plurals.slider_info,
                 slider.sliderVoteCount ?: 0,
