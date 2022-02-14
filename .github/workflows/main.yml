@@ -42,22 +42,11 @@ jobs:
     - name: Build with Gradle (2)
       run: ./gradlew build -x test
       
-    - name: git add
-      run: git add .
-    - name: Configure git (1)
-      run: git config --global user.email "github@github.com"
-    - name: Configure git (2)
-      run: git config --global user.name "Github Bot"
-    - name: Git commit
-      run: git commit -m "artifact" 
-      
-    - name: git pull (1)
-      run: git config pull.rebase false
-    - name: git pull (2)
-      run: git pull origin master
-      
-    - name: Push changes
-      uses: ad-m/github-push-action@master
+ # Create artifact
+    - name: Create apk artifact
+      uses: actions/upload-artifact@v2
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+        name: barinsta_pre-release_${{ steps.date.outputs.date }}
+        # path: ${{steps.sign_app.outputs.signedReleaseFile}}
+        path: app/build/outputs/apk/fdroid/debug/app-fdroid-debug.apk
         
