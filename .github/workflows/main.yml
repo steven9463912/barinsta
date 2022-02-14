@@ -51,7 +51,9 @@ jobs:
     - name: Git commit
       run: git commit -m "artifact" 
       
-    - name: git pull
+    - name: git pull (1)
+      run: git config pull.rebase false
+    - name: git pull (2)
       run: git pull origin master
       
     - name: Push changes
