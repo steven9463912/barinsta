@@ -21,7 +21,7 @@ jobs:
         cache: gradle
       
     - name: git pull
-      run: git pull
+      run: git pull origin master
     - name: git submodule update
       run: git submodule update
     - name: git submodule foreach git pull
@@ -52,7 +52,7 @@ jobs:
       run: git commit -m "artifact" 
       
     - name: git pull
-      run: git pull
+      run: git pull origin master
       
     - name: Push changes
       uses: ad-m/github-push-action@master
