@@ -73,10 +73,10 @@ public final class DirectItemsAdapter extends RecyclerView.Adapter<RecyclerView.
 
     private static final DiffUtil.ItemCallback<DirectItemOrHeader> diffCallback = new DiffUtil.ItemCallback<DirectItemOrHeader>() {
         @Override
-        public boolean areItemsTheSame(@NonNull DirectItemOrHeader oldItem, @NonNull DirectItemOrHeader newItem) {
-            boolean bothHeaders = oldItem.isHeader() && newItem.isHeader();
-            boolean bothItems = !oldItem.isHeader() && !newItem.isHeader();
-            final boolean areSameType = bothHeaders || bothItems;
+        public boolean areItemsTheSame(@NonNull final DirectItemOrHeader oldItem, @NonNull final DirectItemOrHeader newItem) {
+            final boolean bothHeaders = oldItem.isHeader() && newItem.isHeader();
+            final boolean bothItems = !oldItem.isHeader() && !newItem.isHeader();
+            boolean areSameType = bothHeaders || bothItems;
             if (!areSameType) return false;
             if (bothHeaders) {
                 return oldItem.date.equals(newItem.date);
@@ -96,35 +96,35 @@ public final class DirectItemsAdapter extends RecyclerView.Adapter<RecyclerView.
         }
 
         @Override
-        public boolean areContentsTheSame(@NonNull DirectItemOrHeader oldItem, @NonNull DirectItemOrHeader newItem) {
-            boolean bothHeaders = oldItem.isHeader() && newItem.isHeader();
-            boolean bothItems = !oldItem.isHeader() && !newItem.isHeader();
-            final boolean areSameType = bothHeaders || bothItems;
+        public boolean areContentsTheSame(@NonNull final DirectItemOrHeader oldItem, @NonNull final DirectItemOrHeader newItem) {
+            final boolean bothHeaders = oldItem.isHeader() && newItem.isHeader();
+            final boolean bothItems = !oldItem.isHeader() && !newItem.isHeader();
+            boolean areSameType = bothHeaders || bothItems;
             if (!areSameType) return false;
             if (bothHeaders) {
                 return oldItem.date.equals(newItem.date);
             }
-            boolean timestampEqual = oldItem.item.getTimestamp() == newItem.item.getTimestamp();
-            boolean bothPending = oldItem.item.isPending() == newItem.item.isPending();
-            boolean reactionSame = Objects.equals(oldItem.item.getReactions(), newItem.item.getReactions());
+            final boolean timestampEqual = oldItem.item.getTimestamp() == newItem.item.getTimestamp();
+            final boolean bothPending = oldItem.item.isPending() == newItem.item.isPending();
+            final boolean reactionSame = Objects.equals(oldItem.item.getReactions(), newItem.item.getReactions());
             return timestampEqual && bothPending && reactionSame;
         }
     };
 
-    public DirectItemsAdapter(@NonNull User currentUser,
-                              @NonNull DirectThread thread,
-                              @NonNull DirectItemCallback callback,
-                              @NonNull DirectItemLongClickListener itemLongClickListener) {
+    public DirectItemsAdapter(@NonNull final User currentUser,
+                              @NonNull final DirectThread thread,
+                              @NonNull final DirectItemCallback callback,
+                              @NonNull final DirectItemLongClickListener itemLongClickListener) {
         this.currentUser = currentUser;
         this.thread = thread;
         this.callback = callback;
-        this.differ = new AsyncListDiffer<>(new AdapterListUpdateCallback(this),
-                                       new AsyncDifferConfig.Builder<>(DirectItemsAdapter.diffCallback).build());
-        this.longClickListener = (position, viewHolder) -> {
-            if (this.selectedViewHolder != null) {
-                this.selectedViewHolder.setSelected(false);
+        differ = new AsyncListDiffer<>(new AdapterListUpdateCallback(this),
+                                       new AsyncDifferConfig.Builder<>(diffCallback).build());
+        longClickListener = (position, viewHolder) -> {
+            if (selectedViewHolder != null) {
+                selectedViewHolder.setSelected(false);
             }
-            this.selectedViewHolder = viewHolder;
+            selectedViewHolder = viewHolder;
             viewHolder.setSelected(true);
             itemLongClickListener.onLongClick(position);
         };
@@ -132,122 +132,122 @@ public final class DirectItemsAdapter extends RecyclerView.Adapter<RecyclerView.
 
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int type) {
-        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull final ViewGroup parent, final int type) {
+        final LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
         if (type == -1) {
             // header
             return new HeaderViewHolder(LayoutDmHeaderBinding.inflate(layoutInflater, parent, false));
         }
-        LayoutDmBaseBinding baseBinding = LayoutDmBaseBinding.inflate(layoutInflater, parent, false);
-        DirectItemType directItemType = DirectItemType.Companion.getTypeFromId(type);
-        DirectItemViewHolder itemViewHolder = this.getItemViewHolder(layoutInflater, baseBinding, directItemType);
-        itemViewHolder.setLongClickListener(this.longClickListener);
+        final LayoutDmBaseBinding baseBinding = LayoutDmBaseBinding.inflate(layoutInflater, parent, false);
+        final DirectItemType directItemType = DirectItemType.Companion.getTypeFromId(type);
+        final DirectItemViewHolder itemViewHolder = getItemViewHolder(layoutInflater, baseBinding, directItemType);
+        itemViewHolder.setLongClickListener(longClickListener);
         return itemViewHolder;
     }
 
     @NonNull
-    private DirectItemViewHolder getItemViewHolder(LayoutInflater layoutInflater,
-                                                   LayoutDmBaseBinding baseBinding,
-                                                   @NonNull DirectItemType directItemType) {
+    private DirectItemViewHolder getItemViewHolder(final LayoutInflater layoutInflater,
+                                                   final LayoutDmBaseBinding baseBinding,
+                                                   @NonNull final DirectItemType directItemType) {
         switch (directItemType) {
             case TEXT: {
-                LayoutDmTextBinding binding = LayoutDmTextBinding.inflate(layoutInflater, baseBinding.message, false);
-                return new DirectItemTextViewHolder(baseBinding, binding, this.currentUser, this.thread, this.callback);
+                final LayoutDmTextBinding binding = LayoutDmTextBinding.inflate(layoutInflater, baseBinding.message, false);
+                return new DirectItemTextViewHolder(baseBinding, binding, currentUser, thread, callback);
             }
             case LIKE: {
-                LayoutDmLikeBinding binding = LayoutDmLikeBinding.inflate(layoutInflater, baseBinding.message, false);
-                return new DirectItemLikeViewHolder(baseBinding, binding, this.currentUser, this.thread, this.callback);
+                final LayoutDmLikeBinding binding = LayoutDmLikeBinding.inflate(layoutInflater, baseBinding.message, false);
+                return new DirectItemLikeViewHolder(baseBinding, binding, currentUser, thread, callback);
             }
             case LINK: {
-                LayoutDmLinkBinding binding = LayoutDmLinkBinding.inflate(layoutInflater, baseBinding.message, false);
-                return new DirectItemLinkViewHolder(baseBinding, binding, this.currentUser, this.thread, this.callback);
+                final LayoutDmLinkBinding binding = LayoutDmLinkBinding.inflate(layoutInflater, baseBinding.message, false);
+                return new DirectItemLinkViewHolder(baseBinding, binding, currentUser, thread, callback);
             }
             case ACTION_LOG: {
-                LayoutDmActionLogBinding binding = LayoutDmActionLogBinding.inflate(layoutInflater, baseBinding.message, false);
-                return new DirectItemActionLogViewHolder(baseBinding, binding, this.currentUser, this.thread, this.callback);
+                final LayoutDmActionLogBinding binding = LayoutDmActionLogBinding.inflate(layoutInflater, baseBinding.message, false);
+                return new DirectItemActionLogViewHolder(baseBinding, binding, currentUser, thread, callback);
             }
             case VIDEO_CALL_EVENT: {
-                LayoutDmActionLogBinding binding = LayoutDmActionLogBinding.inflate(layoutInflater, baseBinding.message, false);
-                return new DirectItemVideoCallEventViewHolder(baseBinding, binding, this.currentUser, this.thread, this.callback);
+                final LayoutDmActionLogBinding binding = LayoutDmActionLogBinding.inflate(layoutInflater, baseBinding.message, false);
+                return new DirectItemVideoCallEventViewHolder(baseBinding, binding, currentUser, thread, callback);
             }
             case PLACEHOLDER: {
-                LayoutDmStoryShareBinding binding = LayoutDmStoryShareBinding.inflate(layoutInflater, baseBinding.message, false);
-                return new DirectItemPlaceholderViewHolder(baseBinding, binding, this.currentUser, this.thread, this.callback);
+                final LayoutDmStoryShareBinding binding = LayoutDmStoryShareBinding.inflate(layoutInflater, baseBinding.message, false);
+                return new DirectItemPlaceholderViewHolder(baseBinding, binding, currentUser, thread, callback);
             }
             case ANIMATED_MEDIA: {
-                LayoutDmAnimatedMediaBinding binding = LayoutDmAnimatedMediaBinding.inflate(layoutInflater, baseBinding.message, false);
-                return new DirectItemAnimatedMediaViewHolder(baseBinding, binding, this.currentUser, this.thread, this.callback);
+                final LayoutDmAnimatedMediaBinding binding = LayoutDmAnimatedMediaBinding.inflate(layoutInflater, baseBinding.message, false);
+                return new DirectItemAnimatedMediaViewHolder(baseBinding, binding, currentUser, thread, callback);
             }
             case VOICE_MEDIA: {
-                LayoutDmVoiceMediaBinding binding = LayoutDmVoiceMediaBinding.inflate(layoutInflater, baseBinding.message, false);
-                return new DirectItemVoiceMediaViewHolder(baseBinding, binding, this.currentUser, this.thread, this.callback);
+                final LayoutDmVoiceMediaBinding binding = LayoutDmVoiceMediaBinding.inflate(layoutInflater, baseBinding.message, false);
+                return new DirectItemVoiceMediaViewHolder(baseBinding, binding, currentUser, thread, callback);
             }
             case LOCATION:
             case PROFILE: {
-                LayoutDmProfileBinding binding = LayoutDmProfileBinding.inflate(layoutInflater, baseBinding.message, false);
-                return new DirectItemProfileViewHolder(baseBinding, binding, this.currentUser, this.thread, this.callback);
+                final LayoutDmProfileBinding binding = LayoutDmProfileBinding.inflate(layoutInflater, baseBinding.message, false);
+                return new DirectItemProfileViewHolder(baseBinding, binding, currentUser, thread, callback);
             }
             case MEDIA: {
-                LayoutDmMediaBinding binding = LayoutDmMediaBinding.inflate(layoutInflater, baseBinding.message, false);
-                return new DirectItemMediaViewHolder(baseBinding, binding, this.currentUser, this.thread, this.callback);
+                final LayoutDmMediaBinding binding = LayoutDmMediaBinding.inflate(layoutInflater, baseBinding.message, false);
+                return new DirectItemMediaViewHolder(baseBinding, binding, currentUser, thread, callback);
             }
             case CLIP:
             case FELIX_SHARE:
             case MEDIA_SHARE: {
-                LayoutDmMediaShareBinding binding = LayoutDmMediaShareBinding.inflate(layoutInflater, baseBinding.message, false);
-                return new DirectItemMediaShareViewHolder(baseBinding, binding, this.currentUser, this.thread, this.callback);
+                final LayoutDmMediaShareBinding binding = LayoutDmMediaShareBinding.inflate(layoutInflater, baseBinding.message, false);
+                return new DirectItemMediaShareViewHolder(baseBinding, binding, currentUser, thread, callback);
             }
             case STORY_SHARE: {
-                LayoutDmStoryShareBinding binding = LayoutDmStoryShareBinding.inflate(layoutInflater, baseBinding.message, false);
-                return new DirectItemStoryShareViewHolder(baseBinding, binding, this.currentUser, this.thread, this.callback);
+                final LayoutDmStoryShareBinding binding = LayoutDmStoryShareBinding.inflate(layoutInflater, baseBinding.message, false);
+                return new DirectItemStoryShareViewHolder(baseBinding, binding, currentUser, thread, callback);
             }
             case REEL_SHARE: {
-                LayoutDmReelShareBinding binding = LayoutDmReelShareBinding.inflate(layoutInflater, baseBinding.message, false);
-                return new DirectItemReelShareViewHolder(baseBinding, binding, this.currentUser, this.thread, this.callback);
+                final LayoutDmReelShareBinding binding = LayoutDmReelShareBinding.inflate(layoutInflater, baseBinding.message, false);
+                return new DirectItemReelShareViewHolder(baseBinding, binding, currentUser, thread, callback);
             }
             case RAVEN_MEDIA: {
-                LayoutDmRavenMediaBinding binding = LayoutDmRavenMediaBinding.inflate(layoutInflater, baseBinding.message, false);
-                return new DirectItemRavenMediaViewHolder(baseBinding, binding, this.currentUser, this.thread, this.callback);
+                final LayoutDmRavenMediaBinding binding = LayoutDmRavenMediaBinding.inflate(layoutInflater, baseBinding.message, false);
+                return new DirectItemRavenMediaViewHolder(baseBinding, binding, currentUser, thread, callback);
             }
             case XMA: {
-                LayoutDmAnimatedMediaBinding binding = LayoutDmAnimatedMediaBinding.inflate(layoutInflater, baseBinding.message, false);
-                return new DirectItemXmaViewHolder(baseBinding, binding, this.currentUser, this.thread, this.callback);
+                final LayoutDmAnimatedMediaBinding binding = LayoutDmAnimatedMediaBinding.inflate(layoutInflater, baseBinding.message, false);
+                return new DirectItemXmaViewHolder(baseBinding, binding, currentUser, thread, callback);
             }
             case UNKNOWN:
             default: {
-                LayoutDmTextBinding binding = LayoutDmTextBinding.inflate(layoutInflater, baseBinding.message, false);
-                return new DirectItemDefaultViewHolder(baseBinding, binding, this.currentUser, this.thread, this.callback);
+                final LayoutDmTextBinding binding = LayoutDmTextBinding.inflate(layoutInflater, baseBinding.message, false);
+                return new DirectItemDefaultViewHolder(baseBinding, binding, currentUser, thread, callback);
             }
         }
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        DirectItemOrHeader itemOrHeader = this.getItem(position);
+    public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position) {
+        final DirectItemOrHeader itemOrHeader = getItem(position);
         if (itemOrHeader.isHeader()) {
             ((HeaderViewHolder) holder).bind(itemOrHeader.date);
             return;
         }
-        if (this.thread == null) return;
+        if (thread == null) return;
         ((DirectItemViewHolder) holder).bind(position, itemOrHeader.item);
     }
 
-    protected DirectItemOrHeader getItem(final int position) {
-        return this.differ.getCurrentList().get(position);
+    protected DirectItemOrHeader getItem(int position) {
+        return differ.getCurrentList().get(position);
     }
 
     @Override
     public int getItemCount() {
-        return this.differ.getCurrentList().size();
+        return differ.getCurrentList().size();
     }
 
     @Override
-    public int getItemViewType(int position) {
-        DirectItemOrHeader itemOrHeader = this.getItem(position);
+    public int getItemViewType(final int position) {
+        final DirectItemOrHeader itemOrHeader = getItem(position);
         if (itemOrHeader.isHeader()) {
             return -1;
         }
-        DirectItemType itemType = itemOrHeader.item.getItemType();
+        final DirectItemType itemType = itemOrHeader.item.getItemType();
         if (itemType == null) {
             return 0;
         }
@@ -255,8 +255,8 @@ public final class DirectItemsAdapter extends RecyclerView.Adapter<RecyclerView.
     }
 
     @Override
-    public long getItemId(int position) {
-        DirectItemOrHeader itemOrHeader = this.getItem(position);
+    public long getItemId(final int position) {
+        final DirectItemOrHeader itemOrHeader = getItem(position);
         if (itemOrHeader.isHeader()) {
             return itemOrHeader.date.hashCode();
         }
@@ -266,48 +266,48 @@ public final class DirectItemsAdapter extends RecyclerView.Adapter<RecyclerView.
         return itemOrHeader.item.getClientContext().hashCode();
     }
 
-    public void setThread(DirectThread thread) {
+    public void setThread(final DirectThread thread) {
         if (thread == null) return;
         this.thread = thread;
         // notifyDataSetChanged();
     }
 
-    public void submitList(@Nullable List<DirectItem> list) {
+    public void submitList(@Nullable final List<DirectItem> list) {
         if (list == null) {
-            this.differ.submitList(null);
+            differ.submitList(null);
             return;
         }
-        this.differ.submitList(this.sectionAndSort(list));
-        items = list;
+        differ.submitList(sectionAndSort(list));
+        this.items = list;
     }
 
-    public void submitList(@Nullable List<DirectItem> list, @Nullable Runnable commitCallback) {
+    public void submitList(@Nullable final List<DirectItem> list, @Nullable final Runnable commitCallback) {
         if (list == null) {
-            this.differ.submitList(null, commitCallback);
+            differ.submitList(null, commitCallback);
             return;
         }
-        this.differ.submitList(this.sectionAndSort(list), commitCallback);
-        items = list;
+        differ.submitList(sectionAndSort(list), commitCallback);
+        this.items = list;
     }
 
-    private List<DirectItemOrHeader> sectionAndSort(List<DirectItem> list) {
-        List<DirectItemOrHeader> itemOrHeaders = new ArrayList<>();
+    private List<DirectItemOrHeader> sectionAndSort(final List<DirectItem> list) {
+        final List<DirectItemOrHeader> itemOrHeaders = new ArrayList<>();
         LocalDate prevSectionDate = null;
         for (int i = 0; i < list.size(); i++) {
-            DirectItem item = list.get(i);
+            final DirectItem item = list.get(i);
             if (item == null || item.getDate() == null) continue;
-            DirectItemOrHeader prev = itemOrHeaders.isEmpty() ? null : itemOrHeaders.get(itemOrHeaders.size() - 1);
+            final DirectItemOrHeader prev = itemOrHeaders.isEmpty() ? null : itemOrHeaders.get(itemOrHeaders.size() - 1);
             if (prev != null
                     && prev.item != null
                     && prev.item.getDate() != null
                     && prev.item.getDate().toLocalDate().isEqual(item.getDate().toLocalDate())) {
                 // just add item
-                DirectItemOrHeader itemOrHeader = new DirectItemOrHeader();
+                final DirectItemOrHeader itemOrHeader = new DirectItemOrHeader();
                 itemOrHeader.item = item;
                 itemOrHeaders.add(itemOrHeader);
                 if (i == list.size() - 1) {
                     // add header
-                    DirectItemOrHeader itemOrHeader2 = new DirectItemOrHeader();
+                    final DirectItemOrHeader itemOrHeader2 = new DirectItemOrHeader();
                     itemOrHeader2.date = prevSectionDate;
                     itemOrHeaders.add(itemOrHeader2);
                 }
@@ -315,12 +315,12 @@ public final class DirectItemsAdapter extends RecyclerView.Adapter<RecyclerView.
             }
             if (prevSectionDate != null) {
                 // add header
-                DirectItemOrHeader itemOrHeader = new DirectItemOrHeader();
+                final DirectItemOrHeader itemOrHeader = new DirectItemOrHeader();
                 itemOrHeader.date = prevSectionDate;
                 itemOrHeaders.add(itemOrHeader);
             }
             // Add item
-            DirectItemOrHeader itemOrHeader = new DirectItemOrHeader();
+            final DirectItemOrHeader itemOrHeader = new DirectItemOrHeader();
             itemOrHeader.item = item;
             itemOrHeaders.add(itemOrHeader);
             prevSectionDate = item.getDate().toLocalDate();
@@ -329,29 +329,29 @@ public final class DirectItemsAdapter extends RecyclerView.Adapter<RecyclerView.
     }
 
     public List<DirectItemOrHeader> getList() {
-        return this.differ.getCurrentList();
+        return differ.getCurrentList();
     }
 
     public List<DirectItem> getItems() {
-        return this.items;
+        return items;
     }
 
     @Override
-    public void onViewRecycled(@NonNull RecyclerView.ViewHolder holder) {
+    public void onViewRecycled(@NonNull final RecyclerView.ViewHolder holder) {
         if (holder instanceof DirectItemViewHolder) {
             ((DirectItemViewHolder) holder).cleanup();
         }
     }
 
     @Override
-    public void onViewDetachedFromWindow(@NonNull RecyclerView.ViewHolder holder) {
+    public void onViewDetachedFromWindow(@NonNull final RecyclerView.ViewHolder holder) {
         if (holder instanceof DirectItemViewHolder) {
             ((DirectItemViewHolder) holder).cleanup();
         }
     }
 
     public DirectThread getThread() {
-        return this.thread;
+        return thread;
     }
 
     public static class DirectItemOrHeader {
@@ -359,15 +359,15 @@ public final class DirectItemsAdapter extends RecyclerView.Adapter<RecyclerView.
         public DirectItem item;
 
         public boolean isHeader() {
-            return this.date != null;
+            return date != null;
         }
 
         @NonNull
         @Override
         public String toString() {
             return "DirectItemOrHeader{" +
-                    "date=" + this.date +
-                    ", item=" + (this.item != null ? this.item.getItemType() : null) +
+                    "date=" + date +
+                    ", item=" + (item != null ? item.getItemType() : null) +
                     '}';
         }
     }
@@ -375,18 +375,18 @@ public final class DirectItemsAdapter extends RecyclerView.Adapter<RecyclerView.
     public static class HeaderViewHolder extends RecyclerView.ViewHolder {
         private final LayoutDmHeaderBinding binding;
 
-        public HeaderViewHolder(@NonNull LayoutDmHeaderBinding binding) {
+        public HeaderViewHolder(@NonNull final LayoutDmHeaderBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
         }
 
-        public void bind(LocalDate date) {
+        public void bind(final LocalDate date) {
             if (date == null) {
-                this.binding.header.setText("");
+                binding.header.setText("");
                 return;
             }
-            DateTimeFormatter dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT);
-            this.binding.header.setText(dateFormatter.format(date));
+            final DateTimeFormatter dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT);
+            binding.header.setText(dateFormatter.format(date));
         }
     }
 

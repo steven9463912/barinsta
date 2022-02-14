@@ -12,67 +12,67 @@ public class GraphQLUserListFetchResponse {
     private String status;
     private List<User> items;
 
-    public GraphQLUserListFetchResponse(String nextMaxId,
-                                        String status,
-                                        List<User> items) {
+    public GraphQLUserListFetchResponse(final String nextMaxId,
+                                        final String status,
+                                        final List<User> items) {
         this.nextMaxId = nextMaxId;
         this.status = status;
         this.items = items;
     }
 
     public boolean isMoreAvailable() {
-        return !TextUtils.isEmpty(this.nextMaxId);
+        return !TextUtils.isEmpty(nextMaxId);
     }
 
     public String getNextMaxId() {
-        return this.nextMaxId;
+        return nextMaxId;
     }
 
-    public GraphQLUserListFetchResponse setNextMaxId(String nextMaxId) {
+    public GraphQLUserListFetchResponse setNextMaxId(final String nextMaxId) {
         this.nextMaxId = nextMaxId;
         return this;
     }
 
     public String getStatus() {
-        return this.status;
+        return status;
     }
 
-    public GraphQLUserListFetchResponse setStatus(String status) {
+    public GraphQLUserListFetchResponse setStatus(final String status) {
         this.status = status;
         return this;
     }
 
     public List<User> getItems() {
-        return this.items;
+        return items;
     }
 
-    public GraphQLUserListFetchResponse setItems(List<User> items) {
+    public GraphQLUserListFetchResponse setItems(final List<User> items) {
         this.items = items;
         return this;
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
-        if (o == null || this.getClass() != o.getClass()) return false;
-        GraphQLUserListFetchResponse that = (GraphQLUserListFetchResponse) o;
-        return Objects.equals(this.nextMaxId, that.nextMaxId) &&
-                Objects.equals(this.status, that.status) &&
-                Objects.equals(this.items, that.items);
+        if (o == null || getClass() != o.getClass()) return false;
+        final GraphQLUserListFetchResponse that = (GraphQLUserListFetchResponse) o;
+        return Objects.equals(nextMaxId, that.nextMaxId) &&
+                Objects.equals(status, that.status) &&
+                Objects.equals(items, that.items);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.nextMaxId, this.status, this.items);
+        return Objects.hash(nextMaxId, status, items);
     }
 
     @NonNull
     @Override
     public String toString() {
         return "GraphQLUserListFetchResponse{" +
-                "nextMaxId='" + this.nextMaxId + '\'' +
-                ", status='" + this.status + '\'' +
-                ", items=" + this.items +
+                "nextMaxId='" + nextMaxId + '\'' +
+                ", status='" + status + '\'' +
+                ", items=" + items +
                 '}';
     }
 }

@@ -7,24 +7,24 @@ import java.util.Objects;
 public class Usertags implements Serializable {
     private final List<UsertagIn> in;
 
-    public Usertags(List<UsertagIn> in) {
+    public Usertags(final List<UsertagIn> in) {
         this.in = in;
     }
 
     public List<UsertagIn> getIn() {
-        return this.in;
+        return in;
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
-        if (o == null || this.getClass() != o.getClass()) return false;
-        Usertags usertags = (Usertags) o;
-        return Objects.equals(this.in, usertags.in);
+        if (o == null || getClass() != o.getClass()) return false;
+        final Usertags usertags = (Usertags) o;
+        return Objects.equals(in, usertags.in);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.in);
+        return Objects.hash(in);
     }
 }

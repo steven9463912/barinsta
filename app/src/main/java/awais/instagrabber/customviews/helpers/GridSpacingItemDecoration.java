@@ -11,29 +11,29 @@ public class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {
 
     private boolean hasHeader;
 
-    public GridSpacingItemDecoration(final int spacing) {
-        this.halfSpace = spacing / 2;
+    public GridSpacingItemDecoration(int spacing) {
+        halfSpace = spacing / 2;
     }
 
     @Override
-    public void getItemOffsets(@NonNull final Rect outRect, @NonNull final View view, @NonNull final RecyclerView parent, @NonNull final RecyclerView.State state) {
-        if (this.hasHeader && parent.getChildAdapterPosition(view) == 0) {
-            outRect.bottom = this.halfSpace;
-            outRect.left = -this.halfSpace;
-            outRect.right = -this.halfSpace;
+    public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+        if (hasHeader && parent.getChildAdapterPosition(view) == 0) {
+            outRect.bottom = halfSpace;
+            outRect.left = -halfSpace;
+            outRect.right = -halfSpace;
             return;
         }
-        if (parent.getPaddingLeft() != this.halfSpace) {
-            parent.setPadding(this.halfSpace, this.hasHeader ? 0 : this.halfSpace, this.halfSpace, this.halfSpace);
+        if (parent.getPaddingLeft() != halfSpace) {
+            parent.setPadding(halfSpace, hasHeader ? 0 : halfSpace, halfSpace, halfSpace);
             parent.setClipToPadding(false);
         }
-        outRect.top = this.halfSpace;
-        outRect.bottom = this.halfSpace;
-        outRect.left = this.halfSpace;
-        outRect.right = this.halfSpace;
+        outRect.top = halfSpace;
+        outRect.bottom = halfSpace;
+        outRect.left = halfSpace;
+        outRect.right = halfSpace;
     }
 
-    public void setHasHeader(boolean hasHeader) {
+    public void setHasHeader(final boolean hasHeader) {
         this.hasHeader = hasHeader;
     }
 }

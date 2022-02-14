@@ -8,7 +8,7 @@ public class GiphyGifImage {
     private final long webpSize;
     private final String webp;
 
-    public GiphyGifImage(int height, int width, long webpSize, String webp) {
+    public GiphyGifImage(final int height, final int width, final long webpSize, final String webp) {
         this.height = height;
         this.width = width;
         this.webpSize = webpSize;
@@ -16,44 +16,44 @@ public class GiphyGifImage {
     }
 
     public int getHeight() {
-        return this.height;
+        return height;
     }
 
     public int getWidth() {
-        return this.width;
+        return width;
     }
 
     public long getWebpSize() {
-        return this.webpSize;
+        return webpSize;
     }
 
     public String getWebp() {
-        return this.webp;
+        return webp;
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
-        if (o == null || this.getClass() != o.getClass()) return false;
-        GiphyGifImage that = (GiphyGifImage) o;
-        return this.height == that.height &&
-                this.width == that.width &&
-                this.webpSize == that.webpSize &&
-                Objects.equals(this.webp, that.webp);
+        if (o == null || getClass() != o.getClass()) return false;
+        final GiphyGifImage that = (GiphyGifImage) o;
+        return height == that.height &&
+                width == that.width &&
+                webpSize == that.webpSize &&
+                Objects.equals(webp, that.webp);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.height, this.width, this.webpSize, this.webp);
+        return Objects.hash(height, width, webpSize, webp);
     }
 
     @Override
     public String toString() {
         return "GiphyGifImage{" +
-                "height=" + this.height +
-                ", width=" + this.width +
-                ", webpSize=" + this.webpSize +
-                ", webp='" + this.webp + '\'' +
+                "height=" + height +
+                ", width=" + width +
+                ", webpSize=" + webpSize +
+                ", webp='" + webp + '\'' +
                 '}';
     }
 }

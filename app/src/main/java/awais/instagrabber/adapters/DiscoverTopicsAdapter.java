@@ -17,13 +17,13 @@ import awais.instagrabber.utils.ResponseBodyUtils;
 public class DiscoverTopicsAdapter extends ListAdapter<TopicCluster, TopicClusterViewHolder> {
     private static final DiffUtil.ItemCallback<TopicCluster> DIFF_CALLBACK = new DiffUtil.ItemCallback<TopicCluster>() {
         @Override
-        public boolean areItemsTheSame(@NonNull TopicCluster oldItem, @NonNull TopicCluster newItem) {
+        public boolean areItemsTheSame(@NonNull final TopicCluster oldItem, @NonNull final TopicCluster newItem) {
             return oldItem.getId().equals(newItem.getId());
         }
 
         @Override
-        public boolean areContentsTheSame(@NonNull TopicCluster oldItem, @NonNull TopicCluster newItem) {
-            String oldThumbUrl = ResponseBodyUtils.getThumbUrl(oldItem.getCoverMedia());
+        public boolean areContentsTheSame(@NonNull final TopicCluster oldItem, @NonNull final TopicCluster newItem) {
+            final String oldThumbUrl = ResponseBodyUtils.getThumbUrl(oldItem.getCoverMedia());
             return oldThumbUrl != null && oldThumbUrl.equals(ResponseBodyUtils.getThumbUrl(newItem.getCoverMedia()))
                     && oldItem.getTitle().equals(newItem.getTitle());
         }
@@ -31,22 +31,22 @@ public class DiscoverTopicsAdapter extends ListAdapter<TopicCluster, TopicCluste
 
     private final OnTopicClickListener onTopicClickListener;
 
-    public DiscoverTopicsAdapter(OnTopicClickListener onTopicClickListener) {
-        super(DiscoverTopicsAdapter.DIFF_CALLBACK);
+    public DiscoverTopicsAdapter(final OnTopicClickListener onTopicClickListener) {
+        super(DIFF_CALLBACK);
         this.onTopicClickListener = onTopicClickListener;
     }
 
     @NonNull
     @Override
-    public TopicClusterViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        ItemDiscoverTopicBinding binding = ItemDiscoverTopicBinding.inflate(layoutInflater, parent, false);
-        return new TopicClusterViewHolder(binding, this.onTopicClickListener, null);
+    public TopicClusterViewHolder onCreateViewHolder(@NonNull final ViewGroup parent, final int viewType) {
+        final LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+        final ItemDiscoverTopicBinding binding = ItemDiscoverTopicBinding.inflate(layoutInflater, parent, false);
+        return new TopicClusterViewHolder(binding, onTopicClickListener, null);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull TopicClusterViewHolder holder, int position) {
-        TopicCluster topicCluster = this.getItem(position);
+    public void onBindViewHolder(@NonNull final TopicClusterViewHolder holder, final int position) {
+        final TopicCluster topicCluster = getItem(position);
         holder.bind(topicCluster);
     }
 

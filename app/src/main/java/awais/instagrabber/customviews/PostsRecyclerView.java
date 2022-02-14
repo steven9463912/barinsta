@@ -58,174 +58,174 @@ public class PostsRecyclerView extends RecyclerView {
 
     private final List<FetchStatusChangeListener> fetchStatusChangeListeners = new ArrayList<>();
 
-    private final RecyclerView.SmoothScroller smoothScroller = new LinearSmoothScroller(this.getContext()) {
+    private final RecyclerView.SmoothScroller smoothScroller = new LinearSmoothScroller(getContext()) {
         @Override
         protected int getVerticalSnapPreference() {
             return LinearSmoothScroller.SNAP_TO_START;
         }
     };
 
-    public PostsRecyclerView(@NonNull Context context) {
+    public PostsRecyclerView(@NonNull final Context context) {
         super(context);
     }
 
-    public PostsRecyclerView(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public PostsRecyclerView(@NonNull final Context context, @Nullable final AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public PostsRecyclerView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public PostsRecyclerView(@NonNull final Context context, @Nullable final AttributeSet attrs, final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
-    public PostsRecyclerView setViewModelStoreOwner(ViewModelStoreOwner owner) {
-        if (this.initCalled) {
+    public PostsRecyclerView setViewModelStoreOwner(final ViewModelStoreOwner owner) {
+        if (initCalled) {
             throw new IllegalArgumentException("init already called!");
         }
-        viewModelStoreOwner = owner;
+        this.viewModelStoreOwner = owner;
         return this;
     }
 
-    public PostsRecyclerView setLifeCycleOwner(LifecycleOwner lifeCycleOwner) {
-        if (this.initCalled) {
+    public PostsRecyclerView setLifeCycleOwner(final LifecycleOwner lifeCycleOwner) {
+        if (initCalled) {
             throw new IllegalArgumentException("init already called!");
         }
         this.lifeCycleOwner = lifeCycleOwner;
         return this;
     }
 
-    public PostsRecyclerView setPostFetchService(PostFetcher.PostFetchService postFetchService) {
-        if (this.initCalled) {
+    public PostsRecyclerView setPostFetchService(final PostFetcher.PostFetchService postFetchService) {
+        if (initCalled) {
             throw new IllegalArgumentException("init already called!");
         }
         this.postFetchService = postFetchService;
         return this;
     }
 
-    public PostsRecyclerView setFeedItemCallback(@NonNull FeedAdapterV2.FeedItemCallback feedItemCallback) {
+    public PostsRecyclerView setFeedItemCallback(@NonNull final FeedAdapterV2.FeedItemCallback feedItemCallback) {
         this.feedItemCallback = feedItemCallback;
         return this;
     }
 
-    public PostsRecyclerView setSelectionModeCallback(@NonNull FeedAdapterV2.SelectionModeCallback selectionModeCallback) {
+    public PostsRecyclerView setSelectionModeCallback(@NonNull final FeedAdapterV2.SelectionModeCallback selectionModeCallback) {
         this.selectionModeCallback = selectionModeCallback;
         return this;
     }
 
-    public PostsRecyclerView setLayoutPreferences(PostsLayoutPreferences layoutPreferences) {
+    public PostsRecyclerView setLayoutPreferences(final PostsLayoutPreferences layoutPreferences) {
         this.layoutPreferences = layoutPreferences;
-        if (this.initCalled) {
+        if (initCalled) {
             if (layoutPreferences == null) return this;
-            this.feedAdapter.setLayoutPreferences(layoutPreferences);
-            this.updateLayout();
+            feedAdapter.setLayoutPreferences(layoutPreferences);
+            updateLayout();
         }
         return this;
     }
 
     public void init() {
-        this.initCalled = true;
-        if (this.viewModelStoreOwner == null) {
+        initCalled = true;
+        if (viewModelStoreOwner == null) {
             throw new IllegalArgumentException("ViewModelStoreOwner cannot be null");
-        } else if (this.lifeCycleOwner == null) {
+        } else if (lifeCycleOwner == null) {
             throw new IllegalArgumentException("LifecycleOwner cannot be null");
-        } else if (this.postFetchService == null) {
+        } else if (postFetchService == null) {
             throw new IllegalArgumentException("PostFetchService cannot be null");
         }
-        if (this.layoutPreferences == null) {
-            this.layoutPreferences = PostsLayoutPreferences.builder().build();
+        if (layoutPreferences == null) {
+            layoutPreferences = PostsLayoutPreferences.builder().build();
             // Utils.settingsHelper.putString(Constants.PREF_POSTS_LAYOUT, layoutPreferences.getJson());
         }
-        this.gridSpacingItemDecoration = new GridSpacingItemDecoration(Utils.convertDpToPx(2));
-        this.initTransition();
-        this.initAdapter();
-        this.initLayoutManager();
-        this.initSelf();
-        this.initDownloadWorkerListener();
+        gridSpacingItemDecoration = new GridSpacingItemDecoration(Utils.convertDpToPx(2));
+        initTransition();
+        initAdapter();
+        initLayoutManager();
+        initSelf();
+        initDownloadWorkerListener();
     }
 
     private void initTransition() {
-        this.transition = new ChangeBounds();
-        this.transition.setDuration(300);
+        transition = new ChangeBounds();
+        transition.setDuration(300);
     }
 
     private void initLayoutManager() {
-        this.layoutManager = new StaggeredGridLayoutManager(this.layoutPreferences.getColCount(), StaggeredGridLayoutManager.VERTICAL);
-        this.setLayoutManager(this.layoutManager);
+        layoutManager = new StaggeredGridLayoutManager(layoutPreferences.getColCount(), StaggeredGridLayoutManager.VERTICAL);
+        setLayoutManager(layoutManager);
     }
 
     private void initAdapter() {
-        this.feedAdapter = new FeedAdapterV2(this.layoutPreferences, this.feedItemCallback, this.selectionModeCallback);
-        this.feedAdapter.setStateRestorationPolicy(RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY);
-        this.setAdapter(this.feedAdapter);
+        feedAdapter = new FeedAdapterV2(layoutPreferences, feedItemCallback, selectionModeCallback);
+        feedAdapter.setStateRestorationPolicy(RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY);
+        setAdapter(feedAdapter);
     }
 
     private void initSelf() {
         try {
-            this.mediaViewModel = new ViewModelProvider(
-                    this.viewModelStoreOwner,
-                    new MediaViewModel.ViewModelFactory(this.postFetchService)
+            mediaViewModel = new ViewModelProvider(
+                    viewModelStoreOwner,
+                    new MediaViewModel.ViewModelFactory(postFetchService)
             ).get(MediaViewModel.class);
-        } catch (final Exception e) {
-            Log.e(PostsRecyclerView.TAG, "initSelf: ", e);
+        } catch (Exception e) {
+            Log.e(TAG, "initSelf: ", e);
         }
-        if (this.mediaViewModel == null) return;
-        LiveData<List<Media>> mediaListLiveData = this.mediaViewModel.getList();
-        mediaListLiveData.observe(this.lifeCycleOwner, list -> this.feedAdapter.submitList(list, () -> {
-            this.dispatchFetchStatus();
-            this.postDelayed(this::fetchMoreIfPossible, 1000);
-            if (!this.shouldScrollToTop) return;
-            this.shouldScrollToTop = false;
-            this.post(() -> this.smoothScrollToPosition(0));
+        if (mediaViewModel == null) return;
+        final LiveData<List<Media>> mediaListLiveData = mediaViewModel.getList();
+        mediaListLiveData.observe(lifeCycleOwner, list -> feedAdapter.submitList(list, () -> {
+            dispatchFetchStatus();
+            postDelayed(this::fetchMoreIfPossible, 1000);
+            if (!shouldScrollToTop) return;
+            shouldScrollToTop = false;
+            post(() -> smoothScrollToPosition(0));
         }));
-        if (this.layoutPreferences.getHasGap()) {
-            this.addItemDecoration(this.gridSpacingItemDecoration);
+        if (layoutPreferences.getHasGap()) {
+            addItemDecoration(gridSpacingItemDecoration);
         }
-        this.setHasFixedSize(true);
-        this.setNestedScrollingEnabled(true);
-        this.setItemAnimator(null);
-        this.lazyLoader = new RecyclerLazyLoaderAtEdge(this.layoutManager, (page) -> {
-            if (this.mediaViewModel.hasMore()) {
-                this.mediaViewModel.fetch();
-                this.dispatchFetchStatus();
+        setHasFixedSize(true);
+        setNestedScrollingEnabled(true);
+        setItemAnimator(null);
+        lazyLoader = new RecyclerLazyLoaderAtEdge(layoutManager, (page) -> {
+            if (mediaViewModel.hasMore()) {
+                mediaViewModel.fetch();
+                dispatchFetchStatus();
             }
         });
-        this.addOnScrollListener(this.lazyLoader);
+        addOnScrollListener(lazyLoader);
         if (mediaListLiveData.getValue() == null || mediaListLiveData.getValue().isEmpty()) {
-            this.mediaViewModel.fetch();
-            this.dispatchFetchStatus();
+            mediaViewModel.fetch();
+            dispatchFetchStatus();
         }
     }
 
     private void fetchMoreIfPossible() {
-        if (!this.mediaViewModel.hasMore()) return;
-        if (this.feedAdapter.getItemCount() == 0) return;
-        LayoutManager layoutManager = this.getLayoutManager();
+        if (!mediaViewModel.hasMore()) return;
+        if (feedAdapter.getItemCount() == 0) return;
+        final LayoutManager layoutManager = getLayoutManager();
         if (!(layoutManager instanceof StaggeredGridLayoutManager)) return;
-        int[] itemPositions = ((StaggeredGridLayoutManager) layoutManager).findLastCompletelyVisibleItemPositions(null);
-        boolean allNoPosition = Arrays.stream(itemPositions).allMatch(position -> position == RecyclerView.NO_POSITION);
+        final int[] itemPositions = ((StaggeredGridLayoutManager) layoutManager).findLastCompletelyVisibleItemPositions(null);
+        final boolean allNoPosition = Arrays.stream(itemPositions).allMatch(position -> position == RecyclerView.NO_POSITION);
         if (allNoPosition) return;
-        boolean match = Arrays.stream(itemPositions).anyMatch(position -> position == this.feedAdapter.getItemCount() - 1);
+        final boolean match = Arrays.stream(itemPositions).anyMatch(position -> position == feedAdapter.getItemCount() - 1);
         if (!match) return;
-        this.mediaViewModel.fetch();
-        this.dispatchFetchStatus();
+        mediaViewModel.fetch();
+        dispatchFetchStatus();
     }
 
     private void initDownloadWorkerListener() {
-        WorkManager.getInstance(this.getContext())
+        WorkManager.getInstance(getContext())
                    .getWorkInfosByTagLiveData("download")
-                   .observe(this.lifeCycleOwner, workInfoList -> {
-                       for (WorkInfo workInfo : workInfoList) {
+                   .observe(lifeCycleOwner, workInfoList -> {
+                       for (final WorkInfo workInfo : workInfoList) {
                            if (workInfo == null) continue;
-                           Data progress = workInfo.getProgress();
-                           float progressPercent = progress.getFloat(DownloadWorker.PROGRESS, 0);
+                           final Data progress = workInfo.getProgress();
+                           final float progressPercent = progress.getFloat(DownloadWorker.PROGRESS, 0);
                            if (progressPercent != 100) continue;
-                           String url = progress.getString(DownloadWorker.URL);
-                           List<Media> feedModels = this.mediaViewModel.getList().getValue();
+                           final String url = progress.getString(DownloadWorker.URL);
+                           final List<Media> feedModels = mediaViewModel.getList().getValue();
                            if (feedModels == null) continue;
                            for (int i = 0; i < feedModels.size(); i++) {
-                               Media feedModel = feedModels.get(i);
-                               List<String> displayUrls = this.getDisplayUrl(feedModel);
+                               final Media feedModel = feedModels.get(i);
+                               final List<String> displayUrls = getDisplayUrl(feedModel);
                                if (displayUrls.contains(url)) {
-                                   this.feedAdapter.notifyItemChanged(i);
+                                   feedAdapter.notifyItemChanged(i);
                                    break;
                                }
                            }
@@ -233,7 +233,7 @@ public class PostsRecyclerView extends RecyclerView {
                    });
     }
 
-    private List<String> getDisplayUrl(Media feedModel) {
+    private List<String> getDisplayUrl(final Media feedModel) {
         List<String> urls = Collections.emptyList();
         if (feedModel == null || feedModel.getType() == null) return urls;
         switch (feedModel.getType()) {
@@ -242,10 +242,10 @@ public class PostsRecyclerView extends RecyclerView {
                 urls = Collections.singletonList(ResponseBodyUtils.getImageUrl(feedModel));
                 break;
             case MEDIA_TYPE_SLIDER:
-                List<Media> sliderItems = feedModel.getCarouselMedia();
+                final List<Media> sliderItems = feedModel.getCarouselMedia();
                 if (sliderItems != null) {
-                    ImmutableList.Builder<String> builder = ImmutableList.builder();
-                    for (Media child : sliderItems) {
+                    final ImmutableList.Builder<String> builder = ImmutableList.builder();
+                    for (final Media child : sliderItems) {
                         builder.add(ResponseBodyUtils.getImageUrl(child));
                     }
                     urls = builder.build();
@@ -257,74 +257,74 @@ public class PostsRecyclerView extends RecyclerView {
     }
 
     private void updateLayout() {
-        this.post(() -> {
-            TransitionManager.beginDelayedTransition(this, this.transition);
-            this.feedAdapter.notifyDataSetChanged();
-            int itemDecorationCount = this.getItemDecorationCount();
-            if (!this.layoutPreferences.getHasGap()) {
+        post(() -> {
+            TransitionManager.beginDelayedTransition(this, transition);
+            feedAdapter.notifyDataSetChanged();
+            final int itemDecorationCount = getItemDecorationCount();
+            if (!layoutPreferences.getHasGap()) {
                 if (itemDecorationCount == 1) {
-                    this.removeItemDecoration(this.gridSpacingItemDecoration);
+                    removeItemDecoration(gridSpacingItemDecoration);
                 }
             } else {
                 if (itemDecorationCount == 0) {
-                    this.addItemDecoration(this.gridSpacingItemDecoration);
+                    addItemDecoration(gridSpacingItemDecoration);
                 }
             }
-            if (this.layoutPreferences.getType() == PostsLayoutPreferences.PostsLayoutType.LINEAR) {
-                if (this.layoutManager.getSpanCount() != 1) {
-                    this.layoutManager.setSpanCount(1);
-                    this.setAdapter(null);
-                    this.setAdapter(this.feedAdapter);
+            if (layoutPreferences.getType() == PostsLayoutPreferences.PostsLayoutType.LINEAR) {
+                if (layoutManager.getSpanCount() != 1) {
+                    layoutManager.setSpanCount(1);
+                    setAdapter(null);
+                    setAdapter(feedAdapter);
                 }
             } else {
-                final boolean shouldRedraw = this.layoutManager.getSpanCount() == 1;
-                this.layoutManager.setSpanCount(this.layoutPreferences.getColCount());
+                boolean shouldRedraw = layoutManager.getSpanCount() == 1;
+                layoutManager.setSpanCount(layoutPreferences.getColCount());
                 if (shouldRedraw) {
-                    this.setAdapter(null);
-                    this.setAdapter(this.feedAdapter);
+                    setAdapter(null);
+                    setAdapter(feedAdapter);
                 }
             }
         });
     }
 
     public void refresh() {
-        this.shouldScrollToTop = true;
-        if (this.lazyLoader != null) {
-            this.lazyLoader.resetState();
+        shouldScrollToTop = true;
+        if (lazyLoader != null) {
+            lazyLoader.resetState();
         }
-        if (this.mediaViewModel != null) {
-            this.mediaViewModel.refresh();
+        if (mediaViewModel != null) {
+            mediaViewModel.refresh();
         }
-        this.dispatchFetchStatus();
+        dispatchFetchStatus();
     }
 
     public boolean isFetching() {
-        return this.mediaViewModel != null && this.mediaViewModel.isFetching();
+        return mediaViewModel != null && mediaViewModel.isFetching();
     }
 
-    public PostsRecyclerView addFetchStatusChangeListener(FetchStatusChangeListener fetchStatusChangeListener) {
+    public PostsRecyclerView addFetchStatusChangeListener(final FetchStatusChangeListener fetchStatusChangeListener) {
         if (fetchStatusChangeListener == null) return this;
-        this.fetchStatusChangeListeners.add(fetchStatusChangeListener);
+        fetchStatusChangeListeners.add(fetchStatusChangeListener);
         return this;
     }
 
-    public void removeFetchStatusListener(FetchStatusChangeListener fetchStatusChangeListener) {
+    public void removeFetchStatusListener(final FetchStatusChangeListener fetchStatusChangeListener) {
         if (fetchStatusChangeListener == null) return;
-        this.fetchStatusChangeListeners.remove(fetchStatusChangeListener);
+        fetchStatusChangeListeners.remove(fetchStatusChangeListener);
     }
 
     private void dispatchFetchStatus() {
-        for (FetchStatusChangeListener listener : this.fetchStatusChangeListeners) {
-            listener.onFetchStatusChange(this.isFetching());
+        for (final FetchStatusChangeListener listener : fetchStatusChangeListeners) {
+            listener.onFetchStatusChange(isFetching());
         }
     }
 
     public PostsLayoutPreferences getLayoutPreferences() {
-        return this.layoutPreferences;
+        return layoutPreferences;
     }
 
     public void endSelection() {
-        this.feedAdapter.endSelection();
+        feedAdapter.endSelection();
     }
 
     public interface FetchStatusChangeListener {
@@ -334,13 +334,13 @@ public class PostsRecyclerView extends RecyclerView {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        this.lifeCycleOwner = null;
-        this.initCalled = false;
+        lifeCycleOwner = null;
+        initCalled = false;
     }
 
     @Override
-    public void smoothScrollToPosition(int position) {
-        this.smoothScroller.setTargetPosition(position);
-        this.layoutManager.startSmoothScroll(this.smoothScroller);
+    public void smoothScrollToPosition(final int position) {
+        smoothScroller.setTargetPosition(position);
+        layoutManager.startSmoothScroll(smoothScroller);
     }
 }

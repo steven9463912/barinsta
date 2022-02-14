@@ -74,141 +74,141 @@ public class FeedFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     private final FeedStoriesAdapter feedStoriesAdapter = new FeedStoriesAdapter(
             new FeedStoriesAdapter.OnFeedStoryClickListener() {
                 @Override
-                public void onFeedStoryClick(final Story model, final int position) {
-                    NavController navController = NavHostFragment.findNavController(FeedFragment.this);
-                    if (FeedFragment.this.isSafeToNavigate(navController)) {
+                public void onFeedStoryClick(Story model, int position) {
+                    final NavController navController = NavHostFragment.findNavController(FeedFragment.this);
+                    if (isSafeToNavigate(navController)) {
                         try {
-                            NavDirections action = FeedFragmentDirections.actionToStory(StoryViewerOptions.forFeedStoryPosition(position));
+                            final NavDirections action = FeedFragmentDirections.actionToStory(StoryViewerOptions.forFeedStoryPosition(position));
                             navController.navigate(action);
-                        } catch (final Exception e) {
-                            Log.e(FeedFragment.TAG, "onFeedStoryClick: ", e);
+                        } catch (Exception e) {
+                            Log.e(TAG, "onFeedStoryClick: ", e);
                         }
                     }
                 }
 
                 @Override
-                public void onFeedStoryLongClick(final Story model, final int position) {
-                    User user = model.getUser();
+                public void onFeedStoryLongClick(Story model, int position) {
+                    final User user = model.getUser();
                     if (user == null) return;
-                    FeedFragment.this.navigateToProfile("@" + user.getUsername());
+                    navigateToProfile("@" + user.getUsername());
                 }
             }
     );
 
     private final FeedAdapterV2.FeedItemCallback feedItemCallback = new FeedAdapterV2.FeedItemCallback() {
         @Override
-        public void onPostClick(Media feedModel) {
-            this.openPostDialog(feedModel, -1);
+        public void onPostClick(final Media feedModel) {
+            openPostDialog(feedModel, -1);
         }
 
         @Override
-        public void onSliderClick(Media feedModel, int position) {
-            this.openPostDialog(feedModel, position);
+        public void onSliderClick(final Media feedModel, final int position) {
+            openPostDialog(feedModel, position);
         }
 
         @Override
-        public void onCommentsClick(Media feedModel) {
+        public void onCommentsClick(final Media feedModel) {
             try {
-                User user = feedModel.getUser();
+                final User user = feedModel.getUser();
                 if (user == null) return;
-                NavDirections commentsAction = FeedFragmentDirections.actionToComments(
+                final NavDirections commentsAction = FeedFragmentDirections.actionToComments(
                         feedModel.getCode(),
                         feedModel.getPk(),
                         user.getPk()
                 );
                 NavHostFragment.findNavController(FeedFragment.this).navigate(commentsAction);
-            } catch (final Exception e) {
-                Log.e(FeedFragment.TAG, "onCommentsClick: ", e);
+            } catch (Exception e) {
+                Log.e(TAG, "onCommentsClick: ", e);
             }
         }
 
         @Override
-        public void onDownloadClick(Media feedModel, int childPosition, View popupLocation) {
-            Context context = FeedFragment.this.getContext();
+        public void onDownloadClick(final Media feedModel, final int childPosition, final View popupLocation) {
+            final Context context = getContext();
             if (context == null) return;
             DownloadUtils.showDownloadDialog(context, feedModel, childPosition, popupLocation);
         }
 
         @Override
-        public void onHashtagClick(String hashtag) {
+        public void onHashtagClick(final String hashtag) {
             try {
-                NavDirections action = FeedFragmentDirections.actionToHashtag(hashtag);
+                final NavDirections action = FeedFragmentDirections.actionToHashtag(hashtag);
                 NavHostFragment.findNavController(FeedFragment.this).navigate(action);
-            } catch (final Exception e) {
-                Log.e(FeedFragment.TAG, "onHashtagClick: ", e);
+            } catch (Exception e) {
+                Log.e(TAG, "onHashtagClick: ", e);
             }
         }
 
         @Override
-        public void onLocationClick(Media feedModel) {
-            Location location = feedModel.getLocation();
+        public void onLocationClick(final Media feedModel) {
+            final Location location = feedModel.getLocation();
             if (location == null) return;
             try {
-                NavDirections action = FeedFragmentDirections.actionToLocation(location.getPk());
+                final NavDirections action = FeedFragmentDirections.actionToLocation(location.getPk());
                 NavHostFragment.findNavController(FeedFragment.this).navigate(action);
-            } catch (final Exception e) {
-                Log.e(FeedFragment.TAG, "onLocationClick: ", e);
+            } catch (Exception e) {
+                Log.e(TAG, "onLocationClick: ", e);
             }
         }
 
         @Override
-        public void onMentionClick(String mention) {
-            FeedFragment.this.navigateToProfile(mention.trim());
+        public void onMentionClick(final String mention) {
+            navigateToProfile(mention.trim());
         }
 
         @Override
-        public void onNameClick(Media feedModel) {
+        public void onNameClick(final Media feedModel) {
             if (feedModel.getUser() == null) return;
-            FeedFragment.this.navigateToProfile("@" + feedModel.getUser().getUsername());
+            navigateToProfile("@" + feedModel.getUser().getUsername());
         }
 
         @Override
-        public void onProfilePicClick(Media feedModel) {
+        public void onProfilePicClick(final Media feedModel) {
             if (feedModel.getUser() == null) return;
-            FeedFragment.this.navigateToProfile("@" + feedModel.getUser().getUsername());
+            navigateToProfile("@" + feedModel.getUser().getUsername());
         }
 
         @Override
-        public void onURLClick(String url) {
-            Utils.openURL(FeedFragment.this.getContext(), url);
+        public void onURLClick(final String url) {
+            Utils.openURL(getContext(), url);
         }
 
         @Override
-        public void onEmailClick(String emailId) {
-            Utils.openEmailAddress(FeedFragment.this.getContext(), emailId);
+        public void onEmailClick(final String emailId) {
+            Utils.openEmailAddress(getContext(), emailId);
         }
 
-        private void openPostDialog(Media feedModel, int position) {
+        private void openPostDialog(final Media feedModel, final int position) {
             try {
-                NavDirections action = FeedFragmentDirections.actionToPost(feedModel, position);
+                final NavDirections action = FeedFragmentDirections.actionToPost(feedModel, position);
                 NavHostFragment.findNavController(FeedFragment.this).navigate(action);
-            } catch (final Exception e) {
-                Log.e(FeedFragment.TAG, "openPostDialog: ", e);
+            } catch (Exception e) {
+                Log.e(TAG, "openPostDialog: ", e);
             }
         }
     };
     private final OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(false) {
         @Override
         public void handleOnBackPressed() {
-            FeedFragment.this.binding.feedRecyclerView.endSelection();
+            binding.feedRecyclerView.endSelection();
         }
     };
     private final PrimaryActionModeCallback multiSelectAction = new PrimaryActionModeCallback(
             R.menu.multi_select_download_menu,
             new PrimaryActionModeCallback.CallbacksHelper() {
                 @Override
-                public void onDestroy(ActionMode mode) {
-                    FeedFragment.this.binding.feedRecyclerView.endSelection();
+                public void onDestroy(final ActionMode mode) {
+                    binding.feedRecyclerView.endSelection();
                 }
 
                 @Override
-                public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                public boolean onActionItemClicked(final ActionMode mode, final MenuItem item) {
                     if (item.getItemId() == R.id.action_download) {
-                        if (selectedFeedModels == null) return false;
-                        Context context = FeedFragment.this.getContext();
+                        if (FeedFragment.this.selectedFeedModels == null) return false;
+                        final Context context = getContext();
                         if (context == null) return false;
-                        DownloadUtils.download(context, ImmutableList.copyOf(selectedFeedModels));
-                        FeedFragment.this.binding.feedRecyclerView.endSelection();
+                        DownloadUtils.download(context, ImmutableList.copyOf(FeedFragment.this.selectedFeedModels));
+                        binding.feedRecyclerView.endSelection();
                         return true;
                     }
                     return false;
@@ -218,72 +218,72 @@ public class FeedFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
         @Override
         public void onSelectionStart() {
-            if (!FeedFragment.this.onBackPressedCallback.isEnabled()) {
-                OnBackPressedDispatcher onBackPressedDispatcher = FeedFragment.this.fragmentActivity.getOnBackPressedDispatcher();
-                FeedFragment.this.onBackPressedCallback.setEnabled(true);
-                onBackPressedDispatcher.addCallback(FeedFragment.this.getViewLifecycleOwner(), FeedFragment.this.onBackPressedCallback);
+            if (!onBackPressedCallback.isEnabled()) {
+                final OnBackPressedDispatcher onBackPressedDispatcher = fragmentActivity.getOnBackPressedDispatcher();
+                onBackPressedCallback.setEnabled(true);
+                onBackPressedDispatcher.addCallback(getViewLifecycleOwner(), onBackPressedCallback);
             }
-            if (FeedFragment.this.actionMode == null) {
-                FeedFragment.this.actionMode = FeedFragment.this.fragmentActivity.startActionMode(FeedFragment.this.multiSelectAction);
+            if (actionMode == null) {
+                actionMode = fragmentActivity.startActionMode(multiSelectAction);
             }
         }
 
         @Override
-        public void onSelectionChange(Set<Media> selectedFeedModels) {
-            String title = FeedFragment.this.getString(R.string.number_selected, selectedFeedModels.size());
-            if (FeedFragment.this.actionMode != null) {
-                FeedFragment.this.actionMode.setTitle(title);
+        public void onSelectionChange(final Set<Media> selectedFeedModels) {
+            final String title = getString(R.string.number_selected, selectedFeedModels.size());
+            if (actionMode != null) {
+                actionMode.setTitle(title);
             }
             FeedFragment.this.selectedFeedModels = selectedFeedModels;
         }
 
         @Override
         public void onSelectionEnd() {
-            if (FeedFragment.this.onBackPressedCallback.isEnabled()) {
-                FeedFragment.this.onBackPressedCallback.setEnabled(false);
-                FeedFragment.this.onBackPressedCallback.remove();
+            if (onBackPressedCallback.isEnabled()) {
+                onBackPressedCallback.setEnabled(false);
+                onBackPressedCallback.remove();
             }
-            if (FeedFragment.this.actionMode != null) {
-                FeedFragment.this.actionMode.finish();
-                FeedFragment.this.actionMode = null;
+            if (actionMode != null) {
+                actionMode.finish();
+                actionMode = null;
             }
         }
     };
 
-    private void navigateToProfile(String username) {
+    private void navigateToProfile(final String username) {
         try {
-            NavDirections action = FeedFragmentDirections.actionToProfile().setUsername(username);
+            final NavDirections action = FeedFragmentDirections.actionToProfile().setUsername(username);
             NavHostFragment.findNavController(this).navigate(action);
-        } catch (final Exception e) {
-            Log.e(FeedFragment.TAG, "navigateToProfile: ", e);
+        } catch (Exception e) {
+            Log.e(TAG, "navigateToProfile: ", e);
         }
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.fragmentActivity = (MainActivity) this.requireActivity();
-        this.storiesRepository = StoriesRepository.Companion.getInstance();
-        this.setHasOptionsMenu(true);
+        fragmentActivity = (MainActivity) requireActivity();
+        storiesRepository = StoriesRepository.Companion.getInstance();
+        setHasOptionsMenu(true);
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container,
-                             Bundle savedInstanceState) {
-        if (this.root != null) {
-            this.shouldRefresh = false;
-            return this.root;
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             final ViewGroup container,
+                             final Bundle savedInstanceState) {
+        if (root != null) {
+            shouldRefresh = false;
+            return root;
         }
-        this.binding = FragmentFeedBinding.inflate(inflater, container, false);
-        this.root = this.binding.getRoot();
-        return this.root;
+        binding = FragmentFeedBinding.inflate(inflater, container, false);
+        root = binding.getRoot();
+        return root;
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        if (!this.shouldRefresh) return;
-        this.binding.feedSwipeRefreshLayout.setOnRefreshListener(this);
+    public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
+        if (!shouldRefresh) return;
+        binding.feedSwipeRefreshLayout.setOnRefreshListener(this);
         /*
         FabAnimation.init(binding.fabCamera);
         FabAnimation.init(binding.fabStory);
@@ -302,29 +302,29 @@ public class FeedFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             }
         });
          */
-        this.setupFeedStories();
-        this.setupFeed();
-        this.shouldRefresh = false;
+        setupFeedStories();
+        setupFeed();
+        shouldRefresh = false;
     }
 
     @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NonNull final Menu menu, @NonNull final MenuInflater inflater) {
         inflater.inflate(R.menu.feed_menu, menu);
-        this.storyListMenu = menu.findItem(R.id.storyList);
-        this.storyListMenu.setVisible(!this.storiesFetching);
+        storyListMenu = menu.findItem(R.id.storyList);
+        storyListMenu.setVisible(!storiesFetching);
     }
 
     @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         if (item.getItemId() == R.id.storyList) {
             try {
-                NavDirections action = FeedFragmentDirections.actionToStoryList("feed");
+                final NavDirections action = FeedFragmentDirections.actionToStoryList("feed");
                 NavHostFragment.findNavController(this).navigate(action);
-            } catch (final Exception e) {
-                Log.e(FeedFragment.TAG, "onOptionsItemSelected: ", e);
+            } catch (Exception e) {
+                Log.e(TAG, "onOptionsItemSelected: ", e);
             }
         } else if (item.getItemId() == R.id.layout) {
-            this.showPostsLayoutPreferences();
+            showPostsLayoutPreferences();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -332,30 +332,30 @@ public class FeedFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     @Override
     public void onRefresh() {
-        this.binding.feedRecyclerView.refresh();
-        this.fetchStories();
+        binding.feedRecyclerView.refresh();
+        fetchStories();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        this.fragmentActivity.setToolbar(this.binding.toolbar, this);
+        fragmentActivity.setToolbar(binding.toolbar, this);
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        this.fragmentActivity.resetToolbar(this);
+        fragmentActivity.resetToolbar(this);
     }
 
     private void setupFeed() {
-        this.binding.feedRecyclerView.setViewModelStoreOwner(this)
+        binding.feedRecyclerView.setViewModelStoreOwner(this)
                                 .setLifeCycleOwner(this)
                                 .setPostFetchService(new FeedPostFetchService())
-                                .setLayoutPreferences(this.layoutPreferences)
-                                .addFetchStatusChangeListener(fetching -> this.updateSwipeRefreshState())
-                                .setFeedItemCallback(this.feedItemCallback)
-                                .setSelectionModeCallback(this.selectionModeCallback)
+                                .setLayoutPreferences(layoutPreferences)
+                                .addFetchStatusChangeListener(fetching -> updateSwipeRefreshState())
+                                .setFeedItemCallback(feedItemCallback)
+                                .setSelectionModeCallback(selectionModeCallback)
                                 .init();
         // binding.feedRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
         //     @Override
@@ -375,70 +375,70 @@ public class FeedFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     }
 
     private void updateSwipeRefreshState() {
-        AppExecutors.INSTANCE.getMainThread().execute(() -> this.binding.feedSwipeRefreshLayout
-                .setRefreshing(this.binding.feedRecyclerView.isFetching() || this.storiesFetching)
+        AppExecutors.INSTANCE.getMainThread().execute(() -> binding.feedSwipeRefreshLayout
+                .setRefreshing(binding.feedRecyclerView.isFetching() || storiesFetching)
         );
     }
 
     private void setupFeedStories() {
-        if (this.storyListMenu != null) this.storyListMenu.setVisible(false);
-        this.feedStoriesViewModel = new ViewModelProvider(this.fragmentActivity).get(FeedStoriesViewModel.class);
-        Context context = this.getContext();
+        if (storyListMenu != null) storyListMenu.setVisible(false);
+        feedStoriesViewModel = new ViewModelProvider(fragmentActivity).get(FeedStoriesViewModel.class);
+        final Context context = getContext();
         if (context == null) return;
-        RecyclerView storiesRecyclerView = this.binding.header;
+        final RecyclerView storiesRecyclerView = binding.header;
         storiesRecyclerView.setLayoutManager(new LinearLayoutManager(context, RecyclerView.HORIZONTAL, false));
-        storiesRecyclerView.setAdapter(this.feedStoriesAdapter);
-        this.feedStoriesViewModel.getList().observe(this.fragmentActivity, this.feedStoriesAdapter::submitList);
-        this.fetchStories();
+        storiesRecyclerView.setAdapter(feedStoriesAdapter);
+        feedStoriesViewModel.getList().observe(fragmentActivity, feedStoriesAdapter::submitList);
+        fetchStories();
     }
 
     private void fetchStories() {
-        if (this.storiesFetching) return;
+        if (storiesFetching) return;
         // final String cookie = settingsHelper.getString(Constants.COOKIE);
-        this.storiesFetching = true;
-        this.updateSwipeRefreshState();
-        this.storiesRepository.getFeedStories(
+        storiesFetching = true;
+        updateSwipeRefreshState();
+        storiesRepository.getFeedStories(
                 CoroutineUtilsKt.getContinuation((feedStoryModels, throwable) -> AppExecutors.INSTANCE.getMainThread().execute(() -> {
                     if (throwable != null) {
-                        Log.e(FeedFragment.TAG, "failed", throwable);
-                        this.storiesFetching = false;
-                        this.updateSwipeRefreshState();
+                        Log.e(TAG, "failed", throwable);
+                        storiesFetching = false;
+                        updateSwipeRefreshState();
                         return;
                     }
-                    this.storiesFetching = false;
+                    storiesFetching = false;
                     //noinspection unchecked
                     if (Utils.settingsHelper.getBoolean(PreferenceKeys.HIDE_MUTED_REELS)) {
-                        this.feedStoriesViewModel.getList().postValue(feedStoryModels
+                        feedStoriesViewModel.getList().postValue(feedStoryModels
                                 .stream()
                                 .filter(s -> s.getMuted() != true)
                                 .collect(Collectors.toList()));
                     }
-                    this.feedStoriesViewModel.getList().postValue((List<Story>) feedStoryModels);
-                    if (this.storyListMenu != null) this.storyListMenu.setVisible(true);
-                    this.updateSwipeRefreshState();
+                    feedStoriesViewModel.getList().postValue((List<Story>) feedStoryModels);
+                    if (storyListMenu != null) storyListMenu.setVisible(true);
+                    updateSwipeRefreshState();
                 }), Dispatchers.getIO())
         );
     }
 
     private void showPostsLayoutPreferences() {
-        PostsLayoutPreferencesDialogFragment fragment = new PostsLayoutPreferencesDialogFragment(
+        final PostsLayoutPreferencesDialogFragment fragment = new PostsLayoutPreferencesDialogFragment(
                 Constants.PREF_POSTS_LAYOUT,
                 preferences -> {
-                    this.layoutPreferences = preferences;
-                    new Handler().postDelayed(() -> this.binding.feedRecyclerView.setLayoutPreferences(preferences), 200);
+                    layoutPreferences = preferences;
+                    new Handler().postDelayed(() -> binding.feedRecyclerView.setLayoutPreferences(preferences), 200);
                 }
         );
-        fragment.show(this.getChildFragmentManager(), "posts_layout_preferences");
+        fragment.show(getChildFragmentManager(), "posts_layout_preferences");
     }
 
     public void scrollToTop() {
-        if (this.binding != null) {
-            this.binding.feedRecyclerView.smoothScrollToPosition(0);
+        if (binding != null) {
+            binding.feedRecyclerView.smoothScrollToPosition(0);
             // binding.storiesContainer.setExpanded(true);
         }
     }
 
-    private boolean isSafeToNavigate(NavController navController) {
+    private boolean isSafeToNavigate(final NavController navController) {
         return navController.getCurrentDestination() != null
                 && navController.getCurrentDestination().getId() == R.id.feedFragment;
     }

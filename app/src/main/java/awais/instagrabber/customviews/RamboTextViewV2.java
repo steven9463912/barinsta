@@ -27,140 +27,140 @@ public class RamboTextViewV2 extends AutoLinkTextView {
 
     private EmojiTextViewHelper emojiTextViewHelper;
 
-    public RamboTextViewV2(@NonNull Context context,
-                           @Nullable AttributeSet attrs) {
+    public RamboTextViewV2(@NonNull final Context context,
+                           @Nullable final AttributeSet attrs) {
         super(context, attrs);
-        this.init();
+        init();
     }
 
     private void init() {
-        this.getEmojiTextViewHelper().updateTransformationMethod();
-        this.addAutoLinkMode(MODE_HASHTAG.INSTANCE, MODE_MENTION.INSTANCE, MODE_EMAIL.INSTANCE, MODE_URL.INSTANCE);
-        this.onAutoLinkClick(autoLinkItem -> {
-            Mode mode = autoLinkItem.getMode();
+        getEmojiTextViewHelper().updateTransformationMethod();
+        addAutoLinkMode(MODE_HASHTAG.INSTANCE, MODE_MENTION.INSTANCE, MODE_EMAIL.INSTANCE, MODE_URL.INSTANCE);
+        onAutoLinkClick(autoLinkItem -> {
+            final Mode mode = autoLinkItem.getMode();
             if (mode.equals(MODE_MENTION.INSTANCE)) {
-                for (OnMentionClickListener onMentionClickListener : this.onMentionClickListeners) {
+                for (final OnMentionClickListener onMentionClickListener : onMentionClickListeners) {
                     onMentionClickListener.onMentionClick(autoLinkItem);
                 }
                 return;
             }
             if (mode.equals(MODE_HASHTAG.INSTANCE)) {
-                for (OnHashtagClickListener onHashtagClickListener : this.onHashtagClickListeners) {
+                for (final OnHashtagClickListener onHashtagClickListener : onHashtagClickListeners) {
                     onHashtagClickListener.onHashtagClick(autoLinkItem);
                 }
                 return;
             }
             if (mode.equals(MODE_URL.INSTANCE)) {
-                for (OnURLClickListener onURLClickListener : this.onURLClickListeners) {
+                for (final OnURLClickListener onURLClickListener : onURLClickListeners) {
                     onURLClickListener.onURLClick(autoLinkItem);
                 }
                 return;
             }
             if (mode.equals(MODE_EMAIL.INSTANCE)) {
-                for (OnEmailClickListener onEmailClickListener : this.onEmailClickListeners) {
+                for (final OnEmailClickListener onEmailClickListener : onEmailClickListeners) {
                     onEmailClickListener.onEmailClick(autoLinkItem);
                 }
             }
         });
-        this.onAutoLinkLongClick(autoLinkItem -> {});
+        onAutoLinkLongClick(autoLinkItem -> {});
     }
 
     @Override
-    public void setFilters(final InputFilter[] filters) {
-        super.setFilters(this.getEmojiTextViewHelper().getFilters(filters));
+    public void setFilters(InputFilter[] filters) {
+        super.setFilters(getEmojiTextViewHelper().getFilters(filters));
     }
 
     @Override
-    public void setAllCaps(final boolean allCaps) {
+    public void setAllCaps(boolean allCaps) {
         super.setAllCaps(allCaps);
-        this.getEmojiTextViewHelper().setAllCaps(allCaps);
+        getEmojiTextViewHelper().setAllCaps(allCaps);
     }
 
 
     private EmojiTextViewHelper getEmojiTextViewHelper() {
-        if (this.emojiTextViewHelper == null) {
-            this.emojiTextViewHelper = new EmojiTextViewHelper(this);
+        if (emojiTextViewHelper == null) {
+            emojiTextViewHelper = new EmojiTextViewHelper(this);
         }
-        return this.emojiTextViewHelper;
+        return emojiTextViewHelper;
     }
 
-    public void addOnMentionClickListener(OnMentionClickListener onMentionClickListener) {
+    public void addOnMentionClickListener(final OnMentionClickListener onMentionClickListener) {
         if (onMentionClickListener == null) {
             return;
         }
-        this.onMentionClickListeners.add(onMentionClickListener);
+        onMentionClickListeners.add(onMentionClickListener);
     }
 
-    public void removeOnMentionClickListener(OnMentionClickListener onMentionClickListener) {
+    public void removeOnMentionClickListener(final OnMentionClickListener onMentionClickListener) {
         if (onMentionClickListener == null) {
             return;
         }
-        this.onMentionClickListeners.remove(onMentionClickListener);
+        onMentionClickListeners.remove(onMentionClickListener);
     }
 
     public void clearOnMentionClickListeners() {
-        this.onMentionClickListeners.clear();
+        onMentionClickListeners.clear();
     }
 
-    public void addOnHashtagListener(OnHashtagClickListener onHashtagClickListener) {
+    public void addOnHashtagListener(final OnHashtagClickListener onHashtagClickListener) {
         if (onHashtagClickListener == null) {
             return;
         }
-        this.onHashtagClickListeners.add(onHashtagClickListener);
+        onHashtagClickListeners.add(onHashtagClickListener);
     }
 
-    public void removeOnHashtagListener(OnHashtagClickListener onHashtagClickListener) {
+    public void removeOnHashtagListener(final OnHashtagClickListener onHashtagClickListener) {
         if (onHashtagClickListener == null) {
             return;
         }
-        this.onHashtagClickListeners.remove(onHashtagClickListener);
+        onHashtagClickListeners.remove(onHashtagClickListener);
     }
 
     public void clearOnHashtagClickListeners() {
-        this.onHashtagClickListeners.clear();
+        onHashtagClickListeners.clear();
     }
 
-    public void addOnURLClickListener(OnURLClickListener onURLClickListener) {
+    public void addOnURLClickListener(final OnURLClickListener onURLClickListener) {
         if (onURLClickListener == null) {
             return;
         }
-        this.onURLClickListeners.add(onURLClickListener);
+        onURLClickListeners.add(onURLClickListener);
     }
 
-    public void removeOnURLClickListener(OnURLClickListener onURLClickListener) {
+    public void removeOnURLClickListener(final OnURLClickListener onURLClickListener) {
         if (onURLClickListener == null) {
             return;
         }
-        this.onURLClickListeners.remove(onURLClickListener);
+        onURLClickListeners.remove(onURLClickListener);
     }
 
     public void clearOnURLClickListeners() {
-        this.onURLClickListeners.clear();
+        onURLClickListeners.clear();
     }
 
-    public void addOnEmailClickListener(OnEmailClickListener onEmailClickListener) {
+    public void addOnEmailClickListener(final OnEmailClickListener onEmailClickListener) {
         if (onEmailClickListener == null) {
             return;
         }
-        this.onEmailClickListeners.add(onEmailClickListener);
+        onEmailClickListeners.add(onEmailClickListener);
     }
 
-    public void removeOnEmailClickListener(OnEmailClickListener onEmailClickListener) {
+    public void removeOnEmailClickListener(final OnEmailClickListener onEmailClickListener) {
         if (onEmailClickListener == null) {
             return;
         }
-        this.onEmailClickListeners.remove(onEmailClickListener);
+        onEmailClickListeners.remove(onEmailClickListener);
     }
 
     public void clearOnEmailClickListeners() {
-        this.onEmailClickListeners.clear();
+        onEmailClickListeners.clear();
     }
 
     public void clearAllAutoLinkListeners() {
-        this.clearOnMentionClickListeners();
-        this.clearOnHashtagClickListeners();
-        this.clearOnURLClickListeners();
-        this.clearOnEmailClickListeners();
+        clearOnMentionClickListeners();
+        clearOnHashtagClickListeners();
+        clearOnURLClickListeners();
+        clearOnEmailClickListeners();
     }
 
     public interface OnMentionClickListener {

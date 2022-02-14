@@ -29,12 +29,12 @@ public final class SearchItemsAdapter extends RecyclerView.Adapter<RecyclerView.
     private static final String TAG = SearchItemsAdapter.class.getSimpleName();
     private static final DiffUtil.ItemCallback<SearchItemOrHeader> DIFF_CALLBACK = new DiffUtil.ItemCallback<SearchItemOrHeader>() {
         @Override
-        public boolean areItemsTheSame(@NonNull SearchItemOrHeader oldItem, @NonNull SearchItemOrHeader newItem) {
+        public boolean areItemsTheSame(@NonNull final SearchItemOrHeader oldItem, @NonNull final SearchItemOrHeader newItem) {
             return Objects.equals(oldItem, newItem);
         }
 
         @Override
-        public boolean areContentsTheSame(@NonNull SearchItemOrHeader oldItem, @NonNull SearchItemOrHeader newItem) {
+        public boolean areContentsTheSame(@NonNull final SearchItemOrHeader oldItem, @NonNull final SearchItemOrHeader newItem) {
             return Objects.equals(oldItem, newItem);
         }
     };
@@ -46,81 +46,81 @@ public final class SearchItemsAdapter extends RecyclerView.Adapter<RecyclerView.
     private final SearchCategoryFragment.OnSearchItemClickListener onSearchItemClickListener;
     private final AsyncListDiffer<SearchItemOrHeader> differ;
 
-    public SearchItemsAdapter(final SearchCategoryFragment.OnSearchItemClickListener onSearchItemClickListener) {
-        this.differ = new AsyncListDiffer<>(new AdapterListUpdateCallback(this),
-                                       new AsyncDifferConfig.Builder<>(SearchItemsAdapter.DIFF_CALLBACK).build());
+    public SearchItemsAdapter(SearchCategoryFragment.OnSearchItemClickListener onSearchItemClickListener) {
+        differ = new AsyncListDiffer<>(new AdapterListUpdateCallback(this),
+                                       new AsyncDifferConfig.Builder<>(DIFF_CALLBACK).build());
         this.onSearchItemClickListener = onSearchItemClickListener;
     }
 
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        if (viewType == SearchItemsAdapter.VIEW_TYPE_HEADER) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull final ViewGroup parent, final int viewType) {
+        final LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+        if (viewType == VIEW_TYPE_HEADER) {
             return new HeaderViewHolder(ItemFavSectionHeaderBinding.inflate(layoutInflater, parent, false));
         }
-        ItemSearchResultBinding binding = ItemSearchResultBinding.inflate(layoutInflater, parent, false);
-        return new SearchItemViewHolder(binding, this.onSearchItemClickListener);
+        final ItemSearchResultBinding binding = ItemSearchResultBinding.inflate(layoutInflater, parent, false);
+        return new SearchItemViewHolder(binding, onSearchItemClickListener);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        if (this.getItemViewType(position) == SearchItemsAdapter.VIEW_TYPE_HEADER) {
-            SearchItemOrHeader searchItemOrHeader = this.getItem(position);
+    public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position) {
+        if (getItemViewType(position) == VIEW_TYPE_HEADER) {
+            final SearchItemOrHeader searchItemOrHeader = getItem(position);
             if (!searchItemOrHeader.isHeader()) return;
             ((HeaderViewHolder) holder).bind(searchItemOrHeader.header);
             return;
         }
-        ((SearchItemViewHolder) holder).bind(this.getItem(position).searchItem);
+        ((SearchItemViewHolder) holder).bind(getItem(position).searchItem);
     }
 
-    protected SearchItemOrHeader getItem(final int position) {
-        return this.differ.getCurrentList().get(position);
+    protected SearchItemOrHeader getItem(int position) {
+        return differ.getCurrentList().get(position);
     }
 
     @Override
     public int getItemCount() {
-        return this.differ.getCurrentList().size();
+        return differ.getCurrentList().size();
     }
 
     @Override
-    public int getItemViewType(int position) {
-        return this.getItem(position).isHeader() ? SearchItemsAdapter.VIEW_TYPE_HEADER : SearchItemsAdapter.VIEW_TYPE_ITEM;
+    public int getItemViewType(final int position) {
+        return getItem(position).isHeader() ? VIEW_TYPE_HEADER : VIEW_TYPE_ITEM;
     }
 
-    public void submitList(@Nullable List<SearchItem> list) {
+    public void submitList(@Nullable final List<SearchItem> list) {
         if (list == null) {
-            this.differ.submitList(null);
+            differ.submitList(null);
             return;
         }
-        this.differ.submitList(this.sectionAndSort(list));
+        differ.submitList(sectionAndSort(list));
     }
 
-    public void submitList(@Nullable List<SearchItem> list, @Nullable Runnable commitCallback) {
+    public void submitList(@Nullable final List<SearchItem> list, @Nullable final Runnable commitCallback) {
         if (list == null) {
-            this.differ.submitList(null, commitCallback);
+            differ.submitList(null, commitCallback);
             return;
         }
-        this.differ.submitList(this.sectionAndSort(list), commitCallback);
+        differ.submitList(sectionAndSort(list), commitCallback);
     }
 
     @NonNull
-    private List<SearchItemOrHeader> sectionAndSort(@NonNull List<SearchItem> list) {
-        boolean containsRecentOrFavorite = list.stream().anyMatch(searchItem -> searchItem.isRecent() || searchItem.isFavorite());
+    private List<SearchItemOrHeader> sectionAndSort(@NonNull final List<SearchItem> list) {
+        final boolean containsRecentOrFavorite = list.stream().anyMatch(searchItem -> searchItem.isRecent() || searchItem.isFavorite());
         // Don't do anything if not showing recent results
         if (!containsRecentOrFavorite) {
             return list.stream()
                        .map(SearchItemOrHeader::new)
                        .collect(Collectors.toList());
         }
-        List<SearchItem> listCopy = new ArrayList<>(list);
+        final List<SearchItem> listCopy = new ArrayList<>(list);
         Collections.sort(listCopy, (o1, o2) -> {
-            boolean bothRecent = o1.isRecent() && o2.isRecent();
+            final boolean bothRecent = o1.isRecent() && o2.isRecent();
             if (bothRecent) {
                 // Don't sort
                 return 0;
             }
-            boolean bothFavorite = o1.isFavorite() && o2.isFavorite();
+            final boolean bothFavorite = o1.isFavorite() && o2.isFavorite();
             if (bothFavorite) {
                 if (o1.getType() == o2.getType()) return 0;
                 // keep users at top
@@ -135,11 +135,11 @@ public final class SearchItemsAdapter extends RecyclerView.Adapter<RecyclerView.
             if (o2.isRecent()) return 1;
             return 0;
         });
-        List<SearchItemOrHeader> itemOrHeaders = new ArrayList<>();
+        final List<SearchItemOrHeader> itemOrHeaders = new ArrayList<>();
         for (int i = 0; i < listCopy.size(); i++) {
-            SearchItem searchItem = listCopy.get(i);
-            SearchItemOrHeader prev = itemOrHeaders.isEmpty() ? null : itemOrHeaders.get(itemOrHeaders.size() - 1);
-            final boolean prevWasSameType = prev != null && ((prev.searchItem.isRecent() && searchItem.isRecent())
+            final SearchItem searchItem = listCopy.get(i);
+            final SearchItemOrHeader prev = itemOrHeaders.isEmpty() ? null : itemOrHeaders.get(itemOrHeaders.size() - 1);
+            boolean prevWasSameType = prev != null && ((prev.searchItem.isRecent() && searchItem.isRecent())
                     || (prev.searchItem.isFavorite() && searchItem.isFavorite()));
             if (prevWasSameType) {
                 // just add the item
@@ -149,7 +149,7 @@ public final class SearchItemsAdapter extends RecyclerView.Adapter<RecyclerView.
             // add header and item
             // add header only if search item is recent or favorite
             if (searchItem.isRecent() || searchItem.isFavorite()) {
-                itemOrHeaders.add(new SearchItemOrHeader(searchItem.isRecent() ? SearchItemsAdapter.RECENT : SearchItemsAdapter.FAVORITE));
+                itemOrHeaders.add(new SearchItemOrHeader(searchItem.isRecent() ? RECENT : FAVORITE));
             }
             itemOrHeaders.add(new SearchItemOrHeader(searchItem));
         }
@@ -160,56 +160,56 @@ public final class SearchItemsAdapter extends RecyclerView.Adapter<RecyclerView.
         String header;
         SearchItem searchItem;
 
-        public SearchItemOrHeader(SearchItem searchItem) {
+        public SearchItemOrHeader(final SearchItem searchItem) {
             this.searchItem = searchItem;
         }
 
-        public SearchItemOrHeader(String header) {
+        public SearchItemOrHeader(final String header) {
             this.header = header;
         }
 
         boolean isHeader() {
-            return this.header != null;
+            return header != null;
         }
 
         @Override
-        public boolean equals(Object o) {
+        public boolean equals(final Object o) {
             if (this == o) return true;
-            if (o == null || this.getClass() != o.getClass()) return false;
-            SearchItemOrHeader that = (SearchItemOrHeader) o;
-            return Objects.equals(this.header, that.header) &&
-                    Objects.equals(this.searchItem, that.searchItem);
+            if (o == null || getClass() != o.getClass()) return false;
+            final SearchItemOrHeader that = (SearchItemOrHeader) o;
+            return Objects.equals(header, that.header) &&
+                    Objects.equals(searchItem, that.searchItem);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(this.header, this.searchItem);
+            return Objects.hash(header, searchItem);
         }
     }
 
     public static class HeaderViewHolder extends RecyclerView.ViewHolder {
         private final ItemFavSectionHeaderBinding binding;
 
-        public HeaderViewHolder(@NonNull ItemFavSectionHeaderBinding binding) {
+        public HeaderViewHolder(@NonNull final ItemFavSectionHeaderBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
         }
 
-        public void bind(String header) {
+        public void bind(final String header) {
             if (header == null) return;
-            int headerText;
+            final int headerText;
             switch (header) {
-                case SearchItemsAdapter.RECENT:
+                case RECENT:
                     headerText = R.string.recent;
                     break;
-                case SearchItemsAdapter.FAVORITE:
+                case FAVORITE:
                     headerText = R.string.title_favorites;
                     break;
                 default:
                     headerText = R.string.unknown;
                     break;
             }
-            this.binding.getRoot().setText(headerText);
+            binding.getRoot().setText(headerText);
         }
     }
 }

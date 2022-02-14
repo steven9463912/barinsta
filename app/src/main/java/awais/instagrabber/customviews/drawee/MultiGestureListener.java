@@ -33,8 +33,8 @@ public class MultiGestureListener extends GestureDetector.SimpleOnGestureListene
      *
      * @param listener the listener to be added
      */
-    public synchronized void addListener(final GestureDetector.SimpleOnGestureListener listener) {
-        this.mListeners.add(listener);
+    public synchronized void addListener(GestureDetector.SimpleOnGestureListener listener) {
+        mListeners.add(listener);
     }
 
     /**
@@ -44,15 +44,15 @@ public class MultiGestureListener extends GestureDetector.SimpleOnGestureListene
      *
      * @param listener the listener to remove
      */
-    public synchronized void removeListener(final GestureDetector.SimpleOnGestureListener listener) {
-        this.mListeners.remove(listener);
+    public synchronized void removeListener(GestureDetector.SimpleOnGestureListener listener) {
+        mListeners.remove(listener);
     }
 
     @Override
-    public synchronized boolean onSingleTapUp(final MotionEvent e) {
-        int size = this.mListeners.size();
+    public synchronized boolean onSingleTapUp(MotionEvent e) {
+        final int size = mListeners.size();
         for (int i = 0; i < size; i++) {
-            if (this.mListeners.get(i).onSingleTapUp(e)) {
+            if (mListeners.get(i).onSingleTapUp(e)) {
                 return true;
             }
         }
@@ -60,19 +60,19 @@ public class MultiGestureListener extends GestureDetector.SimpleOnGestureListene
     }
 
     @Override
-    public synchronized void onLongPress(final MotionEvent e) {
-        int size = this.mListeners.size();
+    public synchronized void onLongPress(MotionEvent e) {
+        final int size = mListeners.size();
         for (int i = 0; i < size; i++) {
-            this.mListeners.get(i).onLongPress(e);
+            mListeners.get(i).onLongPress(e);
         }
     }
 
     @Override
     public synchronized boolean onScroll(
-            final MotionEvent e1, final MotionEvent e2, final float distanceX, final float distanceY) {
-        int size = this.mListeners.size();
+            MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+        final int size = mListeners.size();
         for (int i = 0; i < size; i++) {
-            if (this.mListeners.get(i).onScroll(e1, e2, distanceX, distanceY)) {
+            if (mListeners.get(i).onScroll(e1, e2, distanceX, distanceY)) {
                 return true;
             }
         }
@@ -81,10 +81,10 @@ public class MultiGestureListener extends GestureDetector.SimpleOnGestureListene
 
     @Override
     public synchronized boolean onFling(
-            final MotionEvent e1, final MotionEvent e2, final float velocityX, final float velocityY) {
-        int size = this.mListeners.size();
+            MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+        final int size = mListeners.size();
         for (int i = 0; i < size; i++) {
-            if (this.mListeners.get(i).onFling(e1, e2, velocityX, velocityY)) {
+            if (mListeners.get(i).onFling(e1, e2, velocityX, velocityY)) {
                 return true;
             }
         }
@@ -92,18 +92,18 @@ public class MultiGestureListener extends GestureDetector.SimpleOnGestureListene
     }
 
     @Override
-    public synchronized void onShowPress(final MotionEvent e) {
-        int size = this.mListeners.size();
+    public synchronized void onShowPress(MotionEvent e) {
+        final int size = mListeners.size();
         for (int i = 0; i < size; i++) {
-            this.mListeners.get(i).onShowPress(e);
+            mListeners.get(i).onShowPress(e);
         }
     }
 
     @Override
-    public synchronized boolean onDown(final MotionEvent e) {
-        int size = this.mListeners.size();
+    public synchronized boolean onDown(MotionEvent e) {
+        final int size = mListeners.size();
         for (int i = 0; i < size; i++) {
-            if (this.mListeners.get(i).onDown(e)) {
+            if (mListeners.get(i).onDown(e)) {
                 return true;
             }
         }
@@ -111,10 +111,10 @@ public class MultiGestureListener extends GestureDetector.SimpleOnGestureListene
     }
 
     @Override
-    public synchronized boolean onDoubleTap(final MotionEvent e) {
-        int size = this.mListeners.size();
+    public synchronized boolean onDoubleTap(MotionEvent e) {
+        final int size = mListeners.size();
         for (int i = 0; i < size; i++) {
-            if (this.mListeners.get(i).onDoubleTap(e)) {
+            if (mListeners.get(i).onDoubleTap(e)) {
                 return true;
             }
         }
@@ -122,10 +122,10 @@ public class MultiGestureListener extends GestureDetector.SimpleOnGestureListene
     }
 
     @Override
-    public synchronized boolean onDoubleTapEvent(final MotionEvent e) {
-        int size = this.mListeners.size();
+    public synchronized boolean onDoubleTapEvent(MotionEvent e) {
+        final int size = mListeners.size();
         for (int i = 0; i < size; i++) {
-            if (this.mListeners.get(i).onDoubleTapEvent(e)) {
+            if (mListeners.get(i).onDoubleTapEvent(e)) {
                 return true;
             }
         }
@@ -133,10 +133,10 @@ public class MultiGestureListener extends GestureDetector.SimpleOnGestureListene
     }
 
     @Override
-    public synchronized boolean onSingleTapConfirmed(final MotionEvent e) {
-        int size = this.mListeners.size();
+    public synchronized boolean onSingleTapConfirmed(MotionEvent e) {
+        final int size = mListeners.size();
         for (int i = 0; i < size; i++) {
-            if (this.mListeners.get(i).onSingleTapConfirmed(e)) {
+            if (mListeners.get(i).onSingleTapConfirmed(e)) {
                 return true;
             }
         }
@@ -144,10 +144,10 @@ public class MultiGestureListener extends GestureDetector.SimpleOnGestureListene
     }
 
     @Override
-    public synchronized boolean onContextClick(final MotionEvent e) {
-        int size = this.mListeners.size();
+    public synchronized boolean onContextClick(MotionEvent e) {
+        final int size = mListeners.size();
         for (int i = 0; i < size; i++) {
-            if (this.mListeners.get(i).onContextClick(e)) {
+            if (mListeners.get(i).onContextClick(e)) {
                 return true;
             }
         }

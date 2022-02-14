@@ -37,148 +37,148 @@ public class TopicClusterViewHolder extends RecyclerView.ViewHolder {
     private final DiscoverTopicsAdapter.OnTopicClickListener onTopicClickListener;
     private final SavedCollectionsAdapter.OnCollectionClickListener onCollectionClickListener;
 
-    public TopicClusterViewHolder(@NonNull ItemDiscoverTopicBinding binding,
-                                  DiscoverTopicsAdapter.OnTopicClickListener onTopicClickListener,
-                                  SavedCollectionsAdapter.OnCollectionClickListener onCollectionClickListener) {
+    public TopicClusterViewHolder(@NonNull final ItemDiscoverTopicBinding binding,
+                                  final DiscoverTopicsAdapter.OnTopicClickListener onTopicClickListener,
+                                  final SavedCollectionsAdapter.OnCollectionClickListener onCollectionClickListener) {
         super(binding.getRoot());
         this.binding = binding;
         this.onTopicClickListener = onTopicClickListener;
         this.onCollectionClickListener = onCollectionClickListener;
     }
 
-    public void bind(TopicCluster topicCluster) {
+    public void bind(final TopicCluster topicCluster) {
         if (topicCluster == null) {
             return;
         }
-        AtomicInteger titleColor = new AtomicInteger(-1);
-        AtomicInteger backgroundColor = new AtomicInteger(-1);
-        if (this.onTopicClickListener != null) {
-            this.itemView.setOnClickListener(v -> this.onTopicClickListener.onTopicClick(
+        final AtomicInteger titleColor = new AtomicInteger(-1);
+        final AtomicInteger backgroundColor = new AtomicInteger(-1);
+        if (onTopicClickListener != null) {
+            itemView.setOnClickListener(v -> onTopicClickListener.onTopicClick(
                     topicCluster,
-                    this.binding.cover,
+                    binding.cover,
                     titleColor.get(),
                     backgroundColor.get()
             ));
-            this.itemView.setOnLongClickListener(v -> {
-                this.onTopicClickListener.onTopicLongClick(topicCluster.getCoverMedia());
+            itemView.setOnLongClickListener(v -> {
+                onTopicClickListener.onTopicLongClick(topicCluster.getCoverMedia());
                 return true;
             });
         }
         // binding.title.setTransitionName("title-" + topicCluster.getId());
-        this.binding.cover.setTransitionName("cover-" + topicCluster.getId());
-        String thumbUrl = ResponseBodyUtils.getThumbUrl(topicCluster.getCoverMedia());
+        binding.cover.setTransitionName("cover-" + topicCluster.getId());
+        final String thumbUrl = ResponseBodyUtils.getThumbUrl(topicCluster.getCoverMedia());
         if (thumbUrl == null) {
-            this.binding.cover.setImageURI((String) null);
+            binding.cover.setImageURI((String) null);
         } else {
-            ImageRequest imageRequest = ImageRequestBuilder
+            final ImageRequest imageRequest = ImageRequestBuilder
                     .newBuilderWithSource(Uri.parse(thumbUrl))
                     .build();
-            ImagePipeline imagePipeline = Fresco.getImagePipeline();
-            DataSource<CloseableReference<CloseableImage>> dataSource = imagePipeline
+            final ImagePipeline imagePipeline = Fresco.getImagePipeline();
+            final DataSource<CloseableReference<CloseableImage>> dataSource = imagePipeline
                     .fetchDecodedImage(imageRequest, CallerThreadExecutor.getInstance());
             dataSource.subscribe(new BaseBitmapDataSubscriber() {
                 @Override
-                public void onNewResultImpl(@Nullable final Bitmap bitmap) {
+                public void onNewResultImpl(@Nullable Bitmap bitmap) {
                     if (dataSource.isFinished()) {
                         dataSource.close();
                     }
                     if (bitmap != null) {
                         Palette.from(bitmap).generate(p -> {
-                            Resources resources = TopicClusterViewHolder.this.itemView.getResources();
+                            final Resources resources = itemView.getResources();
                             int titleTextColor = resources.getColor(R.color.white);
                             if (p != null) {
-                                Palette.Swatch swatch = p.getDominantSwatch();
+                                final Palette.Swatch swatch = p.getDominantSwatch();
                                 if (swatch != null) {
                                     backgroundColor.set(swatch.getRgb());
-                                    final GradientDrawable gd = new GradientDrawable(
+                                    GradientDrawable gd = new GradientDrawable(
                                             GradientDrawable.Orientation.TOP_BOTTOM,
                                             new int[]{Color.TRANSPARENT, backgroundColor.get()});
                                     titleTextColor = swatch.getTitleTextColor();
-                                    TopicClusterViewHolder.this.binding.background.setBackground(gd);
+                                    binding.background.setBackground(gd);
                                 }
                             }
                             titleColor.set(titleTextColor);
-                            TopicClusterViewHolder.this.binding.title.setTextColor(titleTextColor);
+                            binding.title.setTextColor(titleTextColor);
                         });
                     }
                 }
 
                 @Override
-                public void onFailureImpl(@NonNull final DataSource dataSource) {
+                public void onFailureImpl(@NonNull DataSource dataSource) {
                     dataSource.close();
                 }
             }, CallerThreadExecutor.getInstance());
-            this.binding.cover.setImageRequest(imageRequest);
+            binding.cover.setImageRequest(imageRequest);
         }
-        this.binding.title.setText(topicCluster.getTitle());
+        binding.title.setText(topicCluster.getTitle());
     }
 
-    public void bind(SavedCollection topicCluster) {
+    public void bind(final SavedCollection topicCluster) {
         if (topicCluster == null) {
             return;
         }
-        AtomicInteger titleColor = new AtomicInteger(-1);
-        AtomicInteger backgroundColor = new AtomicInteger(-1);
-        if (this.onCollectionClickListener != null) {
-            this.itemView.setOnClickListener(v -> this.onCollectionClickListener.onCollectionClick(
+        final AtomicInteger titleColor = new AtomicInteger(-1);
+        final AtomicInteger backgroundColor = new AtomicInteger(-1);
+        if (onCollectionClickListener != null) {
+            itemView.setOnClickListener(v -> onCollectionClickListener.onCollectionClick(
                     topicCluster,
-                    this.binding.getRoot(),
-                    this.binding.cover,
-                    this.binding.title,
+                    binding.getRoot(),
+                    binding.cover,
+                    binding.title,
                     titleColor.get(),
                     backgroundColor.get()
             ));
         }
         // binding.title.setTransitionName("title-" + topicCluster.getCollectionId());
-        this.binding.cover.setTransitionName("cover-" + topicCluster.getCollectionId());
-        Media coverMedia = topicCluster.getCoverMediaList() == null
+        binding.cover.setTransitionName("cover-" + topicCluster.getCollectionId());
+        final Media coverMedia = topicCluster.getCoverMediaList() == null
                 ? topicCluster.getCoverMedia()
                 : topicCluster.getCoverMediaList().get(0);
-        String thumbUrl = ResponseBodyUtils.getThumbUrl(coverMedia);
+        final String thumbUrl = ResponseBodyUtils.getThumbUrl(coverMedia);
         if (thumbUrl == null) {
-            this.binding.cover.setImageURI((String) null);
+            binding.cover.setImageURI((String) null);
         } else {
-            ImageRequest imageRequest = ImageRequestBuilder
+            final ImageRequest imageRequest = ImageRequestBuilder
                     .newBuilderWithSource(Uri.parse(thumbUrl))
                     .build();
-            ImagePipeline imagePipeline = Fresco.getImagePipeline();
-            DataSource<CloseableReference<CloseableImage>> dataSource = imagePipeline
+            final ImagePipeline imagePipeline = Fresco.getImagePipeline();
+            final DataSource<CloseableReference<CloseableImage>> dataSource = imagePipeline
                     .fetchDecodedImage(imageRequest, CallerThreadExecutor.getInstance());
             dataSource.subscribe(new BaseBitmapDataSubscriber() {
                 @Override
-                public void onNewResultImpl(@Nullable final Bitmap bitmap) {
+                public void onNewResultImpl(@Nullable Bitmap bitmap) {
                     if (dataSource.isFinished()) {
                         dataSource.close();
                     }
                     if (bitmap != null) {
                         Palette.from(bitmap).generate(p -> {
-                            Resources resources = TopicClusterViewHolder.this.itemView.getResources();
+                            final Resources resources = itemView.getResources();
                             int titleTextColor = resources.getColor(R.color.white);
                             if (p != null) {
-                                Palette.Swatch swatch = p.getDominantSwatch();
+                                final Palette.Swatch swatch = p.getDominantSwatch();
                                 if (swatch != null) {
                                     backgroundColor.set(swatch.getRgb());
-                                    final GradientDrawable gd = new GradientDrawable(
+                                    GradientDrawable gd = new GradientDrawable(
                                             GradientDrawable.Orientation.TOP_BOTTOM,
                                             new int[]{Color.TRANSPARENT, backgroundColor.get()}
                                     );
                                     titleTextColor = swatch.getTitleTextColor();
-                                    TopicClusterViewHolder.this.binding.background.setBackground(gd);
+                                    binding.background.setBackground(gd);
                                 }
                             }
                             titleColor.set(titleTextColor);
-                            TopicClusterViewHolder.this.binding.title.setTextColor(titleTextColor);
+                            binding.title.setTextColor(titleTextColor);
                         });
                     }
                 }
 
                 @Override
-                public void onFailureImpl(@NonNull final DataSource dataSource) {
+                public void onFailureImpl(@NonNull DataSource dataSource) {
                     dataSource.close();
                 }
             }, CallerThreadExecutor.getInstance());
-            this.binding.cover.setImageRequest(imageRequest);
+            binding.cover.setImageRequest(imageRequest);
         }
-        this.binding.title.setText(topicCluster.getCollectionName());
+        binding.title.setText(topicCluster.getCollectionName());
     }
 }

@@ -20,18 +20,18 @@ import static awais.instagrabber.utils.Utils.settingsHelper;
 
 public class LocalePreferencesFragment extends BasePreferencesFragment {
     @Override
-    void setupPreferenceScreen(PreferenceScreen screen) {
-        Context context = this.getContext();
+    void setupPreferenceScreen(final PreferenceScreen screen) {
+        final Context context = getContext();
         if (context == null) return;
-        screen.addPreference(this.getLanguagePreference(context));
-        screen.addPreference(this.getPostTimeFormatPreference(context));
+        screen.addPreference(getLanguagePreference(context));
+        screen.addPreference(getPostTimeFormatPreference(context));
     }
 
-    private Preference getLanguagePreference(@NonNull Context context) {
-        ListPreference preference = new ListPreference(context);
+    private Preference getLanguagePreference(@NonNull final Context context) {
+        final ListPreference preference = new ListPreference(context);
         preference.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
-        int length = this.getResources().getStringArray(R.array.languages).length;
-        String[] values = new String[length];
+        final int length = getResources().getStringArray(R.array.languages).length;
+        final String[] values = new String[length];
         for (int i = 0; i < length; i++) {
             values[i] = String.valueOf(i);
         }
@@ -42,17 +42,17 @@ public class LocalePreferencesFragment extends BasePreferencesFragment {
         preference.setIconSpaceReserved(false);
         preference.setEntryValues(values);
         preference.setOnPreferenceChangeListener((preference1, newValue) -> {
-            this.shouldRecreate();
-            int appUaCode = settingsHelper.getInteger(Constants.APP_UA_CODE);
-            String appUa = UserAgentUtils.generateAppUA(appUaCode, LocaleUtils.getCurrentLocale().getLanguage());
+            shouldRecreate();
+            final int appUaCode = settingsHelper.getInteger(Constants.APP_UA_CODE);
+            final String appUa = UserAgentUtils.generateAppUA(appUaCode, LocaleUtils.getCurrentLocale().getLanguage());
             settingsHelper.putString(Constants.APP_UA, appUa);
             return true;
         });
         return preference;
     }
 
-    private Preference getPostTimeFormatPreference(@NonNull Context context) {
-        Preference preference = new Preference(context);
+    private Preference getPostTimeFormatPreference(@NonNull final Context context) {
+        final Preference preference = new Preference(context);
         preference.setTitle(R.string.time_settings);
         preference.setSummary(TextUtils.nowToString());
         preference.setIconSpaceReserved(false);
@@ -73,7 +73,7 @@ public class LocalePreferencesFragment extends BasePreferencesFragment {
                         if (isCustomFormat) {
                             settingsHelper.putString(PreferenceKeys.CUSTOM_DATE_TIME_FORMAT, selectedFormat);
                         } else {
-                            String formatSelectionUpdated = spTimeFormatSelectedItemPosition + ";"
+                            final String formatSelectionUpdated = spTimeFormatSelectedItemPosition + ";"
                                     + spSeparatorSelectedItemPosition + ';'
                                     + spDateFormatSelectedItemPosition; // time;separator;date
                             settingsHelper.putString(PreferenceKeys.DATE_TIME_FORMAT, selectedFormat);
@@ -82,7 +82,7 @@ public class LocalePreferencesFragment extends BasePreferencesFragment {
                         TextUtils.setFormatter(DateTimeFormatter.ofPattern(selectedFormat, LocaleUtils.getCurrentLocale()));
                         preference.setSummary(TextUtils.nowToString());
                     }
-            ).show(this.getParentFragmentManager(), null);
+            ).show(getParentFragmentManager(), null);
             return true;
         });
         return preference;

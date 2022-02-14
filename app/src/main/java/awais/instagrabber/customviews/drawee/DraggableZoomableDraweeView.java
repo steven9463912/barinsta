@@ -21,28 +21,28 @@ public class DraggableZoomableDraweeView extends ZoomableDraweeView {
 
     private final VerticalDragHelper verticalDragHelper;
 
-    public DraggableZoomableDraweeView(Context context, GenericDraweeHierarchy hierarchy) {
+    public DraggableZoomableDraweeView(final Context context, final GenericDraweeHierarchy hierarchy) {
         super(context, hierarchy);
-        this.verticalDragHelper = new VerticalDragHelper(this);
+        verticalDragHelper = new VerticalDragHelper(this);
     }
 
-    public DraggableZoomableDraweeView(Context context) {
+    public DraggableZoomableDraweeView(final Context context) {
         super(context);
-        this.verticalDragHelper = new VerticalDragHelper(this);
+        verticalDragHelper = new VerticalDragHelper(this);
     }
 
-    public DraggableZoomableDraweeView(Context context, AttributeSet attrs) {
+    public DraggableZoomableDraweeView(final Context context, final AttributeSet attrs) {
         super(context, attrs);
-        this.verticalDragHelper = new VerticalDragHelper(this);
+        verticalDragHelper = new VerticalDragHelper(this);
     }
 
-    public DraggableZoomableDraweeView(Context context, AttributeSet attrs, int defStyle) {
+    public DraggableZoomableDraweeView(final Context context, final AttributeSet attrs, final int defStyle) {
         super(context, attrs, defStyle);
-        this.verticalDragHelper = new VerticalDragHelper(this);
+        verticalDragHelper = new VerticalDragHelper(this);
     }
 
-    public void setOnVerticalDragListener(@NonNull VerticalDragHelper.OnVerticalDragListener onVerticalDragListener) {
-        this.verticalDragHelper.setOnVerticalDragListener(onVerticalDragListener);
+    public void setOnVerticalDragListener(@NonNull final VerticalDragHelper.OnVerticalDragListener onVerticalDragListener) {
+        verticalDragHelper.setOnVerticalDragListener(onVerticalDragListener);
     }
 
     private int lastPointerCount;

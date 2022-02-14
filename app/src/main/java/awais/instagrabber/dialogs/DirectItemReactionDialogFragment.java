@@ -36,16 +36,16 @@ public class DirectItemReactionDialogFragment extends BottomSheetDialogFragment 
     private RecyclerView recyclerView;
     private DirectReactionsAdapter.OnReactionClickListener onReactionClickListener;
 
-    public static DirectItemReactionDialogFragment newInstance(final long viewerId,
-                                                               @NonNull final ArrayList<User> users,
-                                                               @NonNull final String itemId,
-                                                               @NonNull final DirectItemReactions reactions) {
-        Bundle args = new Bundle();
-        args.putLong(ARG_VIEWER_ID, viewerId);
-        args.putSerializable(ARG_USERS, users);
-        args.putString(ARG_ITEM_ID, itemId);
-        args.putSerializable(ARG_REACTIONS, reactions);
-        DirectItemReactionDialogFragment fragment = new DirectItemReactionDialogFragment();
+    public static DirectItemReactionDialogFragment newInstance(long viewerId,
+                                                               @NonNull ArrayList<User> users,
+                                                               @NonNull String itemId,
+                                                               @NonNull DirectItemReactions reactions) {
+        final Bundle args = new Bundle();
+        args.putLong(DirectItemReactionDialogFragment.ARG_VIEWER_ID, viewerId);
+        args.putSerializable(DirectItemReactionDialogFragment.ARG_USERS, users);
+        args.putString(DirectItemReactionDialogFragment.ARG_ITEM_ID, itemId);
+        args.putSerializable(DirectItemReactionDialogFragment.ARG_REACTIONS, reactions);
+        final DirectItemReactionDialogFragment fragment = new DirectItemReactionDialogFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -53,34 +53,34 @@ public class DirectItemReactionDialogFragment extends BottomSheetDialogFragment 
     public DirectItemReactionDialogFragment() {}
 
     @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setStyle(DialogFragment.STYLE_NORMAL, R.style.ThemeOverlay_Rounded_BottomSheetDialog);
+        this.setStyle(DialogFragment.STYLE_NORMAL, R.style.ThemeOverlay_Rounded_BottomSheetDialog);
     }
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable final Bundle savedInstanceState) {
-        final Context context = getContext();
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        Context context = this.getContext();
         if (context == null) {
             return null;
         }
-        recyclerView = new RecyclerView(context);
-        return recyclerView;
+        this.recyclerView = new RecyclerView(context);
+        return this.recyclerView;
 
     }
 
     @Override
-    public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
-        init();
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        this.init();
     }
 
     @Override
-    public void onAttach(@NonNull final Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         try {
-            onReactionClickListener = (DirectReactionsAdapter.OnReactionClickListener) this.getParentFragment();
-        } catch (final ClassCastException e) {
+            this.onReactionClickListener = (DirectReactionsAdapter.OnReactionClickListener) getParentFragment();
+        } catch (ClassCastException e) {
             throw new ClassCastException("Calling fragment must implement DirectReactionsAdapter.OnReactionClickListener interface");
         }
     }
@@ -88,33 +88,33 @@ public class DirectItemReactionDialogFragment extends BottomSheetDialogFragment 
     @Override
     public void onStart() {
         super.onStart();
-        Dialog dialog = this.getDialog();
+        final Dialog dialog = getDialog();
         if (dialog == null) return;
-        BottomSheetDialog bottomSheetDialog = (BottomSheetDialog) dialog;
-        View bottomSheetInternal = bottomSheetDialog.findViewById(com.google.android.material.R.id.design_bottom_sheet);
+        final BottomSheetDialog bottomSheetDialog = (BottomSheetDialog) dialog;
+        final View bottomSheetInternal = bottomSheetDialog.findViewById(com.google.android.material.R.id.design_bottom_sheet);
         if (bottomSheetInternal == null) return;
         bottomSheetInternal.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
         bottomSheetInternal.requestLayout();
     }
 
     private void init() {
-        Context context = this.getContext();
+        final Context context = getContext();
         if (context == null) return;
-        Bundle arguments = this.getArguments();
+        final Bundle arguments = getArguments();
         if (arguments == null) return;
-        long viewerId = arguments.getLong(DirectItemReactionDialogFragment.ARG_VIEWER_ID);
-        Serializable usersSerializable = arguments.getSerializable(DirectItemReactionDialogFragment.ARG_USERS);
+        final long viewerId = arguments.getLong(ARG_VIEWER_ID);
+        final Serializable usersSerializable = arguments.getSerializable(ARG_USERS);
         if (!(usersSerializable instanceof ArrayList)) return;
         //noinspection unchecked
-        List<User> users = (ArrayList<User>) usersSerializable;
-        Serializable reactionsSerializable = arguments.getSerializable(DirectItemReactionDialogFragment.ARG_REACTIONS);
+        final List<User> users = (ArrayList<User>) usersSerializable;
+        final Serializable reactionsSerializable = arguments.getSerializable(ARG_REACTIONS);
         if (!(reactionsSerializable instanceof DirectItemReactions)) return;
-        DirectItemReactions reactions = (DirectItemReactions) reactionsSerializable;
-        String itemId = arguments.getString(DirectItemReactionDialogFragment.ARG_ITEM_ID);
+        final DirectItemReactions reactions = (DirectItemReactions) reactionsSerializable;
+        final String itemId = arguments.getString(ARG_ITEM_ID);
         if (TextUtils.isEmpty(itemId)) return;
-        this.recyclerView.setLayoutManager(new LinearLayoutManager(context));
-        DirectReactionsAdapter adapter = new DirectReactionsAdapter(viewerId, users, itemId, this.onReactionClickListener);
-        this.recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        final DirectReactionsAdapter adapter = new DirectReactionsAdapter(viewerId, users, itemId, onReactionClickListener);
+        recyclerView.setAdapter(adapter);
         adapter.submitList(reactions.getEmojis());
     }
 }

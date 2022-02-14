@@ -8,30 +8,30 @@ public class UsertagIn implements Serializable {
     private final User user;
     private final List<String> position;
 
-    public UsertagIn(User user, List<String> position) {
+    public UsertagIn(final User user, final List<String> position) {
         this.user = user;
         this.position = position;
     }
 
     public User getUser() {
-        return this.user;
+        return user;
     }
 
     public List<String> getPosition() {
-        return this.position;
+        return position;
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
-        if (o == null || this.getClass() != o.getClass()) return false;
-        UsertagIn usertagIn = (UsertagIn) o;
-        return Objects.equals(this.user, usertagIn.user) &&
-                Objects.equals(this.position, usertagIn.position);
+        if (o == null || getClass() != o.getClass()) return false;
+        final UsertagIn usertagIn = (UsertagIn) o;
+        return Objects.equals(user, usertagIn.user) &&
+                Objects.equals(position, usertagIn.position);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.user, this.position);
+        return Objects.hash(user, position);
     }
 }

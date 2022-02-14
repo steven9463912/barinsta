@@ -13,11 +13,11 @@ public class ResizeAnimation extends Animation {
     final int startWidth;
     final int targetWidth;
 
-    public ResizeAnimation(View view,
-                           int startHeight,
-                           int startWidth,
-                           int targetHeight,
-                           int targetWidth) {
+    public ResizeAnimation(final View view,
+                           final int startHeight,
+                           final int startWidth,
+                           final int targetHeight,
+                           final int targetWidth) {
         this.view = view;
         this.startHeight = startHeight;
         this.targetHeight = targetHeight;
@@ -26,15 +26,15 @@ public class ResizeAnimation extends Animation {
     }
 
     @Override
-    protected void applyTransformation(float interpolatedTime, Transformation t) {
+    protected void applyTransformation(final float interpolatedTime, final Transformation t) {
         // Log.d(TAG, "applyTransformation: interpolatedTime: " + interpolatedTime);
-        this.view.getLayoutParams().height = (int) (this.startHeight + (this.targetHeight - this.startHeight) * interpolatedTime);
-        this.view.getLayoutParams().width = (int) (this.startWidth + (this.targetWidth - this.startWidth) * interpolatedTime);
-        this.view.requestLayout();
+        view.getLayoutParams().height = (int) (startHeight + (targetHeight - startHeight) * interpolatedTime);
+        view.getLayoutParams().width = (int) (startWidth + (targetWidth - startWidth) * interpolatedTime);
+        view.requestLayout();
     }
 
     @Override
-    public void initialize(int width, int height, int parentWidth, int parentHeight) {
+    public void initialize(final int width, final int height, final int parentWidth, final int parentHeight) {
         super.initialize(width, height, parentWidth, parentHeight);
     }
 

@@ -8,22 +8,22 @@ public class ExpandableGroup {
     private final String title;
     private final List<User> items;
 
-    public ExpandableGroup(String title, List<User> items) {
+    public ExpandableGroup(final String title, final List<User> items) {
         this.title = title;
         this.items = items;
     }
 
     public String getTitle() {
-        return this.title;
+        return title;
     }
 
     public List<User> getItems() {
-        return this.items;
+        return items;
     }
 
     public int getItemCount() {
-        if (this.items != null) {
-            return this.items.size();
+        if (items != null) {
+            return items.size();
         }
         return 0;
     }

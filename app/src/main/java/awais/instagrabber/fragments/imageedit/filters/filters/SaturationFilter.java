@@ -17,26 +17,26 @@ public class SaturationFilter extends Filter<GPUImageSaturationFilter> {
 
     public SaturationFilter() {
         super(FiltersHelper.FilterType.SATURATION, R.string.saturation);
-        this.properties = Collections.singletonMap(
-                SaturationFilter.PROP_SATURATION, new FloatProperty(R.string.saturation, 1.0f, 0f, 2.0f)
+        properties = Collections.singletonMap(
+                PROP_SATURATION, new FloatProperty(R.string.saturation, 1.0f, 0f, 2.0f)
         );
-        this.filter = new GPUImageSaturationFilter((Float) this.getProperty(SaturationFilter.PROP_SATURATION).getDefaultValue());
+        filter = new GPUImageSaturationFilter((Float) getProperty(PROP_SATURATION).getDefaultValue());
     }
 
     @Override
     public Map<Integer, Property<?>> getProperties() {
-        return this.properties;
+        return properties;
     }
 
     @Override
-    public void adjust(int property, Object value) {
+    public void adjust(final int property, final Object value) {
         super.adjust(property, value);
         if (!(value instanceof Float)) return;
-        this.filter.setSaturation((Float) value);
+        filter.setSaturation((Float) value);
     }
 
     @Override
     public GPUImageSaturationFilter getInstance() {
-        return this.filter;
+        return filter;
     }
 }

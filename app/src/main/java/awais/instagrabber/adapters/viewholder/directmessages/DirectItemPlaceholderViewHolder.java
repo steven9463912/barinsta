@@ -16,23 +16,23 @@ public class DirectItemPlaceholderViewHolder extends DirectItemViewHolder {
 
     private final LayoutDmStoryShareBinding binding;
 
-    public DirectItemPlaceholderViewHolder(@NonNull LayoutDmBaseBinding baseBinding,
-                                           LayoutDmStoryShareBinding binding,
-                                           User currentUser,
-                                           DirectThread thread,
-                                           DirectItemsAdapter.DirectItemCallback callback) {
+    public DirectItemPlaceholderViewHolder(@NonNull final LayoutDmBaseBinding baseBinding,
+                                           final LayoutDmStoryShareBinding binding,
+                                           final User currentUser,
+                                           final DirectThread thread,
+                                           final DirectItemsAdapter.DirectItemCallback callback) {
         super(baseBinding, currentUser, thread, callback);
         this.binding = binding;
-        this.setItemView(binding.getRoot());
+        setItemView(binding.getRoot());
     }
 
     @Override
-    public void bindItem(DirectItem directItemModel, MessageDirection messageDirection) {
-        this.binding.shareInfo.setText(directItemModel.getPlaceholder().getTitle());
-        this.binding.text.setVisibility(View.VISIBLE);
-        this.binding.text.setText(directItemModel.getPlaceholder().getMessage());
-        this.binding.ivMediaPreview.setVisibility(View.GONE);
-        this.binding.typeIcon.setVisibility(View.GONE);
+    public void bindItem(final DirectItem directItemModel, final MessageDirection messageDirection) {
+        binding.shareInfo.setText(directItemModel.getPlaceholder().getTitle());
+        binding.text.setVisibility(View.VISIBLE);
+        binding.text.setText(directItemModel.getPlaceholder().getMessage());
+        binding.ivMediaPreview.setVisibility(View.GONE);
+        binding.typeIcon.setVisibility(View.GONE);
     }
 
     @Override

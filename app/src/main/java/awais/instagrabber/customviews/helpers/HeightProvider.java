@@ -16,47 +16,47 @@ public class HeightProvider extends PopupWindow implements ViewTreeObserver.OnGl
     private HeightListener listener;
     private int heightMax;
 
-    public HeightProvider(final Activity activity) {
+    public HeightProvider(Activity activity) {
         super(activity);
-        mActivity = activity;
+        this.mActivity = activity;
 
-        this.rootView = new View(activity);
-        this.setContentView(this.rootView);
+        rootView = new View(activity);
+        setContentView(rootView);
 
-        this.rootView.getViewTreeObserver().addOnGlobalLayoutListener(this);
-        this.setBackgroundDrawable(new ColorDrawable(0));
+        rootView.getViewTreeObserver().addOnGlobalLayoutListener(this);
+        setBackgroundDrawable(new ColorDrawable(0));
 
-        this.setWidth(0);
-        this.setHeight(ViewGroup.LayoutParams.MATCH_PARENT);
+        setWidth(0);
+        setHeight(ViewGroup.LayoutParams.MATCH_PARENT);
 
-        setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-        this.setInputMethodMode(PopupWindow.INPUT_METHOD_NEEDED);
+        this.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        setInputMethodMode(PopupWindow.INPUT_METHOD_NEEDED);
     }
 
     public HeightProvider init() {
-        if (!this.isShowing()) {
-            View view = this.mActivity.getWindow().getDecorView();
-            view.post(() -> this.showAtLocation(view, Gravity.NO_GRAVITY, 0, 0));
+        if (!isShowing()) {
+            final View view = mActivity.getWindow().getDecorView();
+            view.post(() -> showAtLocation(view, Gravity.NO_GRAVITY, 0, 0));
         }
         return this;
     }
 
-    public HeightProvider setHeightListener(final HeightListener listener) {
+    public HeightProvider setHeightListener(HeightListener listener) {
         this.listener = listener;
         return this;
     }
 
     @Override
     public void onGlobalLayout() {
-        final Rect rect = new Rect();
-        this.rootView.getWindowVisibleDisplayFrame(rect);
-        if (rect.bottom > this.heightMax) {
-            this.heightMax = rect.bottom;
+        Rect rect = new Rect();
+        rootView.getWindowVisibleDisplayFrame(rect);
+        if (rect.bottom > heightMax) {
+            heightMax = rect.bottom;
         }
         
-        final int keyboardHeight = this.heightMax - rect.bottom;
-        if (this.listener != null) {
-            this.listener.onHeightChanged(keyboardHeight);
+        int keyboardHeight = heightMax - rect.bottom;
+        if (listener != null) {
+            listener.onHeightChanged(keyboardHeight);
         }
     }
 

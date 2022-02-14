@@ -17,26 +17,26 @@ public class ContrastFilter extends Filter<GPUImageContrastFilter> {
 
     public ContrastFilter() {
         super(FiltersHelper.FilterType.CONTRAST, R.string.contrast);
-        this.properties = Collections.singletonMap(
-                ContrastFilter.PROP_CONTRAST, new FloatProperty(R.string.contrast, 1.0f, 0.0f, 4.0f)
+        properties = Collections.singletonMap(
+                PROP_CONTRAST, new FloatProperty(R.string.contrast, 1.0f, 0.0f, 4.0f)
         );
-        this.filter = new GPUImageContrastFilter((Float) this.getProperty(ContrastFilter.PROP_CONTRAST).getDefaultValue());
+        filter = new GPUImageContrastFilter((Float) getProperty(PROP_CONTRAST).getDefaultValue());
     }
 
     @Override
     public Map<Integer, Property<?>> getProperties() {
-        return this.properties;
+        return properties;
     }
 
     @Override
-    public void adjust(int property, Object value) {
+    public void adjust(final int property, final Object value) {
         super.adjust(property, value);
         if (!(value instanceof Float)) return;
-        this.filter.setContrast((Float) value);
+        filter.setContrast((Float) value);
     }
 
     @Override
     public GPUImageContrastFilter getInstance() {
-        return this.filter;
+        return filter;
     }
 }

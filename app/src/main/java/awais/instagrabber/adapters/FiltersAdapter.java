@@ -20,12 +20,12 @@ public class FiltersAdapter extends ListAdapter<Filter<?>, FilterViewHolder> {
 
     private static final DiffUtil.ItemCallback<Filter<?>> DIFF_CALLBACK = new DiffUtil.ItemCallback<Filter<?>>() {
         @Override
-        public boolean areItemsTheSame(@NonNull Filter<?> oldItem, @NonNull Filter<?> newItem) {
+        public boolean areItemsTheSame(@NonNull final Filter<?> oldItem, @NonNull final Filter<?> newItem) {
             return oldItem.getType().equals(newItem.getType());
         }
 
         @Override
-        public boolean areContentsTheSame(@NonNull Filter<?> oldItem, @NonNull Filter<?> newItem) {
+        public boolean areContentsTheSame(@NonNull final Filter<?> oldItem, @NonNull final Filter<?> newItem) {
             return oldItem.getType().equals(newItem.getType());
         }
     };
@@ -36,56 +36,56 @@ public class FiltersAdapter extends ListAdapter<Filter<?>, FilterViewHolder> {
     private final String originalKey;
     private int selectedPosition;
 
-    public FiltersAdapter(Collection<GPUImageFilter> filters,
-                          String originalKey,
-                          Bitmap bitmap,
-                          OnFilterClickListener onFilterClickListener) {
-        super(FiltersAdapter.DIFF_CALLBACK);
+    public FiltersAdapter(final Collection<GPUImageFilter> filters,
+                          final String originalKey,
+                          final Bitmap bitmap,
+                          final OnFilterClickListener onFilterClickListener) {
+        super(DIFF_CALLBACK);
         this.filters = filters;
         this.originalKey = originalKey;
         this.bitmap = bitmap;
         this.onFilterClickListener = onFilterClickListener;
-        this.setHasStableIds(true);
+        setHasStableIds(true);
     }
 
     @NonNull
     @Override
-    public FilterViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        ItemFilterBinding binding = ItemFilterBinding.inflate(layoutInflater, parent, false);
-        return new FilterViewHolder(binding, this.filters, this.onFilterClickListener);
+    public FilterViewHolder onCreateViewHolder(@NonNull final ViewGroup parent, final int viewType) {
+        final LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+        final ItemFilterBinding binding = ItemFilterBinding.inflate(layoutInflater, parent, false);
+        return new FilterViewHolder(binding, filters, onFilterClickListener);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull FilterViewHolder holder, int position) {
-        holder.bind(position, this.originalKey, this.bitmap, this.getItem(position), this.selectedPosition == position);
+    public void onBindViewHolder(@NonNull final FilterViewHolder holder, final int position) {
+        holder.bind(position, originalKey, bitmap, getItem(position), selectedPosition == position);
     }
 
     @Override
-    public long getItemId(int position) {
-        return this.getItem(position).getLabel();
+    public long getItemId(final int position) {
+        return getItem(position).getLabel();
     }
 
-    public void setSelected(int position) {
-        int prev = selectedPosition;
-        selectedPosition = position;
-        this.notifyItemChanged(position);
-        this.notifyItemChanged(prev);
+    public void setSelected(final int position) {
+        final int prev = this.selectedPosition;
+        this.selectedPosition = position;
+        notifyItemChanged(position);
+        notifyItemChanged(prev);
     }
 
-    public void setSelectedFilter(GPUImageFilter instance) {
-        List<Filter<?>> currentList = this.getCurrentList();
+    public void setSelectedFilter(final GPUImageFilter instance) {
+        final List<Filter<?>> currentList = getCurrentList();
         int index = -1;
         for (int i = 0; i < currentList.size(); i++) {
-            Filter<?> filter = currentList.get(i);
-            GPUImageFilter filterInstance = filter.getInstance();
+            final Filter<?> filter = currentList.get(i);
+            final GPUImageFilter filterInstance = filter.getInstance();
             if (filterInstance.getClass() == instance.getClass()) {
                 index = i;
                 break;
             }
         }
         if (index < 0) return;
-        this.setSelected(index);
+        setSelected(index);
     }
 
     public interface OnFilterClickListener {

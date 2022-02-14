@@ -42,9 +42,9 @@ public class TransformGestureDetector implements MultiPointerGestureDetector.Lis
 
     private Listener mListener;
 
-    public TransformGestureDetector(final MultiPointerGestureDetector multiPointerGestureDetector) {
-        this.mDetector = multiPointerGestureDetector;
-        this.mDetector.setListener(this);
+    public TransformGestureDetector(MultiPointerGestureDetector multiPointerGestureDetector) {
+        mDetector = multiPointerGestureDetector;
+        mDetector.setListener(this);
     }
 
     /**
@@ -59,15 +59,15 @@ public class TransformGestureDetector implements MultiPointerGestureDetector.Lis
      *
      * @param listener listener to set
      */
-    public void setListener(final Listener listener) {
-        this.mListener = listener;
+    public void setListener(Listener listener) {
+        mListener = listener;
     }
 
     /**
      * Resets the component to the initial state.
      */
     public void reset() {
-        this.mDetector.reset();
+        mDetector.reset();
     }
 
     /**
@@ -76,32 +76,32 @@ public class TransformGestureDetector implements MultiPointerGestureDetector.Lis
      * @param event event to handle
      * @return whether or not the event was handled
      */
-    public boolean onTouchEvent(MotionEvent event) {
-        return this.mDetector.onTouchEvent(event);
+    public boolean onTouchEvent(final MotionEvent event) {
+        return mDetector.onTouchEvent(event);
     }
 
     @Override
-    public void onGestureBegin(final MultiPointerGestureDetector detector) {
-        if (this.mListener != null) {
-            this.mListener.onGestureBegin(this);
+    public void onGestureBegin(MultiPointerGestureDetector detector) {
+        if (mListener != null) {
+            mListener.onGestureBegin(this);
         }
     }
 
     @Override
-    public void onGestureUpdate(final MultiPointerGestureDetector detector) {
-        if (this.mListener != null) {
-            this.mListener.onGestureUpdate(this);
+    public void onGestureUpdate(MultiPointerGestureDetector detector) {
+        if (mListener != null) {
+            mListener.onGestureUpdate(this);
         }
     }
 
     @Override
-    public void onGestureEnd(final MultiPointerGestureDetector detector) {
-        if (this.mListener != null) {
-            this.mListener.onGestureEnd(this);
+    public void onGestureEnd(MultiPointerGestureDetector detector) {
+        if (mListener != null) {
+            mListener.onGestureEnd(this);
         }
     }
 
-    private float calcAverage(final float[] arr, final int len) {
+    private float calcAverage(float[] arr, int len) {
         float sum = 0;
         for (int i = 0; i < len; i++) {
             sum += arr[i];
@@ -113,73 +113,73 @@ public class TransformGestureDetector implements MultiPointerGestureDetector.Lis
      * Restarts the current gesture (if any).
      */
     public void restartGesture() {
-        this.mDetector.restartGesture();
+        mDetector.restartGesture();
     }
 
     /**
      * Gets whether there is a gesture in progress
      */
     public boolean isGestureInProgress() {
-        return this.mDetector.isGestureInProgress();
+        return mDetector.isGestureInProgress();
     }
 
     /**
      * Gets the number of pointers after the current gesture
      */
     public int getNewPointerCount() {
-        return this.mDetector.getNewPointerCount();
+        return mDetector.getNewPointerCount();
     }
 
     /**
      * Gets the number of pointers in the current gesture
      */
     public int getPointerCount() {
-        return this.mDetector.getPointerCount();
+        return mDetector.getPointerCount();
     }
 
     /**
      * Gets the X coordinate of the pivot point
      */
     public float getPivotX() {
-        return this.calcAverage(this.mDetector.getStartX(), this.mDetector.getPointerCount());
+        return calcAverage(mDetector.getStartX(), mDetector.getPointerCount());
     }
 
     /**
      * Gets the Y coordinate of the pivot point
      */
     public float getPivotY() {
-        return this.calcAverage(this.mDetector.getStartY(), this.mDetector.getPointerCount());
+        return calcAverage(mDetector.getStartY(), mDetector.getPointerCount());
     }
 
     /**
      * Gets the X component of the translation
      */
     public float getTranslationX() {
-        return this.calcAverage(this.mDetector.getCurrentX(), this.mDetector.getPointerCount())
-                - this.calcAverage(this.mDetector.getStartX(), this.mDetector.getPointerCount());
+        return calcAverage(mDetector.getCurrentX(), mDetector.getPointerCount())
+                - calcAverage(mDetector.getStartX(), mDetector.getPointerCount());
     }
 
     /**
      * Gets the Y component of the translation
      */
     public float getTranslationY() {
-        return this.calcAverage(this.mDetector.getCurrentY(), this.mDetector.getPointerCount())
-                - this.calcAverage(this.mDetector.getStartY(), this.mDetector.getPointerCount());
+        return calcAverage(mDetector.getCurrentY(), mDetector.getPointerCount())
+                - calcAverage(mDetector.getStartY(), mDetector.getPointerCount());
     }
 
     /**
      * Gets the scale
      */
     public float getScale() {
-        if (this.mDetector.getPointerCount() < 2) {
+        if (mDetector.getPointerCount() < 2) {
             return 1;
         } else {
-            final float startDeltaX = this.mDetector.getStartX()[1] - this.mDetector.getStartX()[0];
-            final float startDeltaY = this.mDetector.getStartY()[1] - this.mDetector.getStartY()[0];
-            final float currentDeltaX = this.mDetector.getCurrentX()[1] - this.mDetector.getCurrentX()[0];
-            final float currentDeltaY = this.mDetector.getCurrentY()[1] - this.mDetector.getCurrentY()[0];
-            final float startDist = (float) Math.hypot(startDeltaX, startDeltaY);
-            final float currentDist = (float) Math.hypot(currentDeltaX, currentDeltaY);
+            float startDeltaX = mDetector.getStartX()[1] - mDetector.getStartX()[0];
+            float startDeltaY = mDetector.getStartY()[1] - mDetector.getStartY()[0];
+            float currentDeltaX = mDetector.getCurrentX()[1] - mDetector.getCurrentX()[0];
+            float currentDeltaY = mDetector.getCurrentY()[1] - mDetector.getCurrentY()[0];
+            float startDist = (float) Math.hypot(startDeltaX, startDeltaY);
+            float currentDist = (float) Math.hypot(currentDeltaX, currentDeltaY);
             return currentDist / startDist;
         }
     }
@@ -188,15 +188,15 @@ public class TransformGestureDetector implements MultiPointerGestureDetector.Lis
      * Gets the rotation in radians
      */
     public float getRotation() {
-        if (this.mDetector.getPointerCount() < 2) {
+        if (mDetector.getPointerCount() < 2) {
             return 0;
         } else {
-            final float startDeltaX = this.mDetector.getStartX()[1] - this.mDetector.getStartX()[0];
-            final float startDeltaY = this.mDetector.getStartY()[1] - this.mDetector.getStartY()[0];
-            final float currentDeltaX = this.mDetector.getCurrentX()[1] - this.mDetector.getCurrentX()[0];
-            final float currentDeltaY = this.mDetector.getCurrentY()[1] - this.mDetector.getCurrentY()[0];
-            final float startAngle = (float) Math.atan2(startDeltaY, startDeltaX);
-            final float currentAngle = (float) Math.atan2(currentDeltaY, currentDeltaX);
+            float startDeltaX = mDetector.getStartX()[1] - mDetector.getStartX()[0];
+            float startDeltaY = mDetector.getStartY()[1] - mDetector.getStartY()[0];
+            float currentDeltaX = mDetector.getCurrentX()[1] - mDetector.getCurrentX()[0];
+            float currentDeltaY = mDetector.getCurrentY()[1] - mDetector.getCurrentY()[0];
+            float startAngle = (float) Math.atan2(startDeltaY, startDeltaX);
+            float currentAngle = (float) Math.atan2(currentDeltaY, currentDeltaX);
             return currentAngle - startAngle;
         }
     }

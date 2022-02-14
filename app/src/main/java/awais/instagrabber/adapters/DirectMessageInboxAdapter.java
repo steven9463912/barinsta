@@ -21,52 +21,52 @@ public final class DirectMessageInboxAdapter extends ListAdapter<DirectThread, D
 
     private static final DiffUtil.ItemCallback<DirectThread> diffCallback = new DiffUtil.ItemCallback<DirectThread>() {
         @Override
-        public boolean areItemsTheSame(@NonNull DirectThread oldItem, @NonNull DirectThread newItem) {
+        public boolean areItemsTheSame(@NonNull final DirectThread oldItem, @NonNull final DirectThread newItem) {
             return oldItem.getThreadId().equals(newItem.getThreadId());
         }
 
         @Override
-        public boolean areContentsTheSame(@NonNull DirectThread oldThread,
-                                          @NonNull DirectThread newThread) {
-            boolean titleEqual = oldThread.getThreadTitle().equals(newThread.getThreadTitle());
+        public boolean areContentsTheSame(@NonNull final DirectThread oldThread,
+                                          @NonNull final DirectThread newThread) {
+            final boolean titleEqual = oldThread.getThreadTitle().equals(newThread.getThreadTitle());
             if (!titleEqual) return false;
-            boolean lastSeenAtEqual = Objects.equals(oldThread.getLastSeenAt(), newThread.getLastSeenAt());
+            final boolean lastSeenAtEqual = Objects.equals(oldThread.getLastSeenAt(), newThread.getLastSeenAt());
             if (!lastSeenAtEqual) return false;
-            List<DirectItem> oldItems = oldThread.getItems();
-            List<DirectItem> newItems = newThread.getItems();
+            final List<DirectItem> oldItems = oldThread.getItems();
+            final List<DirectItem> newItems = newThread.getItems();
             if (oldItems == null || newItems == null) return false;
             if (oldItems.size() != newItems.size()) return false;
-            DirectItem oldItemFirst = oldThread.getFirstDirectItem();
-            DirectItem newItemFirst = newThread.getFirstDirectItem();
+            final DirectItem oldItemFirst = oldThread.getFirstDirectItem();
+            final DirectItem newItemFirst = newThread.getFirstDirectItem();
             if (oldItemFirst == null || newItemFirst == null) return false;
-            boolean idsEqual = oldItemFirst.getItemId().equals(newItemFirst.getItemId());
+            final boolean idsEqual = oldItemFirst.getItemId().equals(newItemFirst.getItemId());
             if (!idsEqual) return false;
             return oldItemFirst.getTimestamp() == newItemFirst.getTimestamp();
         }
     };
 
-    public DirectMessageInboxAdapter(OnItemClickListener onClickListener) {
-        super(new AsyncDifferConfig.Builder<>(DirectMessageInboxAdapter.diffCallback).build());
+    public DirectMessageInboxAdapter(final OnItemClickListener onClickListener) {
+        super(new AsyncDifferConfig.Builder<>(diffCallback).build());
         this.onClickListener = onClickListener;
     }
 
     @NonNull
     @Override
-    public DirectInboxItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int type) {
-        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        LayoutDmInboxItemBinding binding = LayoutDmInboxItemBinding.inflate(layoutInflater, parent, false);
-        return new DirectInboxItemViewHolder(binding, this.onClickListener);
+    public DirectInboxItemViewHolder onCreateViewHolder(@NonNull final ViewGroup parent, final int type) {
+        final LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+        final LayoutDmInboxItemBinding binding = LayoutDmInboxItemBinding.inflate(layoutInflater, parent, false);
+        return new DirectInboxItemViewHolder(binding, onClickListener);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull DirectInboxItemViewHolder holder, int position) {
-        DirectThread thread = this.getItem(position);
+    public void onBindViewHolder(@NonNull final DirectInboxItemViewHolder holder, final int position) {
+        final DirectThread thread = getItem(position);
         holder.bind(thread);
     }
 
     @Override
-    public long getItemId(int position) {
-        return this.getItem(position).getThreadId().hashCode();
+    public long getItemId(final int position) {
+        return getItem(position).getThreadId().hashCode();
     }
 
     public interface OnItemClickListener {

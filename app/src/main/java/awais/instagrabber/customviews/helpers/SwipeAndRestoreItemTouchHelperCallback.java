@@ -38,24 +38,24 @@ public class SwipeAndRestoreItemTouchHelperCallback extends ItemTouchHelper.Call
     private boolean mSwipeBack;
     private boolean hasVibrated;
 
-    public SwipeAndRestoreItemTouchHelperCallback(Context context, OnSwipeListener onSwipeListener) {
+    public SwipeAndRestoreItemTouchHelperCallback(final Context context, final OnSwipeListener onSwipeListener) {
         this.onSwipeListener = onSwipeListener;
-        this.swipeThreshold = Utils.displayMetrics.widthPixels * 0.25f;
-        this.swipeAutoCancelThreshold = this.swipeThreshold + Utils.convertDpToPx(5);
-        this.replyIcon = AppCompatResources.getDrawable(context, R.drawable.ic_round_reply_24);
-        if (this.replyIcon == null) {
+        swipeThreshold = Utils.displayMetrics.widthPixels * 0.25f;
+        swipeAutoCancelThreshold = swipeThreshold + Utils.convertDpToPx(5);
+        replyIcon = AppCompatResources.getDrawable(context, R.drawable.ic_round_reply_24);
+        if (replyIcon == null) {
             throw new IllegalArgumentException("reply icon is null");
         }
-        this.replyIcon.setTint(context.getResources().getColor(R.color.white)); //todo need to update according to theme
-        this.replyIconShowThreshold = Utils.convertDpToPx(24);
-        this.replyIconMaxTranslation = this.swipeThreshold - this.replyIconShowThreshold;
+        replyIcon.setTint(context.getResources().getColor(R.color.white)); //todo need to update according to theme
+        replyIconShowThreshold = Utils.convertDpToPx(24);
+        replyIconMaxTranslation = swipeThreshold - replyIconShowThreshold;
         // Log.d(TAG, "replyIconShowThreshold: " + replyIconShowThreshold + ", swipeThreshold: " + swipeThreshold);
-        this.replyIconSize = this.replyIconShowThreshold; // Utils.convertDpToPx(24);
-        this.replyIconXOffset = this.swipeThreshold * 0.25f /*Utils.convertDpToPx(20)*/;
+        replyIconSize = replyIconShowThreshold; // Utils.convertDpToPx(24);
+        replyIconXOffset = swipeThreshold * 0.25f /*Utils.convertDpToPx(20)*/;
     }
 
     @Override
-    public int getMovementFlags(@NonNull final RecyclerView recyclerView, @NonNull final RecyclerView.ViewHolder viewHolder) {
+    public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
         if (!(viewHolder instanceof SwipeableViewHolder)) {
             return ItemTouchHelper.Callback.makeMovementFlags(ItemTouchHelper.ACTION_STATE_IDLE, ItemTouchHelper.ACTION_STATE_IDLE);
         }
@@ -63,48 +63,48 @@ public class SwipeAndRestoreItemTouchHelperCallback extends ItemTouchHelper.Call
     }
 
     @Override
-    public boolean onMove(@NonNull final RecyclerView recyclerView,
-                          @NonNull final RecyclerView.ViewHolder viewHolder,
-                          @NonNull final RecyclerView.ViewHolder viewHolder1) {
+    public boolean onMove(@NonNull RecyclerView recyclerView,
+                          @NonNull RecyclerView.ViewHolder viewHolder,
+                          @NonNull RecyclerView.ViewHolder viewHolder1) {
         return false;
     }
 
     @Override
-    public void onSwiped(@NonNull final RecyclerView.ViewHolder viewHolder, final int i) {}
+    public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int i) {}
 
     @Override
-    public int convertToAbsoluteDirection(final int flags, final int layoutDirection) {
-        if (this.mSwipeBack) {
-            this.mSwipeBack = false;
+    public int convertToAbsoluteDirection(int flags, int layoutDirection) {
+        if (mSwipeBack) {
+            mSwipeBack = false;
             return 0;
         }
         return super.convertToAbsoluteDirection(flags, layoutDirection);
     }
 
     @Override
-    public void onChildDraw(@NonNull final Canvas c,
-                            @NonNull final RecyclerView recyclerView,
-                            @NonNull final RecyclerView.ViewHolder viewHolder,
-                            final float dX,
-                            final float dY,
-                            final int actionState,
-                            final boolean isCurrentlyActive) {
+    public void onChildDraw(@NonNull Canvas c,
+                            @NonNull RecyclerView recyclerView,
+                            @NonNull RecyclerView.ViewHolder viewHolder,
+                            float dX,
+                            float dY,
+                            int actionState,
+                            boolean isCurrentlyActive) {
         if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
-            this.setTouchListener(recyclerView, viewHolder);
+            setTouchListener(recyclerView, viewHolder);
         }
         super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
-        this.drawReplyButton(c, viewHolder);
+        drawReplyButton(c, viewHolder);
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    private void setTouchListener(final RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+    private void setTouchListener(RecyclerView recyclerView, final RecyclerView.ViewHolder viewHolder) {
         recyclerView.setOnTouchListener((v, event) -> {
             if (event.getAction() == MotionEvent.ACTION_MOVE) {
-                if (Math.abs(viewHolder.itemView.getTranslationX()) >= this.swipeAutoCancelThreshold) {
-                    if (!this.hasVibrated) {
+                if (Math.abs(viewHolder.itemView.getTranslationX()) >= swipeAutoCancelThreshold) {
+                    if (!hasVibrated) {
                         viewHolder.itemView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS,
                                                                   HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
-                        this.hasVibrated = true;
+                        hasVibrated = true;
                     }
                     //     MotionEvent cancelEvent = MotionEvent.obtain(event);
                     //     cancelEvent.setAction(MotionEvent.ACTION_CANCEL);
@@ -112,12 +112,12 @@ public class SwipeAndRestoreItemTouchHelperCallback extends ItemTouchHelper.Call
                     //     cancelEvent.recycle();
                 }
             }
-            this.mSwipeBack = event.getAction() == MotionEvent.ACTION_CANCEL || event.getAction() == MotionEvent.ACTION_UP;
-            if (this.mSwipeBack) {
-                this.hasVibrated = false;
-                if (Math.abs(viewHolder.itemView.getTranslationX()) >= this.swipeThreshold) {
-                    if (this.onSwipeListener != null) {
-                        this.onSwipeListener.onSwipe(viewHolder.getBindingAdapterPosition(), viewHolder);
+            mSwipeBack = event.getAction() == MotionEvent.ACTION_CANCEL || event.getAction() == MotionEvent.ACTION_UP;
+            if (mSwipeBack) {
+                hasVibrated = false;
+                if (Math.abs(viewHolder.itemView.getTranslationX()) >= swipeThreshold) {
+                    if (onSwipeListener != null) {
+                        onSwipeListener.onSwipe(viewHolder.getBindingAdapterPosition(), viewHolder);
                     }
                 }
             }
@@ -133,22 +133,22 @@ public class SwipeAndRestoreItemTouchHelperCallback extends ItemTouchHelper.Call
         void onSwipe(int adapterPosition, RecyclerView.ViewHolder viewHolder);
     }
 
-    private void drawReplyButton(final Canvas canvas, RecyclerView.ViewHolder viewHolder) {
+    private void drawReplyButton(Canvas canvas, final RecyclerView.ViewHolder viewHolder) {
         if (!(viewHolder instanceof SwipeableViewHolder)) return;
-        int swipeDirection = ((SwipeableViewHolder) viewHolder).getSwipeDirection();
+        final int swipeDirection = ((SwipeableViewHolder) viewHolder).getSwipeDirection();
         if (swipeDirection != ItemTouchHelper.START && swipeDirection != ItemTouchHelper.END) return;
-        View view = viewHolder.itemView;
-        final float translationX = view.getTranslationX();
+        final View view = viewHolder.itemView;
+        float translationX = view.getTranslationX();
         boolean show = false;
         float progress;
-        float translationXAbs = Math.abs(translationX);
-        if (translationXAbs >= this.replyIconShowThreshold) {
+        final float translationXAbs = Math.abs(translationX);
+        if (translationXAbs >= replyIconShowThreshold) {
             show = true;
         }
         if (show) {
             // replyIconShowThreshold -> swipeThreshold <=> progress 0 -> 1
-            float replyIconTranslation = translationXAbs - this.replyIconShowThreshold;
-            progress = replyIconTranslation / this.replyIconMaxTranslation;
+            final float replyIconTranslation = translationXAbs - replyIconShowThreshold;
+            progress = replyIconTranslation / replyIconMaxTranslation;
             if (progress > 1) {
                 progress = 1f;
             }
@@ -162,11 +162,11 @@ public class SwipeAndRestoreItemTouchHelperCallback extends ItemTouchHelper.Call
         }
         if (progress > 0) {
             // calculate the reply icon y position, then offset top, bottom with icon size
-            int y = view.getTop() + (view.getMeasuredHeight() / 2);
-            int tempIconSize = (int) (this.replyIconSize * progress);
-            int tempIconSizeHalf = tempIconSize / 2;
-            int xOffset = (int) (this.replyIconXOffset * progress);
-            int left;
+            final int y = view.getTop() + (view.getMeasuredHeight() / 2);
+            final int tempIconSize = (int) (replyIconSize * progress);
+            final int tempIconSizeHalf = tempIconSize / 2;
+            final int xOffset = (int) (replyIconXOffset * progress);
+            final int left;
             if (swipeDirection == ItemTouchHelper.END) {
                 // draw arrow of left side
                 left = xOffset;
@@ -174,10 +174,10 @@ public class SwipeAndRestoreItemTouchHelperCallback extends ItemTouchHelper.Call
                 // draw arrow of right side
                 left = view.getMeasuredWidth() - xOffset - tempIconSize;
             }
-            int right = tempIconSize + left;
-            this.replyIconBounds.set(left, y - tempIconSizeHalf, right, y + tempIconSizeHalf);
-            this.replyIcon.setBounds(this.replyIconBounds);
-            this.replyIcon.draw(canvas);
+            final int right = tempIconSize + left;
+            replyIconBounds.set(left, y - tempIconSizeHalf, right, y + tempIconSizeHalf);
+            replyIcon.setBounds(replyIconBounds);
+            replyIcon.draw(canvas);
         }
     }
 

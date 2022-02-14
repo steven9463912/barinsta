@@ -38,78 +38,78 @@ public class GifPickerViewModel extends ViewModel {
     private Call<GiphyGifResponse> searchRequest;
 
     public GifPickerViewModel() {
-        this.gifService = GifService.getInstance();
-        this.search(null);
+        gifService = GifService.getInstance();
+        search(null);
     }
 
     public LiveData<Resource<List<GiphyGif>>> getImages() {
-        return this.images;
+        return images;
     }
 
-    public void search(String query) {
-        Resource<List<GiphyGif>> currentValue = this.images.getValue();
+    public void search(final String query) {
+        final Resource<List<GiphyGif>> currentValue = images.getValue();
         if (currentValue != null && currentValue.status == Resource.Status.LOADING) {
-            this.cancelSearchRequest();
+            cancelSearchRequest();
         }
-        this.images.postValue(Resource.loading(this.getCurrentImages()));
-        this.searchRequest = this.gifService.searchGiphyGifs(query, query != null);
-        this.searchRequest.enqueue(new Callback<GiphyGifResponse>() {
+        images.postValue(Resource.loading(getCurrentImages()));
+        searchRequest = gifService.searchGiphyGifs(query, query != null);
+        searchRequest.enqueue(new Callback<GiphyGifResponse>() {
             @Override
-            public void onResponse(@NonNull Call<GiphyGifResponse> call,
-                                   @NonNull Response<GiphyGifResponse> response) {
+            public void onResponse(@NonNull final Call<GiphyGifResponse> call,
+                                   @NonNull final Response<GiphyGifResponse> response) {
                 if (response.isSuccessful()) {
-                    GifPickerViewModel.this.parseResponse(response);
+                    parseResponse(response);
                     return;
                 }
                 if (response.errorBody() != null) {
                     try {
-                        String string = response.errorBody().string();
-                        String msg = String.format(Locale.US,
+                        final String string = response.errorBody().string();
+                        final String msg = String.format(Locale.US,
                                                          "onResponse: url: %s, responseCode: %d, errorBody: %s",
                                 call.request().url(),
                                                          response.code(),
                                                          string);
-                        GifPickerViewModel.this.images.postValue(Resource.error(msg, GifPickerViewModel.this.getCurrentImages()));
-                        Log.e(GifPickerViewModel.TAG, msg);
-                    } catch (final IOException e) {
-                        GifPickerViewModel.this.images.postValue(Resource.error(e.getMessage(), GifPickerViewModel.this.getCurrentImages()));
-                        Log.e(GifPickerViewModel.TAG, "onResponse: ", e);
+                        images.postValue(Resource.error(msg, getCurrentImages()));
+                        Log.e(TAG, msg);
+                    } catch (IOException e) {
+                        images.postValue(Resource.error(e.getMessage(), getCurrentImages()));
+                        Log.e(TAG, "onResponse: ", e);
                     }
                 }
-                GifPickerViewModel.this.images.postValue(Resource.error(R.string.generic_failed_request, GifPickerViewModel.this.getCurrentImages()));
+                images.postValue(Resource.error(R.string.generic_failed_request, getCurrentImages()));
             }
 
             @Override
-            public void onFailure(@NonNull Call<GiphyGifResponse> call,
-                                  @NonNull Throwable t) {
-                GifPickerViewModel.this.images.postValue(Resource.error(t.getMessage(), GifPickerViewModel.this.getCurrentImages()));
-                Log.e(GifPickerViewModel.TAG, "enqueueRequest: onFailure: ", t);
+            public void onFailure(@NonNull final Call<GiphyGifResponse> call,
+                                  @NonNull final Throwable t) {
+                images.postValue(Resource.error(t.getMessage(), getCurrentImages()));
+                Log.e(TAG, "enqueueRequest: onFailure: ", t);
             }
         });
     }
 
-    private void parseResponse(Response<GiphyGifResponse> response) {
-        GiphyGifResponse giphyGifResponse = response.body();
+    private void parseResponse(final Response<GiphyGifResponse> response) {
+        final GiphyGifResponse giphyGifResponse = response.body();
         if (giphyGifResponse == null) {
-            this.images.postValue(Resource.error(R.string.generic_null_response, this.getCurrentImages()));
+            images.postValue(Resource.error(R.string.generic_null_response, getCurrentImages()));
             return;
         }
-        GiphyGifResults results = giphyGifResponse.getResults();
-        this.images.postValue(Resource.success(
+        final GiphyGifResults results = giphyGifResponse.getResults();
+        images.postValue(Resource.success(
                 ImmutableList.<GiphyGif>builder()
-                        .addAll(results.getGiphy() == null ? Collections.emptyList() : this.filterInvalid(results.getGiphy()))
-                        .addAll(results.getGiphyGifs() == null ? Collections.emptyList() : this.filterInvalid(results.getGiphyGifs()))
+                        .addAll(results.getGiphy() == null ? Collections.emptyList() : filterInvalid(results.getGiphy()))
+                        .addAll(results.getGiphyGifs() == null ? Collections.emptyList() : filterInvalid(results.getGiphyGifs()))
                         .build()
         ));
     }
 
-    private List<GiphyGif> filterInvalid(@NonNull List<GiphyGif> giphyGifs) {
+    private List<GiphyGif> filterInvalid(@NonNull final List<GiphyGif> giphyGifs) {
         return giphyGifs.stream()
                         .filter(Objects::nonNull)
                         .filter(giphyGif -> {
-                            GiphyGifImages images = giphyGif.getImages();
+                            final GiphyGifImages images = giphyGif.getImages();
                             if (images == null) return false;
-                            AnimatedMediaFixedHeight fixedHeight = images.getFixedHeight();
+                            final AnimatedMediaFixedHeight fixedHeight = images.getFixedHeight();
                             if (fixedHeight == null) return false;
                             return !TextUtils.isEmpty(fixedHeight.getWebp());
                         })
@@ -129,12 +129,12 @@ public class GifPickerViewModel extends ViewModel {
     // }
 
     private List<GiphyGif> getCurrentImages() {
-        Resource<List<GiphyGif>> value = this.images.getValue();
+        final Resource<List<GiphyGif>> value = images.getValue();
         return value == null ? Collections.emptyList() : value.data;
     }
 
     public void cancelSearchRequest() {
-        if (this.searchRequest == null) return;
-        this.searchRequest.cancel();
+        if (searchRequest == null) return;
+        searchRequest.cancel();
     }
 }

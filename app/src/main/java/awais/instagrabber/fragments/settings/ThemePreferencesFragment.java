@@ -13,19 +13,19 @@ import awais.instagrabber.utils.Constants;
 
 public class ThemePreferencesFragment extends BasePreferencesFragment {
     @Override
-    void setupPreferenceScreen(PreferenceScreen screen) {
-        Context context = this.getContext();
+    void setupPreferenceScreen(final PreferenceScreen screen) {
+        final Context context = getContext();
         if (context == null) return;
-        screen.addPreference(this.getThemePreference(context));
-        screen.addPreference(this.getLightThemePreference(context));
-        screen.addPreference(this.getDarkThemePreference(context));
+        screen.addPreference(getThemePreference(context));
+        screen.addPreference(getLightThemePreference(context));
+        screen.addPreference(getDarkThemePreference(context));
     }
 
-    private Preference getThemePreference(@NonNull Context context) {
-        ListPreference preference = new ListPreference(context);
+    private Preference getThemePreference(@NonNull final Context context) {
+        final ListPreference preference = new ListPreference(context);
         preference.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
-        int length = this.getResources().getStringArray(R.array.theme_presets).length;
-        String[] values = new String[length];
+        final int length = getResources().getStringArray(R.array.theme_presets).length;
+        final String[] values = new String[length];
         for (int i = 0; i < length; i++) {
             values[i] = String.valueOf(i);
         }
@@ -36,22 +36,22 @@ public class ThemePreferencesFragment extends BasePreferencesFragment {
         preference.setIconSpaceReserved(false);
         preference.setEntryValues(values);
         preference.setOnPreferenceChangeListener((preference1, newValue) -> {
-            this.shouldRecreate();
+            shouldRecreate();
             return true;
         });
         return preference;
     }
 
-    private Preference getLightThemePreference(Context context) {
-        ListPreference preference = new ListPreference(context);
+    private Preference getLightThemePreference(final Context context) {
+        final ListPreference preference = new ListPreference(context);
         preference.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
-        TypedArray lightThemeValues = this.getResources().obtainTypedArray(R.array.light_theme_values);
-        int length = lightThemeValues.length();
-        String[] values = new String[length];
+        final TypedArray lightThemeValues = getResources().obtainTypedArray(R.array.light_theme_values);
+        final int length = lightThemeValues.length();
+        final String[] values = new String[length];
         for (int i = 0; i < length; i++) {
-            int resourceId = lightThemeValues.getResourceId(i, -1);
+            final int resourceId = lightThemeValues.getResourceId(i, -1);
             if (resourceId < 0) continue;
-            values[i] = this.getResources().getResourceEntryName(resourceId);
+            values[i] = getResources().getResourceEntryName(resourceId);
         }
         lightThemeValues.recycle();
         preference.setKey(Constants.PREF_LIGHT_THEME);
@@ -61,22 +61,22 @@ public class ThemePreferencesFragment extends BasePreferencesFragment {
         preference.setIconSpaceReserved(false);
         preference.setEntryValues(values);
         preference.setOnPreferenceChangeListener((preference1, newValue) -> {
-            this.shouldRecreate();
+            shouldRecreate();
             return true;
         });
         return preference;
     }
 
-    private Preference getDarkThemePreference(Context context) {
-        ListPreference preference = new ListPreference(context);
+    private Preference getDarkThemePreference(final Context context) {
+        final ListPreference preference = new ListPreference(context);
         preference.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
-        TypedArray darkThemeValues = this.getResources().obtainTypedArray(R.array.dark_theme_values);
-        int length = darkThemeValues.length();
-        String[] values = new String[length];
+        final TypedArray darkThemeValues = getResources().obtainTypedArray(R.array.dark_theme_values);
+        final int length = darkThemeValues.length();
+        final String[] values = new String[length];
         for (int i = 0; i < length; i++) {
-            int resourceId = darkThemeValues.getResourceId(i, -1);
+            final int resourceId = darkThemeValues.getResourceId(i, -1);
             if (resourceId < 0) continue;
-            values[i] = this.getResources().getResourceEntryName(resourceId);
+            values[i] = getResources().getResourceEntryName(resourceId);
         }
         darkThemeValues.recycle();
         preference.setKey(Constants.PREF_DARK_THEME);
@@ -86,7 +86,7 @@ public class ThemePreferencesFragment extends BasePreferencesFragment {
         preference.setIconSpaceReserved(false);
         preference.setEntryValues(values);
         preference.setOnPreferenceChangeListener((preference1, newValue) -> {
-            this.shouldRecreate();
+            shouldRecreate();
             return true;
         });
         return preference;

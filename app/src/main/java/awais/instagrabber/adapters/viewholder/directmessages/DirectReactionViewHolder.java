@@ -20,10 +20,10 @@ public class DirectReactionViewHolder extends RecyclerView.ViewHolder {
     private final DirectReactionsAdapter.OnReactionClickListener onReactionClickListener;
     private final EmojiParser emojiParser;
 
-    public DirectReactionViewHolder(final LayoutDmUserItemBinding binding,
-                                    final long viewerId,
-                                    final String itemId,
-                                    final DirectReactionsAdapter.OnReactionClickListener onReactionClickListener) {
+    public DirectReactionViewHolder(LayoutDmUserItemBinding binding,
+                                    long viewerId,
+                                    String itemId,
+                                    DirectReactionsAdapter.OnReactionClickListener onReactionClickListener) {
         super(binding.getRoot());
         this.binding = binding;
         this.viewerId = viewerId;
@@ -31,41 +31,41 @@ public class DirectReactionViewHolder extends RecyclerView.ViewHolder {
         this.onReactionClickListener = onReactionClickListener;
         binding.info.setVisibility(View.GONE);
         binding.secondaryImage.setVisibility(View.VISIBLE);
-        this.emojiParser = EmojiParser.Companion.getInstance(this.itemView.getContext());
+        emojiParser = EmojiParser.Companion.getInstance(itemView.getContext());
     }
 
-    public void bind(DirectItemEmojiReaction reaction,
-                     @Nullable User user) {
-        this.itemView.setOnClickListener(v -> {
-            if (this.onReactionClickListener == null) return;
-            this.onReactionClickListener.onReactionClick(this.itemId, reaction);
+    public void bind(final DirectItemEmojiReaction reaction,
+                     @Nullable final User user) {
+        itemView.setOnClickListener(v -> {
+            if (onReactionClickListener == null) return;
+            onReactionClickListener.onReactionClick(itemId, reaction);
         });
-        this.setUser(user);
-        this.setReaction(reaction);
+        setUser(user);
+        setReaction(reaction);
     }
 
-    private void setReaction(DirectItemEmojiReaction reaction) {
-        Emoji emoji = this.emojiParser.getEmoji(reaction.getEmoji());
+    private void setReaction(final DirectItemEmojiReaction reaction) {
+        final Emoji emoji = emojiParser.getEmoji(reaction.getEmoji());
         if (emoji == null) {
-            this.binding.secondaryImage.setImageDrawable(null);
+            binding.secondaryImage.setImageDrawable(null);
             return;
         }
-        this.binding.secondaryImage.setImageDrawable(emoji.getDrawable());
+        binding.secondaryImage.setImageDrawable(emoji.getDrawable());
     }
 
-    private void setUser(User user) {
+    private void setUser(final User user) {
         if (user == null) {
-            this.binding.fullName.setText("");
-            this.binding.username.setText("");
-            this.binding.profilePic.setImageURI((String) null);
+            binding.fullName.setText("");
+            binding.username.setText("");
+            binding.profilePic.setImageURI((String) null);
             return;
         }
-        this.binding.fullName.setText(user.getFullName());
-        if (user.getPk() == this.viewerId) {
-            this.binding.username.setText(R.string.tap_to_remove);
+        binding.fullName.setText(user.getFullName());
+        if (user.getPk() == viewerId) {
+            binding.username.setText(R.string.tap_to_remove);
         } else {
-            this.binding.username.setText(user.getUsername());
+            binding.username.setText(user.getUsername());
         }
-        this.binding.profilePic.setImageURI(user.getProfilePicUrl());
+        binding.profilePic.setImageURI(user.getProfilePicUrl());
     }
 }

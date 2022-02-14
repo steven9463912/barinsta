@@ -27,43 +27,43 @@ public class FeedPhotoViewHolder extends FeedItemViewHolder {
     private final ItemFeedPhotoBinding binding;
     private final FeedAdapterV2.FeedItemCallback feedItemCallback;
 
-    public FeedPhotoViewHolder(@NonNull ItemFeedPhotoBinding binding,
-                               FeedAdapterV2.FeedItemCallback feedItemCallback) {
+    public FeedPhotoViewHolder(@NonNull final ItemFeedPhotoBinding binding,
+                               final FeedAdapterV2.FeedItemCallback feedItemCallback) {
         super(binding.getRoot(), feedItemCallback);
         this.binding = binding;
         this.feedItemCallback = feedItemCallback;
-        LayoutPostViewBottomBinding bottom = LayoutPostViewBottomBinding.bind(binding.getRoot());
+        final LayoutPostViewBottomBinding bottom = LayoutPostViewBottomBinding.bind(binding.getRoot());
         bottom.viewsCount.setVisibility(View.GONE);
         // binding.itemFeedBottom.btnMute.setVisibility(View.GONE);
         binding.imageViewer.setAllowTouchInterceptionWhileZoomed(false);
-        GenericDraweeHierarchy hierarchy = new GenericDraweeHierarchyBuilder(this.itemView.getContext().getResources())
+        final GenericDraweeHierarchy hierarchy = new GenericDraweeHierarchyBuilder(itemView.getContext().getResources())
                 .setActualImageScaleType(ScalingUtils.ScaleType.FIT_CENTER)
                 .build();
         binding.imageViewer.setHierarchy(hierarchy);
     }
 
     @Override
-    public void bindItem(Media media) {
+    public void bindItem(final Media media) {
         if (media == null) return;
-        this.binding.getRoot().post(() -> {
-            this.setDimensions(media);
-            String thumbnailUrl = ResponseBodyUtils.getThumbUrl(media);
+        binding.getRoot().post(() -> {
+            setDimensions(media);
+            final String thumbnailUrl = ResponseBodyUtils.getThumbUrl(media);
             String url = ResponseBodyUtils.getImageUrl(media);
             if (TextUtils.isEmpty(url)) url = thumbnailUrl;
-            ImageRequest requestBuilder = ImageRequestBuilder.newBuilderWithSource(Uri.parse(url))
+            final ImageRequest requestBuilder = ImageRequestBuilder.newBuilderWithSource(Uri.parse(url))
                                                                    // .setLocalThumbnailPreviewsEnabled(true)
                                                                    // .setProgressiveRenderingEnabled(true)
                                                                    .build();
-            this.binding.imageViewer.setController(Fresco.newDraweeControllerBuilder()
+            binding.imageViewer.setController(Fresco.newDraweeControllerBuilder()
                                                     .setImageRequest(requestBuilder)
-                                                    .setOldController(this.binding.imageViewer.getController())
+                                                    .setOldController(binding.imageViewer.getController())
                                                     .setLowResImageRequest(ImageRequest.fromUri(thumbnailUrl))
                                                     .build());
-            this.binding.imageViewer.setTapListener(new GestureDetector.SimpleOnGestureListener() {
+            binding.imageViewer.setTapListener(new GestureDetector.SimpleOnGestureListener() {
                 @Override
-                public boolean onSingleTapConfirmed(MotionEvent e) {
-                    if (FeedPhotoViewHolder.this.feedItemCallback != null) {
-                        FeedPhotoViewHolder.this.feedItemCallback.onPostClick(media);
+                public boolean onSingleTapConfirmed(final MotionEvent e) {
+                    if (feedItemCallback != null) {
+                        feedItemCallback.onPostClick(media);
                         return true;
                     }
                     return false;
@@ -72,8 +72,8 @@ public class FeedPhotoViewHolder extends FeedItemViewHolder {
         });
     }
 
-    private void setDimensions(Media feedModel) {
-        float aspectRatio = (float) feedModel.getOriginalWidth() / feedModel.getOriginalHeight();
-        this.binding.imageViewer.setAspectRatio(aspectRatio);
+    private void setDimensions(final Media feedModel) {
+        final float aspectRatio = (float) feedModel.getOriginalWidth() / feedModel.getOriginalHeight();
+        binding.imageViewer.setAspectRatio(aspectRatio);
     }
 }

@@ -32,70 +32,70 @@ public class DirectItemReelShareViewHolder extends DirectItemViewHolder {
     private final LayoutDmReelShareBinding binding;
     private String type;
 
-    public DirectItemReelShareViewHolder(@NonNull LayoutDmBaseBinding baseBinding,
-                                         @NonNull LayoutDmReelShareBinding binding,
-                                         User currentUser,
-                                         DirectThread thread,
-                                         DirectItemsAdapter.DirectItemCallback callback) {
+    public DirectItemReelShareViewHolder(@NonNull final LayoutDmBaseBinding baseBinding,
+                                         @NonNull final LayoutDmReelShareBinding binding,
+                                         final User currentUser,
+                                         final DirectThread thread,
+                                         final DirectItemsAdapter.DirectItemCallback callback) {
         super(baseBinding, currentUser, thread, callback);
         this.binding = binding;
-        this.setItemView(binding.getRoot());
+        setItemView(binding.getRoot());
     }
 
     @Override
-    public void bindItem(DirectItem item, MessageDirection messageDirection) {
-        DirectItemReelShare reelShare = item.getReelShare();
-        this.type = reelShare.getType();
-        if (this.type == null) return;
-        boolean isSelf = this.isSelf(item);
-        Media media = reelShare.getMedia();
+    public void bindItem(final DirectItem item, final MessageDirection messageDirection) {
+        final DirectItemReelShare reelShare = item.getReelShare();
+        type = reelShare.getType();
+        if (type == null) return;
+        final boolean isSelf = isSelf(item);
+        final Media media = reelShare.getMedia();
         if (media == null) return;
-        User user = media.getUser();
+        final User user = media.getUser();
         if (user == null) return;
-        boolean expired = media.getType() == null;
+        final boolean expired = media.getType() == null;
         if (expired) {
-            this.binding.preview.setVisibility(View.GONE);
-            this.binding.typeIcon.setVisibility(View.GONE);
-            this.binding.quoteLine.setVisibility(View.GONE);
-            this.binding.reaction.setVisibility(View.GONE);
+            binding.preview.setVisibility(View.GONE);
+            binding.typeIcon.setVisibility(View.GONE);
+            binding.quoteLine.setVisibility(View.GONE);
+            binding.reaction.setVisibility(View.GONE);
         } else {
-            this.binding.preview.setVisibility(View.VISIBLE);
-            this.binding.typeIcon.setVisibility(View.VISIBLE);
-            this.binding.quoteLine.setVisibility(View.VISIBLE);
-            this.binding.reaction.setVisibility(View.VISIBLE);
+            binding.preview.setVisibility(View.VISIBLE);
+            binding.typeIcon.setVisibility(View.VISIBLE);
+            binding.quoteLine.setVisibility(View.VISIBLE);
+            binding.reaction.setVisibility(View.VISIBLE);
         }
-        this.setGravity(messageDirection, expired);
-        if (this.type.equals("reply")) {
-            this.setReply(messageDirection, reelShare, isSelf);
+        setGravity(messageDirection, expired);
+        if (type.equals("reply")) {
+            setReply(messageDirection, reelShare, isSelf);
         }
-        if (this.type.equals("reaction")) {
-            this.setReaction(messageDirection, reelShare, isSelf, expired);
+        if (type.equals("reaction")) {
+            setReaction(messageDirection, reelShare, isSelf, expired);
         }
-        if (this.type.equals("mention")) {
-            this.setMention(isSelf);
+        if (type.equals("mention")) {
+            setMention(isSelf);
         }
         if (!expired) {
-            this.setPreview(media);
-            this.itemView.setOnClickListener(v -> this.openMedia(media, -1));
+            setPreview(media);
+            itemView.setOnClickListener(v -> openMedia(media, -1));
         }
     }
 
-    private void setGravity(MessageDirection messageDirection, boolean expired) {
-        boolean isIncoming = messageDirection == MessageDirection.INCOMING;
-        this.binding.shareInfo.setGravity(isIncoming ? Gravity.START : Gravity.END);
+    private void setGravity(final MessageDirection messageDirection, final boolean expired) {
+        final boolean isIncoming = messageDirection == MessageDirection.INCOMING;
+        binding.shareInfo.setGravity(isIncoming ? Gravity.START : Gravity.END);
         if (!expired) {
-            this.binding.quoteLine.setVisibility(isIncoming ? View.VISIBLE : View.GONE);
-            this.binding.quoteLineEnd.setVisibility(isIncoming ? View.GONE : View.VISIBLE);
+            binding.quoteLine.setVisibility(isIncoming ? View.VISIBLE : View.GONE);
+            binding.quoteLineEnd.setVisibility(isIncoming ? View.GONE : View.VISIBLE);
         }
-        ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) this.binding.quoteLine.getLayoutParams();
+        final ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) binding.quoteLine.getLayoutParams();
         layoutParams.horizontalBias = isIncoming ? 0 : 1;
-        ConstraintLayout.LayoutParams messageLayoutParams = (ConstraintLayout.LayoutParams) this.binding.message.getLayoutParams();
+        final ConstraintLayout.LayoutParams messageLayoutParams = (ConstraintLayout.LayoutParams) binding.message.getLayoutParams();
         messageLayoutParams.startToStart = isIncoming ? ConstraintLayout.LayoutParams.PARENT_ID : ConstraintLayout.LayoutParams.UNSET;
         messageLayoutParams.endToEnd = isIncoming ? ConstraintLayout.LayoutParams.UNSET : ConstraintLayout.LayoutParams.PARENT_ID;
-        messageLayoutParams.setMarginStart(isIncoming ? this.messageInfoPaddingSmall : 0);
-        messageLayoutParams.setMarginEnd(isIncoming ? 0 : this.messageInfoPaddingSmall);
-        ConstraintLayout.LayoutParams reactionLayoutParams = (ConstraintLayout.LayoutParams) this.binding.reaction.getLayoutParams();
-        int previewId = this.binding.preview.getId();
+        messageLayoutParams.setMarginStart(isIncoming ? messageInfoPaddingSmall : 0);
+        messageLayoutParams.setMarginEnd(isIncoming ? 0 : messageInfoPaddingSmall);
+        final ConstraintLayout.LayoutParams reactionLayoutParams = (ConstraintLayout.LayoutParams) binding.reaction.getLayoutParams();
+        final int previewId = binding.preview.getId();
         if (isIncoming) {
             reactionLayoutParams.startToEnd = previewId;
             reactionLayoutParams.endToEnd = previewId;
@@ -109,66 +109,66 @@ public class DirectItemReelShareViewHolder extends DirectItemViewHolder {
         }
     }
 
-    private void setReply(MessageDirection messageDirection,
-                          DirectItemReelShare reelShare,
-                          boolean isSelf) {
-        int info = isSelf ? R.string.replied_story_outgoing : R.string.replied_story_incoming;
-        this.binding.shareInfo.setText(info);
-        this.binding.reaction.setVisibility(View.GONE);
-        String text = reelShare.getText();
+    private void setReply(final MessageDirection messageDirection,
+                          final DirectItemReelShare reelShare,
+                          final boolean isSelf) {
+        final int info = isSelf ? R.string.replied_story_outgoing : R.string.replied_story_incoming;
+        binding.shareInfo.setText(info);
+        binding.reaction.setVisibility(View.GONE);
+        final String text = reelShare.getText();
         if (TextUtils.isEmpty(text)) {
-            this.binding.message.setVisibility(View.GONE);
+            binding.message.setVisibility(View.GONE);
             return;
         }
-        this.setMessage(messageDirection, text);
+        setMessage(messageDirection, text);
     }
 
-    private void setReaction(MessageDirection messageDirection,
-                             DirectItemReelShare reelShare,
-                             boolean isSelf,
-                             boolean expired) {
-        int info = isSelf ? R.string.reacted_story_outgoing : R.string.reacted_story_incoming;
-        this.binding.shareInfo.setText(info);
-        this.binding.message.setVisibility(View.GONE);
-        String text = reelShare.getText();
+    private void setReaction(final MessageDirection messageDirection,
+                             final DirectItemReelShare reelShare,
+                             final boolean isSelf,
+                             final boolean expired) {
+        final int info = isSelf ? R.string.reacted_story_outgoing : R.string.reacted_story_incoming;
+        binding.shareInfo.setText(info);
+        binding.message.setVisibility(View.GONE);
+        final String text = reelShare.getText();
         if (TextUtils.isEmpty(text)) {
-            this.binding.reaction.setVisibility(View.GONE);
+            binding.reaction.setVisibility(View.GONE);
             return;
         }
         if (expired) {
-            this.setMessage(messageDirection, text);
+            setMessage(messageDirection, text);
             return;
         }
-        this.binding.reaction.setVisibility(View.VISIBLE);
-        this.binding.reaction.setText(text);
+        binding.reaction.setVisibility(View.VISIBLE);
+        binding.reaction.setText(text);
     }
 
-    private void setMention(boolean isSelf) {
-        int info = isSelf ? R.string.mentioned_story_outgoing : R.string.mentioned_story_incoming;
-        this.binding.shareInfo.setText(info);
-        this.binding.message.setVisibility(View.GONE);
-        this.binding.reaction.setVisibility(View.GONE);
+    private void setMention(final boolean isSelf) {
+        final int info = isSelf ? R.string.mentioned_story_outgoing : R.string.mentioned_story_incoming;
+        binding.shareInfo.setText(info);
+        binding.message.setVisibility(View.GONE);
+        binding.reaction.setVisibility(View.GONE);
     }
 
-    private void setMessage(MessageDirection messageDirection, String text) {
-        this.binding.message.setVisibility(View.VISIBLE);
-        this.binding.message.setBackgroundResource(messageDirection == MessageDirection.INCOMING
+    private void setMessage(final MessageDirection messageDirection, final String text) {
+        binding.message.setVisibility(View.VISIBLE);
+        binding.message.setBackgroundResource(messageDirection == MessageDirection.INCOMING
                                               ? R.drawable.bg_speech_bubble_incoming
                                               : R.drawable.bg_speech_bubble_outgoing);
-        this.binding.message.setText(text);
+        binding.message.setText(text);
     }
 
-    private void setPreview(Media media) {
-        MediaItemType mediaType = media.getType();
+    private void setPreview(final Media media) {
+        final MediaItemType mediaType = media.getType();
         if (mediaType == null) return;
-        this.binding.typeIcon.setVisibility(mediaType == MediaItemType.MEDIA_TYPE_VIDEO || mediaType == MediaItemType.MEDIA_TYPE_SLIDER
+        binding.typeIcon.setVisibility(mediaType == MediaItemType.MEDIA_TYPE_VIDEO || mediaType == MediaItemType.MEDIA_TYPE_SLIDER
                                        ? View.VISIBLE : View.GONE);
-        RoundingParams roundingParams = RoundingParams.fromCornersRadii(this.dmRadiusSmall, this.dmRadiusSmall, this.dmRadiusSmall, this.dmRadiusSmall);
-        this.binding.preview.setHierarchy(new GenericDraweeHierarchyBuilder(this.itemView.getResources())
+        final RoundingParams roundingParams = RoundingParams.fromCornersRadii(dmRadiusSmall, dmRadiusSmall, dmRadiusSmall, dmRadiusSmall);
+        binding.preview.setHierarchy(new GenericDraweeHierarchyBuilder(itemView.getResources())
                                              .setRoundingParams(roundingParams)
                                              .build());
-        String thumbUrl = ResponseBodyUtils.getThumbUrl(media);
-        this.binding.preview.setImageURI(thumbUrl);
+        final String thumbUrl = ResponseBodyUtils.getThumbUrl(media);
+        binding.preview.setImageURI(thumbUrl);
     }
 
     @Override
@@ -178,14 +178,14 @@ public class DirectItemReelShareViewHolder extends DirectItemViewHolder {
 
     @Override
     protected List<DirectItemContextMenu.MenuItem> getLongClickOptions() {
-        ImmutableList.Builder<DirectItemContextMenu.MenuItem> builder = ImmutableList.builder();
-        if ("reply".equals(this.type)) {
+        final ImmutableList.Builder<DirectItemContextMenu.MenuItem> builder = ImmutableList.builder();
+        if ("reply".equals(type)) {
             builder.add(new DirectItemContextMenu.MenuItem(R.id.copy, R.string.copy_reply, item -> {
-                DirectItemReelShare reelShare = item.getReelShare();
+                final DirectItemReelShare reelShare = item.getReelShare();
                 if (reelShare == null) return null;
-                String text = reelShare.getText();
+                final String text = reelShare.getText();
                 if (TextUtils.isEmpty(text)) return null;
-                Utils.copyText(this.itemView.getContext(), text);
+                Utils.copyText(itemView.getContext(), text);
                 return null;
             }));
         }

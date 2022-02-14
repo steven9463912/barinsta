@@ -44,9 +44,9 @@ public class TranslateDeferringInsetsAnimationCallback extends WindowInsetsAnima
     private boolean shouldTranslate = true;
     private int kbHeight;
 
-    public TranslateDeferringInsetsAnimationCallback(View view,
-                                                     int persistentInsetTypes,
-                                                     int deferredInsetTypes) {
+    public TranslateDeferringInsetsAnimationCallback(final View view,
+                                                     final int persistentInsetTypes,
+                                                     final int deferredInsetTypes) {
         this(view, persistentInsetTypes, deferredInsetTypes, WindowInsetsAnimation.Callback.DISPATCH_MODE_STOP);
     }
 
@@ -59,10 +59,10 @@ public class TranslateDeferringInsetsAnimationCallback extends WindowInsetsAnima
      * @param dispatchMode         The dispatch mode for this callback.
      *                             See [WindowInsetsAnimationCompat.Callback.getDispatchMode].
      */
-    public TranslateDeferringInsetsAnimationCallback(View view,
-                                                     int persistentInsetTypes,
-                                                     int deferredInsetTypes,
-                                                     int dispatchMode) {
+    public TranslateDeferringInsetsAnimationCallback(final View view,
+                                                     final int persistentInsetTypes,
+                                                     final int deferredInsetTypes,
+                                                     final int dispatchMode) {
         super(dispatchMode);
         if ((persistentInsetTypes & deferredInsetTypes) != 0) {
             throw new IllegalArgumentException("persistentInsetTypes and deferredInsetTypes can not contain " +
@@ -75,55 +75,55 @@ public class TranslateDeferringInsetsAnimationCallback extends WindowInsetsAnima
 
     @NonNull
     @Override
-    public WindowInsetsCompat onProgress(@NonNull WindowInsetsCompat insets,
-                                         @NonNull List<WindowInsetsAnimationCompat> runningAnimations) {
+    public WindowInsetsCompat onProgress(@NonNull final WindowInsetsCompat insets,
+                                         @NonNull final List<WindowInsetsAnimationCompat> runningAnimations) {
         // onProgress() is called when any of the running animations progress...
 
         // First we get the insets which are potentially deferred
-        Insets typesInset = insets.getInsets(this.deferredInsetTypes);
+        final Insets typesInset = insets.getInsets(deferredInsetTypes);
         // Then we get the persistent inset types which are applied as padding during layout
-        Insets otherInset = insets.getInsets(this.persistentInsetTypes);
+        final Insets otherInset = insets.getInsets(persistentInsetTypes);
 
         // Now that we subtract the two insets, to calculate the difference. We also coerce
         // the insets to be >= 0, to make sure we don't use negative insets.
-        Insets subtract = Insets.subtract(typesInset, otherInset);
-        Insets diff = Insets.max(subtract, Insets.NONE);
+        final Insets subtract = Insets.subtract(typesInset, otherInset);
+        final Insets diff = Insets.max(subtract, Insets.NONE);
 
         // The resulting `diff` insets contain the values for us to apply as a translation
         // to the view
-        this.view.setTranslationX(diff.left - diff.right);
-        this.view.setTranslationY(this.shouldTranslate ? diff.top - diff.bottom : -this.kbHeight);
+        view.setTranslationX(diff.left - diff.right);
+        view.setTranslationY(shouldTranslate ? diff.top - diff.bottom : -kbHeight);
 
         return insets;
     }
 
     @Override
-    public void onEnd(@NonNull WindowInsetsAnimationCompat animation) {
+    public void onEnd(@NonNull final WindowInsetsAnimationCompat animation) {
         try {
-            WindowInsetsCompat rootWindowInsets = ViewCompat.getRootWindowInsets(this.view);
-            if (this.kbHeight == 0) {
+            final WindowInsetsCompat rootWindowInsets = ViewCompat.getRootWindowInsets(view);
+            if (kbHeight == 0) {
                 if (rootWindowInsets == null) return;
-                Insets imeInsets = rootWindowInsets.getInsets(WindowInsetsCompat.Type.ime());
-                Insets navBarInsets = rootWindowInsets.getInsets(WindowInsetsCompat.Type.navigationBars());
-                this.kbHeight = imeInsets.bottom - navBarInsets.bottom;
+                final Insets imeInsets = rootWindowInsets.getInsets(WindowInsetsCompat.Type.ime());
+                final Insets navBarInsets = rootWindowInsets.getInsets(WindowInsetsCompat.Type.navigationBars());
+                kbHeight = imeInsets.bottom - navBarInsets.bottom;
             }
             // Once the animation has ended, reset the translation values
-            this.view.setTranslationX(0f);
-            boolean visible = rootWindowInsets != null && rootWindowInsets.isVisible(WindowInsetsCompat.Type.ime());
+            view.setTranslationX(0f);
+            final boolean visible = rootWindowInsets != null && rootWindowInsets.isVisible(WindowInsetsCompat.Type.ime());
             float translationY = 0;
-            if (!this.shouldTranslate) {
-                translationY = -this.kbHeight;
+            if (!shouldTranslate) {
+                translationY = -kbHeight;
                 if (visible) {
                     translationY = 0;
                 }
             }
-            this.view.setTranslationY(translationY);
+            view.setTranslationY(translationY);
         } finally {
-            this.shouldTranslate = true;
+            shouldTranslate = true;
         }
     }
 
-    public void setShouldTranslate(boolean shouldTranslate) {
+    public void setShouldTranslate(final boolean shouldTranslate) {
         this.shouldTranslate = shouldTranslate;
     }
 }

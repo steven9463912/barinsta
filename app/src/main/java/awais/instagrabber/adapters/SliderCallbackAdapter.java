@@ -8,22 +8,22 @@ import awais.instagrabber.repositories.responses.Media;
 
 public class SliderCallbackAdapter implements SliderItemsAdapter.SliderCallback {
     @Override
-    public void onThumbnailLoaded(int position) {}
+    public void onThumbnailLoaded(final int position) {}
 
     @Override
-    public void onItemClicked(int position, Media media, View view) {}
+    public void onItemClicked(final int position, final Media media, final View view) {}
 
     @Override
-    public void onPlayerPlay(int position) {}
+    public void onPlayerPlay(final int position) {}
 
     @Override
-    public void onPlayerPause(int position) {}
+    public void onPlayerPause(final int position) {}
 
     @Override
-    public void onPlayerRelease(int position) {}
+    public void onPlayerRelease(final int position) {}
 
     @Override
-    public void onFullScreenModeChanged(boolean isFullScreen, StyledPlayerView playerView) {}
+    public void onFullScreenModeChanged(final boolean isFullScreen, final StyledPlayerView playerView) {}
 
     @Override
     public boolean isInFullScreen() {

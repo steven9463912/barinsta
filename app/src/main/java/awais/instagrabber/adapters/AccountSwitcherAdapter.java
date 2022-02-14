@@ -23,12 +23,12 @@ public class AccountSwitcherAdapter extends ListAdapter<Account, AccountSwitcher
     private static final String TAG = "AccountSwitcherAdapter";
     private static final DiffUtil.ItemCallback<Account> DIFF_CALLBACK = new DiffUtil.ItemCallback<Account>() {
         @Override
-        public boolean areItemsTheSame(@NonNull Account oldItem, @NonNull Account newItem) {
+        public boolean areItemsTheSame(@NonNull final Account oldItem, @NonNull final Account newItem) {
             return oldItem.getUid().equals(newItem.getUid());
         }
 
         @Override
-        public boolean areContentsTheSame(@NonNull Account oldItem, @NonNull Account newItem) {
+        public boolean areContentsTheSame(@NonNull final Account oldItem, @NonNull final Account newItem) {
             return oldItem.getUid().equals(newItem.getUid());
         }
     };
@@ -36,28 +36,28 @@ public class AccountSwitcherAdapter extends ListAdapter<Account, AccountSwitcher
     private final OnAccountClickListener clickListener;
     private final OnAccountLongClickListener longClickListener;
 
-    public AccountSwitcherAdapter(OnAccountClickListener clickListener,
-                                  OnAccountLongClickListener longClickListener) {
-        super(AccountSwitcherAdapter.DIFF_CALLBACK);
+    public AccountSwitcherAdapter(final OnAccountClickListener clickListener,
+                                  final OnAccountLongClickListener longClickListener) {
+        super(DIFF_CALLBACK);
         this.clickListener = clickListener;
         this.longClickListener = longClickListener;
     }
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        PrefAccountSwitcherBinding binding = PrefAccountSwitcherBinding.inflate(layoutInflater, parent, false);
+    public ViewHolder onCreateViewHolder(@NonNull final ViewGroup parent, final int viewType) {
+        final LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+        final PrefAccountSwitcherBinding binding = PrefAccountSwitcherBinding.inflate(layoutInflater, parent, false);
         return new ViewHolder(binding);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Account model = this.getItem(position);
+    public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
+        final Account model = getItem(position);
         if (model == null) return;
-        String cookie = settingsHelper.getString(Constants.COOKIE);
-        boolean isCurrent = model.getCookie().equals(cookie);
-        holder.bind(model, isCurrent, this.clickListener, this.longClickListener);
+        final String cookie = settingsHelper.getString(Constants.COOKIE);
+        final boolean isCurrent = model.getCookie().equals(cookie);
+        holder.bind(model, isCurrent, clickListener, longClickListener);
     }
 
     public interface OnAccountClickListener {
@@ -71,42 +71,42 @@ public class AccountSwitcherAdapter extends ListAdapter<Account, AccountSwitcher
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final PrefAccountSwitcherBinding binding;
 
-        public ViewHolder(PrefAccountSwitcherBinding binding) {
+        public ViewHolder(final PrefAccountSwitcherBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
             binding.arrowDown.setImageResource(R.drawable.ic_check_24);
         }
 
         @SuppressLint("SetTextI18n")
-        public void bind(Account model,
-                         boolean isCurrent,
-                         OnAccountClickListener clickListener,
-                         OnAccountLongClickListener longClickListener) {
+        public void bind(final Account model,
+                         final boolean isCurrent,
+                         final OnAccountClickListener clickListener,
+                         final OnAccountLongClickListener longClickListener) {
             // Log.d(TAG, model.getFullName());
-            this.itemView.setOnClickListener(v -> {
+            itemView.setOnClickListener(v -> {
                 if (clickListener == null) return;
                 clickListener.onAccountClick(model, isCurrent);
             });
-            this.itemView.setOnLongClickListener(v -> {
+            itemView.setOnLongClickListener(v -> {
                 if (longClickListener == null) return false;
                 return longClickListener.onAccountLongClick(model, isCurrent);
             });
-            this.binding.profilePic.setImageURI(model.getProfilePic());
-            this.binding.username.setText("@" + model.getUsername());
-            this.binding.fullName.setTypeface(null);
-            String fullName = model.getFullName();
+            binding.profilePic.setImageURI(model.getProfilePic());
+            binding.username.setText("@" + model.getUsername());
+            binding.fullName.setTypeface(null);
+            final String fullName = model.getFullName();
             if (TextUtils.isEmpty(fullName)) {
-                this.binding.fullName.setVisibility(View.GONE);
+                binding.fullName.setVisibility(View.GONE);
             } else {
-                this.binding.fullName.setVisibility(View.VISIBLE);
-                this.binding.fullName.setText(fullName);
+                binding.fullName.setVisibility(View.VISIBLE);
+                binding.fullName.setText(fullName);
             }
             if (!isCurrent) {
-                this.binding.arrowDown.setVisibility(View.GONE);
+                binding.arrowDown.setVisibility(View.GONE);
                 return;
             }
-            this.binding.fullName.setTypeface(this.binding.fullName.getTypeface(), Typeface.BOLD);
-            this.binding.arrowDown.setVisibility(View.VISIBLE);
+            binding.fullName.setTypeface(binding.fullName.getTypeface(), Typeface.BOLD);
+            binding.arrowDown.setVisibility(View.VISIBLE);
         }
     }
 }

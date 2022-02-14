@@ -12,7 +12,7 @@ public class EndOfFeedGroup implements Serializable {
     private final String nextMaxId;
     private final List<Media> feedItems;
 
-    public EndOfFeedGroup(String id, String title, String nextMaxId, List<Media> feedItems) {
+    public EndOfFeedGroup(final String id, final String title, final String nextMaxId, final List<Media> feedItems) {
         this.id = id;
         this.title = title;
         this.nextMaxId = nextMaxId;
@@ -20,34 +20,34 @@ public class EndOfFeedGroup implements Serializable {
     }
 
     public String getId() {
-        return this.id;
+        return id;
     }
 
     public String getTitle() {
-        return this.title;
+        return title;
     }
 
     public String getNextMaxId() {
-        return this.nextMaxId;
+        return nextMaxId;
     }
 
     public List<Media> getFeedItems() {
-        return this.feedItems;
+        return feedItems;
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
-        if (o == null || this.getClass() != o.getClass()) return false;
-        EndOfFeedGroup that = (EndOfFeedGroup) o;
-        return Objects.equals(this.id, that.id) &&
-                Objects.equals(this.title, that.title) &&
-                Objects.equals(this.nextMaxId, that.nextMaxId) &&
-                Objects.equals(this.feedItems, that.feedItems);
+        if (o == null || getClass() != o.getClass()) return false;
+        final EndOfFeedGroup that = (EndOfFeedGroup) o;
+        return Objects.equals(id, that.id) &&
+                Objects.equals(title, that.title) &&
+                Objects.equals(nextMaxId, that.nextMaxId) &&
+                Objects.equals(feedItems, that.feedItems);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.id, this.title, this.nextMaxId, this.feedItems);
+        return Objects.hash(id, title, nextMaxId, feedItems);
     }
 }

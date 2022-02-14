@@ -31,68 +31,68 @@ public final class DirectInboxItemViewHolder extends RecyclerView.ViewHolder {
     private final int childSmallSize;
     private final int childTinySize;
 
-    public DirectInboxItemViewHolder(@NonNull final LayoutDmInboxItemBinding binding,
-                                     final DirectMessageInboxAdapter.OnItemClickListener onClickListener) {
+    public DirectInboxItemViewHolder(@NonNull LayoutDmInboxItemBinding binding,
+                                     DirectMessageInboxAdapter.OnItemClickListener onClickListener) {
         super(binding.getRoot());
         this.binding = binding;
         this.onClickListener = onClickListener;
-        this.multipleProfilePics = ImmutableList.of(
+        multipleProfilePics = ImmutableList.of(
                 binding.multiPic1,
                 binding.multiPic2,
                 binding.multiPic3
         );
-        this.childSmallSize = this.itemView.getResources().getDimensionPixelSize(R.dimen.dm_inbox_avatar_size_small);
-        this.childTinySize = this.itemView.getResources().getDimensionPixelSize(R.dimen.dm_inbox_avatar_size_tiny);
+        childSmallSize = itemView.getResources().getDimensionPixelSize(R.dimen.dm_inbox_avatar_size_small);
+        childTinySize = itemView.getResources().getDimensionPixelSize(R.dimen.dm_inbox_avatar_size_tiny);
     }
 
-    public void bind(DirectThread thread) {
+    public void bind(final DirectThread thread) {
         if (thread == null) return;
-        if (this.onClickListener != null) {
-            this.itemView.setOnClickListener((v) -> this.onClickListener.onItemClick(thread));
+        if (onClickListener != null) {
+            itemView.setOnClickListener((v) -> onClickListener.onItemClick(thread));
         }
-        this.setProfilePics(thread);
-        this.setTitle(thread);
-        List<DirectItem> items = thread.getItems();
+        setProfilePics(thread);
+        setTitle(thread);
+        final List<DirectItem> items = thread.getItems();
         if (items == null || items.isEmpty()) return;
-        DirectItem item = thread.getFirstDirectItem();
+        final DirectItem item = thread.getFirstDirectItem();
         if (item == null) return;
-        this.setDateTime(item);
-        this.setSubtitle(thread);
-        this.setReadState(thread);
+        setDateTime(item);
+        setSubtitle(thread);
+        setReadState(thread);
     }
 
-    private void setProfilePics(@NonNull DirectThread thread) {
-        List<User> users = thread.getUsers();
+    private void setProfilePics(@NonNull final DirectThread thread) {
+        final List<User> users = thread.getUsers();
         if (users.size() > 1) {
-            this.binding.profilePic.setVisibility(View.GONE);
-            this.binding.multiPicContainer.setVisibility(View.VISIBLE);
+            binding.profilePic.setVisibility(View.GONE);
+            binding.multiPicContainer.setVisibility(View.VISIBLE);
             for (int i = 0; i < Math.min(3, users.size()); ++i) {
-                User user = users.get(i);
-                SimpleDraweeView view = this.multipleProfilePics.get(i);
+                final User user = users.get(i);
+                final SimpleDraweeView view = multipleProfilePics.get(i);
                 view.setVisibility(user == null ? View.GONE : View.VISIBLE);
                 if (user == null) return;
-                String profilePicUrl = user.getProfilePicUrl();
+                final String profilePicUrl = user.getProfilePicUrl();
                 view.setImageURI(profilePicUrl);
-                this.setChildSize(view, users.size());
+                setChildSize(view, users.size());
                 if (i == 1) {
-                    this.updateConstraints(view, users.size());
+                    updateConstraints(view, users.size());
                 }
                 view.requestLayout();
             }
             return;
         }
-        this.binding.profilePic.setVisibility(View.VISIBLE);
-        this.binding.multiPicContainer.setVisibility(View.GONE);
-        String profilePicUrl = users.size() == 1 ? users.get(0).getProfilePicUrl() : null;
+        binding.profilePic.setVisibility(View.VISIBLE);
+        binding.multiPicContainer.setVisibility(View.GONE);
+        final String profilePicUrl = users.size() == 1 ? users.get(0).getProfilePicUrl() : null;
         if (profilePicUrl == null) {
-            this.binding.profilePic.setController(null);
+            binding.profilePic.setController(null);
             return;
         }
-        this.binding.profilePic.setImageURI(profilePicUrl);
+        binding.profilePic.setImageURI(profilePicUrl);
     }
 
-    private void updateConstraints(SimpleDraweeView view, int length) {
-        ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) view.getLayoutParams();
+    private void updateConstraints(final SimpleDraweeView view, final int length) {
+        final ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) view.getLayoutParams();
         if (length >= 2) {
             layoutParams.endToEnd = ConstraintSet.PARENT_ID;
             layoutParams.bottomToBottom = ConstraintSet.PARENT_ID;
@@ -103,20 +103,20 @@ public final class DirectInboxItemViewHolder extends RecyclerView.ViewHolder {
         }
     }
 
-    private void setChildSize(SimpleDraweeView view, int length) {
-        int size = length == 3 ? this.childTinySize : this.childSmallSize;
-        ConstraintLayout.LayoutParams viewLayoutParams = new ConstraintLayout.LayoutParams(size, size);
+    private void setChildSize(final SimpleDraweeView view, final int length) {
+        final int size = length == 3 ? childTinySize : childSmallSize;
+        final ConstraintLayout.LayoutParams viewLayoutParams = new ConstraintLayout.LayoutParams(size, size);
         view.setLayoutParams(viewLayoutParams);
     }
 
-    private void setTitle(@NonNull DirectThread thread) {
-        String threadTitle = thread.getThreadTitle();
-        this.binding.threadTitle.setText(threadTitle);
+    private void setTitle(@NonNull final DirectThread thread) {
+        final String threadTitle = thread.getThreadTitle();
+        binding.threadTitle.setText(threadTitle);
     }
 
-    private void setSubtitle(@NonNull DirectThread thread) {
-        Resources resources = this.itemView.getResources();
-        long viewerId = thread.getViewerId();
+    private void setSubtitle(@NonNull final DirectThread thread) {
+        final Resources resources = itemView.getResources();
+        final long viewerId = thread.getViewerId();
 //        final DirectThreadDirectStory directStory = thread.getDirectStory();
 //        if (directStory != null && !directStory.getItems().isEmpty()) {
 //            final DirectItem item = directStory.getItems().get(0);
@@ -126,22 +126,22 @@ public final class DirectInboxItemViewHolder extends RecyclerView.ViewHolder {
 //            binding.subtitle.setText(subtitle);
 //            return;
 //        }
-        DirectItem item = thread.getFirstDirectItem();
+        final DirectItem item = thread.getFirstDirectItem();
         if (item == null) return;
-        String subtitle = DMUtils.getMessageString(thread, resources, viewerId, item);
-        this.binding.subtitle.setText(subtitle != null ? subtitle : "");
+        final String subtitle = DMUtils.getMessageString(thread, resources, viewerId, item);
+        binding.subtitle.setText(subtitle != null ? subtitle : "");
     }
 
-    private void setDateTime(@NonNull DirectItem item) {
-        long timestamp = item.getTimestamp() / 1000;
-        String dateTimeString = TextUtils.getRelativeDateTimeString(timestamp);
-        this.binding.tvDate.setText(dateTimeString);
+    private void setDateTime(@NonNull final DirectItem item) {
+        final long timestamp = item.getTimestamp() / 1000;
+        final String dateTimeString = TextUtils.getRelativeDateTimeString(timestamp);
+        binding.tvDate.setText(dateTimeString);
     }
 
-    private void setReadState(@NonNull DirectThread thread) {
-        boolean read = DMUtils.isRead(thread);
-        this.binding.unread.setVisibility(read ? View.GONE : View.VISIBLE);
-        this.binding.threadTitle.setTypeface(null, read ? Typeface.NORMAL : Typeface.BOLD);
-        this.binding.subtitle.setTypeface(null, read ? Typeface.NORMAL : Typeface.BOLD);
+    private void setReadState(@NonNull final DirectThread thread) {
+        final boolean read = DMUtils.isRead(thread);
+        binding.unread.setVisibility(read ? View.GONE : View.VISIBLE);
+        binding.threadTitle.setTypeface(null, read ? Typeface.NORMAL : Typeface.BOLD);
+        binding.subtitle.setTypeface(null, read ? Typeface.NORMAL : Typeface.BOLD);
     }
 }

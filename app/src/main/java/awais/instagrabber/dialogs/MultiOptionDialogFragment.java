@@ -38,165 +38,165 @@ public class MultiOptionDialogFragment<T extends Serializable> extends DialogFra
     private List<Option<?>> options;
 
     @NonNull
-    public static <E extends Serializable> MultiOptionDialogFragment<E> newInstance(int requestCode,
-                                                                                    @StringRes int title,
-                                                                                    @NonNull ArrayList<Option<E>> options) {
-        return MultiOptionDialogFragment.newInstance(requestCode, title, 0, 0, options, Type.SINGLE);
+    public static <E extends Serializable> MultiOptionDialogFragment<E> newInstance(final int requestCode,
+                                                                                    @StringRes final int title,
+                                                                                    @NonNull final ArrayList<Option<E>> options) {
+        return newInstance(requestCode, title, 0, 0, options, Type.SINGLE);
     }
 
     @NonNull
-    public static <E extends Serializable> MultiOptionDialogFragment<E> newInstance(int requestCode,
-                                                                                    @StringRes int title,
-                                                                                    @StringRes int positiveButtonText,
-                                                                                    @StringRes int negativeButtonText,
-                                                                                    @NonNull ArrayList<Option<E>> options,
-                                                                                    @NonNull Type type) {
-        final Bundle args = new Bundle();
+    public static <E extends Serializable> MultiOptionDialogFragment<E> newInstance(final int requestCode,
+                                                                                    @StringRes final int title,
+                                                                                    @StringRes final int positiveButtonText,
+                                                                                    @StringRes final int negativeButtonText,
+                                                                                    @NonNull final ArrayList<Option<E>> options,
+                                                                                    @NonNull final Type type) {
+        Bundle args = new Bundle();
         args.putInt("requestCode", requestCode);
         args.putInt("title", title);
         args.putInt("positiveButtonText", positiveButtonText);
         args.putInt("negativeButtonText", negativeButtonText);
         args.putSerializable("options", options);
         args.putSerializable("type", type);
-        final MultiOptionDialogFragment<E> fragment = new MultiOptionDialogFragment<>();
+        MultiOptionDialogFragment<E> fragment = new MultiOptionDialogFragment<>();
         fragment.setArguments(args);
         return fragment;
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
-    public void onAttach(@NonNull Context context) {
+    public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
         this.context = context;
-        Fragment parentFragment = this.getParentFragment();
+        final Fragment parentFragment = getParentFragment();
         if (parentFragment != null) {
             if (parentFragment instanceof MultiOptionDialogCallback) {
-                this.callback = (MultiOptionDialogCallback) parentFragment;
+                callback = (MultiOptionDialogCallback) parentFragment;
             }
             if (parentFragment instanceof MultiOptionDialogSingleCallback) {
-                this.singleCallback = (MultiOptionDialogSingleCallback) parentFragment;
+                singleCallback = (MultiOptionDialogSingleCallback) parentFragment;
             }
             return;
         }
-        FragmentActivity fragmentActivity = this.getActivity();
+        final FragmentActivity fragmentActivity = getActivity();
         if (fragmentActivity instanceof MultiOptionDialogCallback) {
-            this.callback = (MultiOptionDialogCallback) fragmentActivity;
+            callback = (MultiOptionDialogCallback) fragmentActivity;
         }
         if (fragmentActivity instanceof MultiOptionDialogSingleCallback) {
-            this.singleCallback = (MultiOptionDialogSingleCallback) fragmentActivity;
+            singleCallback = (MultiOptionDialogSingleCallback) fragmentActivity;
         }
     }
 
     @NonNull
     @Override
-    public Dialog onCreateDialog(final Bundle savedInstanceState) {
-        Bundle arguments = this.getArguments();
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        final Bundle arguments = getArguments();
         int title = 0;
         int rc = 0;
         if (arguments != null) {
             rc = arguments.getInt("requestCode");
             title = arguments.getInt("title");
-            this.type = (Type) arguments.getSerializable("type");
+            type = (Type) arguments.getSerializable("type");
         }
-        int requestCode = rc;
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this.context);
+        final int requestCode = rc;
+        final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
         if (title != 0) {
             builder.setTitle(title);
         }
         try {
             //noinspection unchecked
-            this.options = arguments != null ? (List<Option<?>>) arguments.getSerializable("options")
+            options = arguments != null ? (List<Option<?>>) arguments.getSerializable("options")
                                         : Collections.emptyList();
-        } catch (final Exception e) {
-            Log.e(MultiOptionDialogFragment.TAG, "onCreateDialog: ", e);
-            this.options = Collections.emptyList();
+        } catch (Exception e) {
+            Log.e(TAG, "onCreateDialog: ", e);
+            options = Collections.emptyList();
         }
-        int negativeButtonText = arguments != null ? arguments.getInt("negativeButtonText", -1) : -1;
+        final int negativeButtonText = arguments != null ? arguments.getInt("negativeButtonText", -1) : -1;
         if (negativeButtonText > 0) {
             builder.setNegativeButton(negativeButtonText, (dialog, which) -> {
-                if (this.callback != null) {
-                    this.callback.onCancel(requestCode);
+                if (callback != null) {
+                    callback.onCancel(requestCode);
                     return;
                 }
-                if (this.singleCallback != null) {
-                    this.singleCallback.onCancel(requestCode);
+                if (singleCallback != null) {
+                    singleCallback.onCancel(requestCode);
                 }
             });
         }
-        if (this.type == Type.MULTIPLE || this.type == Type.SINGLE_CHECKED) {
-            int positiveButtonText = arguments != null ? arguments.getInt("positiveButtonText", -1) : -1;
+        if (type == Type.MULTIPLE || type == Type.SINGLE_CHECKED) {
+            final int positiveButtonText = arguments != null ? arguments.getInt("positiveButtonText", -1) : -1;
             if (positiveButtonText > 0) {
                 builder.setPositiveButton(positiveButtonText, (dialog, which) -> {
-                    if (this.callback == null || this.options == null || this.options.isEmpty()) return;
+                    if (callback == null || options == null || options.isEmpty()) return;
                     try {
-                        List<T> selected = new ArrayList<>();
-                        SparseBooleanArray checkedItemPositions = ((AlertDialog) dialog).getListView().getCheckedItemPositions();
+                        final List<T> selected = new ArrayList<>();
+                        final SparseBooleanArray checkedItemPositions = ((AlertDialog) dialog).getListView().getCheckedItemPositions();
                         for (int i = 0; i < checkedItemPositions.size(); i++) {
-                            int position = checkedItemPositions.keyAt(i);
-                            boolean checked = checkedItemPositions.get(position);
+                            final int position = checkedItemPositions.keyAt(i);
+                            final boolean checked = checkedItemPositions.get(position);
                             if (!checked) continue;
                             //noinspection unchecked
-                            Option<T> option = (Option<T>) this.options.get(position);
+                            final Option<T> option = (Option<T>) options.get(position);
                             selected.add(option.value);
                         }
-                        this.callback.onMultipleSelect(requestCode, selected);
-                    } catch (final Exception e) {
-                        Log.e(MultiOptionDialogFragment.TAG, "onCreateDialog: ", e);
+                        callback.onMultipleSelect(requestCode, selected);
+                    } catch (Exception e) {
+                        Log.e(TAG, "onCreateDialog: ", e);
                     }
                 });
             }
         }
-        if (this.type == Type.MULTIPLE) {
-            if (this.options != null && !this.options.isEmpty()) {
-                String[] items = this.options.stream()
+        if (type == Type.MULTIPLE) {
+            if (options != null && !options.isEmpty()) {
+                final String[] items = options.stream()
                                               .map(option -> option.label)
                                               .toArray(String[]::new);
-                boolean[] checkedItems = Booleans.toArray(this.options.stream()
+                final boolean[] checkedItems = Booleans.toArray(options.stream()
                                                                        .map(option -> option.checked)
                                                                        .collect(Collectors.toList()));
                 builder.setMultiChoiceItems(items, checkedItems, (dialog, which, isChecked) -> {
-                    if (this.callback == null) return;
+                    if (callback == null) return;
                     try {
-                        Option<?> option = this.options.get(which);
+                        final Option<?> option = options.get(which);
                         //noinspection unchecked
-                        this.callback.onCheckChange(requestCode, (T) option.value, isChecked);
-                    } catch (final Exception e) {
-                        Log.e(MultiOptionDialogFragment.TAG, "onCreateDialog: ", e);
+                        callback.onCheckChange(requestCode, (T) option.value, isChecked);
+                    } catch (Exception e) {
+                        Log.e(TAG, "onCreateDialog: ", e);
                     }
                 });
             }
         } else {
-            if (this.options != null && !this.options.isEmpty()) {
-                String[] items = this.options.stream()
+            if (options != null && !options.isEmpty()) {
+                final String[] items = options.stream()
                                               .map(option -> option.label)
                                               .toArray(String[]::new);
-                if (this.type == Type.SINGLE_CHECKED) {
+                if (type == Type.SINGLE_CHECKED) {
                     int index = -1;
-                    for (int i = 0; i < this.options.size(); i++) {
-                        if (this.options.get(i).checked) {
+                    for (int i = 0; i < options.size(); i++) {
+                        if (options.get(i).checked) {
                             index = i;
                             break;
                         }
                     }
                     builder.setSingleChoiceItems(items, index, (dialog, which) -> {
-                        if (this.callback == null) return;
+                        if (callback == null) return;
                         try {
-                            Option<?> option = this.options.get(which);
+                            final Option<?> option = options.get(which);
                             //noinspection unchecked
-                            this.callback.onCheckChange(requestCode, (T) option.value, true);
-                        } catch (final Exception e) {
-                            Log.e(MultiOptionDialogFragment.TAG, "onCreateDialog: ", e);
+                            callback.onCheckChange(requestCode, (T) option.value, true);
+                        } catch (Exception e) {
+                            Log.e(TAG, "onCreateDialog: ", e);
                         }
                     });
-                } else if (this.type == Type.SINGLE) {
+                } else if (type == Type.SINGLE) {
                     builder.setItems(items, (dialog, which) -> {
-                        if (this.singleCallback == null) return;
+                        if (singleCallback == null) return;
                         try {
-                            Option<?> option = this.options.get(which);
+                            final Option<?> option = options.get(which);
                             //noinspection unchecked
-                            this.singleCallback.onSelect(requestCode, (T) option.value);
-                        } catch (final Exception e) {
-                            Log.e(MultiOptionDialogFragment.TAG, "onCreateDialog: ", e);
+                            singleCallback.onSelect(requestCode, (T) option.value);
+                        } catch (Exception e) {
+                            Log.e(TAG, "onCreateDialog: ", e);
                         }
                     });
                 }
@@ -205,14 +205,14 @@ public class MultiOptionDialogFragment<T extends Serializable> extends DialogFra
         return builder.create();
     }
 
-    public void setCallback(MultiOptionDialogCallback<T> callback) {
+    public void setCallback(final MultiOptionDialogCallback<T> callback) {
         if (callback == null) return;
         this.callback = callback;
     }
 
-    public void setSingleCallback(MultiOptionDialogSingleCallback<T> callback) {
+    public void setSingleCallback(final MultiOptionDialogSingleCallback<T> callback) {
         if (callback == null) return;
-        singleCallback = callback;
+        this.singleCallback = callback;
     }
 
     public interface MultiOptionDialogCallback<T> {
@@ -236,28 +236,28 @@ public class MultiOptionDialogFragment<T extends Serializable> extends DialogFra
         private final T value;
         private final boolean checked;
 
-        public Option(String label, T value) {
+        public Option(final String label, final T value) {
             this.label = label;
             this.value = value;
-            checked = false;
+            this.checked = false;
         }
 
-        public Option(String label, T value, boolean checked) {
+        public Option(final String label, final T value, final boolean checked) {
             this.label = label;
             this.value = value;
             this.checked = checked;
         }
 
         public String getLabel() {
-            return this.label;
+            return label;
         }
 
         public T getValue() {
-            return this.value;
+            return value;
         }
 
         public boolean isChecked() {
-            return this.checked;
+            return checked;
         }
     }
 }

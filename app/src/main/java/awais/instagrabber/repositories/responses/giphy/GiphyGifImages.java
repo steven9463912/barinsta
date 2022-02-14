@@ -9,32 +9,32 @@ import awais.instagrabber.repositories.responses.AnimatedMediaFixedHeight;
 public class GiphyGifImages {
     private final AnimatedMediaFixedHeight fixedHeight;
 
-    public GiphyGifImages(AnimatedMediaFixedHeight fixedHeight) {
+    public GiphyGifImages(final AnimatedMediaFixedHeight fixedHeight) {
         this.fixedHeight = fixedHeight;
     }
 
     public AnimatedMediaFixedHeight getFixedHeight() {
-        return this.fixedHeight;
+        return fixedHeight;
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
-        if (o == null || this.getClass() != o.getClass()) return false;
-        GiphyGifImages that = (GiphyGifImages) o;
-        return Objects.equals(this.fixedHeight, that.fixedHeight);
+        if (o == null || getClass() != o.getClass()) return false;
+        final GiphyGifImages that = (GiphyGifImages) o;
+        return Objects.equals(fixedHeight, that.fixedHeight);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.fixedHeight);
+        return Objects.hash(fixedHeight);
     }
 
     @NonNull
     @Override
     public String toString() {
         return "GiphyGifImages{" +
-                "fixedHeight=" + this.fixedHeight +
+                "fixedHeight=" + fixedHeight +
                 '}';
     }
 }

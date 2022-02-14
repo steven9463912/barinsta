@@ -89,25 +89,25 @@ public class HashTagFragment extends Fragment implements SwipeRefreshLayout.OnRe
     private final OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(false) {
         @Override
         public void handleOnBackPressed() {
-            HashTagFragment.this.binding.posts.endSelection();
+            binding.posts.endSelection();
         }
     };
     private final PrimaryActionModeCallback multiSelectAction = new PrimaryActionModeCallback(
             R.menu.multi_select_download_menu,
             new PrimaryActionModeCallback.CallbacksHelper() {
                 @Override
-                public void onDestroy(ActionMode mode) {
-                    HashTagFragment.this.binding.posts.endSelection();
+                public void onDestroy(final ActionMode mode) {
+                    binding.posts.endSelection();
                 }
 
                 @Override
-                public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                public boolean onActionItemClicked(final ActionMode mode, final MenuItem item) {
                     if (item.getItemId() == R.id.action_download) {
-                        if (selectedFeedModels == null) return false;
-                        Context context = HashTagFragment.this.getContext();
+                        if (HashTagFragment.this.selectedFeedModels == null) return false;
+                        final Context context = getContext();
                         if (context == null) return false;
-                        DownloadUtils.download(context, ImmutableList.copyOf(selectedFeedModels));
-                        HashTagFragment.this.binding.posts.endSelection();
+                        DownloadUtils.download(context, ImmutableList.copyOf(HashTagFragment.this.selectedFeedModels));
+                        binding.posts.endSelection();
                         return true;
                     }
                     return false;
@@ -115,210 +115,210 @@ public class HashTagFragment extends Fragment implements SwipeRefreshLayout.OnRe
             });
     private final FeedAdapterV2.FeedItemCallback feedItemCallback = new FeedAdapterV2.FeedItemCallback() {
         @Override
-        public void onPostClick(Media feedModel) {
-            this.openPostDialog(feedModel, -1);
+        public void onPostClick(final Media feedModel) {
+            openPostDialog(feedModel, -1);
         }
 
         @Override
-        public void onSliderClick(Media feedModel, int position) {
-            this.openPostDialog(feedModel, position);
+        public void onSliderClick(final Media feedModel, final int position) {
+            openPostDialog(feedModel, position);
         }
 
         @Override
-        public void onCommentsClick(Media feedModel) {
-            User user = feedModel.getUser();
+        public void onCommentsClick(final Media feedModel) {
+            final User user = feedModel.getUser();
             if (user == null) return;
             try {
-                NavDirections commentsAction = HashTagFragmentDirections.actionToComments(
+                final NavDirections commentsAction = HashTagFragmentDirections.actionToComments(
                         feedModel.getCode(),
                         feedModel.getCode(),
                         user.getPk()
                 );
                 NavHostFragment.findNavController(HashTagFragment.this).navigate(commentsAction);
-            } catch (final Exception e) {
-                Log.e(HashTagFragment.TAG, "onCommentsClick: ", e);
+            } catch (Exception e) {
+                Log.e(TAG, "onCommentsClick: ", e);
             }
         }
 
         @Override
-        public void onDownloadClick(Media feedModel, int childPosition, View popupLocation) {
-            Context context = HashTagFragment.this.getContext();
+        public void onDownloadClick(final Media feedModel, final int childPosition, final View popupLocation) {
+            final Context context = getContext();
             if (context == null) return;
             DownloadUtils.showDownloadDialog(context, feedModel, childPosition, popupLocation);
         }
 
         @Override
-        public void onHashtagClick(String hashtag) {
+        public void onHashtagClick(final String hashtag) {
             try {
-                NavDirections action = HashTagFragmentDirections.actionToHashtag(hashtag);
+                final NavDirections action = HashTagFragmentDirections.actionToHashtag(hashtag);
                 NavHostFragment.findNavController(HashTagFragment.this).navigate(action);
-            } catch (final Exception e) {
-                Log.e(HashTagFragment.TAG, "onHashtagClick: ", e);
+            } catch (Exception e) {
+                Log.e(TAG, "onHashtagClick: ", e);
             }
         }
 
         @Override
-        public void onLocationClick(Media media) {
-            Location location = media.getLocation();
+        public void onLocationClick(final Media media) {
+            final Location location = media.getLocation();
             if (location == null) return;
             try {
-                NavDirections action = HashTagFragmentDirections.actionToLocation(location.getPk());
+                final NavDirections action = HashTagFragmentDirections.actionToLocation(location.getPk());
                 NavHostFragment.findNavController(HashTagFragment.this).navigate(action);
-            } catch (final Exception e) {
-                Log.e(HashTagFragment.TAG, "onLocationClick: ", e);
+            } catch (Exception e) {
+                Log.e(TAG, "onLocationClick: ", e);
             }
         }
 
         @Override
-        public void onMentionClick(String mention) {
-            HashTagFragment.this.navigateToProfile(mention.trim());
+        public void onMentionClick(final String mention) {
+            navigateToProfile(mention.trim());
         }
 
         @Override
-        public void onNameClick(Media feedModel) {
-            User user = feedModel.getUser();
+        public void onNameClick(final Media feedModel) {
+            final User user = feedModel.getUser();
             if (user == null) return;
-            HashTagFragment.this.navigateToProfile("@" + user.getUsername());
+            navigateToProfile("@" + user.getUsername());
         }
 
         @Override
-        public void onProfilePicClick(Media feedModel) {
-            User user = feedModel.getUser();
+        public void onProfilePicClick(final Media feedModel) {
+            final User user = feedModel.getUser();
             if (user == null) return;
-            HashTagFragment.this.navigateToProfile("@" + user.getUsername());
+            navigateToProfile("@" + user.getUsername());
         }
 
         @Override
-        public void onURLClick(String url) {
-            Utils.openURL(HashTagFragment.this.getContext(), url);
+        public void onURLClick(final String url) {
+            Utils.openURL(getContext(), url);
         }
 
         @Override
-        public void onEmailClick(String emailId) {
-            Utils.openEmailAddress(HashTagFragment.this.getContext(), emailId);
+        public void onEmailClick(final String emailId) {
+            Utils.openEmailAddress(getContext(), emailId);
         }
 
-        private void openPostDialog(@NonNull Media feedModel, int position) {
-            if (HashTagFragment.this.opening) return;
-            User user = feedModel.getUser();
+        private void openPostDialog(@NonNull final Media feedModel, final int position) {
+            if (opening) return;
+            final User user = feedModel.getUser();
             if (user == null) return;
             if (TextUtils.isEmpty(user.getUsername())) {
                 // this only happens for anons
-                HashTagFragment.this.opening = true;
-                String code = feedModel.getCode();
+                opening = true;
+                final String code = feedModel.getCode();
                 if (code == null) return;
-                HashTagFragment.this.graphQLRepository.fetchPost(code, CoroutineUtilsKt.getContinuation((media, throwable) -> {
-                    HashTagFragment.this.opening = false;
+                graphQLRepository.fetchPost(code, CoroutineUtilsKt.getContinuation((media, throwable) -> {
+                    opening = false;
                     if (throwable != null) {
-                        Log.e(HashTagFragment.TAG, "Error", throwable);
+                        Log.e(TAG, "Error", throwable);
                         return;
                     }
                     if (media == null) return;
-                    AppExecutors.INSTANCE.getMainThread().execute(() -> this.openPostDialog(media, position));
+                    AppExecutors.INSTANCE.getMainThread().execute(() -> openPostDialog(media, position));
                 }, Dispatchers.getIO()));
                 return;
             }
-            HashTagFragment.this.opening = true;
+            opening = true;
             try {
-                NavDirections action = HashTagFragmentDirections.actionToPost(feedModel, position);
+                final NavDirections action = HashTagFragmentDirections.actionToPost(feedModel, position);
                 NavHostFragment.findNavController(HashTagFragment.this).navigate(action);
-            } catch (final Exception e) {
-                Log.e(HashTagFragment.TAG, "openPostDialog: ", e);
+            } catch (Exception e) {
+                Log.e(TAG, "openPostDialog: ", e);
             }
-            HashTagFragment.this.opening = false;
+            opening = false;
         }
     };
     private final FeedAdapterV2.SelectionModeCallback selectionModeCallback = new FeedAdapterV2.SelectionModeCallback() {
 
         @Override
         public void onSelectionStart() {
-            if (!HashTagFragment.this.onBackPressedCallback.isEnabled()) {
-                OnBackPressedDispatcher onBackPressedDispatcher = HashTagFragment.this.fragmentActivity.getOnBackPressedDispatcher();
-                HashTagFragment.this.onBackPressedCallback.setEnabled(true);
-                onBackPressedDispatcher.addCallback(HashTagFragment.this.getViewLifecycleOwner(), HashTagFragment.this.onBackPressedCallback);
+            if (!onBackPressedCallback.isEnabled()) {
+                final OnBackPressedDispatcher onBackPressedDispatcher = fragmentActivity.getOnBackPressedDispatcher();
+                onBackPressedCallback.setEnabled(true);
+                onBackPressedDispatcher.addCallback(getViewLifecycleOwner(), onBackPressedCallback);
             }
-            if (HashTagFragment.this.actionMode == null) {
-                HashTagFragment.this.actionMode = HashTagFragment.this.fragmentActivity.startActionMode(HashTagFragment.this.multiSelectAction);
+            if (actionMode == null) {
+                actionMode = fragmentActivity.startActionMode(multiSelectAction);
             }
         }
 
         @Override
-        public void onSelectionChange(Set<Media> selectedFeedModels) {
-            String title = HashTagFragment.this.getString(R.string.number_selected, selectedFeedModels.size());
-            if (HashTagFragment.this.actionMode != null) {
-                HashTagFragment.this.actionMode.setTitle(title);
+        public void onSelectionChange(final Set<Media> selectedFeedModels) {
+            final String title = getString(R.string.number_selected, selectedFeedModels.size());
+            if (actionMode != null) {
+                actionMode.setTitle(title);
             }
             HashTagFragment.this.selectedFeedModels = selectedFeedModels;
         }
 
         @Override
         public void onSelectionEnd() {
-            if (HashTagFragment.this.onBackPressedCallback.isEnabled()) {
-                HashTagFragment.this.onBackPressedCallback.setEnabled(false);
-                HashTagFragment.this.onBackPressedCallback.remove();
+            if (onBackPressedCallback.isEnabled()) {
+                onBackPressedCallback.setEnabled(false);
+                onBackPressedCallback.remove();
             }
-            if (HashTagFragment.this.actionMode != null) {
-                HashTagFragment.this.actionMode.finish();
-                HashTagFragment.this.actionMode = null;
+            if (actionMode != null) {
+                actionMode.finish();
+                actionMode = null;
             }
         }
     };
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.fragmentActivity = (MainActivity) this.requireActivity();
-        String cookie = settingsHelper.getString(Constants.COOKIE);
-        this.isLoggedIn = !TextUtils.isEmpty(cookie) && CookieUtils.getUserIdFromCookie(cookie) > 0;
-        this.hashtagRepository = this.isLoggedIn ? HashtagRepository.Companion.getInstance() : null;
+        fragmentActivity = (MainActivity) requireActivity();
+        final String cookie = settingsHelper.getString(Constants.COOKIE);
+        isLoggedIn = !TextUtils.isEmpty(cookie) && CookieUtils.getUserIdFromCookie(cookie) > 0;
+        hashtagRepository = isLoggedIn ? HashtagRepository.Companion.getInstance() : null;
         //        storiesRepository = isLoggedIn ? StoriesRepository.Companion.getInstance() : null;
-        this.graphQLRepository = this.isLoggedIn ? null : GraphQLRepository.Companion.getInstance();
-        this.setHasOptionsMenu(true);
+        graphQLRepository = isLoggedIn ? null : GraphQLRepository.Companion.getInstance();
+        setHasOptionsMenu(true);
     }
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        if (this.root != null) {
-            this.shouldRefresh = false;
-            return this.root;
+    public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable final Bundle savedInstanceState) {
+        if (root != null) {
+            shouldRefresh = false;
+            return root;
         }
-        this.binding = FragmentHashtagBinding.inflate(inflater, container, false);
-        this.root = this.binding.getRoot();
-        this.hashtagDetailsBinding = this.binding.header;
-        return this.root;
+        binding = FragmentHashtagBinding.inflate(inflater, container, false);
+        root = binding.getRoot();
+        hashtagDetailsBinding = binding.header;
+        return root;
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        if (!this.shouldRefresh) return;
-        this.binding.swipeRefreshLayout.setOnRefreshListener(this);
-        this.init();
-        this.shouldRefresh = false;
+    public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
+        if (!shouldRefresh) return;
+        binding.swipeRefreshLayout.setOnRefreshListener(this);
+        init();
+        shouldRefresh = false;
     }
 
     @Override
     public void onRefresh() {
-        this.binding.posts.refresh();
+        binding.posts.refresh();
         //        fetchStories();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        this.fragmentActivity.setToolbar(this.binding.toolbar, this);
-        this.setTitle();
+        fragmentActivity.setToolbar(binding.toolbar, this);
+        setTitle();
     }
 
     @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NonNull final Menu menu, @NonNull final MenuInflater inflater) {
         inflater.inflate(R.menu.topic_posts_menu, menu);
     }
 
     @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         if (item.getItemId() == R.id.layout) {
-            this.showPostsLayoutPreferences();
+            showPostsLayoutPreferences();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -327,38 +327,38 @@ public class HashTagFragment extends Fragment implements SwipeRefreshLayout.OnRe
     @Override
     public void onStop() {
         super.onStop();
-        this.fragmentActivity.resetToolbar(this);
+        fragmentActivity.resetToolbar(this);
     }
 
     private void init() {
-        if (this.getArguments() == null) return;
-        HashTagFragmentArgs fragmentArgs = HashTagFragmentArgs.fromBundle(this.getArguments());
-        this.hashtag = fragmentArgs.getHashtag();
-        if (this.hashtag.charAt(0) == '#') this.hashtag = this.hashtag.substring(1);
-        this.fetchHashtagModel(true);
+        if (getArguments() == null) return;
+        final HashTagFragmentArgs fragmentArgs = HashTagFragmentArgs.fromBundle(getArguments());
+        hashtag = fragmentArgs.getHashtag();
+        if (hashtag.charAt(0) == '#') hashtag = hashtag.substring(1);
+        fetchHashtagModel(true);
     }
 
-    private void fetchHashtagModel(boolean init) {
-        this.binding.swipeRefreshLayout.setRefreshing(true);
-        Continuation<Hashtag> cb = CoroutineUtilsKt.getContinuation((result, t) -> {
-            this.hashtagModel = result;
+    private void fetchHashtagModel(final boolean init) {
+        binding.swipeRefreshLayout.setRefreshing(true);
+        final Continuation<Hashtag> cb = CoroutineUtilsKt.getContinuation((result, t) -> {
+            hashtagModel = result;
             AppExecutors.INSTANCE.getMainThread().execute(() -> {
-                this.setHashtagDetails(init);
-                this.binding.swipeRefreshLayout.setRefreshing(false);
+                setHashtagDetails(init);
+                binding.swipeRefreshLayout.setRefreshing(false);
             });
         }, Dispatchers.getIO());
-        if (this.isLoggedIn) this.hashtagRepository.fetch(this.hashtag, cb);
-        else this.graphQLRepository.fetchTag(this.hashtag, cb);
+        if (isLoggedIn) hashtagRepository.fetch(hashtag, cb);
+        else graphQLRepository.fetchTag(hashtag, cb);
     }
 
     private void setupPosts() {
-        this.binding.posts.setViewModelStoreOwner(this)
+        binding.posts.setViewModelStoreOwner(this)
                      .setLifeCycleOwner(this)
-                     .setPostFetchService(new HashtagPostFetchService(this.hashtagModel, this.isLoggedIn))
-                     .setLayoutPreferences(this.layoutPreferences)
-                     .addFetchStatusChangeListener(fetching -> this.updateSwipeRefreshState())
-                     .setFeedItemCallback(this.feedItemCallback)
-                     .setSelectionModeCallback(this.selectionModeCallback)
+                     .setPostFetchService(new HashtagPostFetchService(hashtagModel, isLoggedIn))
+                     .setLayoutPreferences(layoutPreferences)
+                     .addFetchStatusChangeListener(fetching -> updateSwipeRefreshState())
+                     .setFeedItemCallback(feedItemCallback)
+                     .setSelectionModeCallback(selectionModeCallback)
                      .init();
         // binding.posts.addOnScrollListener(new RecyclerView.OnScrollListener() {
         //     @Override
@@ -373,157 +373,157 @@ public class HashTagFragment extends Fragment implements SwipeRefreshLayout.OnRe
         // });
     }
 
-    private void setHashtagDetails(boolean init) {
-        if (this.hashtagModel == null) {
+    private void setHashtagDetails(final boolean init) {
+        if (hashtagModel == null) {
             try {
-                Toast.makeText(this.getContext(), R.string.error_loading_hashtag, Toast.LENGTH_SHORT).show();
-                this.binding.swipeRefreshLayout.setEnabled(false);
-            } catch (final Exception ignored) {}
+                Toast.makeText(getContext(), R.string.error_loading_hashtag, Toast.LENGTH_SHORT).show();
+                binding.swipeRefreshLayout.setEnabled(false);
+            } catch (Exception ignored) {}
             return;
         }
         if (init) {
-            this.setTitle();
-            this.setupPosts();
+            setTitle();
+            setupPosts();
         }
-        if (this.isLoggedIn) {
-            this.hashtagDetailsBinding.btnFollowTag.setVisibility(View.VISIBLE);
-            this.hashtagDetailsBinding.btnFollowTag.setText(this.hashtagModel.getFollow()
+        if (isLoggedIn) {
+            hashtagDetailsBinding.btnFollowTag.setVisibility(View.VISIBLE);
+            hashtagDetailsBinding.btnFollowTag.setText(hashtagModel.getFollow()
                                                        ? R.string.unfollow
                                                        : R.string.follow);
-            this.hashtagDetailsBinding.btnFollowTag.setChipIconResource(this.hashtagModel.getFollow()
+            hashtagDetailsBinding.btnFollowTag.setChipIconResource(hashtagModel.getFollow()
                                                                    ? R.drawable.ic_outline_person_add_disabled_24
                                                                    : R.drawable.ic_outline_person_add_24);
-            this.hashtagDetailsBinding.btnFollowTag.setOnClickListener(v -> {
-                String cookie = settingsHelper.getString(Constants.COOKIE);
-                String csrfToken = CookieUtils.getCsrfTokenFromCookie(cookie);
-                long userId = CookieUtils.getUserIdFromCookie(cookie);
-                String deviceUuid = settingsHelper.getString(Constants.DEVICE_UUID);
+            hashtagDetailsBinding.btnFollowTag.setOnClickListener(v -> {
+                final String cookie = settingsHelper.getString(Constants.COOKIE);
+                final String csrfToken = CookieUtils.getCsrfTokenFromCookie(cookie);
+                final long userId = CookieUtils.getUserIdFromCookie(cookie);
+                final String deviceUuid = settingsHelper.getString(Constants.DEVICE_UUID);
                 if (csrfToken != null && userId != 0) {
-                    this.hashtagDetailsBinding.btnFollowTag.setClickable(false);
-                    this.hashtagRepository.changeFollow(
-                            this.hashtagModel.getFollow() ? "unfollow" : "follow",
-                            this.hashtag,
+                    hashtagDetailsBinding.btnFollowTag.setClickable(false);
+                    hashtagRepository.changeFollow(
+                            hashtagModel.getFollow() ? "unfollow" : "follow",
+                            hashtag,
                             csrfToken,
                             userId,
                             deviceUuid,
                             CoroutineUtilsKt.getContinuation((result, t) -> {
-                                this.hashtagDetailsBinding.btnFollowTag.setClickable(true);
+                                hashtagDetailsBinding.btnFollowTag.setClickable(true);
                                 if (t != null) {
-                                    Log.e(HashTagFragment.TAG, "onFailure: ", t);
-                                    String message = t.getMessage();
+                                    Log.e(TAG, "onFailure: ", t);
+                                    final String message = t.getMessage();
                                     Snackbar.make(
-                                            this.root,
-                                            message != null ? message : this.getString(R.string.downloader_unknown_error),
+                                            root,
+                                            message != null ? message : getString(R.string.downloader_unknown_error),
                                             BaseTransientBottomBar.LENGTH_LONG)
                                             .show();
                                     return;
                                 }
                                 if (result != true) {
-                                    Log.e(HashTagFragment.TAG, "onSuccess: result is false");
-                                    Snackbar.make(this.root, R.string.downloader_unknown_error, BaseTransientBottomBar.LENGTH_LONG)
+                                    Log.e(TAG, "onSuccess: result is false");
+                                    Snackbar.make(root, R.string.downloader_unknown_error, BaseTransientBottomBar.LENGTH_LONG)
                                             .show();
                                     return;
                                 }
-                                this.fetchHashtagModel(false);
+                                fetchHashtagModel(false);
                             })
                     );
                 }
             });
         } else {
-            this.hashtagDetailsBinding.btnFollowTag.setVisibility(View.GONE);
+            hashtagDetailsBinding.btnFollowTag.setVisibility(View.GONE);
         }
-        this.hashtagDetailsBinding.favChip.setVisibility(View.VISIBLE);
-        Context context = this.getContext();
+        hashtagDetailsBinding.favChip.setVisibility(View.VISIBLE);
+        final Context context = getContext();
         if (context == null) return;
-        String postCount = String.valueOf(this.hashtagModel.getMediaCount());
-        SpannableStringBuilder span = new SpannableStringBuilder(this.getResources().getQuantityString(
+        final String postCount = String.valueOf(hashtagModel.getMediaCount());
+        final SpannableStringBuilder span = new SpannableStringBuilder(getResources().getQuantityString(
                 R.plurals.main_posts_count_inline,
-                this.hashtagModel.getMediaCount() > 2000000000L ? 2000000000
-                        : Long.valueOf(this.hashtagModel.getMediaCount()).intValue(),
+                hashtagModel.getMediaCount() > 2000000000L ? 2000000000
+                        : Long.valueOf(hashtagModel.getMediaCount()).intValue(),
                 postCount)
         );
         span.setSpan(new RelativeSizeSpan(1.2f), 0, postCount.length(), 0);
         span.setSpan(new StyleSpan(Typeface.BOLD), 0, postCount.length(), 0);
-        this.hashtagDetailsBinding.mainTagPostCount.setText(span);
-        this.hashtagDetailsBinding.mainTagPostCount.setVisibility(View.VISIBLE);
+        hashtagDetailsBinding.mainTagPostCount.setText(span);
+        hashtagDetailsBinding.mainTagPostCount.setVisibility(View.VISIBLE);
         if (!init) return;
-        FavoriteRepository favoriteRepository = FavoriteRepository.Companion.getInstance(context);
+        final FavoriteRepository favoriteRepository = FavoriteRepository.Companion.getInstance(context);
         favoriteRepository.getFavorite(
-                this.hashtag,
+                hashtag,
                 FavoriteType.HASHTAG,
                 CoroutineUtilsKt.getContinuation((favorite, throwable) -> AppExecutors.INSTANCE.getMainThread().execute(() -> {
                     if (throwable != null || favorite == null) {
-                        this.hashtagDetailsBinding.favChip.setChipIconResource(R.drawable.ic_outline_star_plus_24);
-                        this.hashtagDetailsBinding.favChip.setText(R.string.add_to_favorites);
+                        hashtagDetailsBinding.favChip.setChipIconResource(R.drawable.ic_outline_star_plus_24);
+                        hashtagDetailsBinding.favChip.setText(R.string.add_to_favorites);
                         return;
                     }
                     favoriteRepository.insertOrUpdateFavorite(
                             new Favorite(
                                     favorite.getId(),
-                                    this.hashtag,
+                                    hashtag,
                                     FavoriteType.HASHTAG,
-                                    this.hashtagModel.getName(),
+                                    hashtagModel.getName(),
                                     "res:/" + R.drawable.ic_hashtag,
                                     favorite.getDateAdded()
                             ),
                             CoroutineUtilsKt.getContinuation((unit, throwable1) -> AppExecutors.INSTANCE.getMainThread().execute(() -> {
                                 if (throwable1 != null) {
-                                    Log.e(HashTagFragment.TAG, "onSuccess: ", throwable1);
+                                    Log.e(TAG, "onSuccess: ", throwable1);
                                     return;
                                 }
-                                this.hashtagDetailsBinding.favChip.setChipIconResource(R.drawable.ic_star_check_24);
-                                this.hashtagDetailsBinding.favChip.setText(R.string.favorite_short);
+                                hashtagDetailsBinding.favChip.setChipIconResource(R.drawable.ic_star_check_24);
+                                hashtagDetailsBinding.favChip.setText(R.string.favorite_short);
                             }), Dispatchers.getIO())
                     );
                 }), Dispatchers.getIO())
         );
-        this.hashtagDetailsBinding.favChip.setOnClickListener(v -> favoriteRepository.getFavorite(
-                this.hashtag,
+        hashtagDetailsBinding.favChip.setOnClickListener(v -> favoriteRepository.getFavorite(
+                hashtag,
                 FavoriteType.HASHTAG,
                 CoroutineUtilsKt.getContinuation((favorite, throwable) -> AppExecutors.INSTANCE.getMainThread().execute(() -> {
                     if (throwable != null) {
-                        Log.e(HashTagFragment.TAG, "setHashtagDetails: ", throwable);
+                        Log.e(TAG, "setHashtagDetails: ", throwable);
                         return;
                     }
                     if (favorite == null) {
                         favoriteRepository.insertOrUpdateFavorite(
                                 new Favorite(
                                         0,
-                                        this.hashtag,
+                                        hashtag,
                                         FavoriteType.HASHTAG,
-                                        this.hashtagModel.getName(),
+                                        hashtagModel.getName(),
                                         "res:/" + R.drawable.ic_hashtag,
                                         LocalDateTime.now()
                                 ),
                                 CoroutineUtilsKt.getContinuation((unit, throwable1) -> AppExecutors.INSTANCE.getMainThread().execute(() -> {
                                     if (throwable1 != null) {
-                                        Log.e(HashTagFragment.TAG, "onDataNotAvailable: ", throwable1);
+                                        Log.e(TAG, "onDataNotAvailable: ", throwable1);
                                         return;
                                     }
-                                    this.hashtagDetailsBinding.favChip.setText(R.string.favorite_short);
-                                    this.hashtagDetailsBinding.favChip.setChipIconResource(R.drawable.ic_star_check_24);
-                                    this.showSnackbar(this.getString(R.string.added_to_favs));
+                                    hashtagDetailsBinding.favChip.setText(R.string.favorite_short);
+                                    hashtagDetailsBinding.favChip.setChipIconResource(R.drawable.ic_star_check_24);
+                                    showSnackbar(getString(R.string.added_to_favs));
                                 }), Dispatchers.getIO())
                         );
                         return;
                     }
                     favoriteRepository.deleteFavorite(
-                            this.hashtag,
+                            hashtag,
                             FavoriteType.HASHTAG,
                             CoroutineUtilsKt.getContinuation((unit, throwable1) -> AppExecutors.INSTANCE.getMainThread().execute(() -> {
                                 if (throwable1 != null) {
-                                    Log.e(HashTagFragment.TAG, "onSuccess: ", throwable1);
+                                    Log.e(TAG, "onSuccess: ", throwable1);
                                     return;
                                 }
-                                this.hashtagDetailsBinding.favChip.setText(R.string.add_to_favorites);
-                                this.hashtagDetailsBinding.favChip.setChipIconResource(R.drawable.ic_outline_star_plus_24);
-                                this.showSnackbar(this.getString(R.string.removed_from_favs));
+                                hashtagDetailsBinding.favChip.setText(R.string.add_to_favorites);
+                                hashtagDetailsBinding.favChip.setChipIconResource(R.drawable.ic_outline_star_plus_24);
+                                showSnackbar(getString(R.string.removed_from_favs));
                             }), Dispatchers.getIO())
                     );
                 }), Dispatchers.getIO())
                                                          )
         );
-        this.hashtagDetailsBinding.mainHashtagImage.setImageURI("res:/" + R.drawable.ic_hashtag);
+        hashtagDetailsBinding.mainHashtagImage.setImageURI("res:/" + R.drawable.ic_hashtag);
         //        hashtagDetailsBinding.mainHashtagImage.setOnClickListener(v -> {
         //            if (!hasStories) return;
         //            // show stories
@@ -533,43 +533,43 @@ public class HashTagFragment extends Fragment implements SwipeRefreshLayout.OnRe
         //        });
     }
 
-    private void showSnackbar(String message) {
-        @SuppressLint("ShowToast") Snackbar snackbar = Snackbar.make(this.root, message, BaseTransientBottomBar.LENGTH_LONG);
+    private void showSnackbar(final String message) {
+        @SuppressLint("ShowToast") final Snackbar snackbar = Snackbar.make(root, message, BaseTransientBottomBar.LENGTH_LONG);
         snackbar.setAction(R.string.ok, v1 -> snackbar.dismiss())
                 .setAnimationMode(BaseTransientBottomBar.ANIMATION_MODE_SLIDE)
-                .setAnchorView(this.fragmentActivity.getBottomNavView())
+                .setAnchorView(fragmentActivity.getBottomNavView())
                 .show();
     }
 
     private void setTitle() {
-        ActionBar actionBar = this.fragmentActivity.getSupportActionBar();
+        final ActionBar actionBar = fragmentActivity.getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setTitle('#' + this.hashtag);
+            actionBar.setTitle('#' + hashtag);
         }
     }
 
     private void updateSwipeRefreshState() {
         AppExecutors.INSTANCE.getMainThread().execute(() ->
-                this.binding.swipeRefreshLayout.setRefreshing(this.binding.posts.isFetching())
+                binding.swipeRefreshLayout.setRefreshing(binding.posts.isFetching())
         );
     }
 
-    private void navigateToProfile(String username) {
+    private void navigateToProfile(final String username) {
         try {
-            NavDirections action = HashTagFragmentDirections.actionToProfile().setUsername(username);
+            final NavDirections action = HashTagFragmentDirections.actionToProfile().setUsername(username);
             NavHostFragment.findNavController(this).navigate(action);
-        } catch (final Exception e) {
-            Log.e(HashTagFragment.TAG, "navigateToProfile: ", e);
+        } catch (Exception e) {
+            Log.e(TAG, "navigateToProfile: ", e);
         }
     }
 
     private void showPostsLayoutPreferences() {
-        PostsLayoutPreferencesDialogFragment fragment = new PostsLayoutPreferencesDialogFragment(
+        final PostsLayoutPreferencesDialogFragment fragment = new PostsLayoutPreferencesDialogFragment(
                 Constants.PREF_HASHTAG_POSTS_LAYOUT,
                 preferences -> {
-                    this.layoutPreferences = preferences;
-                    new Handler().postDelayed(() -> this.binding.posts.setLayoutPreferences(preferences), 200);
+                    layoutPreferences = preferences;
+                    new Handler().postDelayed(() -> binding.posts.setLayoutPreferences(preferences), 200);
                 });
-        fragment.show(this.getChildFragmentManager(), "posts_layout_preferences");
+        fragment.show(getChildFragmentManager(), "posts_layout_preferences");
     }
 }

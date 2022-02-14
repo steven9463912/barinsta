@@ -23,55 +23,55 @@ public class UsernameTextView extends AppCompatTextView {
     private boolean verified;
     private VerticalImageSpan verifiedSpan;
 
-    public UsernameTextView(@NonNull Context context) {
+    public UsernameTextView(@NonNull final Context context) {
         this(context, null);
     }
 
-    public UsernameTextView(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public UsernameTextView(@NonNull final Context context, @Nullable final AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public UsernameTextView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public UsernameTextView(@NonNull final Context context, @Nullable final AttributeSet attrs, final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        this.init();
+        init();
     }
 
     private void init() {
         try {
-            Drawable verifiedDrawable = AppCompatResources.getDrawable(this.getContext(), R.drawable.verified);
-            Drawable drawable = verifiedDrawable.mutate();
-            drawable.setBounds(0, 0, this.drawableSize, this.drawableSize);
-            this.verifiedSpan = new VerticalImageSpan(drawable);
-        } catch (final Exception e) {
-            Log.e(UsernameTextView.TAG, "init: ", e);
+            final Drawable verifiedDrawable = AppCompatResources.getDrawable(getContext(), R.drawable.verified);
+            final Drawable drawable = verifiedDrawable.mutate();
+            drawable.setBounds(0, 0, drawableSize, drawableSize);
+            verifiedSpan = new VerticalImageSpan(drawable);
+        } catch (Exception e) {
+            Log.e(TAG, "init: ", e);
         }
     }
 
-    public void setUsername(CharSequence username) {
-        this.setUsername(username, false);
+    public void setUsername(final CharSequence username) {
+        setUsername(username, false);
     }
 
-    public void setUsername(CharSequence username, boolean verified) {
+    public void setUsername(final CharSequence username, final boolean verified) {
         this.verified = verified;
-        SpannableStringBuilder sb = new SpannableStringBuilder(username);
+        final SpannableStringBuilder sb = new SpannableStringBuilder(username);
         if (verified) {
             try {
-                if (this.verifiedSpan != null) {
+                if (verifiedSpan != null) {
                     sb.append("  ");
-                    sb.setSpan(this.verifiedSpan, sb.length() - 1, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    sb.setSpan(verifiedSpan, sb.length() - 1, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 }
-            } catch (final Exception e) {
-                Log.e(UsernameTextView.TAG, "bind: ", e);
+            } catch (Exception e) {
+                Log.e(TAG, "bind: ", e);
             }
         }
-        setText(sb);
+        this.setText(sb);
     }
 
     public boolean isVerified() {
-        return this.verified;
+        return verified;
     }
 
-    public void setVerified(boolean verified) {
-        this.setUsername(this.getText(), verified);
+    public void setVerified(final boolean verified) {
+        setUsername(getText(), verified);
     }
 }

@@ -31,8 +31,8 @@ public class FavoritesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     private static final DiffUtil.ItemCallback<FavoriteModelOrHeader> diffCallback = new DiffUtil.ItemCallback<FavoriteModelOrHeader>() {
         @Override
-        public boolean areItemsTheSame(@NonNull FavoriteModelOrHeader oldItem, @NonNull FavoriteModelOrHeader newItem) {
-            final boolean areSame = oldItem.isHeader() && newItem.isHeader();
+        public boolean areItemsTheSame(@NonNull final FavoriteModelOrHeader oldItem, @NonNull final FavoriteModelOrHeader newItem) {
+            boolean areSame = oldItem.isHeader() && newItem.isHeader();
             if (!areSame) {
                 return false;
             }
@@ -46,8 +46,8 @@ public class FavoritesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
 
         @Override
-        public boolean areContentsTheSame(@NonNull FavoriteModelOrHeader oldItem, @NonNull FavoriteModelOrHeader newItem) {
-            final boolean areSame = oldItem.isHeader() && newItem.isHeader();
+        public boolean areContentsTheSame(@NonNull final FavoriteModelOrHeader oldItem, @NonNull final FavoriteModelOrHeader newItem) {
+            boolean areSame = oldItem.isHeader() && newItem.isHeader();
             if (!areSame) {
                 return false;
             }
@@ -58,69 +58,69 @@ public class FavoritesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
     };
 
-    public FavoritesAdapter(OnFavoriteClickListener clickListener, OnFavoriteLongClickListener longClickListener) {
+    public FavoritesAdapter(final OnFavoriteClickListener clickListener, final OnFavoriteLongClickListener longClickListener) {
         this.clickListener = clickListener;
         this.longClickListener = longClickListener;
-        this.differ = new AsyncListDiffer<>(new AdapterListUpdateCallback(this),
-                                       new AsyncDifferConfig.Builder<>(FavoritesAdapter.diffCallback).build());
+        differ = new AsyncListDiffer<>(new AdapterListUpdateCallback(this),
+                                       new AsyncDifferConfig.Builder<>(diffCallback).build());
     }
 
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull final ViewGroup parent, final int viewType) {
+        final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         if (viewType == 0) {
             // header
             return new FavSectionViewHolder(ItemFavSectionHeaderBinding.inflate(inflater, parent, false));
         }
-        ItemSearchResultBinding binding = ItemSearchResultBinding.inflate(inflater, parent, false);
+        final ItemSearchResultBinding binding = ItemSearchResultBinding.inflate(inflater, parent, false);
         return new FavoriteViewHolder(binding);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        if (this.getItemViewType(position) == 0) {
-            FavoriteModelOrHeader modelOrHeader = this.getItem(position);
+    public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position) {
+        if (getItemViewType(position) == 0) {
+            final FavoriteModelOrHeader modelOrHeader = getItem(position);
             if (!modelOrHeader.isHeader()) return;
             ((FavSectionViewHolder) holder).bind(modelOrHeader.header);
             return;
         }
-        ((FavoriteViewHolder) holder).bind(this.getItem(position).model, this.clickListener, this.longClickListener);
+        ((FavoriteViewHolder) holder).bind(getItem(position).model, clickListener, longClickListener);
     }
 
-    protected FavoriteModelOrHeader getItem(final int position) {
-        return this.differ.getCurrentList().get(position);
+    protected FavoriteModelOrHeader getItem(int position) {
+        return differ.getCurrentList().get(position);
     }
 
     @Override
     public int getItemCount() {
-        return this.differ.getCurrentList().size();
+        return differ.getCurrentList().size();
     }
 
     @Override
-    public int getItemViewType(int position) {
-        return this.getItem(position).isHeader() ? 0 : 1;
+    public int getItemViewType(final int position) {
+        return getItem(position).isHeader() ? 0 : 1;
     }
 
-    public void submitList(@Nullable List<Favorite> list) {
+    public void submitList(@Nullable final List<Favorite> list) {
         if (list == null) {
-            this.differ.submitList(null);
+            differ.submitList(null);
             return;
         }
-        this.differ.submitList(this.sectionAndSort(list));
+        differ.submitList(sectionAndSort(list));
     }
 
-    public void submitList(@Nullable List<Favorite> list, @Nullable Runnable commitCallback) {
+    public void submitList(@Nullable final List<Favorite> list, @Nullable final Runnable commitCallback) {
         if (list == null) {
-            this.differ.submitList(null, commitCallback);
+            differ.submitList(null, commitCallback);
             return;
         }
-        this.differ.submitList(this.sectionAndSort(list), commitCallback);
+        differ.submitList(sectionAndSort(list), commitCallback);
     }
 
     @NonNull
-    private List<FavoriteModelOrHeader> sectionAndSort(@NonNull List<Favorite> list) {
-        List<Favorite> listCopy = new ArrayList<>(list);
+    private List<FavoriteModelOrHeader> sectionAndSort(@NonNull final List<Favorite> list) {
+        final List<Favorite> listCopy = new ArrayList<>(list);
         Collections.sort(listCopy, (o1, o2) -> {
             if (o1.getType() == o2.getType()) return 0;
             // keep users at top
@@ -131,14 +131,14 @@ public class FavoritesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             if (o2.getType() == FavoriteType.LOCATION) return -1;
             return 0;
         });
-        List<FavoriteModelOrHeader> modelOrHeaders = new ArrayList<>();
+        final List<FavoriteModelOrHeader> modelOrHeaders = new ArrayList<>();
         for (int i = 0; i < listCopy.size(); i++) {
-            Favorite model = listCopy.get(i);
-            FavoriteModelOrHeader prev = modelOrHeaders.isEmpty() ? null : modelOrHeaders.get(modelOrHeaders.size() - 1);
-            final boolean prevWasSameType = prev != null && prev.model.getType() == model.getType();
+            final Favorite model = listCopy.get(i);
+            final FavoriteModelOrHeader prev = modelOrHeaders.isEmpty() ? null : modelOrHeaders.get(modelOrHeaders.size() - 1);
+            boolean prevWasSameType = prev != null && prev.model.getType() == model.getType();
             if (prevWasSameType) {
                 // just add model
-                FavoriteModelOrHeader modelOrHeader = new FavoriteModelOrHeader();
+                final FavoriteModelOrHeader modelOrHeader = new FavoriteModelOrHeader();
                 modelOrHeader.model = model;
                 modelOrHeaders.add(modelOrHeader);
                 continue;
@@ -159,7 +159,7 @@ public class FavoritesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         Favorite model;
 
         boolean isHeader() {
-            return this.header != null;
+            return header != null;
         }
     }
 
@@ -174,14 +174,14 @@ public class FavoritesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     public static class FavSectionViewHolder extends RecyclerView.ViewHolder {
         private final ItemFavSectionHeaderBinding binding;
 
-        public FavSectionViewHolder(@NonNull ItemFavSectionHeaderBinding binding) {
+        public FavSectionViewHolder(@NonNull final ItemFavSectionHeaderBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
         }
 
-        public void bind(FavoriteType header) {
+        public void bind(final FavoriteType header) {
             if (header == null) return;
-            int headerText;
+            final int headerText;
             switch (header) {
                 case USER:
                     headerText = R.string.accounts;
@@ -196,7 +196,7 @@ public class FavoritesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     headerText = R.string.unknown;
                     break;
             }
-            this.binding.getRoot().setText(headerText);
+            binding.getRoot().setText(headerText);
         }
     }
 }

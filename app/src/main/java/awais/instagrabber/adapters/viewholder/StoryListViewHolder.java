@@ -14,68 +14,68 @@ import awais.instagrabber.utils.ResponseBodyUtils;
 public final class StoryListViewHolder extends RecyclerView.ViewHolder {
     private final ItemNotificationBinding binding;
 
-    public StoryListViewHolder(ItemNotificationBinding binding) {
+    public StoryListViewHolder(final ItemNotificationBinding binding) {
         super(binding.getRoot());
         this.binding = binding;
     }
 
-    public void bind(Story model,
-                     FeedStoriesListAdapter.OnFeedStoryClickListener notificationClickListener) {
+    public void bind(final Story model,
+                     final FeedStoriesListAdapter.OnFeedStoryClickListener notificationClickListener) {
         if (model == null) return;
 
-        int storiesCount = model.getMediaCount();
-        this.binding.tvComment.setVisibility(View.VISIBLE);
-        this.binding.tvComment.setText(this.itemView.getResources().getQuantityString(R.plurals.stories_count, storiesCount, storiesCount));
+        final int storiesCount = model.getMediaCount();
+        binding.tvComment.setVisibility(View.VISIBLE);
+        binding.tvComment.setText(itemView.getResources().getQuantityString(R.plurals.stories_count, storiesCount, storiesCount));
 
-        this.binding.tvSubComment.setVisibility(View.GONE);
+        binding.tvSubComment.setVisibility(View.GONE);
 
-        this.binding.tvDate.setText(model.getDateTime());
+        binding.tvDate.setText(model.getDateTime());
 
-        this.binding.tvUsername.setText(model.getUser().getUsername());
-        this.binding.ivProfilePic.setImageURI(model.getUser().getProfilePicUrl());
-        this.binding.ivProfilePic.setOnClickListener(v -> {
+        binding.tvUsername.setText(model.getUser().getUsername());
+        binding.ivProfilePic.setImageURI(model.getUser().getProfilePicUrl());
+        binding.ivProfilePic.setOnClickListener(v -> {
             if (notificationClickListener == null) return;
             notificationClickListener.onProfileClick(model.getUser().getUsername());
         });
 
         if (model.getItems() != null && model.getItems().size() > 0) {
-            this.binding.ivPreviewPic.setVisibility(View.VISIBLE);
-            this.binding.ivPreviewPic.setImageURI(ResponseBodyUtils.getThumbUrl(model.getItems().get(0)));
-        } else this.binding.ivPreviewPic.setVisibility(View.INVISIBLE);
+            binding.ivPreviewPic.setVisibility(View.VISIBLE);
+            binding.ivPreviewPic.setImageURI(ResponseBodyUtils.getThumbUrl(model.getItems().get(0)));
+        } else binding.ivPreviewPic.setVisibility(View.INVISIBLE);
 
-        final float alpha = model.getSeen() != null && model.getSeen().equals(model.getLatestReelMedia())
+        float alpha = model.getSeen() != null && model.getSeen().equals(model.getLatestReelMedia())
                 ? 0.5F : 1.0F;
-        this.binding.ivProfilePic.setAlpha(alpha);
-        this.binding.ivPreviewPic.setAlpha(alpha);
-        this.binding.tvUsername.setAlpha(alpha);
-        this.binding.tvComment.setAlpha(alpha);
-        this.binding.tvDate.setAlpha(alpha);
+        binding.ivProfilePic.setAlpha(alpha);
+        binding.ivPreviewPic.setAlpha(alpha);
+        binding.tvUsername.setAlpha(alpha);
+        binding.tvComment.setAlpha(alpha);
+        binding.tvDate.setAlpha(alpha);
 
-        this.itemView.setOnClickListener(v -> {
+        itemView.setOnClickListener(v -> {
             if (notificationClickListener == null) return;
             notificationClickListener.onFeedStoryClick(model);
         });
     }
 
-    public void bind(Story model,
-                     int position,
-                     HighlightStoriesListAdapter.OnHighlightStoryClickListener notificationClickListener) {
+    public void bind(final Story model,
+                     final int position,
+                     final HighlightStoriesListAdapter.OnHighlightStoryClickListener notificationClickListener) {
         if (model == null) return;
 
-        int storiesCount = model.getMediaCount();
-        this.binding.tvComment.setVisibility(View.VISIBLE);
-        this.binding.tvComment.setText(this.itemView.getResources().getQuantityString(R.plurals.stories_count, storiesCount, storiesCount));
+        final int storiesCount = model.getMediaCount();
+        binding.tvComment.setVisibility(View.VISIBLE);
+        binding.tvComment.setText(itemView.getResources().getQuantityString(R.plurals.stories_count, storiesCount, storiesCount));
 
-        this.binding.tvSubComment.setVisibility(View.GONE);
+        binding.tvSubComment.setVisibility(View.GONE);
 
-        this.binding.tvUsername.setText(model.getDateTime());
+        binding.tvUsername.setText(model.getDateTime());
 
-        this.binding.ivProfilePic.setVisibility(View.GONE);
+        binding.ivProfilePic.setVisibility(View.GONE);
 
-        this.binding.ivPreviewPic.setVisibility(View.VISIBLE);
-        this.binding.ivPreviewPic.setImageURI(model.getCoverImageVersion().getUrl());
+        binding.ivPreviewPic.setVisibility(View.VISIBLE);
+        binding.ivPreviewPic.setImageURI(model.getCoverImageVersion().getUrl());
 
-        this.itemView.setOnClickListener(v -> {
+        itemView.setOnClickListener(v -> {
             if (notificationClickListener == null) return;
             notificationClickListener.onHighlightClick(model, position);
         });

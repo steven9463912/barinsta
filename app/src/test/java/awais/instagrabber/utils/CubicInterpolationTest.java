@@ -6,7 +6,7 @@ class CubicInterpolationTest {
 
     @Test
     void interpolate() {
-        float[] array = {0,
+        final float[] array = {0,
                 0,
                 0,
                 0,
@@ -54,8 +54,8 @@ class CubicInterpolationTest {
                 1.8114564f,
                 2.68573f,
                 2.4381645f};
-        CubicInterpolation cubicInterpolation = new CubicInterpolation(array);
-        float interpolate = cubicInterpolation.interpolate(5.25f);
+        final CubicInterpolation cubicInterpolation = new CubicInterpolation(array);
+        final float interpolate = cubicInterpolation.interpolate(5.25f);
         System.out.println(interpolate);
     }
 }

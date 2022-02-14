@@ -23,7 +23,7 @@ class DownloadUtilsTest {
         // ans: (((100 * 1/ 6) ) * (100 / 100)) + (100 * (position - 1)) / total
         for (int position = 1; position <= total; position++) {
             for (float currentPercent = 1; currentPercent <= 100; currentPercent++) {
-                final float totalPercent = (100f * (position - 1) / total) + (1f / total) * (currentPercent);
+                float totalPercent = (100f * (position - 1) / total) + (1f / total) * (currentPercent);
                 System.out.println(totalPercent);
             }
         }

@@ -17,26 +17,26 @@ public class ExposureFilter extends Filter<GPUImageExposureFilter> {
 
     public ExposureFilter() {
         super(FiltersHelper.FilterType.EXPOSURE, R.string.exposure);
-        this.properties = Collections.singletonMap(
-                ExposureFilter.PROP_EXPOSURE, new FloatProperty(R.string.exposure, 0f, -3.0f, 3.0f)
+        properties = Collections.singletonMap(
+                PROP_EXPOSURE, new FloatProperty(R.string.exposure, 0f, -3.0f, 3.0f)
         );
-        this.filter = new GPUImageExposureFilter((Float) this.getProperty(ExposureFilter.PROP_EXPOSURE).getDefaultValue());
+        filter = new GPUImageExposureFilter((Float) getProperty(PROP_EXPOSURE).getDefaultValue());
     }
 
     @Override
     public Map<Integer, Property<?>> getProperties() {
-        return this.properties;
+        return properties;
     }
 
     @Override
-    public void adjust(int property, Object value) {
+    public void adjust(final int property, final Object value) {
         super.adjust(property, value);
         if (!(value instanceof Float)) return;
-        this.filter.setExposure((Float) value);
+        filter.setExposure((Float) value);
     }
 
     @Override
     public GPUImageExposureFilter getInstance() {
-        return this.filter;
+        return filter;
     }
 }

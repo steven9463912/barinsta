@@ -10,9 +10,9 @@ public class FileListViewModel extends ViewModel {
     private MutableLiveData<List<File>> list;
 
     public MutableLiveData<List<File>> getList() {
-        if (this.list == null) {
-            this.list = new MutableLiveData<>();
+        if (list == null) {
+            list = new MutableLiveData<>();
         }
-        return this.list;
+        return list;
     }
 }

@@ -14,40 +14,40 @@ public abstract class Filter<T extends GPUImageFilter> {
     private final FiltersHelper.FilterType type;
     private final int label;
 
-    public Filter(FiltersHelper.FilterType type, @StringRes int label) {
+    public Filter(final FiltersHelper.FilterType type, @StringRes final int label) {
         this.type = type;
         this.label = label;
     }
 
     public FiltersHelper.FilterType getType() {
-        return this.type;
+        return type;
     }
 
     @StringRes
     public int getLabel() {
-        return this.label;
+        return label;
     }
 
     public abstract T getInstance();
 
     public abstract Map<Integer, Property<?>> getProperties();
 
-    public Property<?> getProperty(final int property) {
-        return this.getProperties().get(property);
+    public Property<?> getProperty(int property) {
+        return getProperties().get(property);
     }
 
     @CallSuper
-    public void adjust(int property, Object value) {
-        Property<?> propertyObj = this.getProperty(property);
+    public void adjust(final int property, final Object value) {
+        final Property<?> propertyObj = getProperty(property);
         propertyObj.setValue(value);
     }
 
     public void reset() {
-        Map<Integer, Property<?>> propertyMap = this.getProperties();
+        final Map<Integer, Property<?>> propertyMap = getProperties();
         if (propertyMap == null) return;
-        Set<Map.Entry<Integer, Property<?>>> entries = propertyMap.entrySet();
-        for (Map.Entry<Integer, Property<?>> entry : entries) {
-            this.adjust(entry.getKey(), entry.getValue().getDefaultValue());
+        final Set<Map.Entry<Integer, Property<?>>> entries = propertyMap.entrySet();
+        for (final Map.Entry<Integer, Property<?>> entry : entries) {
+            adjust(entry.getKey(), entry.getValue().getDefaultValue());
         }
     }
 }
