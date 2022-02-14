@@ -11,6 +11,7 @@
 /.idea/assetWizardSettings.xml
 /.idea/git_toolbox_prj.xml
 /.idea/dbnavigator.xml
+./idea/
 .DS_Store
 /build
 /captures
