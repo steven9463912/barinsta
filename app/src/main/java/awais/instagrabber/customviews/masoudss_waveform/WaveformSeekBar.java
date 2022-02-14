@@ -21,7 +21,7 @@ import awais.instagrabber.utils.CubicInterpolation;
 import awais.instagrabber.utils.Utils;
 
 public final class WaveformSeekBar extends View {
-    private final int mScaledTouchSlop = ViewConfiguration.get(this.getContext()).getScaledTouchSlop();
+    private final int mScaledTouchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
     private final Paint mWavePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final RectF mWaveRect = new RectF();
     private final Canvas mProgressCanvas = new Canvas();
@@ -41,17 +41,17 @@ public final class WaveformSeekBar extends View {
     private int wavesCount;
     private CubicInterpolation interpolation;
 
-    public WaveformSeekBar(Context context) {
+    public WaveformSeekBar(final Context context) {
         this(context, null);
     }
 
-    public WaveformSeekBar(Context context, @Nullable AttributeSet attrs) {
+    public WaveformSeekBar(final Context context, @Nullable final AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public WaveformSeekBar(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public WaveformSeekBar(final Context context, @Nullable final AttributeSet attrs, final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        TypedArray a = context.getTheme().obtainStyledAttributes(
+        final TypedArray a = context.getTheme().obtainStyledAttributes(
                 attrs,
                 R.styleable.WaveformSeekBar,
                 0,
@@ -64,14 +64,14 @@ public final class WaveformSeekBar extends View {
         } finally {
             a.recycle();
         }
-        waveBackgroundColor = context.getResources().getColor(backgroundColor);
-        waveProgressColor = context.getResources().getColor(progressColor);
+        this.waveBackgroundColor = context.getResources().getColor(backgroundColor);
+        this.waveProgressColor = context.getResources().getColor(progressColor);
     }
 
     private float getSampleMax() {
         float max = -1f;
-        if (this.sample != null) {
-            for (float v : this.sample) {
+        if (sample != null) {
+            for (final float v : sample) {
                 if (v > max) max = v;
             }
         }
@@ -79,64 +79,64 @@ public final class WaveformSeekBar extends View {
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
+    protected void onDraw(final Canvas canvas) {
         super.onDraw(canvas);
-        if (this.sample == null || this.sample.length == 0) return;
-        int availableWidth = this.getAvailableWidth();
-        int availableHeight = this.getAvailableHeight();
+        if (sample == null || sample.length == 0) return;
+        final int availableWidth = getAvailableWidth();
+        final int availableHeight = getAvailableHeight();
 
         // final float step = availableWidth / (waveGap + waveWidth) / sample.size();
 
         int i = 0;
-        float lastWaveRight = (float) this.getPaddingLeft();
+        float lastWaveRight = (float) getPaddingLeft();
 
-        float sampleMax = this.getSampleMax();
-        while (i < this.wavesCount) {
-            float t = lastWaveRight / availableWidth * this.sample.length;
-            float waveHeight = availableHeight * (this.interpolation.interpolate(t) / sampleMax);
+        final float sampleMax = getSampleMax();
+        while (i < wavesCount) {
+            final float t = lastWaveRight / availableWidth * sample.length;
+            float waveHeight = availableHeight * (interpolation.interpolate(t) / sampleMax);
 
-            if (waveHeight < this.waveMinHeight)
-                waveHeight = this.waveMinHeight;
+            if (waveHeight < waveMinHeight)
+                waveHeight = waveMinHeight;
 
-            float top;
-            if (this.waveGravity == WaveGravity.TOP) {
-                top = (float) this.getPaddingTop();
-            } else if (this.waveGravity == WaveGravity.CENTER) {
-                top = (float) this.getPaddingTop() + availableHeight / 2F - waveHeight / 2F;
-            } else if (this.waveGravity == WaveGravity.BOTTOM) {
-                top = this.getMeasuredHeight() - (float) this.getPaddingBottom() - waveHeight;
+            final float top;
+            if (waveGravity == WaveGravity.TOP) {
+                top = (float) getPaddingTop();
+            } else if (waveGravity == WaveGravity.CENTER) {
+                top = (float) getPaddingTop() + availableHeight / 2F - waveHeight / 2F;
+            } else if (waveGravity == WaveGravity.BOTTOM) {
+                top = getMeasuredHeight() - (float) getPaddingBottom() - waveHeight;
             } else {
                 top = 0;
             }
 
-            this.mWaveRect.set(lastWaveRight, top, lastWaveRight + this.waveWidth, top + waveHeight);
+            mWaveRect.set(lastWaveRight, top, lastWaveRight + waveWidth, top + waveHeight);
 
-            if (this.mWaveRect.contains(availableWidth * this.progress / 100F, this.mWaveRect.centerY())) {
-                int bitHeight = (int) this.mWaveRect.height();
-                if (bitHeight <= 0) bitHeight = (int) this.waveWidth;
+            if (mWaveRect.contains(availableWidth * progress / 100F, mWaveRect.centerY())) {
+                int bitHeight = (int) mWaveRect.height();
+                if (bitHeight <= 0) bitHeight = (int) waveWidth;
 
-                Bitmap bitmap = Bitmap.createBitmap(availableWidth, bitHeight, Bitmap.Config.ARGB_8888);
-                this.mProgressCanvas.setBitmap(bitmap);
+                final Bitmap bitmap = Bitmap.createBitmap(availableWidth, bitHeight, Bitmap.Config.ARGB_8888);
+                mProgressCanvas.setBitmap(bitmap);
 
-                final float fillWidth = availableWidth * this.progress / 100F;
+                float fillWidth = availableWidth * progress / 100F;
 
-                this.mWavePaint.setColor(this.waveProgressColor);
-                this.mProgressCanvas.drawRect(0F, 0F, fillWidth, this.mWaveRect.bottom, this.mWavePaint);
+                mWavePaint.setColor(waveProgressColor);
+                mProgressCanvas.drawRect(0F, 0F, fillWidth, mWaveRect.bottom, mWavePaint);
 
-                this.mWavePaint.setColor(this.waveBackgroundColor);
-                this.mProgressCanvas.drawRect(fillWidth, 0F, (float) availableWidth, this.mWaveRect.bottom, this.mWavePaint);
+                mWavePaint.setColor(waveBackgroundColor);
+                mProgressCanvas.drawRect(fillWidth, 0F, (float) availableWidth, mWaveRect.bottom, mWavePaint);
 
-                this.mWavePaint.setShader(new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP));
+                mWavePaint.setShader(new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP));
             } else {
-                this.mWavePaint.setColor(this.mWaveRect.right <= availableWidth * this.progress / 100F ? this.waveProgressColor : this.waveBackgroundColor);
-                this.mWavePaint.setShader(null);
+                mWavePaint.setColor(mWaveRect.right <= availableWidth * progress / 100F ? waveProgressColor : waveBackgroundColor);
+                mWavePaint.setShader(null);
             }
 
-            canvas.drawRoundRect(this.mWaveRect, this.waveCornerRadius, this.waveCornerRadius, this.mWavePaint);
+            canvas.drawRoundRect(mWaveRect, waveCornerRadius, waveCornerRadius, mWavePaint);
 
-            lastWaveRight = this.mWaveRect.right + this.waveGap;
+            lastWaveRight = mWaveRect.right + waveGap;
 
-            if (lastWaveRight + this.waveWidth > availableWidth + this.getPaddingLeft()) {
+            if (lastWaveRight + waveWidth > availableWidth + getPaddingLeft()) {
                 break;
             }
             i++;
@@ -144,24 +144,24 @@ public final class WaveformSeekBar extends View {
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        if (!this.isEnabled()) return false;
+    public boolean onTouchEvent(final MotionEvent event) {
+        if (!isEnabled()) return false;
 
         switch (event.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
-                if (this.isParentScrolling()) this.mTouchDownX = event.getX();
-                else this.updateProgress(event);
+                if (isParentScrolling()) mTouchDownX = event.getX();
+                else updateProgress(event);
                 break;
 
             case MotionEvent.ACTION_MOVE:
-                this.updateProgress(event);
+                updateProgress(event);
                 break;
 
             case MotionEvent.ACTION_UP:
-                if (Math.abs(event.getX() - this.mTouchDownX) > this.mScaledTouchSlop)
-                    this.updateProgress(event);
+                if (Math.abs(event.getX() - mTouchDownX) > mScaledTouchSlop)
+                    updateProgress(event);
 
-                this.performClick();
+                performClick();
                 break;
         }
 
@@ -169,18 +169,18 @@ public final class WaveformSeekBar extends View {
     }
 
     @Override
-    protected void onLayout(final boolean changed, final int left, final int top, final int right, final int bottom) {
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
         if (changed) {
-            this.calculateWaveDimensions();
+            calculateWaveDimensions();
         }
     }
 
     private void calculateWaveDimensions() {
-        if (this.sample == null || this.sample.length == 0) return;
-        int availableWidth = this.getAvailableWidth();
-        this.wavesCount = (int) (availableWidth / (this.waveGap + this.waveWidth));
-        this.interpolation = new CubicInterpolation(this.sample);
+        if (sample == null || sample.length == 0) return;
+        final int availableWidth = getAvailableWidth();
+        wavesCount = (int) (availableWidth / (waveGap + waveWidth));
+        interpolation = new CubicInterpolation(sample);
     }
 
     // @Override
@@ -197,8 +197,8 @@ public final class WaveformSeekBar extends View {
     }
 
     private boolean isParentScrolling() {
-        View parent = (View) this.getParent();
-        View root = this.getRootView();
+        View parent = (View) getParent();
+        final View root = getRootView();
 
         while (true) {
             if (parent.canScrollHorizontally(1) || parent.canScrollHorizontally(-1) ||
@@ -211,35 +211,35 @@ public final class WaveformSeekBar extends View {
         }
     }
 
-    private void updateProgress(@NonNull MotionEvent event) {
-        this.progress = (int) (100 * event.getX() / this.getAvailableWidth());
-        this.invalidate();
+    private void updateProgress(@NonNull final MotionEvent event) {
+        progress = (int) (100 * event.getX() / getAvailableWidth());
+        invalidate();
 
-        if (this.progressChangeListener != null)
-            this.progressChangeListener.onProgressChanged(this, Math.min(Math.max(0, this.progress), 100), true);
+        if (progressChangeListener != null)
+            progressChangeListener.onProgressChanged(this, Math.min(Math.max(0, progress), 100), true);
     }
 
     private int getAvailableWidth() {
-        return this.getMeasuredWidth() - this.getPaddingLeft() - this.getPaddingRight();
+        return getMeasuredWidth() - getPaddingLeft() - getPaddingRight();
     }
 
     private int getAvailableHeight() {
-        return this.getMeasuredHeight() - this.getPaddingTop() - this.getPaddingBottom();
+        return getMeasuredHeight() - getPaddingTop() - getPaddingBottom();
     }
 
-    public void setProgress(int progress) {
+    public void setProgress(final int progress) {
         this.progress = progress;
-        this.invalidate();
+        invalidate();
     }
 
-    public void setProgressChangeListener(WaveFormProgressChangeListener progressChangeListener) {
+    public void setProgressChangeListener(final WaveFormProgressChangeListener progressChangeListener) {
         this.progressChangeListener = progressChangeListener;
     }
 
-    public void setSample(float[] sample) {
+    public void setSample(final float[] sample) {
         if (sample == this.sample) return;
         this.sample = sample;
-        this.calculateWaveDimensions();
-        this.invalidate();
+        calculateWaveDimensions();
+        invalidate();
     }
 }

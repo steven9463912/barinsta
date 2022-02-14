@@ -18,55 +18,55 @@ public class GestureListenerWrapper extends GestureDetector.SimpleOnGestureListe
     private GestureDetector.SimpleOnGestureListener mDelegate;
 
     public GestureListenerWrapper() {
-        this.mDelegate = new GestureDetector.SimpleOnGestureListener();
+        mDelegate = new GestureDetector.SimpleOnGestureListener();
     }
 
-    public void setListener(final GestureDetector.SimpleOnGestureListener listener) {
-        this.mDelegate = listener;
-    }
-
-    @Override
-    public void onLongPress(final MotionEvent e) {
-        this.mDelegate.onLongPress(e);
+    public void setListener(GestureDetector.SimpleOnGestureListener listener) {
+        mDelegate = listener;
     }
 
     @Override
-    public boolean onScroll(final MotionEvent e1, final MotionEvent e2, final float distanceX, final float distanceY) {
-        return this.mDelegate.onScroll(e1, e2, distanceX, distanceY);
+    public void onLongPress(MotionEvent e) {
+        mDelegate.onLongPress(e);
     }
 
     @Override
-    public boolean onFling(final MotionEvent e1, final MotionEvent e2, final float velocityX, final float velocityY) {
-        return this.mDelegate.onFling(e1, e2, velocityX, velocityY);
+    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+        return mDelegate.onScroll(e1, e2, distanceX, distanceY);
     }
 
     @Override
-    public void onShowPress(final MotionEvent e) {
-        this.mDelegate.onShowPress(e);
+    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+        return mDelegate.onFling(e1, e2, velocityX, velocityY);
     }
 
     @Override
-    public boolean onDown(final MotionEvent e) {
-        return this.mDelegate.onDown(e);
+    public void onShowPress(MotionEvent e) {
+        mDelegate.onShowPress(e);
     }
 
     @Override
-    public boolean onDoubleTap(final MotionEvent e) {
-        return this.mDelegate.onDoubleTap(e);
+    public boolean onDown(MotionEvent e) {
+        return mDelegate.onDown(e);
     }
 
     @Override
-    public boolean onDoubleTapEvent(final MotionEvent e) {
-        return this.mDelegate.onDoubleTapEvent(e);
+    public boolean onDoubleTap(MotionEvent e) {
+        return mDelegate.onDoubleTap(e);
     }
 
     @Override
-    public boolean onSingleTapConfirmed(final MotionEvent e) {
-        return this.mDelegate.onSingleTapConfirmed(e);
+    public boolean onDoubleTapEvent(MotionEvent e) {
+        return mDelegate.onDoubleTapEvent(e);
     }
 
     @Override
-    public boolean onSingleTapUp(final MotionEvent e) {
-        return this.mDelegate.onSingleTapUp(e);
+    public boolean onSingleTapConfirmed(MotionEvent e) {
+        return mDelegate.onSingleTapConfirmed(e);
+    }
+
+    @Override
+    public boolean onSingleTapUp(MotionEvent e) {
+        return mDelegate.onSingleTapUp(e);
     }
 }

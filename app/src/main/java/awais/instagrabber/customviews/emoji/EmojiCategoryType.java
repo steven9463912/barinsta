@@ -20,24 +20,24 @@ public enum EmojiCategoryType {
     private static final Map<String, EmojiCategoryType> map = new HashMap<>();
 
     static {
-        for (final EmojiCategoryType type : values()) {
-            EmojiCategoryType.map.put(type.name, type);
+        for (EmojiCategoryType type : EmojiCategoryType.values()) {
+            map.put(type.name, type);
         }
     }
 
-    EmojiCategoryType(String name) {
+    EmojiCategoryType(final String name) {
         this.name = name;
     }
 
-    public static EmojiCategoryType valueOfName(String name) {
-        EmojiCategoryType emojiCategoryType = EmojiCategoryType.map.get(name);
+    public static EmojiCategoryType valueOfName(final String name) {
+        final EmojiCategoryType emojiCategoryType = map.get(name);
         if (emojiCategoryType == null) {
-            return OTHERS;
+            return EmojiCategoryType.OTHERS;
         }
         return emojiCategoryType;
     }
 
     public String getName() {
-        return this.name;
+        return name;
     }
 }

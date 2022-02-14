@@ -14,17 +14,17 @@ public class NormalFilter extends Filter<GPUImageFilter> {
 
     public NormalFilter() {
         super(FiltersHelper.FilterType.NORMAL, R.string.normal);
-        this.properties = Collections.emptyMap();
-        this.filter = new GPUImageFilter();
+        properties = Collections.emptyMap();
+        filter = new GPUImageFilter();
     }
 
     @Override
     public Map<Integer, Property<?>> getProperties() {
-        return this.properties;
+        return properties;
     }
 
     @Override
     public GPUImageFilter getInstance() {
-        return this.filter;
+        return filter;
     }
 }

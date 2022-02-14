@@ -22,30 +22,30 @@ public class KeywordsFilterDialogViewHolder extends RecyclerView.ViewHolder {
     private final Button deleteButton;
     private final TextView item;
 
-    public KeywordsFilterDialogViewHolder(@NonNull final View itemView) {
+    public KeywordsFilterDialogViewHolder(@NonNull View itemView) {
         super(itemView);
-        this.deleteButton = itemView.findViewById(R.id.keyword_delete);
-        this.item = itemView.findViewById(R.id.keyword_text);
+        deleteButton = itemView.findViewById(R.id.keyword_delete);
+        item = itemView.findViewById(R.id.keyword_text);
     }
 
-    public void bind(final ArrayList<String> items, final int position, final Context context, final KeywordsFilterAdapter adapter){
-        this.item.setText(items.get(position));
-        this.deleteButton.setOnClickListener(view -> {
-            String s = items.get(position);
-            final SettingsHelper settingsHelper = new SettingsHelper(context);
+    public void bind(ArrayList<String> items, int position, Context context, KeywordsFilterAdapter adapter){
+        item.setText(items.get(position));
+        deleteButton.setOnClickListener(view -> {
+            final String s = items.get(position);
+            SettingsHelper settingsHelper = new SettingsHelper(context);
             items.remove(position);
             settingsHelper.putStringSet(PreferenceKeys.KEYWORD_FILTERS, new HashSet<>(items));
             adapter.notifyDataSetChanged();
-            String message = context.getString(R.string.removed_keywords, s);
+            final String message = context.getString(R.string.removed_keywords, s);
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
         });
     }
 
     public Button getDeleteButton(){
-        return this.deleteButton;
+        return deleteButton;
     }
 
     public TextView getTextView(){
-        return this.item;
+        return item;
     }
 }

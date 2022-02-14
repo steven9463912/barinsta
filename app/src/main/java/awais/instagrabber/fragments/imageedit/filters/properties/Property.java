@@ -18,19 +18,19 @@ public abstract class Property<T> {
     public abstract T getMaxValue();
 
     public T getValue() {
-        return this.value;
+        return value;
     }
 
-    public void setValue(Object value) {
+    public void setValue(final Object value) {
         try {
             //noinspection unchecked
             this.value = (T) value;
-        } catch (final ClassCastException e) {
-            Log.e(Property.TAG, "setValue: ", e);
+        } catch (ClassCastException e) {
+            Log.e(TAG, "setValue: ", e);
         }
     }
 
     public void reset() {
-        this.setValue(this.getDefaultValue());
+        setValue(getDefaultValue());
     }
 }

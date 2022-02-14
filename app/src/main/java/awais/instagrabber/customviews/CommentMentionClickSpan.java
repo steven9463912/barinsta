@@ -8,10 +8,10 @@ import androidx.annotation.NonNull;
 
 public final class CommentMentionClickSpan extends ClickableSpan {
     @Override
-    public void onClick(@NonNull View widget) { }
+    public void onClick(@NonNull final View widget) { }
 
     @Override
-    public void updateDrawState(@NonNull TextPaint ds) {
+    public void updateDrawState(@NonNull final TextPaint ds) {
         ds.setColor(ds.linkColor);
     }
 }

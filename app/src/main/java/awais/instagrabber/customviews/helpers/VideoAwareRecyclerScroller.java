@@ -29,61 +29,61 @@ public class VideoAwareRecyclerScroller extends RecyclerView.OnScrollListener {
     private FeedVideoViewHolder currentlyPlayingViewHolder;
 
     @Override
-    public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-        this.dragging = newState == SCROLL_STATE_DRAGGING;
-        if (this.isLoadingPaused) {
+    public void onScrollStateChanged(@NonNull final RecyclerView recyclerView, final int newState) {
+        dragging = newState == SCROLL_STATE_DRAGGING;
+        if (isLoadingPaused) {
             if (newState == SCROLL_STATE_DRAGGING || newState == SCROLL_STATE_IDLE) {
                 // user is touchy or the scroll finished, show videos
-                this.isLoadingPaused = false;
+                isLoadingPaused = false;
             } // settling means the user let the screen go, but it can still be flinging
         }
     }
 
     @Override
-    public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-        if (!this.dragging) {
+    public void onScrolled(@NonNull final RecyclerView recyclerView, final int dx, final int dy) {
+        if (!dragging) {
             // TODO can be made better by a rolling average of last N calls to smooth out patterns like a,b,a
-            final int currentSpeed = Math.abs(dy);
-            if (this.isLoadingPaused && currentSpeed < VideoAwareRecyclerScroller.FLING_JUMP_LOW_THRESHOLD) {
-                this.isLoadingPaused = false;
-            } else if (!this.isLoadingPaused && VideoAwareRecyclerScroller.FLING_JUMP_HIGH_THRESHOLD < currentSpeed) {
-                this.isLoadingPaused = true;
+            int currentSpeed = Math.abs(dy);
+            if (isLoadingPaused && currentSpeed < FLING_JUMP_LOW_THRESHOLD) {
+                isLoadingPaused = false;
+            } else if (!isLoadingPaused && FLING_JUMP_HIGH_THRESHOLD < currentSpeed) {
+                isLoadingPaused = true;
                 // stop playing video
             }
         }
-        if (this.isLoadingPaused) return;
-        if (this.layoutManager == null) {
-            RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
+        if (isLoadingPaused) return;
+        if (layoutManager == null) {
+            final RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
             if (layoutManager instanceof LinearLayoutManager)
                 this.layoutManager = (LinearLayoutManager) layoutManager;
         }
-        if (this.layoutManager == null) {
+        if (layoutManager == null) {
             return;
         }
-        int firstVisibleItemPos = this.layoutManager.findFirstCompletelyVisibleItemPosition();
-        int lastVisibleItemPos = this.layoutManager.findLastCompletelyVisibleItemPosition();
+        int firstVisibleItemPos = layoutManager.findFirstCompletelyVisibleItemPosition();
+        int lastVisibleItemPos = layoutManager.findLastCompletelyVisibleItemPosition();
         if (firstVisibleItemPos == -1 && lastVisibleItemPos == -1) {
-            firstVisibleItemPos = this.layoutManager.findFirstVisibleItemPosition();
-            lastVisibleItemPos = this.layoutManager.findLastVisibleItemPosition();
+            firstVisibleItemPos = layoutManager.findFirstVisibleItemPosition();
+            lastVisibleItemPos = layoutManager.findLastVisibleItemPosition();
         }
-        synchronized (VideoAwareRecyclerScroller.LOCK) {
-            FeedVideoViewHolder videoHolder = this.getFirstVideoHolder(recyclerView, firstVisibleItemPos, lastVisibleItemPos);
+        synchronized (LOCK) {
+            final FeedVideoViewHolder videoHolder = getFirstVideoHolder(recyclerView, firstVisibleItemPos, lastVisibleItemPos);
             if (videoHolder == null || videoHolder.getCurrentFeedModel() == null) {
-                if (this.currentlyPlayingViewHolder != null) {
+                if (currentlyPlayingViewHolder != null) {
                     // currentlyPlayingViewHolder.stopPlaying();
-                    this.currentlyPlayingViewHolder = null;
+                    currentlyPlayingViewHolder = null;
                 }
                 return;
             }
-            if (this.currentlyPlayingViewHolder != null && this.currentlyPlayingViewHolder.getCurrentFeedModel().getPk()
+            if (currentlyPlayingViewHolder != null && currentlyPlayingViewHolder.getCurrentFeedModel().getPk()
                                                                                 .equals(videoHolder.getCurrentFeedModel().getPk())) {
                 return;
             }
-            if (this.currentlyPlayingViewHolder != null) {
+            if (currentlyPlayingViewHolder != null) {
                 // currentlyPlayingViewHolder.stopPlaying();
             }
             // videoHolder.startPlaying();
-            this.currentlyPlayingViewHolder = videoHolder;
+            currentlyPlayingViewHolder = videoHolder;
         }
         // boolean processFirstItem = false, processLastItem = false;
         // View currView;
@@ -190,22 +190,22 @@ public class VideoAwareRecyclerScroller extends RecyclerView.OnScrollListener {
         // }
     }
 
-    private FeedVideoViewHolder getFirstVideoHolder(RecyclerView recyclerView, int firstVisibleItemPos, int lastVisibleItemPos) {
-        Rect visibleItemRect = new Rect();
-        Point offset = new Point();
+    private FeedVideoViewHolder getFirstVideoHolder(final RecyclerView recyclerView, final int firstVisibleItemPos, final int lastVisibleItemPos) {
+        final Rect visibleItemRect = new Rect();
+        final Point offset = new Point();
         for (int pos = firstVisibleItemPos; pos <= lastVisibleItemPos; pos++) {
-            View view = this.layoutManager.findViewByPosition(pos);
+            final View view = layoutManager.findViewByPosition(pos);
             if (view != null && view.getId() == R.id.videoHolder) {
-                View viewSwitcher = view.findViewById(R.id.root);
+                final View viewSwitcher = view.findViewById(R.id.root);
                 if (viewSwitcher == null) {
                     continue;
                 }
-                boolean result = viewSwitcher.getGlobalVisibleRect(visibleItemRect, offset);
+                final boolean result = viewSwitcher.getGlobalVisibleRect(visibleItemRect, offset);
                 if (!result) continue;
-                FeedVideoViewHolder viewHolder = (FeedVideoViewHolder) recyclerView.getChildViewHolder(view);
-                Media currentFeedModel = viewHolder.getCurrentFeedModel();
+                final FeedVideoViewHolder viewHolder = (FeedVideoViewHolder) recyclerView.getChildViewHolder(view);
+                final Media currentFeedModel = viewHolder.getCurrentFeedModel();
                 visibleItemRect.offset(-offset.x, -offset.y);
-                int visibleHeight = visibleItemRect.height();
+                final int visibleHeight = visibleItemRect.height();
                 if (visibleHeight < currentFeedModel.getOriginalHeight()) {
                     continue;
                 }
@@ -217,14 +217,14 @@ public class VideoAwareRecyclerScroller extends RecyclerView.OnScrollListener {
     }
 
     public void startPlaying() {
-        if (this.currentlyPlayingViewHolder == null) {
+        if (currentlyPlayingViewHolder == null) {
             return;
         }
         // currentlyPlayingViewHolder.startPlaying();
     }
 
     public void stopPlaying() {
-        if (this.currentlyPlayingViewHolder == null) {
+        if (currentlyPlayingViewHolder == null) {
             return;
         }
         // currentlyPlayingViewHolder.stopPlaying();

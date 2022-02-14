@@ -42,132 +42,132 @@ public class DirectItemVoiceMediaViewHolder extends DirectItemViewHolder {
     private Runnable positionChecker;
     private Player.EventListener listener;
 
-    public DirectItemVoiceMediaViewHolder(@NonNull LayoutDmBaseBinding baseBinding,
-                                          @NonNull LayoutDmVoiceMediaBinding binding,
-                                          User currentUser,
-                                          DirectThread thread,
-                                          DirectItemsAdapter.DirectItemCallback callback) {
+    public DirectItemVoiceMediaViewHolder(@NonNull final LayoutDmBaseBinding baseBinding,
+                                          @NonNull final LayoutDmVoiceMediaBinding binding,
+                                          final User currentUser,
+                                          final DirectThread thread,
+                                          final DirectItemsAdapter.DirectItemCallback callback) {
         super(baseBinding, currentUser, thread, callback);
         this.binding = binding;
-        dataSourceFactory = new DefaultDataSourceFactory(binding.getRoot().getContext(), "instagram");
-        this.setItemView(binding.getRoot());
-        binding.voiceMedia.getLayoutParams().width = this.mediaImageMaxWidth;
+        this.dataSourceFactory = new DefaultDataSourceFactory(binding.getRoot().getContext(), "instagram");
+        setItemView(binding.getRoot());
+        binding.voiceMedia.getLayoutParams().width = mediaImageMaxWidth;
     }
 
     @Override
-    public void bindItem(DirectItem directItemModel, MessageDirection messageDirection) {
-        DirectItemVoiceMedia voiceMedia = directItemModel.getVoiceMedia();
+    public void bindItem(final DirectItem directItemModel, final MessageDirection messageDirection) {
+        final DirectItemVoiceMedia voiceMedia = directItemModel.getVoiceMedia();
         if (voiceMedia == null) return;
-        Media media = voiceMedia.getMedia();
+        final Media media = voiceMedia.getMedia();
         if (media == null) return;
-        Audio audio = media.getAudio();
+        final Audio audio = media.getAudio();
         if (audio == null) return;
-        List<Float> waveformData = audio.getWaveformData();
-        this.binding.waveformSeekBar.setSample(Floats.toArray(waveformData));
-        this.binding.waveformSeekBar.setEnabled(false);
-        String text = String.format("%s/%s", TextUtils.millisToTimeString(0), TextUtils.millisToTimeString(audio.getDuration()));
-        this.binding.duration.setText(text);
-        AudioItemState audioItemState = new AudioItemState();
-        this.player = new SimpleExoPlayer.Builder(this.itemView.getContext()).build();
-        this.player.setVolume(1);
-        this.player.setPlayWhenReady(true);
-        this.player.setRepeatMode(Player.REPEAT_MODE_OFF);
-        this.handler = new Handler();
+        final List<Float> waveformData = audio.getWaveformData();
+        binding.waveformSeekBar.setSample(Floats.toArray(waveformData));
+        binding.waveformSeekBar.setEnabled(false);
+        final String text = String.format("%s/%s", TextUtils.millisToTimeString(0), TextUtils.millisToTimeString(audio.getDuration()));
+        binding.duration.setText(text);
+        final AudioItemState audioItemState = new AudioItemState();
+        player = new SimpleExoPlayer.Builder(itemView.getContext()).build();
+        player.setVolume(1);
+        player.setPlayWhenReady(true);
+        player.setRepeatMode(Player.REPEAT_MODE_OFF);
+        handler = new Handler();
         final long initialDelay = 0;
         final long recurringDelay = 60;
-        this.positionChecker = new Runnable() {
+        positionChecker = new Runnable() {
             @Override
             public void run() {
-                if (DirectItemVoiceMediaViewHolder.this.handler != null) {
-                    DirectItemVoiceMediaViewHolder.this.handler.removeCallbacks(this);
+                if (handler != null) {
+                    handler.removeCallbacks(this);
                 }
-                if (DirectItemVoiceMediaViewHolder.this.player == null) return;
-                long currentPosition = DirectItemVoiceMediaViewHolder.this.player.getCurrentPosition();
-                long duration = DirectItemVoiceMediaViewHolder.this.player.getDuration();
+                if (player == null) return;
+                final long currentPosition = player.getCurrentPosition();
+                final long duration = player.getDuration();
                 // Log.d(TAG, "currentPosition: " + currentPosition + ", duration: " + duration);
                 if (duration == TIME_UNSET) return;
                 // final float progress = ((float) currentPosition / duration /* * 100 */);
-                int progress = (int) ((float) currentPosition / duration * 100);
+                final int progress = (int) ((float) currentPosition / duration * 100);
                 // Log.d(TAG, "progress: " + progress);
-                String text = String.format("%s/%s", TextUtils.millisToTimeString(currentPosition), TextUtils.millisToTimeString(duration));
-                DirectItemVoiceMediaViewHolder.this.binding.duration.setText(text);
-                DirectItemVoiceMediaViewHolder.this.binding.waveformSeekBar.setProgress(progress);
-                if (DirectItemVoiceMediaViewHolder.this.handler != null) {
-                    DirectItemVoiceMediaViewHolder.this.handler.postDelayed(this, recurringDelay);
+                final String text = String.format("%s/%s", TextUtils.millisToTimeString(currentPosition), TextUtils.millisToTimeString(duration));
+                binding.duration.setText(text);
+                binding.waveformSeekBar.setProgress(progress);
+                if (handler != null) {
+                    handler.postDelayed(this, recurringDelay);
                 }
             }
         };
-        this.player.addListener(this.listener = new Player.EventListener() {
+        player.addListener(listener = new Player.EventListener() {
             @Override
-            public void onPlaybackStateChanged(int state) {
+            public void onPlaybackStateChanged(final int state) {
                 if (!audioItemState.isPrepared() && state == Player.STATE_READY) {
-                    DirectItemVoiceMediaViewHolder.this.binding.playPause.setIconResource(R.drawable.ic_round_pause_24);
+                    binding.playPause.setIconResource(R.drawable.ic_round_pause_24);
                     audioItemState.setPrepared(true);
-                    DirectItemVoiceMediaViewHolder.this.binding.playPause.setVisibility(View.VISIBLE);
-                    DirectItemVoiceMediaViewHolder.this.binding.progressBar.setVisibility(View.GONE);
-                    if (DirectItemVoiceMediaViewHolder.this.handler != null) {
-                        DirectItemVoiceMediaViewHolder.this.handler.postDelayed(DirectItemVoiceMediaViewHolder.this.positionChecker, initialDelay);
+                    binding.playPause.setVisibility(View.VISIBLE);
+                    binding.progressBar.setVisibility(View.GONE);
+                    if (handler != null) {
+                        handler.postDelayed(positionChecker, initialDelay);
                     }
                     return;
                 }
                 if (state == Player.STATE_ENDED) {
                     // binding.waveformSeekBar.setProgressInPercentage(0);
-                    DirectItemVoiceMediaViewHolder.this.binding.waveformSeekBar.setProgress(0);
-                    DirectItemVoiceMediaViewHolder.this.binding.playPause.setIconResource(R.drawable.ic_round_play_arrow_24);
-                    if (DirectItemVoiceMediaViewHolder.this.handler != null) {
-                        DirectItemVoiceMediaViewHolder.this.handler.removeCallbacks(DirectItemVoiceMediaViewHolder.this.positionChecker);
+                    binding.waveformSeekBar.setProgress(0);
+                    binding.playPause.setIconResource(R.drawable.ic_round_play_arrow_24);
+                    if (handler != null) {
+                        handler.removeCallbacks(positionChecker);
                     }
                 }
             }
 
             @Override
-            public void onPlayerError(ExoPlaybackException error) {
-                Log.e(DirectItemVoiceMediaViewHolder.TAG, "onPlayerError: ", error);
+            public void onPlayerError(final ExoPlaybackException error) {
+                Log.e(TAG, "onPlayerError: ", error);
             }
         });
-        ProgressiveMediaSource.Factory sourceFactory = new ProgressiveMediaSource.Factory(this.dataSourceFactory);
-        MediaItem mediaItem = MediaItem.fromUri(audio.getAudioSrc());
-        ProgressiveMediaSource mediaSource = sourceFactory.createMediaSource(mediaItem);
-        this.player.setMediaSource(mediaSource);
-        this.binding.playPause.setOnClickListener(v -> {
-            if (this.player == null) return;
+        final ProgressiveMediaSource.Factory sourceFactory = new ProgressiveMediaSource.Factory(dataSourceFactory);
+        final MediaItem mediaItem = MediaItem.fromUri(audio.getAudioSrc());
+        final ProgressiveMediaSource mediaSource = sourceFactory.createMediaSource(mediaItem);
+        player.setMediaSource(mediaSource);
+        binding.playPause.setOnClickListener(v -> {
+            if (player == null) return;
             if (!audioItemState.isPrepared()) {
-                this.player.prepare();
-                this.binding.playPause.setVisibility(View.GONE);
-                this.binding.progressBar.setVisibility(View.VISIBLE);
+                player.prepare();
+                binding.playPause.setVisibility(View.GONE);
+                binding.progressBar.setVisibility(View.VISIBLE);
                 return;
             }
-            if (this.player.isPlaying()) {
-                this.binding.playPause.setIconResource(R.drawable.ic_round_play_arrow_24);
-                this.player.pause();
+            if (player.isPlaying()) {
+                binding.playPause.setIconResource(R.drawable.ic_round_play_arrow_24);
+                player.pause();
                 return;
             }
-            this.binding.playPause.setIconResource(R.drawable.ic_round_pause_24);
-            if (this.player.getPlaybackState() == Player.STATE_ENDED) {
-                this.player.seekTo(0);
-                if (this.handler != null) {
-                    this.handler.postDelayed(this.positionChecker, initialDelay);
+            binding.playPause.setIconResource(R.drawable.ic_round_pause_24);
+            if (player.getPlaybackState() == Player.STATE_ENDED) {
+                player.seekTo(0);
+                if (handler != null) {
+                    handler.postDelayed(positionChecker, initialDelay);
                 }
             }
-            this.binding.waveformSeekBar.setEnabled(true);
-            this.player.play();
+            binding.waveformSeekBar.setEnabled(true);
+            player.play();
         });
     }
 
     @Override
     public void cleanup() {
         super.cleanup();
-        if (this.handler != null && this.positionChecker != null) {
-            this.handler.removeCallbacks(this.positionChecker);
-            this.handler = null;
-            this.positionChecker = null;
+        if (handler != null && positionChecker != null) {
+            handler.removeCallbacks(positionChecker);
+            handler = null;
+            positionChecker = null;
         }
-        if (this.player != null) {
-            this.player.release();
-            if (this.listener != null) {
-                this.player.removeListener(this.listener);
+        if (player != null) {
+            player.release();
+            if (listener != null) {
+                player.removeListener(listener);
             }
-            this.player = null;
+            player = null;
         }
     }
 
@@ -189,10 +189,10 @@ public class DirectItemVoiceMediaViewHolder extends DirectItemViewHolder {
         private AudioItemState() {}
 
         public boolean isPrepared() {
-            return this.prepared;
+            return prepared;
         }
 
-        public void setPrepared(boolean prepared) {
+        public void setPrepared(final boolean prepared) {
             this.prepared = prepared;
         }
     }

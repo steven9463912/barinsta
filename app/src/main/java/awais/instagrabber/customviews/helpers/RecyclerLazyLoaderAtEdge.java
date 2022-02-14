@@ -14,45 +14,45 @@ public final class RecyclerLazyLoaderAtEdge extends RecyclerView.OnScrollListene
     private int previousItemCount;
     private boolean loading;
 
-    public RecyclerLazyLoaderAtEdge(@NonNull RecyclerView.LayoutManager layoutManager,
-                                    LazyLoadListener lazyLoadListener) {
+    public RecyclerLazyLoaderAtEdge(@NonNull final RecyclerView.LayoutManager layoutManager,
+                                    final LazyLoadListener lazyLoadListener) {
         this.layoutManager = layoutManager;
-        atTop = false;
+        this.atTop = false;
         this.lazyLoadListener = lazyLoadListener;
     }
 
-    public RecyclerLazyLoaderAtEdge(@NonNull RecyclerView.LayoutManager layoutManager,
-                                    boolean atTop,
-                                    LazyLoadListener lazyLoadListener) {
+    public RecyclerLazyLoaderAtEdge(@NonNull final RecyclerView.LayoutManager layoutManager,
+                                    final boolean atTop,
+                                    final LazyLoadListener lazyLoadListener) {
         this.layoutManager = layoutManager;
         this.atTop = atTop;
         this.lazyLoadListener = lazyLoadListener;
     }
 
     @Override
-    public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+    public void onScrollStateChanged(@NonNull final RecyclerView recyclerView, final int newState) {
         super.onScrollStateChanged(recyclerView, newState);
-        int itemCount = this.layoutManager.getItemCount();
-        if (itemCount > this.previousItemCount) {
-            this.loading = false;
+        final int itemCount = layoutManager.getItemCount();
+        if (itemCount > previousItemCount) {
+            loading = false;
         }
-        if (!recyclerView.canScrollVertically(this.atTop ? -1 : 1)
+        if (!recyclerView.canScrollVertically(atTop ? -1 : 1)
                 && newState == RecyclerView.SCROLL_STATE_IDLE
-                && !this.loading
-                && this.lazyLoadListener != null) {
-            this.loading = true;
-            new Handler().postDelayed(() -> this.lazyLoadListener.onLoadMore(++this.currentPage), 300);
+                && !loading
+                && lazyLoadListener != null) {
+            loading = true;
+            new Handler().postDelayed(() -> lazyLoadListener.onLoadMore(++currentPage), 300);
         }
     }
 
     public int getCurrentPage() {
-        return this.currentPage;
+        return currentPage;
     }
 
     public void resetState() {
-        this.currentPage = 0;
-        this.previousItemCount = 0;
-        this.loading = true;
+        currentPage = 0;
+        previousItemCount = 0;
+        loading = true;
     }
 
     public interface LazyLoadListener {

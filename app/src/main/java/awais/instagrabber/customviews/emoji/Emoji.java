@@ -11,57 +11,57 @@ public class Emoji {
     private final List<Emoji> variants;
     private GoogleCompatEmojiDrawable drawable;
 
-    public Emoji(String unicode,
-                 String name,
-                 List<Emoji> variants) {
+    public Emoji(final String unicode,
+                 final String name,
+                 final List<Emoji> variants) {
         this.unicode = unicode;
         this.name = name;
         this.variants = variants;
     }
 
     public String getUnicode() {
-        return this.unicode;
+        return unicode;
     }
 
-    public void addVariant(Emoji emoji) {
-        this.variants.add(emoji);
+    public void addVariant(final Emoji emoji) {
+        variants.add(emoji);
     }
 
     public String getName() {
-        return this.name;
+        return name;
     }
 
     public List<Emoji> getVariants() {
-        return this.variants;
+        return variants;
     }
 
     public GoogleCompatEmojiDrawable getDrawable() {
-        if (this.drawable == null && this.unicode != null) {
-            this.drawable = new GoogleCompatEmojiDrawable(this.unicode);
+        if (drawable == null && unicode != null) {
+            drawable = new GoogleCompatEmojiDrawable(unicode);
         }
-        return this.drawable;
+        return drawable;
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
-        if (o == null || this.getClass() != o.getClass()) return false;
-        Emoji emoji = (Emoji) o;
-        return Objects.equals(this.unicode, emoji.unicode);
+        if (o == null || getClass() != o.getClass()) return false;
+        final Emoji emoji = (Emoji) o;
+        return Objects.equals(unicode, emoji.unicode);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.unicode);
+        return Objects.hash(unicode);
     }
 
     @NonNull
     @Override
     public String toString() {
         return "Emoji{" +
-                "unicode='" + this.unicode + '\'' +
-                ", name='" + this.name + '\'' +
-                ", variants=" + this.variants +
+                "unicode='" + unicode + '\'' +
+                ", name='" + name + '\'' +
+                ", variants=" + variants +
                 '}';
     }
 }

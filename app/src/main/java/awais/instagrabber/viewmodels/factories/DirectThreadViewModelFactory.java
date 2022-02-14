@@ -16,10 +16,10 @@ public class DirectThreadViewModelFactory implements ViewModelProvider.Factory {
     private final boolean pending;
     private final User currentUser;
 
-    public DirectThreadViewModelFactory(@NonNull Application application,
-                                        @NonNull String threadId,
-                                        boolean pending,
-                                        @NonNull User currentUser) {
+    public DirectThreadViewModelFactory(@NonNull final Application application,
+                                        @NonNull final String threadId,
+                                        final boolean pending,
+                                        @NonNull final User currentUser) {
         this.application = application;
         this.threadId = threadId;
         this.pending = pending;
@@ -28,8 +28,8 @@ public class DirectThreadViewModelFactory implements ViewModelProvider.Factory {
 
     @NonNull
     @Override
-    public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
+    public <T extends ViewModel> T create(@NonNull final Class<T> modelClass) {
         //noinspection unchecked
-        return (T) new DirectThreadViewModel(this.application, this.threadId, this.pending, this.currentUser);
+        return (T) new DirectThreadViewModel(application, threadId, pending, currentUser);
     }
 }

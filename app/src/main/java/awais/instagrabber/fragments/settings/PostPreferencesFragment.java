@@ -12,14 +12,14 @@ import awais.instagrabber.dialogs.KeywordsFilterDialog;
 
 public class PostPreferencesFragment extends BasePreferencesFragment {
     @Override
-    void setupPreferenceScreen(PreferenceScreen screen) {
-        Context context = this.getContext();
+    void setupPreferenceScreen(final PreferenceScreen screen) {
+        final Context context = getContext();
         if (context == null) return;
         // generalCategory.addPreference(getAutoPlayVideosPreference(context));
-        screen.addPreference(this.getBackgroundPlayPreference(context));
-        screen.addPreference(this.getAlwaysMuteVideosPreference(context));
-        screen.addPreference(this.getToggleKeywordFilterPreference(context));
-        screen.addPreference(this.getEditKeywordFilterPreference(context));
+        screen.addPreference(getBackgroundPlayPreference(context));
+        screen.addPreference(getAlwaysMuteVideosPreference(context));
+        screen.addPreference(getToggleKeywordFilterPreference(context));
+        screen.addPreference(getEditKeywordFilterPreference(context));
     }
 
 //    private Preference getAutoPlayVideosPreference(@NonNull final Context context) {
@@ -30,8 +30,8 @@ public class PostPreferencesFragment extends BasePreferencesFragment {
 //        return preference;
 //    }
 
-    private Preference getBackgroundPlayPreference(@NonNull Context context) {
-        SwitchPreferenceCompat preference = new SwitchPreferenceCompat(context);
+    private Preference getBackgroundPlayPreference(@NonNull final Context context) {
+        final SwitchPreferenceCompat preference = new SwitchPreferenceCompat(context);
         preference.setKey(PreferenceKeys.PLAY_IN_BACKGROUND);
         preference.setTitle(R.string.post_viewer_background_play);
         preference.setSummary(R.string.post_viewer_background_play_summary);
@@ -39,16 +39,16 @@ public class PostPreferencesFragment extends BasePreferencesFragment {
         return preference;
     }
 
-    private Preference getAlwaysMuteVideosPreference(@NonNull Context context) {
-        SwitchPreferenceCompat preference = new SwitchPreferenceCompat(context);
+    private Preference getAlwaysMuteVideosPreference(@NonNull final Context context) {
+        final SwitchPreferenceCompat preference = new SwitchPreferenceCompat(context);
         preference.setKey(PreferenceKeys.MUTED_VIDEOS);
         preference.setTitle(R.string.post_viewer_muted_autoplay);
         preference.setIconSpaceReserved(false);
         return preference;
     }
 
-    private Preference getToggleKeywordFilterPreference(@NonNull Context context) {
-        SwitchPreferenceCompat preference = new SwitchPreferenceCompat(context);
+    private Preference getToggleKeywordFilterPreference(@NonNull final Context context) {
+        final SwitchPreferenceCompat preference = new SwitchPreferenceCompat(context);
         preference.setKey(PreferenceKeys.TOGGLE_KEYWORD_FILTER);
         preference.setDefaultValue(false);
         preference.setTitle(R.string.toggle_keyword_filter);
@@ -56,12 +56,12 @@ public class PostPreferencesFragment extends BasePreferencesFragment {
         return preference;
     }
 
-    private Preference getEditKeywordFilterPreference(@NonNull Context context){
-        Preference preference = new Preference(context);
+    private Preference getEditKeywordFilterPreference(@NonNull final Context context){
+        final Preference preference = new Preference(context);
         preference.setTitle(R.string.edit_keyword_filter);
         preference.setIconSpaceReserved(false);
         preference.setOnPreferenceClickListener(view ->{
-            new KeywordsFilterDialog().show(this.getParentFragmentManager(), null);
+            new KeywordsFilterDialog().show(getParentFragmentManager(), null);
             return true;
         });
         return preference;

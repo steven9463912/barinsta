@@ -17,20 +17,20 @@ public class DirectItemDefaultViewHolder extends DirectItemViewHolder {
 
     private final LayoutDmTextBinding binding;
 
-    public DirectItemDefaultViewHolder(@NonNull LayoutDmBaseBinding baseBinding,
-                                       @NonNull LayoutDmTextBinding binding,
-                                       User currentUser,
-                                       DirectThread thread,
-                                       DirectItemsAdapter.DirectItemCallback callback) {
+    public DirectItemDefaultViewHolder(@NonNull final LayoutDmBaseBinding baseBinding,
+                                       @NonNull final LayoutDmTextBinding binding,
+                                       final User currentUser,
+                                       final DirectThread thread,
+                                       final DirectItemsAdapter.DirectItemCallback callback) {
         super(baseBinding, currentUser, thread, callback);
         this.binding = binding;
-        this.setItemView(binding.getRoot());
+        setItemView(binding.getRoot());
     }
 
     @Override
-    public void bindItem(DirectItem directItemModel, MessageDirection messageDirection) {
-        Context context = this.itemView.getContext();
-        this.binding.tvMessage.setText(context.getText(R.string.dms_inbox_raven_message_unknown));
+    public void bindItem(final DirectItem directItemModel, final MessageDirection messageDirection) {
+        final Context context = itemView.getContext();
+        binding.tvMessage.setText(context.getText(R.string.dms_inbox_raven_message_unknown));
     }
 
     @Override

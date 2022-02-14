@@ -39,13 +39,13 @@ import awais.instagrabber.webservices.ServiceCallback;
 public final class Helper {
     private static final String TAG = Helper.class.getSimpleName();
 
-    public static void setupList(@NonNull Context context,
-                                 @NonNull RecyclerView list,
-                                 @NonNull RecyclerView.LayoutManager layoutManager,
-                                 @NonNull RecyclerView.OnScrollListener lazyLoader) {
+    public static void setupList(@NonNull final Context context,
+                                 @NonNull final RecyclerView list,
+                                 @NonNull final RecyclerView.LayoutManager layoutManager,
+                                 @NonNull final RecyclerView.OnScrollListener lazyLoader) {
         list.setLayoutManager(layoutManager);
-        DividerItemDecoration itemDecoration = new DividerItemDecoration(context, LinearLayoutManager.VERTICAL);
-        Drawable drawable = ContextCompat.getDrawable(context, R.drawable.pref_list_divider_material);
+        final DividerItemDecoration itemDecoration = new DividerItemDecoration(context, LinearLayoutManager.VERTICAL);
+        final Drawable drawable = ContextCompat.getDrawable(context, R.drawable.pref_list_divider_material);
         if (drawable != null) {
             itemDecoration.setDrawable(drawable);
         }
@@ -54,51 +54,51 @@ public final class Helper {
     }
 
     @NonNull
-    public static CommentsAdapter.CommentCallback getCommentCallback(@NonNull final Context context,
-                                                     final LifecycleOwner lifecycleOwner,
-                                                     final NavController navController,
-                                                     @NonNull final CommentsViewerViewModel viewModel,
-                                                     final BiFunction<Comment, Boolean, Void> onRepliesClick) {
+    public static CommentsAdapter.CommentCallback getCommentCallback(@NonNull Context context,
+                                                     LifecycleOwner lifecycleOwner,
+                                                     NavController navController,
+                                                     @NonNull CommentsViewerViewModel viewModel,
+                                                     BiFunction<Comment, Boolean, Void> onRepliesClick) {
         return new CommentsAdapter.CommentCallback() {
             @Override
-            public void onClick(Comment comment) {
+            public void onClick(final Comment comment) {
                 // onCommentClick(comment);
                 if (onRepliesClick == null) return;
                 onRepliesClick.apply(comment, false);
             }
 
             @Override
-            public void onHashtagClick(String hashtag) {
+            public void onHashtagClick(final String hashtag) {
                 try {
                     if (navController == null) return;
                     navController.navigate(CommentsViewerFragmentDirections.actionToHashtag(hashtag));
-                } catch (final Exception e) {
-                    Log.e(Helper.TAG, "onHashtagClick: ", e);
+                } catch (Exception e) {
+                    Log.e(TAG, "onHashtagClick: ", e);
                 }
             }
 
             @Override
-            public void onMentionClick(String mention) {
-                Helper.openProfile(navController, mention);
+            public void onMentionClick(final String mention) {
+                openProfile(navController, mention);
             }
 
             @Override
-            public void onURLClick(String url) {
+            public void onURLClick(final String url) {
                 Utils.openURL(context, url);
             }
 
             @Override
-            public void onEmailClick(String emailAddress) {
+            public void onEmailClick(final String emailAddress) {
                 Utils.openEmailAddress(context, emailAddress);
             }
 
             @Override
-            public void onLikeClick(Comment comment, boolean liked, boolean isReply) {
+            public void onLikeClick(final Comment comment, final boolean liked, final boolean isReply) {
                 if (comment == null) return;
-                LiveData<Resource<Object>> resourceLiveData = viewModel.likeComment(comment, liked, isReply);
+                final LiveData<Resource<Object>> resourceLiveData = viewModel.likeComment(comment, liked, isReply);
                 resourceLiveData.observe(lifecycleOwner, new Observer<Resource<Object>>() {
                     @Override
-                    public void onChanged(Resource<Object> objectResource) {
+                    public void onChanged(final Resource<Object> objectResource) {
                         if (objectResource == null) return;
                         switch (objectResource.status) {
                             case SUCCESS:
@@ -117,34 +117,34 @@ public final class Helper {
             }
 
             @Override
-            public void onRepliesClick(Comment comment) {
+            public void onRepliesClick(final Comment comment) {
                 // viewModel.showReplies(comment);
                 if (onRepliesClick == null) return;
                 onRepliesClick.apply(comment, true);
             }
 
             @Override
-            public void onViewLikes(Comment comment) {
+            public void onViewLikes(final Comment comment) {
                 try {
                     if (navController == null) return;
-                    NavDirections actionToLikes = CommentsViewerFragmentDirections.actionToLikes(comment.getPk(), true);
+                    final NavDirections actionToLikes = CommentsViewerFragmentDirections.actionToLikes(comment.getPk(), true);
                     navController.navigate(actionToLikes);
-                } catch (final Exception e) {
-                    Log.e(Helper.TAG, "onViewLikes: ", e);
+                } catch (Exception e) {
+                    Log.e(TAG, "onViewLikes: ", e);
                 }
             }
 
             @Override
-            public void onTranslate(Comment comment) {
+            public void onTranslate(final Comment comment) {
                 if (comment == null) return;
                 viewModel.translate(comment, new ServiceCallback<String>() {
                     @Override
-                    public void onSuccess(String result) {
+                    public void onSuccess(final String result) {
                         if (TextUtils.isEmpty(result)) {
                             Toast.makeText(context, R.string.downloader_unknown_error, Toast.LENGTH_SHORT).show();
                             return;
                         }
-                        String username = comment.getUser().getUsername();
+                        final String username = comment.getUser().getUsername();
                         new MaterialAlertDialogBuilder(context)
                                 .setTitle(username)
                                 .setMessage(result)
@@ -153,20 +153,20 @@ public final class Helper {
                     }
 
                     @Override
-                    public void onFailure(Throwable t) {
-                        Log.e(Helper.TAG, "Error translating comment", t);
+                    public void onFailure(final Throwable t) {
+                        Log.e(TAG, "Error translating comment", t);
                         Toast.makeText(context, t.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
             }
 
             @Override
-            public void onDelete(Comment comment, boolean isReply) {
+            public void onDelete(final Comment comment, final boolean isReply) {
                 if (comment == null) return;
-                LiveData<Resource<Object>> resourceLiveData = viewModel.deleteComment(comment, isReply);
+                final LiveData<Resource<Object>> resourceLiveData = viewModel.deleteComment(comment, isReply);
                 resourceLiveData.observe(lifecycleOwner, new Observer<Resource<Object>>() {
                     @Override
-                    public void onChanged(Resource<Object> objectResource) {
+                    public void onChanged(final Resource<Object> objectResource) {
                         if (objectResource == null) return;
                         switch (objectResource.status) {
                             case SUCCESS:
@@ -187,21 +187,21 @@ public final class Helper {
         };
     }
 
-    private static void openProfile(NavController navController,
-                                    @NonNull String username) {
+    private static void openProfile(final NavController navController,
+                                    @NonNull final String username) {
         try {
             if (navController == null) return;
-            NavDirections action = CommentsViewerFragmentDirections.actionToProfile().setUsername(username);
+            final NavDirections action = CommentsViewerFragmentDirections.actionToProfile().setUsername(username);
             navController.navigate(action);
-        } catch (final Exception e) {
-            Log.e(Helper.TAG, "openProfile: ", e);
+        } catch (Exception e) {
+            Log.e(TAG, "openProfile: ", e);
         }
     }
 
-    public static void setupCommentInput(@NonNull TextInputLayout commentField,
-                                         @NonNull TextInputEditText commentText,
-                                         boolean isReplyFragment,
-                                         @NonNull Function<String, Void> commentFunction) {
+    public static void setupCommentInput(@NonNull final TextInputLayout commentField,
+                                         @NonNull final TextInputEditText commentText,
+                                         final boolean isReplyFragment,
+                                         @NonNull final Function<String, Void> commentFunction) {
         // commentField.setStartIconVisible(false);
         commentField.setVisibility(View.VISIBLE);
         commentField.setEndIconVisible(false);
@@ -210,8 +210,8 @@ public final class Helper {
         }
         commentText.addTextChangedListener(new TextWatcherAdapter() {
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                boolean isEmpty = TextUtils.isEmpty(s);
+            public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
+                final boolean isEmpty = TextUtils.isEmpty(s);
                 commentField.setStartIconVisible(!isEmpty);
                 commentField.setEndIconVisible(!isEmpty);
                 commentField.setCounterEnabled(s != null && s.length() > 2000); // show the counter when user approaches the limit
@@ -222,31 +222,31 @@ public final class Helper {
         //     commentText.setText("");
         // });
         commentField.setEndIconOnClickListener(v -> {
-            Editable text = commentText.getText();
+            final Editable text = commentText.getText();
             if (TextUtils.isEmpty(text)) return;
             commentFunction.apply(text.toString().trim());
         });
     }
 
-    public static void handleCommentResource(@NonNull Context context,
-                                             @NonNull Resource.Status status,
-                                             String message,
-                                             @NonNull LiveData<Resource<Object>> resourceLiveData,
-                                             @NonNull Observer<Resource<Object>> observer,
-                                             @NonNull TextInputLayout commentField,
-                                             @NonNull TextInputEditText commentText,
-                                             @NonNull RecyclerView comments) {
+    public static void handleCommentResource(@NonNull final Context context,
+                                             @NonNull final Resource.Status status,
+                                             final String message,
+                                             @NonNull final LiveData<Resource<Object>> resourceLiveData,
+                                             @NonNull final Observer<Resource<Object>> observer,
+                                             @NonNull final TextInputLayout commentField,
+                                             @NonNull final TextInputEditText commentText,
+                                             @NonNull final RecyclerView comments) {
         CheckableImageButton endIcon = null;
         try {
             endIcon = commentField.findViewById(com.google.android.material.R.id.text_input_end_icon);
-        } catch (final Exception e) {
-            Log.e(Helper.TAG, "setupObservers: ", e);
+        } catch (Exception e) {
+            Log.e(TAG, "setupObservers: ", e);
         }
         CheckableImageButton startIcon = null;
         try {
             startIcon = commentField.findViewById(com.google.android.material.R.id.text_input_start_icon);
-        } catch (final Exception e) {
-            Log.e(Helper.TAG, "setupObservers: ", e);
+        } catch (Exception e) {
+            Log.e(TAG, "setupObservers: ", e);
         }
         switch (status) {
             case SUCCESS:

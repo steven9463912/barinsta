@@ -22,12 +22,12 @@ public class EmojiPickerPageAdapter extends RecyclerView.Adapter<EmojiCategoryPa
 
     private static final DiffUtil.ItemCallback<EmojiCategory> diffCallback = new DiffUtil.ItemCallback<EmojiCategory>() {
         @Override
-        public boolean areItemsTheSame(@NonNull EmojiCategory oldItem, @NonNull EmojiCategory newItem) {
+        public boolean areItemsTheSame(@NonNull final EmojiCategory oldItem, @NonNull final EmojiCategory newItem) {
             return oldItem.equals(newItem);
         }
 
         @Override
-        public boolean areContentsTheSame(@NonNull EmojiCategory oldItem, @NonNull EmojiCategory newItem) {
+        public boolean areContentsTheSame(@NonNull final EmojiCategory oldItem, @NonNull final EmojiCategory newItem) {
             return oldItem.equals(newItem);
         }
     };
@@ -36,43 +36,43 @@ public class EmojiPickerPageAdapter extends RecyclerView.Adapter<EmojiCategoryPa
     private final EmojiPicker.OnEmojiClickListener onEmojiClickListener;
     private final AsyncListDiffer<EmojiCategory> differ;
 
-    public EmojiPickerPageAdapter(@NonNull final View rootView,
-                                  final EmojiPicker.OnEmojiClickListener onEmojiClickListener) {
+    public EmojiPickerPageAdapter(@NonNull View rootView,
+                                  EmojiPicker.OnEmojiClickListener onEmojiClickListener) {
         this.rootView = rootView;
         this.onEmojiClickListener = onEmojiClickListener;
-        this.differ = new AsyncListDiffer<>(new AdapterListUpdateCallback(this),
-                                       new AsyncDifferConfig.Builder<>(EmojiPickerPageAdapter.diffCallback).build());
-        EmojiParser emojiParser = EmojiParser.Companion.getInstance(rootView.getContext());
-        this.differ.submitList(emojiParser.getEmojiCategories());
-        this.setHasStableIds(true);
+        differ = new AsyncListDiffer<>(new AdapterListUpdateCallback(this),
+                                       new AsyncDifferConfig.Builder<>(diffCallback).build());
+        final EmojiParser emojiParser = EmojiParser.Companion.getInstance(rootView.getContext());
+        differ.submitList(emojiParser.getEmojiCategories());
+        setHasStableIds(true);
     }
 
     @NonNull
     @Override
-    public EmojiCategoryPageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        Context context = parent.getContext();
-        RecyclerView emojiGrid = new RecyclerView(context);
+    public EmojiCategoryPageViewHolder onCreateViewHolder(@NonNull final ViewGroup parent, final int viewType) {
+        final Context context = parent.getContext();
+        final RecyclerView emojiGrid = new RecyclerView(context);
         emojiGrid.setLayoutParams(new ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT));
         emojiGrid.setLayoutManager(new GridLayoutManager(context, 9));
         emojiGrid.setHasFixedSize(true);
         emojiGrid.setClipToPadding(false);
         emojiGrid.addItemDecoration(new GridSpacingItemDecoration(Utils.convertDpToPx(8)));
-        return new EmojiCategoryPageViewHolder(this.rootView, emojiGrid, this.onEmojiClickListener);
+        return new EmojiCategoryPageViewHolder(rootView, emojiGrid, onEmojiClickListener);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull EmojiCategoryPageViewHolder holder, int position) {
-        EmojiCategory emojiCategory = this.differ.getCurrentList().get(position);
+    public void onBindViewHolder(@NonNull final EmojiCategoryPageViewHolder holder, final int position) {
+        final EmojiCategory emojiCategory = differ.getCurrentList().get(position);
         holder.bind(emojiCategory);
     }
 
     @Override
-    public long getItemId(int position) {
-        return this.differ.getCurrentList().get(position).hashCode();
+    public long getItemId(final int position) {
+        return differ.getCurrentList().get(position).hashCode();
     }
 
     @Override
     public int getItemCount() {
-        return this.differ.getCurrentList().size();
+        return differ.getCurrentList().size();
     }
 }

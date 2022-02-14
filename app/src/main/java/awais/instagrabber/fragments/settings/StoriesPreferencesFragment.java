@@ -12,21 +12,21 @@ import awais.instagrabber.R;
 
 public class StoriesPreferencesFragment extends BasePreferencesFragment {
     @Override
-    void setupPreferenceScreen(PreferenceScreen screen) {
-        Context context = this.getContext();
+    void setupPreferenceScreen(final PreferenceScreen screen) {
+        final Context context = getContext();
         if (context == null) return;
-        screen.addPreference(this.getStorySortPreference(context));
-        screen.addPreference(this.getHideMutedReelsPreference(context));
-        screen.addPreference(this.getMarkStoriesSeenPreference(context));
-        screen.addPreference(this.getAutoPlayPreference(context));
-        screen.addPreference(this.getStoryListPreference(context));
+        screen.addPreference(getStorySortPreference(context));
+        screen.addPreference(getHideMutedReelsPreference(context));
+        screen.addPreference(getMarkStoriesSeenPreference(context));
+        screen.addPreference(getAutoPlayPreference(context));
+        screen.addPreference(getStoryListPreference(context));
     }
 
-    private Preference getStorySortPreference(@NonNull Context context) {
-        ListPreference preference = new ListPreference(context);
+    private Preference getStorySortPreference(@NonNull final Context context) {
+        final ListPreference preference = new ListPreference(context);
         preference.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
-        int length = this.getResources().getStringArray(R.array.story_sorts).length;
-        String[] values = new String[length];
+        final int length = getResources().getStringArray(R.array.story_sorts).length;
+        final String[] values = new String[length];
         for (int i = 0; i < length; i++) {
             values[i] = String.valueOf(i);
         }
@@ -39,16 +39,16 @@ public class StoriesPreferencesFragment extends BasePreferencesFragment {
         return preference;
     }
 
-    private Preference getHideMutedReelsPreference(@NonNull Context context) {
-        SwitchPreferenceCompat preference = new SwitchPreferenceCompat(context);
+    private Preference getHideMutedReelsPreference(@NonNull final Context context) {
+        final SwitchPreferenceCompat preference = new SwitchPreferenceCompat(context);
         preference.setKey(PreferenceKeys.HIDE_MUTED_REELS);
         preference.setTitle(R.string.hide_muted_reels_setting);
         preference.setIconSpaceReserved(false);
         return preference;
     }
 
-    private Preference getMarkStoriesSeenPreference(@NonNull Context context) {
-        SwitchPreferenceCompat preference = new SwitchPreferenceCompat(context);
+    private Preference getMarkStoriesSeenPreference(@NonNull final Context context) {
+        final SwitchPreferenceCompat preference = new SwitchPreferenceCompat(context);
         preference.setKey(PreferenceKeys.MARK_AS_SEEN);
         preference.setTitle(R.string.mark_as_seen_setting);
         preference.setSummary(R.string.mark_as_seen_setting_summary);
@@ -56,16 +56,16 @@ public class StoriesPreferencesFragment extends BasePreferencesFragment {
         return preference;
     }
 
-    private Preference getAutoPlayPreference(@NonNull Context context) {
-        SwitchPreferenceCompat preference = new SwitchPreferenceCompat(context);
+    private Preference getAutoPlayPreference(@NonNull final Context context) {
+        final SwitchPreferenceCompat preference = new SwitchPreferenceCompat(context);
         preference.setKey(PreferenceKeys.AUTOPLAY_VIDEOS_STORIES);
         preference.setTitle(R.string.autoplay_stories_setting);
         preference.setIconSpaceReserved(false);
         return preference;
     }
 
-    private Preference getStoryListPreference(@NonNull Context context) {
-        SwitchPreferenceCompat preference = new SwitchPreferenceCompat(context);
+    private Preference getStoryListPreference(@NonNull final Context context) {
+        final SwitchPreferenceCompat preference = new SwitchPreferenceCompat(context);
         preference.setKey(PreferenceKeys.PREF_STORY_SHOW_LIST);
         preference.setTitle(R.string.story_list_setting);
         preference.setSummary(R.string.story_list_setting_summary);

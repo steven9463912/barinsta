@@ -30,81 +30,81 @@ public class DirectItemStoryShareViewHolder extends DirectItemViewHolder {
 
     private final LayoutDmStoryShareBinding binding;
 
-    public DirectItemStoryShareViewHolder(@NonNull LayoutDmBaseBinding baseBinding,
-                                          @NonNull LayoutDmStoryShareBinding binding,
-                                          User currentUser,
-                                          DirectThread thread,
-                                          DirectItemsAdapter.DirectItemCallback callback) {
+    public DirectItemStoryShareViewHolder(@NonNull final LayoutDmBaseBinding baseBinding,
+                                          @NonNull final LayoutDmStoryShareBinding binding,
+                                          final User currentUser,
+                                          final DirectThread thread,
+                                          final DirectItemsAdapter.DirectItemCallback callback) {
         super(baseBinding, currentUser, thread, callback);
         this.binding = binding;
-        this.setItemView(binding.getRoot());
+        setItemView(binding.getRoot());
     }
 
     @Override
-    public void bindItem(DirectItem item, MessageDirection messageDirection) {
-        Resources resources = this.itemView.getResources();
+    public void bindItem(final DirectItem item, final MessageDirection messageDirection) {
+        final Resources resources = itemView.getResources();
         int format = R.string.story_share;
-        String reelType = item.getStoryShare().getReelType();
+        final String reelType = item.getStoryShare().getReelType();
         if (reelType == null || item.getStoryShare().getMedia() == null) {
-            this.setExpiredStoryInfo(item);
+            setExpiredStoryInfo(item);
             return;
         }
         if (reelType.equals("highlight_reel")) {
             format = R.string.story_share_highlight;
         }
-        User user = item.getStoryShare().getMedia().getUser();
-        String info = resources.getString(format, user != null ? user.getUsername() : "");
-        this.binding.shareInfo.setText(info);
-        this.binding.text.setVisibility(View.GONE);
-        this.binding.ivMediaPreview.setController(null);
-        DirectItemStoryShare storyShare = item.getStoryShare();
+        final User user = item.getStoryShare().getMedia().getUser();
+        final String info = resources.getString(format, user != null ? user.getUsername() : "");
+        binding.shareInfo.setText(info);
+        binding.text.setVisibility(View.GONE);
+        binding.ivMediaPreview.setController(null);
+        final DirectItemStoryShare storyShare = item.getStoryShare();
         if (storyShare == null) return;
-        this.setText(storyShare);
-        Media media = storyShare.getMedia();
-        this.setupPreview(messageDirection, media);
-        this.itemView.setOnClickListener(v -> this.openStory(storyShare));
+        setText(storyShare);
+        final Media media = storyShare.getMedia();
+        setupPreview(messageDirection, media);
+        itemView.setOnClickListener(v -> openStory(storyShare));
     }
 
-    private void setupPreview(MessageDirection messageDirection, Media storyShareMedia) {
-        MediaItemType mediaType = storyShareMedia.getType();
-        this.binding.typeIcon.setVisibility(mediaType == MediaItemType.MEDIA_TYPE_VIDEO ? View.VISIBLE : View.GONE);
-        RoundingParams roundingParams = messageDirection == MessageDirection.INCOMING
-                                              ? RoundingParams.fromCornersRadii(this.dmRadiusSmall, this.dmRadius, this.dmRadius, this.dmRadius)
-                                              : RoundingParams.fromCornersRadii(this.dmRadius, this.dmRadiusSmall, this.dmRadius, this.dmRadius);
-        this.binding.ivMediaPreview.setHierarchy(new GenericDraweeHierarchyBuilder(this.itemView.getResources())
+    private void setupPreview(final MessageDirection messageDirection, final Media storyShareMedia) {
+        final MediaItemType mediaType = storyShareMedia.getType();
+        binding.typeIcon.setVisibility(mediaType == MediaItemType.MEDIA_TYPE_VIDEO ? View.VISIBLE : View.GONE);
+        final RoundingParams roundingParams = messageDirection == MessageDirection.INCOMING
+                                              ? RoundingParams.fromCornersRadii(dmRadiusSmall, dmRadius, dmRadius, dmRadius)
+                                              : RoundingParams.fromCornersRadii(dmRadius, dmRadiusSmall, dmRadius, dmRadius);
+        binding.ivMediaPreview.setHierarchy(new GenericDraweeHierarchyBuilder(itemView.getResources())
                                                     .setRoundingParams(roundingParams)
                                                     .setActualImageScaleType(ScalingUtils.ScaleType.CENTER_CROP)
                                                     .build());
-        NullSafePair<Integer, Integer> widthHeight = NumberUtils.calculateWidthHeight(
+        final NullSafePair<Integer, Integer> widthHeight = NumberUtils.calculateWidthHeight(
                 storyShareMedia.getOriginalHeight(),
                 storyShareMedia.getOriginalWidth(),
-                this.mediaImageMaxHeight,
-                this.mediaImageMaxWidth
+                mediaImageMaxHeight,
+                mediaImageMaxWidth
         );
-        ViewGroup.LayoutParams layoutParams = this.binding.ivMediaPreview.getLayoutParams();
+        final ViewGroup.LayoutParams layoutParams = binding.ivMediaPreview.getLayoutParams();
         layoutParams.width = widthHeight.first;
         layoutParams.height = widthHeight.second;
-        this.binding.ivMediaPreview.requestLayout();
-        String thumbUrl = ResponseBodyUtils.getThumbUrl(storyShareMedia);
-        this.binding.ivMediaPreview.setImageURI(thumbUrl);
+        binding.ivMediaPreview.requestLayout();
+        final String thumbUrl = ResponseBodyUtils.getThumbUrl(storyShareMedia);
+        binding.ivMediaPreview.setImageURI(thumbUrl);
     }
 
-    private void setText(DirectItemStoryShare storyShare) {
-        String text = storyShare.getText();
+    private void setText(final DirectItemStoryShare storyShare) {
+        final String text = storyShare.getText();
         if (!TextUtils.isEmpty(text)) {
-            this.binding.text.setText(text);
-            this.binding.text.setVisibility(View.VISIBLE);
+            binding.text.setText(text);
+            binding.text.setVisibility(View.VISIBLE);
             return;
         }
-        this.binding.text.setVisibility(View.GONE);
+        binding.text.setVisibility(View.GONE);
     }
 
-    private void setExpiredStoryInfo(DirectItem item) {
-        this.binding.shareInfo.setText(item.getStoryShare().getTitle());
-        this.binding.text.setVisibility(View.VISIBLE);
-        this.binding.text.setText(item.getStoryShare().getMessage());
-        this.binding.ivMediaPreview.setVisibility(View.GONE);
-        this.binding.typeIcon.setVisibility(View.GONE);
+    private void setExpiredStoryInfo(final DirectItem item) {
+        binding.shareInfo.setText(item.getStoryShare().getTitle());
+        binding.text.setVisibility(View.VISIBLE);
+        binding.text.setText(item.getStoryShare().getMessage());
+        binding.ivMediaPreview.setVisibility(View.GONE);
+        binding.typeIcon.setVisibility(View.GONE);
     }
 
     @Override

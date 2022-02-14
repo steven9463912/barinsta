@@ -17,26 +17,26 @@ public class VibranceFilter extends Filter<GPUImageVibranceFilter> {
 
     public VibranceFilter() {
         super(FiltersHelper.FilterType.VIBRANCE, R.string.vibrance);
-        this.properties = Collections.singletonMap(
-                VibranceFilter.PROP_VIBRANCE, new FloatProperty(R.string.vibrance, 0f, -1.2f, 1.2f)
+        properties = Collections.singletonMap(
+                PROP_VIBRANCE, new FloatProperty(R.string.vibrance, 0f, -1.2f, 1.2f)
         );
-        this.filter = new GPUImageVibranceFilter((Float) this.getProperty(VibranceFilter.PROP_VIBRANCE).getDefaultValue());
+        filter = new GPUImageVibranceFilter((Float) getProperty(PROP_VIBRANCE).getDefaultValue());
     }
 
     @Override
     public Map<Integer, Property<?>> getProperties() {
-        return this.properties;
+        return properties;
     }
 
     @Override
-    public void adjust(int property, Object value) {
+    public void adjust(final int property, final Object value) {
         super.adjust(property, value);
         if (!(value instanceof Float)) return;
-        this.filter.setVibrance((Float) value);
+        filter.setVibrance((Float) value);
     }
 
     @Override
     public GPUImageVibranceFilter getInstance() {
-        return this.filter;
+        return filter;
     }
 }

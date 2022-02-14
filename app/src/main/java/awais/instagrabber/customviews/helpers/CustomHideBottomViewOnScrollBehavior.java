@@ -17,32 +17,32 @@ public class CustomHideBottomViewOnScrollBehavior extends HideBottomViewOnScroll
     public CustomHideBottomViewOnScrollBehavior() {
     }
 
-    public CustomHideBottomViewOnScrollBehavior(Context context, AttributeSet attrs) {
+    public CustomHideBottomViewOnScrollBehavior(final Context context, final AttributeSet attrs) {
         super(context, attrs);
     }
 
     @Override
-    public boolean onStartNestedScroll(@NonNull CoordinatorLayout coordinatorLayout,
-                                       @NonNull BottomNavigationView child,
-                                       @NonNull View directTargetChild,
-                                       @NonNull View target,
-                                       int nestedScrollAxes,
-                                       int type) {
+    public boolean onStartNestedScroll(@NonNull final CoordinatorLayout coordinatorLayout,
+                                       @NonNull final BottomNavigationView child,
+                                       @NonNull final View directTargetChild,
+                                       @NonNull final View target,
+                                       final int nestedScrollAxes,
+                                       final int type) {
         return nestedScrollAxes == ViewCompat.SCROLL_AXIS_VERTICAL;
     }
 
     @Override
-    public void onNestedPreScroll(@NonNull CoordinatorLayout coordinatorLayout,
-                                  @NonNull BottomNavigationView child,
-                                  @NonNull View target,
-                                  int dx,
-                                  int dy,
-                                  @NonNull int[] consumed,
-                                  int type) {
+    public void onNestedPreScroll(@NonNull final CoordinatorLayout coordinatorLayout,
+                                  @NonNull final BottomNavigationView child,
+                                  @NonNull final View target,
+                                  final int dx,
+                                  final int dy,
+                                  @NonNull final int[] consumed,
+                                  final int type) {
         if (dy > 0) {
-            this.slideDown(child);
+            slideDown(child);
         } else if (dy < 0) {
-            this.slideUp(child);
+            slideUp(child);
         }
     }
 }

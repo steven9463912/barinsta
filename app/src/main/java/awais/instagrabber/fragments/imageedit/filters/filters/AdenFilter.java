@@ -13,12 +13,12 @@ public class AdenFilter extends Filter<GPUImageAdenFilter> {
 
     public AdenFilter() {
         super(FiltersHelper.FilterType.ADEN, R.string.aden);
-        this.filter = new GPUImageAdenFilter();
+        filter = new GPUImageAdenFilter();
     }
 
     @Override
     public GPUImageAdenFilter getInstance() {
-        return this.filter;
+        return filter;
     }
 
     @Override

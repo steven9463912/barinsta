@@ -78,32 +78,32 @@ public final class Utils {
     private static int defaultStatusBarColor;
     private static Object[] volumes;
 
-    public static int convertDpToPx(float dp) {
-        return Math.round((dp * Utils.displayMetrics.densityDpi) / DisplayMetrics.DENSITY_DEFAULT);
+    public static int convertDpToPx(final float dp) {
+        return Math.round((dp * displayMetrics.densityDpi) / DisplayMetrics.DENSITY_DEFAULT);
     }
 
-    public static void copyText(@NonNull Context context, CharSequence string) {
-        if (Utils.clipboardManager == null) {
-            Utils.clipboardManager = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+    public static void copyText(@NonNull final Context context, final CharSequence string) {
+        if (clipboardManager == null) {
+            clipboardManager = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
         }
         int toastMessage = R.string.clipboard_error;
-        if (Utils.clipboardManager != null) {
+        if (clipboardManager != null) {
             try {
-                Utils.clipboardManager.setPrimaryClip(ClipData.newPlainText(context.getString(R.string.app_name), string));
+                clipboardManager.setPrimaryClip(ClipData.newPlainText(context.getString(R.string.app_name), string));
                 toastMessage = R.string.clipboard_copied;
-            } catch (final Exception e) {
-                Log.e(Utils.TAG, "copyText: ", e);
+            } catch (Exception e) {
+                Log.e(TAG, "copyText: ", e);
             }
         }
         Toast.makeText(context, toastMessage, Toast.LENGTH_SHORT).show();
     }
 
-    public static Map<String, String> sign(Map<String, Object> form) {
+    public static Map<String, String> sign(final Map<String, Object> form) {
         // final String signed = sign(Constants.SIGNATURE_KEY, new JSONObject(form).toString());
         // if (signed == null) {
         //     return null;
         // }
-        Map<String, String> map = new HashMap<>();
+        final Map<String, String> map = new HashMap<>();
         // map.put("ig_sig_key_version", Constants.SIGNATURE_VERSION);
         // map.put("signed_body", signed);
         map.put("signed_body", "SIGNATURE." + new JSONObject(form));
@@ -128,37 +128,37 @@ public final class Utils {
     //     }
     // }
 
-    public static String getMimeType(@NonNull Uri uri, ContentResolver contentResolver) {
-        final String mimeType;
-        String scheme = uri.getScheme();
-        String fileExtension = MimeTypeMap.getFileExtensionFromUrl(uri.toString());
+    public static String getMimeType(@NonNull final Uri uri, final ContentResolver contentResolver) {
+        String mimeType;
+        final String scheme = uri.getScheme();
+        final String fileExtension = MimeTypeMap.getFileExtensionFromUrl(uri.toString());
         if (TextUtils.isEmpty(scheme)) {
-            mimeType = Utils.mimeTypeMap.getMimeTypeFromExtension(fileExtension.toLowerCase());
+            mimeType = mimeTypeMap.getMimeTypeFromExtension(fileExtension.toLowerCase());
         } else {
             if (ContentResolver.SCHEME_CONTENT.equals(scheme)) {
                 mimeType = contentResolver.getType(uri);
             } else {
-                mimeType = Utils.mimeTypeMap.getMimeTypeFromExtension(fileExtension.toLowerCase());
+                mimeType = mimeTypeMap.getMimeTypeFromExtension(fileExtension.toLowerCase());
             }
         }
         if (mimeType == null) return null;
         return mimeType.toLowerCase();
     }
 
-    public static SimpleCache getSimpleCacheInstance(Context context) {
+    public static SimpleCache getSimpleCacheInstance(final Context context) {
         if (context == null) {
             return null;
         }
-        ExoDatabaseProvider exoDatabaseProvider = new ExoDatabaseProvider(context);
-        File cacheDir = context.getCacheDir();
-        if (Utils.simpleCache == null && cacheDir != null) {
-            Utils.simpleCache = new SimpleCache(cacheDir, new LeastRecentlyUsedCacheEvictor(Utils.VIDEO_CACHE_MAX_BYTES), exoDatabaseProvider);
+        final ExoDatabaseProvider exoDatabaseProvider = new ExoDatabaseProvider(context);
+        final File cacheDir = context.getCacheDir();
+        if (simpleCache == null && cacheDir != null) {
+            simpleCache = new SimpleCache(cacheDir, new LeastRecentlyUsedCacheEvictor(VIDEO_CACHE_MAX_BYTES), exoDatabaseProvider);
         }
-        return Utils.simpleCache;
+        return simpleCache;
     }
 
     @Nullable
-    public static Pair<FavoriteType, String> migrateOldFavQuery(String queryText) {
+    public static Pair<FavoriteType, String> migrateOldFavQuery(final String queryText) {
         if (queryText.startsWith("@")) {
             return new Pair<>(FavoriteType.USER, queryText.substring(1));
         } else if (queryText.contains("/")) {
@@ -169,29 +169,29 @@ public final class Utils {
         return null;
     }
 
-    public static int getStatusBarHeight(Context context) {
-        if (Utils.statusBarHeight > 0) {
-            return Utils.statusBarHeight;
+    public static int getStatusBarHeight(final Context context) {
+        if (statusBarHeight > 0) {
+            return statusBarHeight;
         }
-        final int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
+        int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
         if (resourceId > 0) {
-            Utils.statusBarHeight = context.getResources().getDimensionPixelSize(resourceId);
+            statusBarHeight = context.getResources().getDimensionPixelSize(resourceId);
         }
-        return Utils.statusBarHeight;
+        return statusBarHeight;
     }
 
-    public static int getActionBarHeight(@NonNull Context context) {
-        if (Utils.actionBarHeight > 0) {
-            return Utils.actionBarHeight;
+    public static int getActionBarHeight(@NonNull final Context context) {
+        if (actionBarHeight > 0) {
+            return actionBarHeight;
         }
-        TypedValue tv = new TypedValue();
+        final TypedValue tv = new TypedValue();
         if (context.getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
-            Utils.actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, Utils.displayMetrics);
+            actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, displayMetrics);
         }
-        return Utils.actionBarHeight;
+        return actionBarHeight;
     }
 
-    public static void openURL(Context context, String url) {
+    public static void openURL(final Context context, final String url) {
         if (context == null || TextUtils.isEmpty(url)) {
             return;
         }
@@ -201,43 +201,43 @@ public final class Utils {
             if (!url.startsWith("http://") && !url.startsWith("https://")) {
                 url1 = "http://" + url;
             }
-            Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(url1));
+            final Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(url1));
             i.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
             i.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);
             context.startActivity(i);
-        } catch (final ActivityNotFoundException e) {
-            Log.e(Utils.TAG, "openURL: No activity found to handle URLs", e);
+        } catch (ActivityNotFoundException e) {
+            Log.e(TAG, "openURL: No activity found to handle URLs", e);
             Toast.makeText(context, context.getString(R.string.no_external_app_url), Toast.LENGTH_LONG).show();
-        } catch (final Exception e) {
-            Log.e(Utils.TAG, "openURL", e);
+        } catch (Exception e) {
+            Log.e(TAG, "openURL", e);
         }
     }
 
-    public static void openEmailAddress(Context context, String emailAddress) {
+    public static void openEmailAddress(final Context context, final String emailAddress) {
         if (context == null || TextUtils.isEmpty(emailAddress)) {
             return;
         }
-        final Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:" + emailAddress));
+        Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:" + emailAddress));
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, "");
         emailIntent.putExtra(Intent.EXTRA_TEXT, "");
         context.startActivity(emailIntent);
     }
 
-    public static void displayToastAboveView(@NonNull Context context,
-                                             @NonNull View view,
-                                             @NonNull String text) {
-        Toast toast = Toast.makeText(context, text, Toast.LENGTH_SHORT);
+    public static void displayToastAboveView(@NonNull final Context context,
+                                             @NonNull final View view,
+                                             @NonNull final String text) {
+        final Toast toast = Toast.makeText(context, text, Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.TOP | Gravity.START,
                          view.getLeft(),
                          view.getTop());
         toast.show();
     }
 
-    public static PostsLayoutPreferences getPostsLayoutPreferences(String layoutPreferenceKey) {
-        PostsLayoutPreferences layoutPreferences = PostsLayoutPreferences.fromJson(Utils.settingsHelper.getString(layoutPreferenceKey));
+    public static PostsLayoutPreferences getPostsLayoutPreferences(final String layoutPreferenceKey) {
+        PostsLayoutPreferences layoutPreferences = PostsLayoutPreferences.fromJson(settingsHelper.getString(layoutPreferenceKey));
         if (layoutPreferences == null) {
             layoutPreferences = PostsLayoutPreferences.builder().build();
-            Utils.settingsHelper.putString(layoutPreferenceKey, layoutPreferences.getJson());
+            settingsHelper.putString(layoutPreferenceKey, layoutPreferences.getJson());
         }
         return layoutPreferences;
     }
@@ -245,84 +245,84 @@ public final class Utils {
     private static Field mAttachInfoField;
     private static Field mStableInsetsField;
 
-    public static int getViewInset(final View view) {
+    public static int getViewInset(View view) {
         if (view == null
-                || view.getHeight() == Utils.displayMetrics.heightPixels
-                || view.getHeight() == Utils.displayMetrics.widthPixels - Utils.getStatusBarHeight(view.getContext())) {
+                || view.getHeight() == displayMetrics.heightPixels
+                || view.getHeight() == displayMetrics.widthPixels - getStatusBarHeight(view.getContext())) {
             return 0;
         }
         try {
-            if (Utils.mAttachInfoField == null) {
+            if (mAttachInfoField == null) {
                 //noinspection JavaReflectionMemberAccess
-                Utils.mAttachInfoField = View.class.getDeclaredField("mAttachInfo");
-                Utils.mAttachInfoField.setAccessible(true);
+                mAttachInfoField = View.class.getDeclaredField("mAttachInfo");
+                mAttachInfoField.setAccessible(true);
             }
-            final Object mAttachInfo = Utils.mAttachInfoField.get(view);
+            Object mAttachInfo = mAttachInfoField.get(view);
             if (mAttachInfo != null) {
-                if (Utils.mStableInsetsField == null) {
-                    Utils.mStableInsetsField = mAttachInfo.getClass().getDeclaredField("mStableInsets");
-                    Utils.mStableInsetsField.setAccessible(true);
+                if (mStableInsetsField == null) {
+                    mStableInsetsField = mAttachInfo.getClass().getDeclaredField("mStableInsets");
+                    mStableInsetsField.setAccessible(true);
                 }
-                final Rect insets = (Rect) Utils.mStableInsetsField.get(mAttachInfo);
+                Rect insets = (Rect) mStableInsetsField.get(mAttachInfo);
                 if (insets == null) {
                     return 0;
                 }
                 return insets.bottom;
             }
-        } catch (final Exception e) {
-            Log.e(Utils.TAG, "getViewInset", e);
+        } catch (Exception e) {
+            Log.e(TAG, "getViewInset", e);
         }
         return 0;
     }
 
-    public static int getThemeAccentColor(final Context context) {
-        final int colorAttr;
+    public static int getThemeAccentColor(Context context) {
+        int colorAttr;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             colorAttr = android.R.attr.colorAccent;
         } else {
             //Get colorAccent defined for AppCompat
             colorAttr = context.getResources().getIdentifier("colorAccent", "attr", context.getPackageName());
         }
-        final TypedValue outValue = new TypedValue();
+        TypedValue outValue = new TypedValue();
         context.getTheme().resolveAttribute(colorAttr, outValue, true);
         return outValue.data;
     }
 
-    public static int getAttrValue(@NonNull Context context, int attr) {
-        TypedValue outValue = new TypedValue();
+    public static int getAttrValue(@NonNull final Context context, final int attr) {
+        final TypedValue outValue = new TypedValue();
         context.getTheme().resolveAttribute(attr, outValue, true);
         return outValue.data;
     }
 
-    public static int getAttrResId(@NonNull Context context, int attr) {
-        TypedValue outValue = new TypedValue();
+    public static int getAttrResId(@NonNull final Context context, final int attr) {
+        final TypedValue outValue = new TypedValue();
         context.getTheme().resolveAttribute(attr, outValue, true);
         return outValue.resourceId;
     }
 
-    public static void transparentStatusBar(Activity activity,
-                                            boolean enable,
-                                            boolean fullscreen) {
+    public static void transparentStatusBar(final Activity activity,
+                                            final boolean enable,
+                                            final boolean fullscreen) {
         if (activity == null) return;
-        ActionBar actionBar = ((AppCompatActivity) activity).getSupportActionBar();
-        Window window = activity.getWindow();
-        View decorView = window.getDecorView();
+        final ActionBar actionBar = ((AppCompatActivity) activity).getSupportActionBar();
+        final Window window = activity.getWindow();
+        final View decorView = window.getDecorView();
         if (enable) {
             decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
             if (actionBar != null) {
                 actionBar.hide();
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                Utils.defaultStatusBarColor = window.getStatusBarColor();
+                defaultStatusBarColor = window.getStatusBarColor();
                 window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
                 window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
                 // FOR TRANSPARENT NAVIGATION BAR
                 window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
                 window.setStatusBarColor(Color.TRANSPARENT);
-                Log.d(Utils.TAG, "Setting Color Transparent " + Color.TRANSPARENT + " Default Color " + Utils.defaultStatusBarColor);
+                Log.d(TAG, "Setting Color Transparent " + Color.TRANSPARENT + " Default Color " + defaultStatusBarColor);
                 return;
             }
-            Log.d(Utils.TAG, "Setting Color Trans " + Color.TRANSPARENT);
+            Log.d(TAG, "Setting Color Trans " + Color.TRANSPARENT);
             window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             return;
         }
@@ -340,7 +340,7 @@ public final class Utils {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
             window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            window.setStatusBarColor(Utils.defaultStatusBarColor);
+            window.setStatusBarColor(defaultStatusBarColor);
             return;
         }
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
@@ -359,38 +359,38 @@ public final class Utils {
     //     );
     // }
 
-    public static void showKeyboard(@NonNull View view) {
+    public static void showKeyboard(@NonNull final View view) {
         try {
-            Context context = view.getContext();
+            final Context context = view.getContext();
             if (context == null) return;
-            InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+            final InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
             if (imm == null) return;
             view.requestFocus();
-            boolean shown = imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
+            final boolean shown = imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
             if (!shown) {
-                Log.e(Utils.TAG, "showKeyboard: System did not display the keyboard");
+                Log.e(TAG, "showKeyboard: System did not display the keyboard");
             }
-        } catch (final Exception e) {
-            Log.e(Utils.TAG, "showKeyboard: ", e);
+        } catch (Exception e) {
+            Log.e(TAG, "showKeyboard: ", e);
         }
     }
 
-    public static void hideKeyboard(View view) {
+    public static void hideKeyboard(final View view) {
         if (view == null) return;
-        Context context = view.getContext();
+        final Context context = view.getContext();
         if (context == null) return;
         try {
-            InputMethodManager manager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+            final InputMethodManager manager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
             if (manager == null) return;
             manager.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        } catch (final Exception e) {
-            Log.e(Utils.TAG, "hideKeyboard: ", e);
+        } catch (Exception e) {
+            Log.e(TAG, "hideKeyboard: ", e);
         }
     }
 
-    public static Drawable getAnimatableDrawable(@NonNull Context context,
-                                                 @DrawableRes int drawableResId) {
-        Drawable drawable;
+    public static Drawable getAnimatableDrawable(@NonNull final Context context,
+                                                 @DrawableRes final int drawableResId) {
+        final Drawable drawable;
         if (Build.VERSION.SDK_INT >= 24) {
             drawable = ContextCompat.getDrawable(context, drawableResId);
         } else {
@@ -399,19 +399,19 @@ public final class Utils {
         return drawable;
     }
 
-    public static void enabledKeepScreenOn(@NonNull Activity activity) {
-        Window window = activity.getWindow();
+    public static void enabledKeepScreenOn(@NonNull final Activity activity) {
+        final Window window = activity.getWindow();
         if (window == null) return;
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
-    public static void disableKeepScreenOn(@NonNull Activity activity) {
-        Window window = activity.getWindow();
+    public static void disableKeepScreenOn(@NonNull final Activity activity) {
+        final Window window = activity.getWindow();
         if (window == null) return;
         window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
-    public static <T> void moveItem(final int sourceIndex, final int targetIndex, final List<T> list) {
+    public static <T> void moveItem(int sourceIndex, int targetIndex, List<T> list) {
         if (sourceIndex <= targetIndex) {
             Collections.rotate(list.subList(sourceIndex, targetIndex + 1), -1);
         } else {
@@ -440,32 +440,32 @@ public final class Utils {
     //                                     callback);
     // }
 
-    public static File getDocumentFileRealPath(@NonNull Context context,
-                                               @NonNull DocumentFile documentFile)
+    public static File getDocumentFileRealPath(@NonNull final Context context,
+                                               @NonNull final DocumentFile documentFile)
             throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        String docId = DocumentsContract.getDocumentId(documentFile.getUri());
-        String[] split = docId.split(":");
-        String type = split[0];
+        final String docId = DocumentsContract.getDocumentId(documentFile.getUri());
+        final String[] split = docId.split(":");
+        final String type = split[0];
 
         if (type.equalsIgnoreCase("primary")) {
             return new File(Environment.getExternalStorageDirectory(), split[1]);
         } else if (type.equalsIgnoreCase("raw")) {
             return new File(split[1]);
         } else {
-            if (Utils.volumes == null) {
-                StorageManager sm = (StorageManager) context.getSystemService(Context.STORAGE_SERVICE);
+            if (volumes == null) {
+                final StorageManager sm = (StorageManager) context.getSystemService(Context.STORAGE_SERVICE);
                 if (sm == null) return null;
-                Method getVolumeListMethod = sm.getClass().getMethod("getVolumeList");
-                Utils.volumes = (Object[]) getVolumeListMethod.invoke(sm);
+                final Method getVolumeListMethod = sm.getClass().getMethod("getVolumeList");
+                volumes = (Object[]) getVolumeListMethod.invoke(sm);
             }
-            if (Utils.volumes == null) return null;
-            for (final Object volume : Utils.volumes) {
-                Method getUuidMethod = volume.getClass().getMethod("getUuid");
-                String uuid = (String) getUuidMethod.invoke(volume);
+            if (volumes == null) return null;
+            for (Object volume : volumes) {
+                final Method getUuidMethod = volume.getClass().getMethod("getUuid");
+                final String uuid = (String) getUuidMethod.invoke(volume);
 
                 if (type.equalsIgnoreCase(uuid)) {
-                    Method getPathMethod = volume.getClass().getMethod("getPath");
-                    String path = (String) getPathMethod.invoke(volume);
+                    final Method getPathMethod = volume.getClass().getMethod("getPath");
+                    final String path = (String) getPathMethod.invoke(volume);
                     return new File(path, split[1]);
                 }
             }
@@ -474,21 +474,21 @@ public final class Utils {
         return null;
     }
 
-    public static void setupSelectedDir(@NonNull Context context,
-                                        @NonNull Intent intent) throws DownloadUtils.ReselectDocumentTreeException {
-        Uri dirUri = intent.getData();
-        Log.d(Utils.TAG, "onActivityResult: " + dirUri);
+    public static void setupSelectedDir(@NonNull final Context context,
+                                        @NonNull final Intent intent) throws DownloadUtils.ReselectDocumentTreeException {
+        final Uri dirUri = intent.getData();
+        Log.d(TAG, "onActivityResult: " + dirUri);
         if (dirUri == null) return;
-        int takeFlags = intent.getFlags() & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        final int takeFlags = intent.getFlags() & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         context.getContentResolver().takePersistableUriPermission(dirUri, takeFlags);
         // re-init DownloadUtils
         DownloadUtils.init(context, dirUri.toString());
     }
 
     @NonNull
-    public static Point getNavigationBarSize(@NonNull final Context context) {
-        final Point appUsableSize = Utils.getAppUsableScreenSize(context);
-        final Point realScreenSize = Utils.getRealScreenSize(context);
+    public static Point getNavigationBarSize(@NonNull Context context) {
+        Point appUsableSize = getAppUsableScreenSize(context);
+        Point realScreenSize = getRealScreenSize(context);
 
         // navigation bar on the right
         if (appUsableSize.x < realScreenSize.x) {
@@ -505,26 +505,26 @@ public final class Utils {
     }
 
     @NonNull
-    public static Point getAppUsableScreenSize(@NonNull final Context context) {
-        final WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        final Display display = windowManager.getDefaultDisplay();
-        final Point size = new Point();
+    public static Point getAppUsableScreenSize(@NonNull Context context) {
+        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Display display = windowManager.getDefaultDisplay();
+        Point size = new Point();
         display.getSize(size);
         return size;
     }
 
     @NonNull
-    public static Point getRealScreenSize(@NonNull final Context context) {
-        final WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        final Display display = windowManager.getDefaultDisplay();
-        final Point size = new Point();
+    public static Point getRealScreenSize(@NonNull Context context) {
+        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Display display = windowManager.getDefaultDisplay();
+        Point size = new Point();
         display.getRealSize(size);
         return size;
     }
 
-    public static <F, S> LiveData<Pair<F, S>> zipLiveData(@NonNull LiveData<F> firstLiveData,
-                                                          @NonNull LiveData<S> secondLiveData) {
-        ZippedLiveData<F, S> zippedLiveData = new ZippedLiveData<>();
+    public static <F, S> LiveData<Pair<F, S>> zipLiveData(@NonNull final LiveData<F> firstLiveData,
+                                                          @NonNull final LiveData<S> secondLiveData) {
+        final ZippedLiveData<F, S> zippedLiveData = new ZippedLiveData<>();
         zippedLiveData.addFirstSource(firstLiveData);
         zippedLiveData.addSecondSource(secondLiveData);
         return zippedLiveData;
@@ -535,24 +535,24 @@ public final class Utils {
         private S lastS;
 
         private void update() {
-            final F localLastF = this.lastF;
-            final S localLastS = this.lastS;
+            F localLastF = lastF;
+            S localLastS = lastS;
             if (localLastF != null && localLastS != null) {
-                this.setValue(new Pair<>(localLastF, localLastS));
+                setValue(new Pair<>(localLastF, localLastS));
             }
         }
 
-        public void addFirstSource(@NonNull LiveData<F> firstLiveData) {
-            this.addSource(firstLiveData, f -> {
-                this.lastF = f;
-                this.update();
+        public void addFirstSource(@NonNull final LiveData<F> firstLiveData) {
+            addSource(firstLiveData, f -> {
+                lastF = f;
+                update();
             });
         }
 
-        public void addSecondSource(@NonNull LiveData<S> secondLiveData) {
-            this.addSource(secondLiveData, s -> {
-                this.lastS = s;
-                this.update();
+        public void addSecondSource(@NonNull final LiveData<S> secondLiveData) {
+            addSource(secondLiveData, s -> {
+                lastS = s;
+                update();
             });
         }
     }

@@ -16,28 +16,28 @@ public class ImageResizingControllerListener<T extends DraweeView<GenericDraweeH
     private final T imageView;
     private final int requiredWidth;
 
-    public ImageResizingControllerListener(T imageView, int requiredWidth) {
+    public ImageResizingControllerListener(final T imageView, final int requiredWidth) {
         this.imageView = imageView;
         this.requiredWidth = requiredWidth;
     }
 
     @Override
-    public void onIntermediateImageSet(String id, ImageInfo imageInfo) {
+    public void onIntermediateImageSet(final String id, final ImageInfo imageInfo) {
         super.onIntermediateImageSet(id, imageInfo);
     }
 
-    public void onFinalImageSet(final String id, final ImageInfo imageInfo, final Animatable animatable) {
+    public void onFinalImageSet(String id, ImageInfo imageInfo, Animatable animatable) {
         if (imageInfo != null) {
             // updateViewSize(imageInfo);
-            int height = imageInfo.getHeight();
-            int width = imageInfo.getWidth();
+            final int height = imageInfo.getHeight();
+            final int width = imageInfo.getWidth();
             // final float aspectRatio = ((float) width) / height;
-            ViewGroup.LayoutParams layoutParams = this.imageView.getLayoutParams();
+            final ViewGroup.LayoutParams layoutParams = imageView.getLayoutParams();
             // final int deviceWidth = Utils.displayMetrics.widthPixels;
-            int resultingHeight = NumberUtils.getResultingHeight(this.requiredWidth, height, width);
-            layoutParams.width = this.requiredWidth;
+            final int resultingHeight = NumberUtils.getResultingHeight(requiredWidth, height, width);
+            layoutParams.width = requiredWidth;
             layoutParams.height = resultingHeight;
-            this.imageView.requestLayout();
+            imageView.requestLayout();
         }
     }
 }

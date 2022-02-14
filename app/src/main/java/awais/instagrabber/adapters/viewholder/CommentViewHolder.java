@@ -30,164 +30,164 @@ public final class CommentViewHolder extends RecyclerView.ViewHolder {
     private int parentCommentHighlightColor;
     private PopupMenu optionsPopup;
 
-    public CommentViewHolder(@NonNull final ItemCommentBinding binding,
-                             final long currentUserId,
-                             final CommentsAdapter.CommentCallback commentCallback) {
+    public CommentViewHolder(@NonNull ItemCommentBinding binding,
+                             long currentUserId,
+                             CommentsAdapter.CommentCallback commentCallback) {
         super(binding.getRoot());
         this.binding = binding;
         this.currentUserId = currentUserId;
         this.commentCallback = commentCallback;
-        Context context = this.itemView.getContext();
+        final Context context = itemView.getContext();
         if (context == null) return;
-        Resources.Theme theme = context.getTheme();
+        final Resources.Theme theme = context.getTheme();
         if (theme == null) return;
-        TypedValue typedValue = new TypedValue();
-        boolean resolved = theme.resolveAttribute(R.attr.parentCommentHighlightColor, typedValue, true);
+        final TypedValue typedValue = new TypedValue();
+        final boolean resolved = theme.resolveAttribute(R.attr.parentCommentHighlightColor, typedValue, true);
         if (resolved) {
-            this.parentCommentHighlightColor = typedValue.data;
+            parentCommentHighlightColor = typedValue.data;
         }
     }
 
-    public void bind(Comment comment, boolean isReplyParent, boolean isReply) {
+    public void bind(final Comment comment, final boolean isReplyParent, final boolean isReply) {
         if (comment == null) return;
-        this.itemView.setOnClickListener(v -> {
-            if (this.commentCallback != null) {
-                this.commentCallback.onClick(comment);
+        itemView.setOnClickListener(v -> {
+            if (commentCallback != null) {
+                commentCallback.onClick(comment);
             }
         });
-        if (isReplyParent && this.parentCommentHighlightColor != 0) {
-            this.itemView.setBackgroundColor(this.parentCommentHighlightColor);
+        if (isReplyParent && parentCommentHighlightColor != 0) {
+            itemView.setBackgroundColor(parentCommentHighlightColor);
         } else {
-            this.itemView.setBackgroundColor(this.itemView.getResources().getColor(android.R.color.transparent));
+            itemView.setBackgroundColor(itemView.getResources().getColor(android.R.color.transparent));
         }
-        this.setupCommentText(comment, isReply);
-        this.binding.date.setText(comment.getDateTime());
-        this.setLikes(comment, isReply);
-        this.setReplies(comment, isReply);
-        this.setUser(comment, isReply);
-        this.setupOptions(comment, isReply);
+        setupCommentText(comment, isReply);
+        binding.date.setText(comment.getDateTime());
+        setLikes(comment, isReply);
+        setReplies(comment, isReply);
+        setUser(comment, isReply);
+        setupOptions(comment, isReply);
     }
 
-    private void setupCommentText(@NonNull Comment comment, boolean isReply) {
-        this.binding.comment.clearOnURLClickListeners();
-        this.binding.comment.clearOnHashtagClickListeners();
-        this.binding.comment.clearOnMentionClickListeners();
-        this.binding.comment.clearOnEmailClickListeners();
-        this.binding.comment.setText(comment.getText());
-        this.binding.comment.setTextSize(TypedValue.COMPLEX_UNIT_SP, isReply ? 12 : 14);
-        this.binding.comment.addOnHashtagListener(autoLinkItem -> {
-            String originalText = autoLinkItem.getOriginalText();
-            if (this.commentCallback == null) return;
-            this.commentCallback.onHashtagClick(originalText);
+    private void setupCommentText(@NonNull final Comment comment, final boolean isReply) {
+        binding.comment.clearOnURLClickListeners();
+        binding.comment.clearOnHashtagClickListeners();
+        binding.comment.clearOnMentionClickListeners();
+        binding.comment.clearOnEmailClickListeners();
+        binding.comment.setText(comment.getText());
+        binding.comment.setTextSize(TypedValue.COMPLEX_UNIT_SP, isReply ? 12 : 14);
+        binding.comment.addOnHashtagListener(autoLinkItem -> {
+            final String originalText = autoLinkItem.getOriginalText();
+            if (commentCallback == null) return;
+            commentCallback.onHashtagClick(originalText);
         });
-        this.binding.comment.addOnMentionClickListener(autoLinkItem -> {
-            String originalText = autoLinkItem.getOriginalText();
-            if (this.commentCallback == null) return;
-            this.commentCallback.onMentionClick(originalText);
+        binding.comment.addOnMentionClickListener(autoLinkItem -> {
+            final String originalText = autoLinkItem.getOriginalText();
+            if (commentCallback == null) return;
+            commentCallback.onMentionClick(originalText);
 
         });
-        this.binding.comment.addOnEmailClickListener(autoLinkItem -> {
-            String originalText = autoLinkItem.getOriginalText();
-            if (this.commentCallback == null) return;
-            this.commentCallback.onEmailClick(originalText);
+        binding.comment.addOnEmailClickListener(autoLinkItem -> {
+            final String originalText = autoLinkItem.getOriginalText();
+            if (commentCallback == null) return;
+            commentCallback.onEmailClick(originalText);
         });
-        this.binding.comment.addOnURLClickListener(autoLinkItem -> {
-            String originalText = autoLinkItem.getOriginalText();
-            if (this.commentCallback == null) return;
-            this.commentCallback.onURLClick(originalText);
+        binding.comment.addOnURLClickListener(autoLinkItem -> {
+            final String originalText = autoLinkItem.getOriginalText();
+            if (commentCallback == null) return;
+            commentCallback.onURLClick(originalText);
         });
-        this.binding.comment.setOnLongClickListener(v -> {
-            Utils.copyText(this.itemView.getContext(), comment.getText());
+        binding.comment.setOnLongClickListener(v -> {
+            Utils.copyText(itemView.getContext(), comment.getText());
             return true;
         });
-        this.binding.comment.setOnClickListener(v -> this.commentCallback.onClick(comment));
+        binding.comment.setOnClickListener(v -> commentCallback.onClick(comment));
     }
 
-    private void setUser(@NonNull Comment comment, boolean isReply) {
-        User user = comment.getUser();
+    private void setUser(@NonNull final Comment comment, final boolean isReply) {
+        final User user = comment.getUser();
         if (user == null) return;
-        this.binding.username.setUsername(user.getUsername(), user.isVerified());
-        this.binding.username.setTextAppearance(this.itemView.getContext(), isReply ? R.style.TextAppearance_MaterialComponents_Subtitle2
+        binding.username.setUsername(user.getUsername(), user.isVerified());
+        binding.username.setTextAppearance(itemView.getContext(), isReply ? R.style.TextAppearance_MaterialComponents_Subtitle2
                                                                           : R.style.TextAppearance_MaterialComponents_Subtitle1);
-        this.binding.username.setOnClickListener(v -> {
-            if (this.commentCallback == null) return;
-            this.commentCallback.onMentionClick("@" + user.getUsername());
+        binding.username.setOnClickListener(v -> {
+            if (commentCallback == null) return;
+            commentCallback.onMentionClick("@" + user.getUsername());
         });
-        this.binding.profilePic.setImageURI(user.getProfilePicUrl());
-        this.binding.profilePic.setSize(isReply ? ProfilePicView.Size.SMALLER : ProfilePicView.Size.SMALL);
-        this.binding.profilePic.setOnClickListener(v -> {
-            if (this.commentCallback == null) return;
-            this.commentCallback.onMentionClick("@" + user.getUsername());
+        binding.profilePic.setImageURI(user.getProfilePicUrl());
+        binding.profilePic.setSize(isReply ? ProfilePicView.Size.SMALLER : ProfilePicView.Size.SMALL);
+        binding.profilePic.setOnClickListener(v -> {
+            if (commentCallback == null) return;
+            commentCallback.onMentionClick("@" + user.getUsername());
         });
     }
 
-    private void setLikes(@NonNull Comment comment, boolean isReply) {
-        this.binding.likes.setText(String.valueOf(comment.getCommentLikeCount()));
-        this.binding.likes.setOnLongClickListener(v -> {
-            if (this.commentCallback == null) return false;
-            this.commentCallback.onViewLikes(comment);
+    private void setLikes(@NonNull final Comment comment, final boolean isReply) {
+        binding.likes.setText(String.valueOf(comment.getCommentLikeCount()));
+        binding.likes.setOnLongClickListener(v -> {
+            if (commentCallback == null) return false;
+            commentCallback.onViewLikes(comment);
             return true;
         });
-        if (this.currentUserId == 0) { // not logged in
-            this.binding.likes.setOnClickListener(v -> {
-                if (this.commentCallback == null) return;
-                this.commentCallback.onViewLikes(comment);
+        if (currentUserId == 0) { // not logged in
+            binding.likes.setOnClickListener(v -> {
+                if (commentCallback == null) return;
+                commentCallback.onViewLikes(comment);
             });
             return;
         }
-        boolean liked = comment.getLiked();
-        int resId = liked ? R.drawable.ic_like : R.drawable.ic_not_liked;
-        this.binding.likes.setCompoundDrawablesRelativeWithSize(ContextCompat.getDrawable(this.itemView.getContext(), resId), null, null, null);
-        this.binding.likes.setOnClickListener(v -> {
-            if (this.commentCallback == null) return;
+        final boolean liked = comment.getLiked();
+        final int resId = liked ? R.drawable.ic_like : R.drawable.ic_not_liked;
+        binding.likes.setCompoundDrawablesRelativeWithSize(ContextCompat.getDrawable(itemView.getContext(), resId), null, null, null);
+        binding.likes.setOnClickListener(v -> {
+            if (commentCallback == null) return;
             // toggle like
-            this.commentCallback.onLikeClick(comment, !liked, isReply);
+            commentCallback.onLikeClick(comment, !liked, isReply);
         });
     }
 
-    private void setReplies(@NonNull Comment comment, boolean isReply) {
-        int replies = comment.getChildCommentCount();
-        this.binding.replies.setVisibility(View.VISIBLE);
-        String text = isReply ? "" : String.valueOf(replies);
-        this.binding.replies.setText(text);
-        this.binding.replies.setOnClickListener(v -> {
-            if (this.commentCallback == null) return;
-            this.commentCallback.onRepliesClick(comment);
+    private void setReplies(@NonNull final Comment comment, final boolean isReply) {
+        final int replies = comment.getChildCommentCount();
+        binding.replies.setVisibility(View.VISIBLE);
+        final String text = isReply ? "" : String.valueOf(replies);
+        binding.replies.setText(text);
+        binding.replies.setOnClickListener(v -> {
+            if (commentCallback == null) return;
+            commentCallback.onRepliesClick(comment);
         });
     }
 
-    private void setupOptions(Comment comment, boolean isReply) {
-        this.binding.options.setOnClickListener(v -> {
-            if (this.optionsPopup == null) {
-                this.createOptionsPopupMenu(comment, isReply);
+    private void setupOptions(final Comment comment, final boolean isReply) {
+        binding.options.setOnClickListener(v -> {
+            if (optionsPopup == null) {
+                createOptionsPopupMenu(comment, isReply);
             }
-            if (this.optionsPopup == null) return;
-            this.optionsPopup.show();
+            if (optionsPopup == null) return;
+            optionsPopup.show();
         });
     }
 
-    private void createOptionsPopupMenu(Comment comment, boolean isReply) {
-        if (this.optionsPopup == null) {
-            ContextThemeWrapper themeWrapper = new ContextThemeWrapper(this.itemView.getContext(), R.style.popupMenuStyle);
-            this.optionsPopup = new PopupMenu(themeWrapper, this.binding.options);
+    private void createOptionsPopupMenu(final Comment comment, final boolean isReply) {
+        if (optionsPopup == null) {
+            final ContextThemeWrapper themeWrapper = new ContextThemeWrapper(itemView.getContext(), R.style.popupMenuStyle);
+            optionsPopup = new PopupMenu(themeWrapper, binding.options);
         } else {
-            this.optionsPopup.getMenu().clear();
+            optionsPopup.getMenu().clear();
         }
-        this.optionsPopup.getMenuInflater().inflate(R.menu.comment_options_menu, this.optionsPopup.getMenu());
-        User user = comment.getUser();
-        if (this.currentUserId == 0 || user == null || user.getPk() != this.currentUserId) {
-            Menu menu = this.optionsPopup.getMenu();
+        optionsPopup.getMenuInflater().inflate(R.menu.comment_options_menu, optionsPopup.getMenu());
+        final User user = comment.getUser();
+        if (currentUserId == 0 || user == null || user.getPk() != currentUserId) {
+            final Menu menu = optionsPopup.getMenu();
             menu.removeItem(R.id.delete);
         }
-        this.optionsPopup.setOnMenuItemClickListener(item -> {
-            if (this.commentCallback == null) return false;
-            final int itemId = item.getItemId();
+        optionsPopup.setOnMenuItemClickListener(item -> {
+            if (commentCallback == null) return false;
+            int itemId = item.getItemId();
             if (itemId == R.id.translate) {
-                this.commentCallback.onTranslate(comment);
+                commentCallback.onTranslate(comment);
                 return true;
             }
             if (itemId == R.id.delete) {
-                this.commentCallback.onDelete(comment, isReply);
+                commentCallback.onDelete(comment, isReply);
             }
             return true;
         });

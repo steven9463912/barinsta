@@ -42,70 +42,70 @@ public final class FeedAdapterV2 extends ListAdapter<Media, RecyclerView.ViewHol
 
     private static final DiffUtil.ItemCallback<Media> DIFF_CALLBACK = new DiffUtil.ItemCallback<Media>() {
         @Override
-        public boolean areItemsTheSame(@NonNull Media oldItem, @NonNull Media newItem) {
+        public boolean areItemsTheSame(@NonNull final Media oldItem, @NonNull final Media newItem) {
             return Objects.equals(oldItem.getPk(), newItem.getPk());
         }
 
         @Override
-        public boolean areContentsTheSame(@NonNull Media oldItem, @NonNull Media newItem) {
-            Caption oldItemCaption = oldItem.getCaption();
-            Caption newItemCaption = newItem.getCaption();
+        public boolean areContentsTheSame(@NonNull final Media oldItem, @NonNull final Media newItem) {
+            final Caption oldItemCaption = oldItem.getCaption();
+            final Caption newItemCaption = newItem.getCaption();
             return Objects.equals(oldItem.getPk(), newItem.getPk())
-                    && Objects.equals(this.getCaptionText(oldItemCaption), this.getCaptionText(newItemCaption));
+                    && Objects.equals(getCaptionText(oldItemCaption), getCaptionText(newItemCaption));
         }
 
-        private String getCaptionText(Caption caption) {
+        private String getCaptionText(final Caption caption) {
             if (caption == null) return null;
             return caption.getText();
         }
     };
     private final AdapterSelectionCallback adapterSelectionCallback = new AdapterSelectionCallback() {
         @Override
-        public boolean onPostLongClick(int position, Media feedModel) {
-            if (!FeedAdapterV2.this.selectionModeActive) {
-                FeedAdapterV2.this.selectionModeActive = true;
-                FeedAdapterV2.this.notifyDataSetChanged();
-                if (FeedAdapterV2.this.selectionModeCallback != null) {
-                    FeedAdapterV2.this.selectionModeCallback.onSelectionStart();
+        public boolean onPostLongClick(final int position, final Media feedModel) {
+            if (!selectionModeActive) {
+                selectionModeActive = true;
+                notifyDataSetChanged();
+                if (selectionModeCallback != null) {
+                    selectionModeCallback.onSelectionStart();
                 }
             }
-            FeedAdapterV2.this.selectedPositions.add(position);
-            FeedAdapterV2.this.selectedFeedModels.add(feedModel);
-            FeedAdapterV2.this.notifyItemChanged(position);
-            if (FeedAdapterV2.this.selectionModeCallback != null) {
-                FeedAdapterV2.this.selectionModeCallback.onSelectionChange(FeedAdapterV2.this.selectedFeedModels);
+            selectedPositions.add(position);
+            selectedFeedModels.add(feedModel);
+            notifyItemChanged(position);
+            if (selectionModeCallback != null) {
+                selectionModeCallback.onSelectionChange(selectedFeedModels);
             }
             return true;
         }
 
         @Override
-        public void onPostClick(int position, Media feedModel) {
-            if (!FeedAdapterV2.this.selectionModeActive) return;
-            if (FeedAdapterV2.this.selectedPositions.contains(position)) {
-                FeedAdapterV2.this.selectedPositions.remove(position);
-                FeedAdapterV2.this.selectedFeedModels.remove(feedModel);
+        public void onPostClick(final int position, final Media feedModel) {
+            if (!selectionModeActive) return;
+            if (selectedPositions.contains(position)) {
+                selectedPositions.remove(position);
+                selectedFeedModels.remove(feedModel);
             } else {
-                FeedAdapterV2.this.selectedPositions.add(position);
-                FeedAdapterV2.this.selectedFeedModels.add(feedModel);
+                selectedPositions.add(position);
+                selectedFeedModels.add(feedModel);
             }
-            FeedAdapterV2.this.notifyItemChanged(position);
-            if (FeedAdapterV2.this.selectionModeCallback != null) {
-                FeedAdapterV2.this.selectionModeCallback.onSelectionChange(FeedAdapterV2.this.selectedFeedModels);
+            notifyItemChanged(position);
+            if (selectionModeCallback != null) {
+                selectionModeCallback.onSelectionChange(selectedFeedModels);
             }
-            if (FeedAdapterV2.this.selectedPositions.isEmpty()) {
-                FeedAdapterV2.this.selectionModeActive = false;
-                FeedAdapterV2.this.notifyDataSetChanged();
-                if (FeedAdapterV2.this.selectionModeCallback != null) {
-                    FeedAdapterV2.this.selectionModeCallback.onSelectionEnd();
+            if (selectedPositions.isEmpty()) {
+                selectionModeActive = false;
+                notifyDataSetChanged();
+                if (selectionModeCallback != null) {
+                    selectionModeCallback.onSelectionEnd();
                 }
             }
         }
     };
 
-    public FeedAdapterV2(@NonNull PostsLayoutPreferences layoutPreferences,
-                         FeedItemCallback feedItemCallback,
-                         SelectionModeCallback selectionModeCallback) {
-        super(FeedAdapterV2.DIFF_CALLBACK);
+    public FeedAdapterV2(@NonNull final PostsLayoutPreferences layoutPreferences,
+                         final FeedItemCallback feedItemCallback,
+                         final SelectionModeCallback selectionModeCallback) {
+        super(DIFF_CALLBACK);
         this.layoutPreferences = layoutPreferences;
         this.feedItemCallback = feedItemCallback;
         this.selectionModeCallback = selectionModeCallback;
@@ -113,46 +113,46 @@ public final class FeedAdapterV2 extends ListAdapter<Media, RecyclerView.ViewHol
 
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        Context context = parent.getContext();
-        LayoutInflater layoutInflater = LayoutInflater.from(context);
-        switch (this.layoutPreferences.getType()) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull final ViewGroup parent, final int viewType) {
+        final Context context = parent.getContext();
+        final LayoutInflater layoutInflater = LayoutInflater.from(context);
+        switch (layoutPreferences.getType()) {
             case LINEAR:
-                return this.getLinearViewHolder(parent, layoutInflater, viewType);
+                return getLinearViewHolder(parent, layoutInflater, viewType);
             case GRID:
             case STAGGERED_GRID:
             default:
-                ItemFeedGridBinding binding = ItemFeedGridBinding.inflate(layoutInflater, parent, false);
+                final ItemFeedGridBinding binding = ItemFeedGridBinding.inflate(layoutInflater, parent, false);
                 return new FeedGridItemViewHolder(binding);
         }
     }
 
     @NonNull
-    private RecyclerView.ViewHolder getLinearViewHolder(@NonNull ViewGroup parent,
-                                                        LayoutInflater layoutInflater,
-                                                        int viewType) {
+    private RecyclerView.ViewHolder getLinearViewHolder(@NonNull final ViewGroup parent,
+                                                        final LayoutInflater layoutInflater,
+                                                        final int viewType) {
         switch (MediaItemType.valueOf(viewType)) {
             case MEDIA_TYPE_VIDEO: {
-                ItemFeedVideoBinding binding = ItemFeedVideoBinding.inflate(layoutInflater, parent, false);
-                return new FeedVideoViewHolder(binding, this.feedItemCallback);
+                final ItemFeedVideoBinding binding = ItemFeedVideoBinding.inflate(layoutInflater, parent, false);
+                return new FeedVideoViewHolder(binding, feedItemCallback);
             }
             case MEDIA_TYPE_SLIDER: {
-                ItemFeedSliderBinding binding = ItemFeedSliderBinding.inflate(layoutInflater, parent, false);
-                return new FeedSliderViewHolder(binding, this.feedItemCallback);
+                final ItemFeedSliderBinding binding = ItemFeedSliderBinding.inflate(layoutInflater, parent, false);
+                return new FeedSliderViewHolder(binding, feedItemCallback);
             }
             case MEDIA_TYPE_IMAGE:
             default: {
-                ItemFeedPhotoBinding binding = ItemFeedPhotoBinding.inflate(layoutInflater, parent, false);
-                return new FeedPhotoViewHolder(binding, this.feedItemCallback);
+                final ItemFeedPhotoBinding binding = ItemFeedPhotoBinding.inflate(layoutInflater, parent, false);
+                return new FeedPhotoViewHolder(binding, feedItemCallback);
             }
         }
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
-        Media feedModel = this.getItem(position);
+    public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder viewHolder, final int position) {
+        final Media feedModel = getItem(position);
         if (feedModel == null) return;
-        switch (this.layoutPreferences.getType()) {
+        switch (layoutPreferences.getType()) {
             case LINEAR:
                 ((FeedItemViewHolder) viewHolder).bind(feedModel);
                 break;
@@ -161,31 +161,31 @@ public final class FeedAdapterV2 extends ListAdapter<Media, RecyclerView.ViewHol
             default:
                 ((FeedGridItemViewHolder) viewHolder).bind(position,
                                                            feedModel,
-                        this.layoutPreferences,
-                        this.feedItemCallback,
-                        this.adapterSelectionCallback,
-                        this.selectionModeActive,
-                        this.selectedPositions.contains(position));
+                        layoutPreferences,
+                        feedItemCallback,
+                        adapterSelectionCallback,
+                        selectionModeActive,
+                        selectedPositions.contains(position));
         }
     }
 
     @Override
-    public int getItemViewType(int position) {
-        return this.getItem(position).getType().getId();
+    public int getItemViewType(final int position) {
+        return getItem(position).getType().getId();
     }
 
-    public void setLayoutPreferences(@NonNull PostsLayoutPreferences layoutPreferences) {
+    public void setLayoutPreferences(@NonNull final PostsLayoutPreferences layoutPreferences) {
         this.layoutPreferences = layoutPreferences;
     }
 
     public void endSelection() {
-        if (!this.selectionModeActive) return;
-        this.selectionModeActive = false;
-        this.selectedPositions.clear();
-        this.selectedFeedModels.clear();
-        this.notifyDataSetChanged();
-        if (this.selectionModeCallback != null) {
-            this.selectionModeCallback.onSelectionEnd();
+        if (!selectionModeActive) return;
+        selectionModeActive = false;
+        selectedPositions.clear();
+        selectedFeedModels.clear();
+        notifyDataSetChanged();
+        if (selectionModeCallback != null) {
+            selectionModeCallback.onSelectionEnd();
         }
     }
 

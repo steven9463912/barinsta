@@ -50,157 +50,157 @@ public final class LikesViewerFragment extends BottomSheetDialogFragment impleme
 
     private final ServiceCallback<List<User>> cb = new ServiceCallback<List<User>>() {
         @Override
-        public void onSuccess(List<User> result) {
-            LikesAdapter likesAdapter = new LikesAdapter(result, v -> {
-                Object tag = v.getTag();
+        public void onSuccess(final List<User> result) {
+            final LikesAdapter likesAdapter = new LikesAdapter(result, v -> {
+                final Object tag = v.getTag();
                 if (tag instanceof User) {
-                    final User model = (User) tag;
+                    User model = (User) tag;
                     try {
-                        NavDirections action = LikesViewerFragmentDirections.actionToProfile().setUsername(model.getUsername());
+                        final NavDirections action = LikesViewerFragmentDirections.actionToProfile().setUsername(model.getUsername());
                         NavHostFragment.findNavController(LikesViewerFragment.this).navigate(action);
-                    } catch (final Exception e) {
-                        Log.e(LikesViewerFragment.TAG, "onSuccess: ", e);
+                    } catch (Exception e) {
+                        Log.e(TAG, "onSuccess: ", e);
                     }
                 }
             });
-            LikesViewerFragment.this.binding.rvLikes.setAdapter(likesAdapter);
-            Context context = LikesViewerFragment.this.getContext();
+            binding.rvLikes.setAdapter(likesAdapter);
+            final Context context = getContext();
             if (context == null) return;
-            LikesViewerFragment.this.binding.rvLikes.setLayoutManager(new LinearLayoutManager(context));
-            LikesViewerFragment.this.binding.rvLikes.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
-            LikesViewerFragment.this.binding.swipeRefreshLayout.setRefreshing(false);
+            binding.rvLikes.setLayoutManager(new LinearLayoutManager(context));
+            binding.rvLikes.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
+            binding.swipeRefreshLayout.setRefreshing(false);
         }
 
         @Override
-        public void onFailure(Throwable t) {
-            Log.e(LikesViewerFragment.TAG, "Error", t);
+        public void onFailure(final Throwable t) {
+            Log.e(TAG, "Error", t);
             try {
-                Context context = LikesViewerFragment.this.getContext();
+                final Context context = getContext();
                 Toast.makeText(context, t.getMessage(), Toast.LENGTH_SHORT).show();
-            } catch (final Exception ignored) {}
+            } catch (Exception ignored) {}
         }
     };
 
     private final ServiceCallback<GraphQLUserListFetchResponse> anonCb = new ServiceCallback<GraphQLUserListFetchResponse>() {
         @Override
-        public void onSuccess(GraphQLUserListFetchResponse result) {
-            LikesViewerFragment.this.endCursor = result.getNextMaxId();
-            LikesAdapter likesAdapter = new LikesAdapter(result.getItems(), v -> {
-                Object tag = v.getTag();
+        public void onSuccess(final GraphQLUserListFetchResponse result) {
+            endCursor = result.getNextMaxId();
+            final LikesAdapter likesAdapter = new LikesAdapter(result.getItems(), v -> {
+                final Object tag = v.getTag();
                 if (tag instanceof User) {
-                    final User model = (User) tag;
+                    User model = (User) tag;
                     try {
-                        NavDirections action = LikesViewerFragmentDirections.actionToProfile().setUsername(model.getUsername());
+                        final NavDirections action = LikesViewerFragmentDirections.actionToProfile().setUsername(model.getUsername());
                         NavHostFragment.findNavController(LikesViewerFragment.this).navigate(action);
-                    } catch (final Exception e) {
-                        Log.e(LikesViewerFragment.TAG, "onSuccess: ", e);
+                    } catch (Exception e) {
+                        Log.e(TAG, "onSuccess: ", e);
                     }
                 }
             });
-            LikesViewerFragment.this.binding.rvLikes.setAdapter(likesAdapter);
-            LikesViewerFragment.this.binding.swipeRefreshLayout.setRefreshing(false);
+            binding.rvLikes.setAdapter(likesAdapter);
+            binding.swipeRefreshLayout.setRefreshing(false);
         }
 
         @Override
-        public void onFailure(Throwable t) {
-            Log.e(LikesViewerFragment.TAG, "Error", t);
+        public void onFailure(final Throwable t) {
+            Log.e(TAG, "Error", t);
             try {
-                Context context = LikesViewerFragment.this.getContext();
+                final Context context = getContext();
                 Toast.makeText(context, t.getMessage(), Toast.LENGTH_SHORT).show();
-            } catch (final Exception ignored) {}
+            } catch (Exception ignored) {}
         }
     };
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        String cookie = settingsHelper.getString(Constants.COOKIE);
-        long userId = CookieUtils.getUserIdFromCookie(cookie);
-        this.isLoggedIn = !TextUtils.isEmpty(cookie) && userId != 0;
+        final String cookie = settingsHelper.getString(Constants.COOKIE);
+        final long userId = CookieUtils.getUserIdFromCookie(cookie);
+        isLoggedIn = !TextUtils.isEmpty(cookie) && userId != 0;
         // final String deviceUuid = settingsHelper.getString(Constants.DEVICE_UUID);
-        String csrfToken = CookieUtils.getCsrfTokenFromCookie(cookie);
+        final String csrfToken = CookieUtils.getCsrfTokenFromCookie(cookie);
         if (csrfToken == null) return;
-        this.mediaRepository = this.isLoggedIn ? MediaRepository.Companion.getInstance() : null;
-        this.graphQLRepository = this.isLoggedIn ? null : GraphQLRepository.Companion.getInstance();
+        mediaRepository = isLoggedIn ? MediaRepository.Companion.getInstance() : null;
+        graphQLRepository = isLoggedIn ? null : GraphQLRepository.Companion.getInstance();
         // setHasOptionsMenu(true);
     }
 
     @NonNull
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        this.binding = FragmentLikesBinding.inflate(this.getLayoutInflater());
-        this.binding.swipeRefreshLayout.setEnabled(false);
-        this.binding.swipeRefreshLayout.setNestedScrollingEnabled(false);
-        return this.binding.getRoot();
+    public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable final Bundle savedInstanceState) {
+        binding = FragmentLikesBinding.inflate(getLayoutInflater());
+        binding.swipeRefreshLayout.setEnabled(false);
+        binding.swipeRefreshLayout.setNestedScrollingEnabled(false);
+        return binding.getRoot();
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        this.init();
+    public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
+        init();
     }
 
     @Override
     public void onRefresh() {
-        if (this.isComment && !this.isLoggedIn) {
-            this.lazyLoader.resetState();
-            this.graphQLRepository.fetchCommentLikers(
-                    this.postId,
+        if (isComment && !isLoggedIn) {
+            lazyLoader.resetState();
+            graphQLRepository.fetchCommentLikers(
+                    postId,
                     null,
                     CoroutineUtilsKt.getContinuation((response, throwable) -> AppExecutors.INSTANCE.getMainThread().execute(() -> {
                         if (throwable != null) {
-                            this.anonCb.onFailure(throwable);
+                            anonCb.onFailure(throwable);
                             return;
                         }
-                        this.anonCb.onSuccess(response);
+                        anonCb.onSuccess(response);
                     }), Dispatchers.getIO())
             );
         } else {
-            this.mediaRepository.fetchLikes(
-                    this.postId,
-                    this.isComment,
+            mediaRepository.fetchLikes(
+                    postId,
+                    isComment,
                     CoroutineUtilsKt.getContinuation((users, throwable) -> AppExecutors.INSTANCE.getMainThread().execute(() -> {
                         if (throwable != null) {
-                            this.cb.onFailure(throwable);
+                            cb.onFailure(throwable);
                             return;
                         }
                         //noinspection unchecked
-                        this.cb.onSuccess((List<User>) users);
+                        cb.onSuccess((List<User>) users);
                     }), Dispatchers.getIO())
             );
         }
     }
 
     private void init() {
-        if (this.getArguments() == null) return;
-        LikesViewerFragmentArgs fragmentArgs = LikesViewerFragmentArgs.fromBundle(this.getArguments());
-        this.postId = fragmentArgs.getPostId();
-        this.isComment = fragmentArgs.getIsComment();
-        this.binding.swipeRefreshLayout.setOnRefreshListener(this);
-        this.binding.swipeRefreshLayout.setRefreshing(true);
-        if (this.isComment && !this.isLoggedIn) {
-            Context context = this.getContext();
+        if (getArguments() == null) return;
+        final LikesViewerFragmentArgs fragmentArgs = LikesViewerFragmentArgs.fromBundle(getArguments());
+        postId = fragmentArgs.getPostId();
+        isComment = fragmentArgs.getIsComment();
+        binding.swipeRefreshLayout.setOnRefreshListener(this);
+        binding.swipeRefreshLayout.setRefreshing(true);
+        if (isComment && !isLoggedIn) {
+            final Context context = getContext();
             if (context == null) return;
-            LinearLayoutManager layoutManager = new LinearLayoutManager(context);
-            this.binding.rvLikes.setLayoutManager(layoutManager);
-            this.binding.rvLikes.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.HORIZONTAL));
-            this.lazyLoader = new RecyclerLazyLoader(layoutManager, (page, totalItemsCount) -> {
-                if (!TextUtils.isEmpty(this.endCursor)) {
-                    this.graphQLRepository.fetchCommentLikers(
-                            this.postId,
-                            this.endCursor,
+            final LinearLayoutManager layoutManager = new LinearLayoutManager(context);
+            binding.rvLikes.setLayoutManager(layoutManager);
+            binding.rvLikes.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.HORIZONTAL));
+            lazyLoader = new RecyclerLazyLoader(layoutManager, (page, totalItemsCount) -> {
+                if (!TextUtils.isEmpty(endCursor)) {
+                    graphQLRepository.fetchCommentLikers(
+                            postId,
+                            endCursor,
                             CoroutineUtilsKt.getContinuation((response, throwable) -> AppExecutors.INSTANCE.getMainThread().execute(() -> {
                                 if (throwable != null) {
-                                    this.anonCb.onFailure(throwable);
+                                    anonCb.onFailure(throwable);
                                     return;
                                 }
-                                this.anonCb.onSuccess(response);
+                                anonCb.onSuccess(response);
                             }), Dispatchers.getIO())
                     );
                 }
-                this.endCursor = null;
+                endCursor = null;
             });
-            this.binding.rvLikes.addOnScrollListener(this.lazyLoader);
+            binding.rvLikes.addOnScrollListener(lazyLoader);
         }
-        this.onRefresh();
+        onRefresh();
     }
 }

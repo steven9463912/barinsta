@@ -31,15 +31,15 @@ public class DMPreferencesFragment extends BasePreferencesFragment {
     private static final String TAG = DMPreferencesFragment.class.getSimpleName();
 
     @Override
-    void setupPreferenceScreen(PreferenceScreen screen) {
-        Context context = this.getContext();
+    void setupPreferenceScreen(final PreferenceScreen screen) {
+        final Context context = getContext();
         if (context == null) return;
-        screen.addPreference(this.getMarkDMSeenPreference(context));
+        screen.addPreference(getMarkDMSeenPreference(context));
         // screen.addPreference(getAutoRefreshDMPreference(context));
         // screen.addPreference(getAutoRefreshDMFreqPreference(context));
     }
 
-    private Preference getMarkDMSeenPreference(@NonNull Context context) {
+    private Preference getMarkDMSeenPreference(@NonNull final Context context) {
         return PreferenceHelper.getSwitchPreference(
                 context,
                 PreferenceKeys.DM_MARK_AS_SEEN,
@@ -50,7 +50,7 @@ public class DMPreferencesFragment extends BasePreferencesFragment {
         );
     }
 
-    private Preference getAutoRefreshDMPreference(@NonNull Context context) {
+    private Preference getAutoRefreshDMPreference(@NonNull final Context context) {
         return PreferenceHelper.getSwitchPreference(
                 context,
                 PreferenceKeys.PREF_ENABLE_DM_AUTO_REFRESH,
@@ -59,24 +59,24 @@ public class DMPreferencesFragment extends BasePreferencesFragment {
                 false,
                 (preference, newValue) -> {
                     if (!(newValue instanceof Boolean)) return false;
-                    boolean enabled = (Boolean) newValue;
+                    final boolean enabled = (Boolean) newValue;
                     if (enabled) {
                         DMSyncAlarmReceiver.setAlarm(context);
                         return true;
                     }
                     DMSyncAlarmReceiver.cancelAlarm(context);
                     try {
-                        Context applicationContext = context.getApplicationContext();
+                        final Context applicationContext = context.getApplicationContext();
                         applicationContext.stopService(new Intent(applicationContext, DMSyncService.class));
-                    } catch (final Exception e) {
-                        Log.e(DMPreferencesFragment.TAG, "getAutoRefreshDMPreference: ", e);
+                    } catch (Exception e) {
+                        Log.e(TAG, "getAutoRefreshDMPreference: ", e);
                     }
                     return true;
                 }
         );
     }
 
-    private Preference getAutoRefreshDMFreqPreference(@NonNull Context context) {
+    private Preference getAutoRefreshDMFreqPreference(@NonNull final Context context) {
         return new AutoRefreshDMFrePreference(context);
     }
 
@@ -90,57 +90,57 @@ public class DMPreferencesFragment extends BasePreferencesFragment {
         private Debouncer<String> serviceUpdateDebouncer;
         private PrefAutoRefreshDmFreqBinding binding;
 
-        public AutoRefreshDMFrePreference(Context context) {
+        public AutoRefreshDMFrePreference(final Context context) {
             super(context);
-            this.setLayoutResource(R.layout.pref_auto_refresh_dm_freq);
+            setLayoutResource(R.layout.pref_auto_refresh_dm_freq);
             // setKey(key);
-            this.setIconSpaceReserved(false);
-            this.changeCallback = new Debouncer.Callback<String>() {
+            setIconSpaceReserved(false);
+            changeCallback = new Debouncer.Callback<String>() {
                 @Override
-                public void call(String key) {
+                public void call(final String key) {
                     DMSyncAlarmReceiver.setAlarm(context);
                 }
 
                 @Override
-                public void onError(Throwable t) {
-                    Log.e(AutoRefreshDMFrePreference.TAG, "onError: ", t);
+                public void onError(final Throwable t) {
+                    Log.e(TAG, "onError: ", t);
                 }
             };
-            this.serviceUpdateDebouncer = new Debouncer<>(this.changeCallback, AutoRefreshDMFrePreference.INTERVAL);
+            serviceUpdateDebouncer = new Debouncer<>(changeCallback, INTERVAL);
         }
 
         @Override
-        public void onDependencyChanged(Preference dependency, boolean disableDependent) {
+        public void onDependencyChanged(final Preference dependency, final boolean disableDependent) {
             // super.onDependencyChanged(dependency, disableDependent);
-            if (this.binding == null) return;
-            this.binding.startText.setEnabled(!disableDependent);
-            this.binding.freqNum.setEnabled(!disableDependent);
-            this.binding.freqUnit.setEnabled(!disableDependent);
+            if (binding == null) return;
+            binding.startText.setEnabled(!disableDependent);
+            binding.freqNum.setEnabled(!disableDependent);
+            binding.freqUnit.setEnabled(!disableDependent);
             if (disableDependent) {
-                this.serviceUpdateDebouncer.terminate();
+                serviceUpdateDebouncer.terminate();
                 return;
             }
-            this.serviceUpdateDebouncer = new Debouncer<>(this.changeCallback, AutoRefreshDMFrePreference.INTERVAL);
+            serviceUpdateDebouncer = new Debouncer<>(changeCallback, INTERVAL);
         }
 
         @Override
-        public void onBindViewHolder(PreferenceViewHolder holder) {
+        public void onBindViewHolder(final PreferenceViewHolder holder) {
             super.onBindViewHolder(holder);
-            this.setDependency(PreferenceKeys.PREF_ENABLE_DM_AUTO_REFRESH);
-            this.binding = PrefAutoRefreshDmFreqBinding.bind(holder.itemView);
-            Context context = this.getContext();
+            setDependency(PreferenceKeys.PREF_ENABLE_DM_AUTO_REFRESH);
+            binding = PrefAutoRefreshDmFreqBinding.bind(holder.itemView);
+            final Context context = getContext();
             if (context == null) return;
-            this.setupUnitSpinner(context);
-            this.setupNumberEditText(context);
+            setupUnitSpinner(context);
+            setupNumberEditText(context);
         }
 
-        private void setupUnitSpinner(Context context) {
-            ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(context,
+        private void setupUnitSpinner(final Context context) {
+            final ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(context,
                                                                                        R.array.dm_auto_refresh_freq_unit_labels,
                                                                                        android.R.layout.simple_spinner_item);
-            String[] values = context.getResources().getStringArray(R.array.dm_auto_refresh_freq_units);
+            final String[] values = context.getResources().getStringArray(R.array.dm_auto_refresh_freq_units);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            this.binding.freqUnit.setAdapter(adapter);
+            binding.freqUnit.setAdapter(adapter);
 
             String unit = settingsHelper.getString(PREF_ENABLE_DM_AUTO_REFRESH_FREQ_UNIT);
             if (TextUtils.isEmpty(unit)) {
@@ -153,45 +153,45 @@ public class DMPreferencesFragment extends BasePreferencesFragment {
                     break;
                 }
             }
-            this.binding.freqUnit.setSelection(position);
-            this.binding.freqUnit.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            binding.freqUnit.setSelection(position);
+            binding.freqUnit.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                public void onItemSelected(final AdapterView<?> parent, final View view, final int position, final long id) {
                     settingsHelper.putString(PREF_ENABLE_DM_AUTO_REFRESH_FREQ_UNIT, values[position]);
-                    if (!AutoRefreshDMFrePreference.this.isEnabled()) {
-                        AutoRefreshDMFrePreference.this.serviceUpdateDebouncer.terminate();
+                    if (!isEnabled()) {
+                        serviceUpdateDebouncer.terminate();
                         return;
                     }
-                    AutoRefreshDMFrePreference.this.serviceUpdateDebouncer.call(AutoRefreshDMFrePreference.DEBOUNCE_KEY);
+                    serviceUpdateDebouncer.call(DEBOUNCE_KEY);
                 }
 
                 @Override
-                public void onNothingSelected(AdapterView<?> parent) {}
+                public void onNothingSelected(final AdapterView<?> parent) {}
             });
         }
 
-        private void setupNumberEditText(Context context) {
+        private void setupNumberEditText(final Context context) {
             int currentValue = settingsHelper.getInteger(PREF_ENABLE_DM_AUTO_REFRESH_FREQ_NUMBER);
             if (currentValue <= 0) {
                 currentValue = 30;
             }
-            this.binding.freqNum.setText(String.valueOf(currentValue));
-            this.binding.freqNum.addTextChangedListener(new TextWatcherAdapter() {
+            binding.freqNum.setText(String.valueOf(currentValue));
+            binding.freqNum.addTextChangedListener(new TextWatcherAdapter() {
 
                 @Override
-                public void afterTextChanged(Editable s) {
+                public void afterTextChanged(final Editable s) {
                     if (TextUtils.isEmpty(s)) return;
                     try {
-                        int value = Integer.parseInt(s.toString());
+                        final int value = Integer.parseInt(s.toString());
                         if (value <= 0) return;
                         settingsHelper.putInteger(PREF_ENABLE_DM_AUTO_REFRESH_FREQ_NUMBER, value);
-                        if (!AutoRefreshDMFrePreference.this.isEnabled()) {
-                            AutoRefreshDMFrePreference.this.serviceUpdateDebouncer.terminate();
+                        if (!isEnabled()) {
+                            serviceUpdateDebouncer.terminate();
                             return;
                         }
-                        AutoRefreshDMFrePreference.this.serviceUpdateDebouncer.call(AutoRefreshDMFrePreference.DEBOUNCE_KEY);
-                    } catch (final Exception e) {
-                        Log.e(AutoRefreshDMFrePreference.TAG, "afterTextChanged: ", e);
+                        serviceUpdateDebouncer.call(DEBOUNCE_KEY);
+                    } catch (Exception e) {
+                        Log.e(TAG, "afterTextChanged: ", e);
                     }
                 }
             });

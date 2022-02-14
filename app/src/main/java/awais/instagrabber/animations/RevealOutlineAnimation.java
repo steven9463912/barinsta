@@ -18,7 +18,7 @@ public abstract class RevealOutlineAnimation extends ViewOutlineProvider {
     protected float mOutlineRadius;
 
     public RevealOutlineAnimation() {
-        this.mOutline = new Rect();
+        mOutline = new Rect();
     }
 
     /**
@@ -31,30 +31,30 @@ public abstract class RevealOutlineAnimation extends ViewOutlineProvider {
      */
     abstract void setProgress(float progress);
 
-    public ValueAnimator createRevealAnimator(View revealView, final boolean isReversed) {
-        final ValueAnimator va =
+    public ValueAnimator createRevealAnimator(final View revealView, boolean isReversed) {
+        ValueAnimator va =
                 isReversed ? ValueAnimator.ofFloat(1f, 0f) : ValueAnimator.ofFloat(0f, 1f);
-        float elevation = revealView.getElevation();
+        final float elevation = revealView.getElevation();
 
         va.addListener(new AnimatorListenerAdapter() {
             private boolean mIsClippedToOutline;
             private ViewOutlineProvider mOldOutlineProvider;
 
-            public void onAnimationStart(final Animator animation) {
-                this.mIsClippedToOutline = revealView.getClipToOutline();
-                this.mOldOutlineProvider = revealView.getOutlineProvider();
+            public void onAnimationStart(Animator animation) {
+                mIsClippedToOutline = revealView.getClipToOutline();
+                mOldOutlineProvider = revealView.getOutlineProvider();
 
                 revealView.setOutlineProvider(RevealOutlineAnimation.this);
                 revealView.setClipToOutline(true);
-                if (RevealOutlineAnimation.this.shouldRemoveElevationDuringAnimation()) {
+                if (shouldRemoveElevationDuringAnimation()) {
                     revealView.setTranslationZ(-elevation);
                 }
             }
 
-            public void onAnimationEnd(final Animator animation) {
-                revealView.setOutlineProvider(this.mOldOutlineProvider);
-                revealView.setClipToOutline(this.mIsClippedToOutline);
-                if (RevealOutlineAnimation.this.shouldRemoveElevationDuringAnimation()) {
+            public void onAnimationEnd(Animator animation) {
+                revealView.setOutlineProvider(mOldOutlineProvider);
+                revealView.setClipToOutline(mIsClippedToOutline);
+                if (shouldRemoveElevationDuringAnimation()) {
                     revealView.setTranslationZ(0);
                 }
             }
@@ -62,23 +62,23 @@ public abstract class RevealOutlineAnimation extends ViewOutlineProvider {
         });
 
         va.addUpdateListener(v -> {
-            final float progress = (Float) v.getAnimatedValue();
-            this.setProgress(progress);
+            float progress = (Float) v.getAnimatedValue();
+            setProgress(progress);
             revealView.invalidateOutline();
         });
         return va;
     }
 
     @Override
-    public void getOutline(final View v, final Outline outline) {
-        outline.setRoundRect(this.mOutline, this.mOutlineRadius);
+    public void getOutline(View v, Outline outline) {
+        outline.setRoundRect(mOutline, mOutlineRadius);
     }
 
     public float getRadius() {
-        return this.mOutlineRadius;
+        return mOutlineRadius;
     }
 
-    public void getOutline(final Rect out) {
-        out.set(this.mOutline);
+    public void getOutline(Rect out) {
+        out.set(mOutline);
     }
 }

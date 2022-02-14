@@ -27,33 +27,33 @@ public class MediaViewModel extends ViewModel {
     private final PostFetcher postFetcher;
     private final MutableLiveData<List<Media>> list = new MutableLiveData<>();
 
-    public MediaViewModel(@NonNull PostFetcher.PostFetchService postFetchService) {
-        FetchListener<List<Media>> fetchListener = new FetchListener<List<Media>>() {
+    public MediaViewModel(@NonNull final PostFetcher.PostFetchService postFetchService) {
+        final FetchListener<List<Media>> fetchListener = new FetchListener<List<Media>>() {
             @Override
-            public void onResult(List<Media> result) {
-                if (MediaViewModel.this.refresh) {
-                    MediaViewModel.this.list.postValue(MediaViewModel.this.filterResult(result, true));
-                    MediaViewModel.this.refresh = false;
+            public void onResult(final List<Media> result) {
+                if (refresh) {
+                    list.postValue(filterResult(result, true));
+                    refresh = false;
                     return;
                 }
-                MediaViewModel.this.list.postValue(MediaViewModel.this.filterResult(result, false));
+                list.postValue(filterResult(result, false));
             }
 
             @Override
-            public void onFailure(Throwable t) {
-                Log.e(MediaViewModel.TAG, "onFailure: ", t);
+            public void onFailure(final Throwable t) {
+                Log.e(TAG, "onFailure: ", t);
             }
         };
-        this.postFetcher = new PostFetcher(postFetchService, fetchListener);
+        postFetcher = new PostFetcher(postFetchService, fetchListener);
     }
 
     @NonNull
-    private List<Media> filterResult(List<Media> result, boolean isRefresh) {
-        List<Media> models = this.list.getValue();
-        List<Media> modelsCopy = models == null || isRefresh ? new ArrayList<>() : new ArrayList<>(models);
+    private List<Media> filterResult(final List<Media> result, final boolean isRefresh) {
+        final List<Media> models = list.getValue();
+        final List<Media> modelsCopy = models == null || isRefresh ? new ArrayList<>() : new ArrayList<>(models);
         if (settingsHelper.getBoolean(PreferenceKeys.TOGGLE_KEYWORD_FILTER)) {
-            List<String> keywords = new ArrayList<>(settingsHelper.getStringSet(PreferenceKeys.KEYWORD_FILTERS));
-            List<Media> filter = KeywordsFilterUtilsKt.filter(keywords, result);
+            final List<String> keywords = new ArrayList<>(settingsHelper.getStringSet(PreferenceKeys.KEYWORD_FILTERS));
+            final List<Media> filter = KeywordsFilterUtilsKt.filter(keywords, result);
             if (filter != null) {
                 modelsCopy.addAll(filter);
             }
@@ -64,29 +64,29 @@ public class MediaViewModel extends ViewModel {
     }
 
     public LiveData<List<Media>> getList() {
-        return this.list;
+        return list;
     }
 
     public boolean hasMore() {
-        return this.postFetcher.hasMore();
+        return postFetcher.hasMore();
     }
 
     public void fetch() {
-        this.postFetcher.fetch();
+        postFetcher.fetch();
     }
 
     public void reset() {
-        this.postFetcher.reset();
+        postFetcher.reset();
     }
 
     public boolean isFetching() {
-        return this.postFetcher.isFetching();
+        return postFetcher.isFetching();
     }
 
     public void refresh() {
-        this.refresh = true;
-        this.reset();
-        this.fetch();
+        refresh = true;
+        reset();
+        fetch();
     }
 
     public static class ViewModelFactory implements ViewModelProvider.Factory {
@@ -94,15 +94,15 @@ public class MediaViewModel extends ViewModel {
         @NonNull
         private final PostFetcher.PostFetchService postFetchService;
 
-        public ViewModelFactory(@NonNull PostFetcher.PostFetchService postFetchService) {
+        public ViewModelFactory(@NonNull final PostFetcher.PostFetchService postFetchService) {
             this.postFetchService = postFetchService;
         }
 
         @NonNull
         @Override
-        public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
+        public <T extends ViewModel> T create(@NonNull final Class<T> modelClass) {
             //noinspection unchecked
-            return (T) new MediaViewModel(this.postFetchService);
+            return (T) new MediaViewModel(postFetchService);
         }
     }
 }

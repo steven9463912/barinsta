@@ -5,5 +5,5 @@ public interface FetchListener<T> {
 
     default void doBefore() {}
 
-    default void onFailure(final Throwable t) {}
+    default void onFailure(Throwable t) {}
 }

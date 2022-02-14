@@ -42,14 +42,14 @@ public class SettingsPreferencesFragment extends BasePreferencesFragment {
     );
 
     @Override
-    void setupPreferenceScreen(PreferenceScreen screen) {
-        Context context = this.getContext();
+    void setupPreferenceScreen(final PreferenceScreen screen) {
+        final Context context = getContext();
         if (context == null) return;
-        String cookie = settingsHelper.getString(Constants.COOKIE);
-        boolean isLoggedIn = !TextUtils.isEmpty(cookie) && CookieUtils.getUserIdFromCookie(cookie) > 0;
-        for (SettingScreen settingScreen : SettingsPreferencesFragment.screens) {
+        final String cookie = settingsHelper.getString(Constants.COOKIE);
+        final boolean isLoggedIn = !TextUtils.isEmpty(cookie) && CookieUtils.getUserIdFromCookie(cookie) > 0;
+        for (final SettingScreen settingScreen : screens) {
             if (settingScreen.isLoginRequired() && !isLoggedIn) continue;
-            screen.addPreference(this.getNavPreference(context, settingScreen));
+            screen.addPreference(getNavPreference(context, settingScreen));
         }
         //        else {
         //            final PreferenceCategory anonUsersPreferenceCategory = new PreferenceCategory(context);
@@ -59,9 +59,9 @@ public class SettingsPreferencesFragment extends BasePreferencesFragment {
         //        }
     }
 
-    private Preference getNavPreference(@NonNull Context context,
-                                        @NonNull SettingScreen settingScreen) {
-        Preference preference = new Preference(context);
+    private Preference getNavPreference(@NonNull final Context context,
+                                        @NonNull final SettingScreen settingScreen) {
+        final Preference preference = new Preference(context);
         preference.setTitle(settingScreen.getTitleResId());
         preference.setIconSpaceReserved(false);
         preference.setOnPreferenceClickListener(preference1 -> {
@@ -76,26 +76,26 @@ public class SettingsPreferencesFragment extends BasePreferencesFragment {
         private final NavDirections directions;
         private final boolean loginRequired;
 
-        public SettingScreen(@StringRes int titleResId, NavDirections directions) {
+        public SettingScreen(@StringRes final int titleResId, final NavDirections directions) {
             this(titleResId, directions, false);
         }
 
-        public SettingScreen(@StringRes int titleResId, NavDirections directions, boolean loginRequired) {
+        public SettingScreen(@StringRes final int titleResId, final NavDirections directions, final boolean loginRequired) {
             this.titleResId = titleResId;
             this.directions = directions;
             this.loginRequired = loginRequired;
         }
 
         public int getTitleResId() {
-            return this.titleResId;
+            return titleResId;
         }
 
         public NavDirections getDirections() {
-            return this.directions;
+            return directions;
         }
 
         public boolean isLoginRequired() {
-            return this.loginRequired;
+            return loginRequired;
         }
     }
 }

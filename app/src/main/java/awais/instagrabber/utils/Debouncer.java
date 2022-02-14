@@ -14,31 +14,31 @@ public class Debouncer<T> {
     private final Callback<T> callback;
     private final int interval;
 
-    public Debouncer(final Callback<T> c, final int interval) {
-        callback = c;
+    public Debouncer(Callback<T> c, int interval) {
+        this.callback = c;
         this.interval = interval;
     }
 
-    public void call(final T key) {
-        final TimerTask task = new TimerTask(key);
+    public void call(T key) {
+        TimerTask task = new TimerTask(key);
 
         TimerTask prev;
         do {
-            prev = this.delayedMap.putIfAbsent(key, task);
+            prev = delayedMap.putIfAbsent(key, task);
             if (prev == null) {
-                ScheduledFuture<?> future = this.scheduler.schedule(task, this.interval, TimeUnit.MILLISECONDS);
-                this.futureMap.put(key, future);
+                final ScheduledFuture<?> future = scheduler.schedule(task, interval, TimeUnit.MILLISECONDS);
+                futureMap.put(key, future);
             }
         } while (prev != null && !prev.extend()); // Exit only if new task was added to map, or existing task was extended successfully
     }
 
     public void terminate() {
-        this.scheduler.shutdownNow();
+        scheduler.shutdownNow();
     }
 
-    public void cancel(T key) {
-        this.delayedMap.remove(key);
-        ScheduledFuture<?> future = this.futureMap.get(key);
+    public void cancel(final T key) {
+        delayedMap.remove(key);
+        final ScheduledFuture<?> future = futureMap.get(key);
         if (future != null) {
             future.cancel(true);
         }
@@ -50,33 +50,33 @@ public class Debouncer<T> {
         private long dueTime;
         private final Object lock = new Object();
 
-        public TimerTask(final T key) {
+        public TimerTask(T key) {
             this.key = key;
-            this.extend();
+            extend();
         }
 
         public boolean extend() {
-            synchronized (this.lock) {
-                if (this.dueTime < 0) // Task has been shutdown
+            synchronized (lock) {
+                if (dueTime < 0) // Task has been shutdown
                     return false;
-                this.dueTime = System.currentTimeMillis() + Debouncer.this.interval;
+                dueTime = System.currentTimeMillis() + interval;
                 return true;
             }
         }
 
         public void run() {
-            synchronized (this.lock) {
-                final long remaining = this.dueTime - System.currentTimeMillis();
+            synchronized (lock) {
+                long remaining = dueTime - System.currentTimeMillis();
                 if (remaining > 0) { // Re-schedule task
-                    Debouncer.this.scheduler.schedule(this, remaining, TimeUnit.MILLISECONDS);
+                    scheduler.schedule(this, remaining, TimeUnit.MILLISECONDS);
                 } else { // Mark as terminated and invoke callback
-                    this.dueTime = -1;
+                    dueTime = -1;
                     try {
-                        Debouncer.this.callback.call(this.key);
-                    } catch (final Exception e) {
-                        Debouncer.this.callback.onError(e);
+                        callback.call(key);
+                    } catch (Exception e) {
+                        callback.onError(e);
                     } finally {
-                        Debouncer.this.delayedMap.remove(this.key);
+                        delayedMap.remove(key);
                     }
                 }
             }

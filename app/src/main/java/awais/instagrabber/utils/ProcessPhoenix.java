@@ -45,8 +45,8 @@ public final class ProcessPhoenix extends Activity {
      * <p>
      * Behavior of the current process after invoking this method is undefined.
      */
-    public static void triggerRebirth(final Context context) {
-        ProcessPhoenix.triggerRebirth(context, ProcessPhoenix.getRestartIntent(context));
+    public static void triggerRebirth(Context context) {
+        triggerRebirth(context, getRestartIntent(context));
     }
 
     /**
@@ -54,10 +54,10 @@ public final class ProcessPhoenix extends Activity {
      * <p>
      * Behavior of the current process after invoking this method is undefined.
      */
-    public static void triggerRebirth(final Context context, final Intent... nextIntents) {
-        final Intent intent = new Intent(context, ProcessPhoenix.class);
+    public static void triggerRebirth(Context context, Intent... nextIntents) {
+        Intent intent = new Intent(context, ProcessPhoenix.class);
         intent.addFlags(FLAG_ACTIVITY_NEW_TASK); // In case we are called with non-Activity context.
-        intent.putParcelableArrayListExtra(ProcessPhoenix.KEY_RESTART_INTENTS, new ArrayList<>(Arrays.asList(nextIntents)));
+        intent.putParcelableArrayListExtra(KEY_RESTART_INTENTS, new ArrayList<>(Arrays.asList(nextIntents)));
         context.startActivity(intent);
         if (context instanceof Activity) {
             ((Activity) context).finish();
@@ -65,9 +65,9 @@ public final class ProcessPhoenix extends Activity {
         Runtime.getRuntime().exit(0); // Kill kill kill!
     }
 
-    private static Intent getRestartIntent(final Context context) {
-        final String packageName = context.getPackageName();
-        final Intent defaultIntent = context.getPackageManager().getLaunchIntentForPackage(packageName);
+    private static Intent getRestartIntent(Context context) {
+        String packageName = context.getPackageName();
+        Intent defaultIntent = context.getPackageManager().getLaunchIntentForPackage(packageName);
         if (defaultIntent != null) {
             defaultIntent.addFlags(FLAG_ACTIVITY_NEW_TASK | FLAG_ACTIVITY_CLEAR_TASK);
             return defaultIntent;
@@ -79,12 +79,12 @@ public final class ProcessPhoenix extends Activity {
     }
 
     @Override
-    protected void onCreate(final Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final ArrayList<Intent> intents = this.getIntent().getParcelableArrayListExtra(ProcessPhoenix.KEY_RESTART_INTENTS);
-        this.startActivities(intents.toArray(new Intent[intents.size()]));
-        this.finish();
+        ArrayList<Intent> intents = getIntent().getParcelableArrayListExtra(KEY_RESTART_INTENTS);
+        startActivities(intents.toArray(new Intent[intents.size()]));
+        finish();
         Runtime.getRuntime().exit(0); // Kill kill kill!
     }
 
@@ -95,12 +95,12 @@ public final class ProcessPhoenix extends Activity {
      *
      * @return true if the current process is a temporary Phoenix Process
      */
-    public static boolean isPhoenixProcess(final Context context) {
-        final int currentPid = Process.myPid();
-        final ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        final List<ActivityManager.RunningAppProcessInfo> runningProcesses = manager.getRunningAppProcesses();
+    public static boolean isPhoenixProcess(Context context) {
+        int currentPid = Process.myPid();
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningAppProcessInfo> runningProcesses = manager.getRunningAppProcesses();
         if (runningProcesses != null) {
-            for (final ActivityManager.RunningAppProcessInfo processInfo : runningProcesses) {
+            for (ActivityManager.RunningAppProcessInfo processInfo : runningProcesses) {
                 if (processInfo.pid == currentPid && processInfo.processName.endsWith(":phoenix")) {
                     return true;
                 }

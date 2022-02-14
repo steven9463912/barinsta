@@ -19,37 +19,37 @@ public class SearchItemViewHolder extends RecyclerView.ViewHolder {
     private final ItemSearchResultBinding binding;
     private final SearchCategoryFragment.OnSearchItemClickListener onSearchItemClickListener;
 
-    public SearchItemViewHolder(@NonNull final ItemSearchResultBinding binding,
-                                final SearchCategoryFragment.OnSearchItemClickListener onSearchItemClickListener) {
+    public SearchItemViewHolder(@NonNull ItemSearchResultBinding binding,
+                                SearchCategoryFragment.OnSearchItemClickListener onSearchItemClickListener) {
         super(binding.getRoot());
         this.binding = binding;
         this.onSearchItemClickListener = onSearchItemClickListener;
     }
 
-    public void bind(SearchItem searchItem) {
+    public void bind(final SearchItem searchItem) {
         if (searchItem == null) return;
-        FavoriteType type = searchItem.getType();
+        final FavoriteType type = searchItem.getType();
         if (type == null) return;
-        final String title;
-        final String subtitle;
-        final String picUrl;
+        String title;
+        String subtitle;
+        String picUrl;
         boolean isVerified = false;
         switch (type) {
             case USER:
-                User user = searchItem.getUser();
+                final User user = searchItem.getUser();
                 title = "@" + user.getUsername();
                 subtitle = user.getFullName();
                 picUrl = user.getProfilePicUrl();
                 isVerified = user.isVerified();
                 break;
             case HASHTAG:
-                Hashtag hashtag = searchItem.getHashtag();
+                final Hashtag hashtag = searchItem.getHashtag();
                 title = "#" + hashtag.getName();
                 subtitle = hashtag.getSearchResultSubtitle();
                 picUrl = "res:/" + R.drawable.ic_hashtag;
                 break;
             case LOCATION:
-                Place place = searchItem.getPlace();
+                final Place place = searchItem.getPlace();
                 title = place.getTitle();
                 subtitle = place.getSubtitle();
                 picUrl = "res:/" + R.drawable.ic_location;
@@ -57,24 +57,24 @@ public class SearchItemViewHolder extends RecyclerView.ViewHolder {
             default:
                 return;
         }
-        this.itemView.setOnClickListener(v -> {
-            if (this.onSearchItemClickListener != null) {
-                this.onSearchItemClickListener.onSearchItemClick(searchItem);
+        itemView.setOnClickListener(v -> {
+            if (onSearchItemClickListener != null) {
+                onSearchItemClickListener.onSearchItemClick(searchItem);
             }
         });
-        this.binding.delete.setVisibility(searchItem.isRecent() ? View.VISIBLE : View.GONE);
+        binding.delete.setVisibility(searchItem.isRecent() ? View.VISIBLE : View.GONE);
         if (searchItem.isRecent()) {
-            this.binding.delete.setEnabled(true);
-            this.binding.delete.setOnClickListener(v -> {
-                if (this.onSearchItemClickListener != null) {
-                    this.binding.delete.setEnabled(false);
-                    this.onSearchItemClickListener.onSearchItemDelete(searchItem, type);
+            binding.delete.setEnabled(true);
+            binding.delete.setOnClickListener(v -> {
+                if (onSearchItemClickListener != null) {
+                    binding.delete.setEnabled(false);
+                    onSearchItemClickListener.onSearchItemDelete(searchItem, type);
                 }
             });
         }
-        this.binding.title.setText(title);
-        this.binding.subtitle.setText(subtitle);
-        this.binding.profilePic.setImageURI(picUrl);
-        this.binding.verified.setVisibility(isVerified ? View.VISIBLE : View.GONE);
+        binding.title.setText(title);
+        binding.subtitle.setText(subtitle);
+        binding.profilePic.setImageURI(picUrl);
+        binding.verified.setVisibility(isVerified ? View.VISIBLE : View.GONE);
     }
 }

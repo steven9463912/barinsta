@@ -13,8 +13,8 @@ public class SearchCategoryAdapter extends FragmentStateAdapter {
 
     private final List<FavoriteType> categories;
 
-    public SearchCategoryAdapter(@NonNull Fragment fragment,
-                                 @NonNull List<FavoriteType> categories) {
+    public SearchCategoryAdapter(@NonNull final Fragment fragment,
+                                 @NonNull final List<FavoriteType> categories) {
         super(fragment);
         this.categories = categories;
 
@@ -22,12 +22,12 @@ public class SearchCategoryAdapter extends FragmentStateAdapter {
 
     @NonNull
     @Override
-    public Fragment createFragment(int position) {
-        return SearchCategoryFragment.newInstance(this.categories.get(position));
+    public Fragment createFragment(final int position) {
+        return SearchCategoryFragment.newInstance(categories.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return this.categories.size();
+        return categories.size();
     }
 }

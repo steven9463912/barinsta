@@ -31,34 +31,34 @@ public class GifItemsAdapter extends ListAdapter<GiphyGif, GifItemsAdapter.GifVi
 
     private static final DiffUtil.ItemCallback<GiphyGif> diffCallback = new DiffUtil.ItemCallback<GiphyGif>() {
         @Override
-        public boolean areItemsTheSame(@NonNull GiphyGif oldItem, @NonNull GiphyGif newItem) {
+        public boolean areItemsTheSame(@NonNull final GiphyGif oldItem, @NonNull final GiphyGif newItem) {
             return Objects.equals(oldItem.getId(), newItem.getId());
         }
 
         @Override
-        public boolean areContentsTheSame(@NonNull GiphyGif oldItem, @NonNull GiphyGif newItem) {
+        public boolean areContentsTheSame(@NonNull final GiphyGif oldItem, @NonNull final GiphyGif newItem) {
             return Objects.equals(oldItem.getId(), newItem.getId());
         }
     };
 
     private final OnItemClickListener onItemClickListener;
 
-    public GifItemsAdapter(OnItemClickListener onItemClickListener) {
-        super(GifItemsAdapter.diffCallback);
+    public GifItemsAdapter(final OnItemClickListener onItemClickListener) {
+        super(diffCallback);
         this.onItemClickListener = onItemClickListener;
     }
 
     @NonNull
     @Override
-    public GifViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        ItemMediaBinding binding = ItemMediaBinding.inflate(layoutInflater, parent, false);
-        return new GifViewHolder(binding, this.onItemClickListener);
+    public GifViewHolder onCreateViewHolder(@NonNull final ViewGroup parent, final int viewType) {
+        final LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+        final ItemMediaBinding binding = ItemMediaBinding.inflate(layoutInflater, parent, false);
+        return new GifViewHolder(binding, onItemClickListener);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull GifViewHolder holder, int position) {
-        holder.bind(this.getItem(position));
+    public void onBindViewHolder(@NonNull final GifViewHolder holder, final int position) {
+        holder.bind(getItem(position));
     }
 
     public static class GifViewHolder extends RecyclerView.ViewHolder {
@@ -68,36 +68,36 @@ public class GifItemsAdapter extends ListAdapter<GiphyGif, GifItemsAdapter.GifVi
         private final ItemMediaBinding binding;
         private final OnItemClickListener onItemClickListener;
 
-        public GifViewHolder(@NonNull ItemMediaBinding binding,
-                             OnItemClickListener onItemClickListener) {
+        public GifViewHolder(@NonNull final ItemMediaBinding binding,
+                             final OnItemClickListener onItemClickListener) {
             super(binding.getRoot());
             this.binding = binding;
             this.onItemClickListener = onItemClickListener;
             binding.duration.setVisibility(View.GONE);
-            GenericDraweeHierarchyBuilder builder = new GenericDraweeHierarchyBuilder(this.itemView.getResources());
+            final GenericDraweeHierarchyBuilder builder = new GenericDraweeHierarchyBuilder(itemView.getResources());
             builder.setActualImageScaleType(ScalingUtils.ScaleType.FIT_CENTER);
             binding.item.setHierarchy(builder.build());
         }
 
-        public void bind(GiphyGif item) {
-            if (this.onItemClickListener != null) {
-                this.itemView.setOnClickListener(v -> this.onItemClickListener.onItemClick(item));
+        public void bind(final GiphyGif item) {
+            if (onItemClickListener != null) {
+                itemView.setOnClickListener(v -> onItemClickListener.onItemClick(item));
             }
-            BaseControllerListener<ImageInfo> controllerListener = new BaseControllerListener<ImageInfo>() {
+            final BaseControllerListener<ImageInfo> controllerListener = new BaseControllerListener<ImageInfo>() {
                 @Override
-                public void onFailure(String id, Throwable throwable) {
-                    Log.e(GifViewHolder.TAG, "onFailure: ", throwable);
+                public void onFailure(final String id, final Throwable throwable) {
+                    Log.e(TAG, "onFailure: ", throwable);
                 }
             };
-            ImageRequest request = ImageRequestBuilder
+            final ImageRequest request = ImageRequestBuilder
                     .newBuilderWithSource(Uri.parse(item.getImages().getFixedHeight().getWebp()))
-                    .setResizeOptions(ResizeOptions.forDimensions(GifViewHolder.size, GifViewHolder.size))
+                    .setResizeOptions(ResizeOptions.forDimensions(size, size))
                     .build();
-            PipelineDraweeControllerBuilder builder = Fresco.newDraweeControllerBuilder()
+            final PipelineDraweeControllerBuilder builder = Fresco.newDraweeControllerBuilder()
                                                                   .setImageRequest(request)
                                                                   .setAutoPlayAnimations(true)
                                                                   .setControllerListener(controllerListener);
-            this.binding.item.setController(builder.build());
+            binding.item.setController(builder.build());
         }
     }
 

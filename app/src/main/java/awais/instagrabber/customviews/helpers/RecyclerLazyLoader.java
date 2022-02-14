@@ -33,80 +33,80 @@ public final class RecyclerLazyLoader extends RecyclerView.OnScrollListener {
     private final LazyLoadListener lazyLoadListener;
     private final RecyclerView.LayoutManager layoutManager;
 
-    public RecyclerLazyLoader(@NonNull RecyclerView.LayoutManager layoutManager,
-                              LazyLoadListener lazyLoadListener,
-                              int threshold) {
+    public RecyclerLazyLoader(@NonNull final RecyclerView.LayoutManager layoutManager,
+                              final LazyLoadListener lazyLoadListener,
+                              final int threshold) {
         this.layoutManager = layoutManager;
         this.lazyLoadListener = lazyLoadListener;
         if (threshold > 0) {
-            visibleThreshold = threshold;
+            this.visibleThreshold = threshold;
             return;
         }
         if (layoutManager instanceof GridLayoutManager) {
-            visibleThreshold = 5 * Math.max(3, ((GridLayoutManager) layoutManager).getSpanCount());
+            this.visibleThreshold = 5 * Math.max(3, ((GridLayoutManager) layoutManager).getSpanCount());
         } else if (layoutManager instanceof StaggeredGridLayoutManager) {
-            visibleThreshold = 4 * Math.max(3, ((StaggeredGridLayoutManager) layoutManager).getSpanCount());
+            this.visibleThreshold = 4 * Math.max(3, ((StaggeredGridLayoutManager) layoutManager).getSpanCount());
         } else if (layoutManager instanceof LinearLayoutManager) {
-            visibleThreshold = ((LinearLayoutManager) layoutManager).getReverseLayout() ? 4 : 8;
+            this.visibleThreshold = ((LinearLayoutManager) layoutManager).getReverseLayout() ? 4 : 8;
         } else {
-            visibleThreshold = 5;
+            this.visibleThreshold = 5;
         }
     }
 
-    public RecyclerLazyLoader(@NonNull RecyclerView.LayoutManager layoutManager,
-                              LazyLoadListener lazyLoadListener) {
+    public RecyclerLazyLoader(@NonNull final RecyclerView.LayoutManager layoutManager,
+                              final LazyLoadListener lazyLoadListener) {
         this(layoutManager, lazyLoadListener, -1);
     }
 
     @Override
-    public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-        int totalItemCount = this.layoutManager.getItemCount();
+    public void onScrolled(@NonNull final RecyclerView recyclerView, final int dx, final int dy) {
+        final int totalItemCount = layoutManager.getItemCount();
 
-        if (totalItemCount < this.previousTotalItemCount) {
-            this.currentPage = 0;
-            this.previousTotalItemCount = totalItemCount;
-            if (totalItemCount == 0) this.loading = true;
+        if (totalItemCount < previousTotalItemCount) {
+            currentPage = 0;
+            previousTotalItemCount = totalItemCount;
+            if (totalItemCount == 0) loading = true;
         }
 
-        if (this.loading && totalItemCount > this.previousTotalItemCount) {
-            this.loading = false;
-            this.previousTotalItemCount = totalItemCount;
+        if (loading && totalItemCount > previousTotalItemCount) {
+            loading = false;
+            previousTotalItemCount = totalItemCount;
         }
 
         int lastVisibleItemPosition;
-        if (this.layoutManager instanceof GridLayoutManager) {
-            GridLayoutManager layoutManager = (GridLayoutManager) this.layoutManager;
+        if (layoutManager instanceof GridLayoutManager) {
+            final GridLayoutManager layoutManager = (GridLayoutManager) this.layoutManager;
             lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition();
-        } else if (this.layoutManager instanceof StaggeredGridLayoutManager) {
-            StaggeredGridLayoutManager layoutManager = (StaggeredGridLayoutManager) this.layoutManager;
-            int spanCount = layoutManager.getSpanCount();
-            int[] lastVisibleItemPositions = layoutManager.findLastVisibleItemPositions(null);
+        } else if (layoutManager instanceof StaggeredGridLayoutManager) {
+            final StaggeredGridLayoutManager layoutManager = (StaggeredGridLayoutManager) this.layoutManager;
+            final int spanCount = layoutManager.getSpanCount();
+            final int[] lastVisibleItemPositions = layoutManager.findLastVisibleItemPositions(null);
             lastVisibleItemPosition = 0;
-            for (int itemPosition : lastVisibleItemPositions) {
+            for (final int itemPosition : lastVisibleItemPositions) {
                 if (itemPosition > lastVisibleItemPosition) {
                     lastVisibleItemPosition = itemPosition;
                 }
             }
         } else {
-            LinearLayoutManager layoutManager = (LinearLayoutManager) this.layoutManager;
+            final LinearLayoutManager layoutManager = (LinearLayoutManager) this.layoutManager;
             lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition();
         }
 
-        if (!this.loading && lastVisibleItemPosition + this.visibleThreshold > totalItemCount) {
-            this.loading = true;
-            if (this.lazyLoadListener != null) {
-                new Handler().postDelayed(() -> this.lazyLoadListener.onLoadMore(++this.currentPage, totalItemCount), 200);
+        if (!loading && lastVisibleItemPosition + visibleThreshold > totalItemCount) {
+            loading = true;
+            if (lazyLoadListener != null) {
+                new Handler().postDelayed(() -> lazyLoadListener.onLoadMore(++currentPage, totalItemCount), 200);
             }
         }
     }
 
     public int getCurrentPage() {
-        return this.currentPage;
+        return currentPage;
     }
 
     public void resetState() {
-        currentPage = 0;
-        previousTotalItemCount = 0;
-        loading = true;
+        this.currentPage = 0;
+        this.previousTotalItemCount = 0;
+        this.loading = true;
     }
 }

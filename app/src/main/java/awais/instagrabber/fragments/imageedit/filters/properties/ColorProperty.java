@@ -9,29 +9,29 @@ public class ColorProperty extends Property<Integer> {
     private final int label;
     private final int defaultValue;
 
-    public ColorProperty(@StringRes int label,
-                         int defaultValue) {
+    public ColorProperty(@StringRes final int label,
+                         final int defaultValue) {
         this.label = label;
         this.defaultValue = defaultValue;
     }
 
     @Override
     public int getLabel() {
-        return this.label;
+        return label;
     }
 
     @Override
     public Integer getDefaultValue() {
-        return this.defaultValue;
+        return defaultValue;
     }
 
     @Override
     public Integer getMinValue() {
-        return this.defaultValue;
+        return defaultValue;
     }
 
     @Override
     public Integer getMaxValue() {
-        return this.defaultValue;
+        return defaultValue;
     }
 }

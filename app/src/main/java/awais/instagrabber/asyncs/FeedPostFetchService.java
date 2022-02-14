@@ -22,17 +22,17 @@ public class FeedPostFetchService implements PostFetcher.PostFetchService {
     private boolean hasNextPage;
 
     public FeedPostFetchService() {
-        this.feedRepository = FeedRepository.Companion.getInstance();
+        feedRepository = FeedRepository.Companion.getInstance();
     }
 
     @Override
-    public void fetch(FetchListener<List<Media>> fetchListener) {
-        List<Media> feedModels = new ArrayList<>();
-        String cookie = settingsHelper.getString(Constants.COOKIE);
-        String csrfToken = CookieUtils.getCsrfTokenFromCookie(cookie);
-        String deviceUuid = settingsHelper.getString(Constants.DEVICE_UUID);
+    public void fetch(final FetchListener<List<Media>> fetchListener) {
+        final List<Media> feedModels = new ArrayList<>();
+        final String cookie = settingsHelper.getString(Constants.COOKIE);
+        final String csrfToken = CookieUtils.getCsrfTokenFromCookie(cookie);
+        final String deviceUuid = settingsHelper.getString(Constants.DEVICE_UUID);
         feedModels.clear();
-        this.feedRepository.fetchFeed(csrfToken, deviceUuid, this.nextCursor, CoroutineUtilsKt.getContinuation((result, t) -> {
+        feedRepository.fetchFeed(csrfToken, deviceUuid, nextCursor, CoroutineUtilsKt.getContinuation((result, t) -> {
             if (t != null) {
                 if (fetchListener != null) {
                     fetchListener.onFailure(t);
@@ -43,10 +43,10 @@ public class FeedPostFetchService implements PostFetcher.PostFetchService {
                 fetchListener.onResult(feedModels);
                 return;
             } else if (result == null) return;
-            this.nextCursor = result.getNextCursor();
-            this.hasNextPage = result.getHasNextPage();
+            nextCursor = result.getNextCursor();
+            hasNextPage = result.getHasNextPage();
 
-            List<Media> mediaResults = result.getFeedModels();
+            final List<Media> mediaResults = result.getFeedModels();
             feedModels.addAll(mediaResults);
 
             if (fetchListener != null) {
@@ -57,11 +57,11 @@ public class FeedPostFetchService implements PostFetcher.PostFetchService {
 
     @Override
     public void reset() {
-        this.nextCursor = null;
+        nextCursor = null;
     }
 
     @Override
     public boolean hasNextPage() {
-        return this.hasNextPage;
+        return hasNextPage;
     }
 }

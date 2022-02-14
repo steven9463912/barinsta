@@ -26,47 +26,47 @@ public class FilterViewHolder extends RecyclerView.ViewHolder {
     private final FiltersAdapter.OnFilterClickListener onFilterClickListener;
     private final AppExecutors appExecutors;
 
-    public FilterViewHolder(@NonNull ItemFilterBinding binding,
-                            Collection<GPUImageFilter> tuneFilters,
-                            FiltersAdapter.OnFilterClickListener onFilterClickListener) {
+    public FilterViewHolder(@NonNull final ItemFilterBinding binding,
+                            final Collection<GPUImageFilter> tuneFilters,
+                            final FiltersAdapter.OnFilterClickListener onFilterClickListener) {
         super(binding.getRoot());
         this.binding = binding;
         this.tuneFilters = tuneFilters;
         this.onFilterClickListener = onFilterClickListener;
-        this.appExecutors = AppExecutors.INSTANCE;
+        appExecutors = AppExecutors.INSTANCE;
     }
 
-    public void bind(int position, String originalKey, Bitmap originalBitmap, Filter<?> item, boolean isSelected) {
+    public void bind(final int position, final String originalKey, final Bitmap originalBitmap, final Filter<?> item, final boolean isSelected) {
         if (originalBitmap == null || item == null) return;
-        if (this.onFilterClickListener != null) {
-            this.itemView.setOnClickListener(v -> this.onFilterClickListener.onClick(position, item));
+        if (onFilterClickListener != null) {
+            itemView.setOnClickListener(v -> onFilterClickListener.onClick(position, item));
         }
         if (item.getLabel() != -1) {
-            this.binding.name.setVisibility(View.VISIBLE);
-            this.binding.name.setText(item.getLabel());
-            this.binding.name.setSelected(isSelected);
+            binding.name.setVisibility(View.VISIBLE);
+            binding.name.setText(item.getLabel());
+            binding.name.setSelected(isSelected);
         } else {
-            this.binding.name.setVisibility(View.GONE);
+            binding.name.setVisibility(View.GONE);
         }
-        String filterKey = item.getLabel() + "_" + originalKey;
+        final String filterKey = item.getLabel() + "_" + originalKey;
         // avoid resetting the bitmap
-        if (this.binding.preview.getTag() != null && this.binding.preview.getTag().equals(filterKey)) return;
-        this.binding.preview.setTag(filterKey);
-        Bitmap bitmap = BitmapUtils.getBitmapFromMemCache(filterKey);
+        if (binding.preview.getTag() != null && binding.preview.getTag().equals(filterKey)) return;
+        binding.preview.setTag(filterKey);
+        final Bitmap bitmap = BitmapUtils.getBitmapFromMemCache(filterKey);
         if (bitmap == null) {
-            GPUImageFilter filter = item.getInstance();
-            this.appExecutors.getTasksThread().submit(() -> {
+            final GPUImageFilter filter = item.getInstance();
+            appExecutors.getTasksThread().submit(() -> {
                 GPUImage.getBitmapForMultipleFilters(
                         originalBitmap,
-                        ImmutableList.<GPUImageFilter>builder().add(filter).addAll(this.tuneFilters).build(),
+                        ImmutableList.<GPUImageFilter>builder().add(filter).addAll(tuneFilters).build(),
                         filteredBitmap -> {
                             BitmapUtils.addBitmapToMemoryCache(filterKey, filteredBitmap, true);
-                            this.appExecutors.getMainThread().execute(() -> this.binding.getRoot().post(() -> this.binding.preview.setImageBitmap(filteredBitmap)));
+                            appExecutors.getMainThread().execute(() -> binding.getRoot().post(() -> binding.preview.setImageBitmap(filteredBitmap)));
                         }
                 );
             });
             return;
         }
-        this.binding.getRoot().post(() -> this.binding.preview.setImageBitmap(bitmap));
+        binding.getRoot().post(() -> binding.preview.setImageBitmap(bitmap));
     }
 }

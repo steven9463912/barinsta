@@ -21,12 +21,12 @@ public class DiscoverPostFetchService implements PostFetcher.PostFetchService {
     private boolean moreAvailable;
 
     public DiscoverPostFetchService() {
-        this.feedRepository = FeedRepository.Companion.getInstance();
+        feedRepository = FeedRepository.Companion.getInstance();
     }
 
     @Override
-    public void fetch(FetchListener<List<Media>> fetchListener) {
-        this.feedRepository.topicalExplore(this.maxId, CoroutineUtilsKt.getContinuation((result, t) -> {
+    public void fetch(final FetchListener<List<Media>> fetchListener) {
+        feedRepository.topicalExplore(maxId, CoroutineUtilsKt.getContinuation((result, t) -> {
             if (t != null) {
                 if (fetchListener != null) {
                     fetchListener.onFailure(t);
@@ -37,10 +37,10 @@ public class DiscoverPostFetchService implements PostFetcher.PostFetchService {
                 fetchListener.onFailure(new RuntimeException("result is null"));
                 return;
             }
-            this.moreAvailable = result.getMoreAvailable();
-            this.maxId = result.getNextMaxId();
-            List<WrappedMedia> items = result.getItems();
-            List<Media> posts;
+            moreAvailable = result.getMoreAvailable();
+            maxId = result.getNextMaxId();
+            final List<WrappedMedia> items = result.getItems();
+            final List<Media> posts;
             if (items == null) {
                 posts = Collections.emptyList();
             } else {
@@ -57,11 +57,11 @@ public class DiscoverPostFetchService implements PostFetcher.PostFetchService {
 
     @Override
     public void reset() {
-        this.maxId = null;
+        maxId = null;
     }
 
     @Override
     public boolean hasNextPage() {
-        return this.moreAvailable;
+        return moreAvailable;
     }
 }

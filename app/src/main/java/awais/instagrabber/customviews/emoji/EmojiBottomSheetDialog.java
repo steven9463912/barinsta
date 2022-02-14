@@ -36,67 +36,67 @@ public class EmojiBottomSheetDialog extends BottomSheetDialogFragment {
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.setStyle(DialogFragment.STYLE_NORMAL, R.style.ThemeOverlay_Rounded_BottomSheetDialog);
+        setStyle(DialogFragment.STYLE_NORMAL, R.style.ThemeOverlay_Rounded_BottomSheetDialog);
     }
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Context context = this.getContext();
+    public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable final Bundle savedInstanceState) {
+        final Context context = getContext();
         if (context == null) return null;
-        this.grid = new RecyclerView(context);
-        return this.grid;
+        grid = new RecyclerView(context);
+        return grid;
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        this.init();
+    public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
+        init();
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        Dialog dialog = this.getDialog();
+        final Dialog dialog = getDialog();
         if (dialog == null) return;
-        BottomSheetDialog bottomSheetDialog = (BottomSheetDialog) dialog;
-        View bottomSheetInternal = bottomSheetDialog.findViewById(com.google.android.material.R.id.design_bottom_sheet);
+        final BottomSheetDialog bottomSheetDialog = (BottomSheetDialog) dialog;
+        final View bottomSheetInternal = bottomSheetDialog.findViewById(com.google.android.material.R.id.design_bottom_sheet);
         if (bottomSheetInternal == null) return;
         bottomSheetInternal.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
         bottomSheetInternal.requestLayout();
     }
 
     @Override
-    public void onAttach(@NonNull Context context) {
+    public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
-        Fragment parentFragment = this.getParentFragment();
+        final Fragment parentFragment = getParentFragment();
         if (parentFragment instanceof EmojiPicker.OnEmojiClickListener) {
-            this.callback = (EmojiPicker.OnEmojiClickListener) parentFragment;
+            callback = (EmojiPicker.OnEmojiClickListener) parentFragment;
         }
     }
 
     @Override
     public void onDestroyView() {
-        this.grid = null;
+        grid = null;
         super.onDestroyView();
     }
 
     private void init() {
-        Context context = this.getContext();
+        final Context context = getContext();
         if (context == null) return;
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(context, 9);
-        this.grid.setLayoutManager(gridLayoutManager);
-        this.grid.setHasFixedSize(true);
-        this.grid.setClipToPadding(false);
-        this.grid.addItemDecoration(new GridSpacingItemDecoration(Utils.convertDpToPx(8)));
-        EmojiParser emojiParser = EmojiParser.Companion.getInstance(context);
-        EmojiGridAdapter adapter = new EmojiGridAdapter(emojiParser, null, (view, emoji) -> {
-            if (this.callback != null) {
-                this.callback.onClick(view, emoji);
+        final GridLayoutManager gridLayoutManager = new GridLayoutManager(context, 9);
+        grid.setLayoutManager(gridLayoutManager);
+        grid.setHasFixedSize(true);
+        grid.setClipToPadding(false);
+        grid.addItemDecoration(new GridSpacingItemDecoration(Utils.convertDpToPx(8)));
+        final EmojiParser emojiParser = EmojiParser.Companion.getInstance(context);
+        final EmojiGridAdapter adapter = new EmojiGridAdapter(emojiParser, null, (view, emoji) -> {
+            if (callback != null) {
+                callback.onClick(view, emoji);
             }
-            this.dismiss();
+            dismiss();
         }, null);
-        this.grid.setAdapter(adapter);
+        grid.setAdapter(adapter);
     }
 }

@@ -23,41 +23,41 @@ public class DirectItemXmaViewHolder extends DirectItemViewHolder {
 
     private final LayoutDmAnimatedMediaBinding binding;
 
-    public DirectItemXmaViewHolder(@NonNull LayoutDmBaseBinding baseBinding,
-                                   @NonNull LayoutDmAnimatedMediaBinding binding,
-                                   User currentUser,
-                                   DirectThread thread,
-                                   DirectItemsAdapter.DirectItemCallback callback) {
+    public DirectItemXmaViewHolder(@NonNull final LayoutDmBaseBinding baseBinding,
+                                   @NonNull final LayoutDmAnimatedMediaBinding binding,
+                                   final User currentUser,
+                                   final DirectThread thread,
+                                   final DirectItemsAdapter.DirectItemCallback callback) {
         super(baseBinding, currentUser, thread, callback);
         this.binding = binding;
-        this.setItemView(binding.getRoot());
+        setItemView(binding.getRoot());
     }
 
     @Override
-    public void bindItem(DirectItem item, MessageDirection messageDirection) {
-        DirectItemXma xma = item.getXma();
-        XmaUrlInfo playableUrlInfo = xma.getPlayableUrlInfo();
-        XmaUrlInfo previewUrlInfo = xma.getPreviewUrlInfo();
+    public void bindItem(final DirectItem item, final MessageDirection messageDirection) {
+        final DirectItemXma xma = item.getXma();
+        final XmaUrlInfo playableUrlInfo = xma.getPlayableUrlInfo();
+        final XmaUrlInfo previewUrlInfo = xma.getPreviewUrlInfo();
         if (playableUrlInfo == null && previewUrlInfo == null) {
-            this.binding.ivAnimatedMessage.setController(null);
+            binding.ivAnimatedMessage.setController(null);
             return;
         }
-        XmaUrlInfo urlInfo = playableUrlInfo != null ? playableUrlInfo : previewUrlInfo;
-        String url = urlInfo.getUrl();
-        NullSafePair<Integer, Integer> widthHeight = NumberUtils.calculateWidthHeight(
+        final XmaUrlInfo urlInfo = playableUrlInfo != null ? playableUrlInfo : previewUrlInfo;
+        final String url = urlInfo.getUrl();
+        final NullSafePair<Integer, Integer> widthHeight = NumberUtils.calculateWidthHeight(
                 urlInfo.getHeight(),
                 urlInfo.getWidth(),
-                this.mediaImageMaxHeight,
-                this.mediaImageMaxWidth
+                mediaImageMaxHeight,
+                mediaImageMaxWidth
         );
-        this.binding.ivAnimatedMessage.setVisibility(View.VISIBLE);
-        ViewGroup.LayoutParams layoutParams = this.binding.ivAnimatedMessage.getLayoutParams();
-        int width = widthHeight.first;
-        int height = widthHeight.second;
+        binding.ivAnimatedMessage.setVisibility(View.VISIBLE);
+        final ViewGroup.LayoutParams layoutParams = binding.ivAnimatedMessage.getLayoutParams();
+        final int width = widthHeight.first;
+        final int height = widthHeight.second;
         layoutParams.width = width;
         layoutParams.height = height;
-        this.binding.ivAnimatedMessage.requestLayout();
-        this.binding.ivAnimatedMessage.setController(Fresco.newDraweeControllerBuilder()
+        binding.ivAnimatedMessage.requestLayout();
+        binding.ivAnimatedMessage.setController(Fresco.newDraweeControllerBuilder()
                                                       .setUri(url)
                                                       .setAutoPlayAnimations(true)
                                                       .build());

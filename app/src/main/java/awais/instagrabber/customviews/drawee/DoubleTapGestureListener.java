@@ -26,59 +26,59 @@ public class DoubleTapGestureListener extends GestureDetector.SimpleOnGestureLis
     private float mDoubleTapScale = 1;
     private boolean mDoubleTapScroll;
 
-    public DoubleTapGestureListener(final ZoomableDraweeView zoomableDraweeView) {
-        this.mDraweeView = zoomableDraweeView;
+    public DoubleTapGestureListener(ZoomableDraweeView zoomableDraweeView) {
+        mDraweeView = zoomableDraweeView;
     }
 
     @Override
-    public boolean onDoubleTapEvent(final MotionEvent e) {
-        final AbstractAnimatedZoomableController zc =
-                (AbstractAnimatedZoomableController) this.mDraweeView.getZoomableController();
-        final PointF vp = new PointF(e.getX(), e.getY());
-        final PointF ip = zc.mapViewToImage(vp);
+    public boolean onDoubleTapEvent(MotionEvent e) {
+        AbstractAnimatedZoomableController zc =
+                (AbstractAnimatedZoomableController) mDraweeView.getZoomableController();
+        PointF vp = new PointF(e.getX(), e.getY());
+        PointF ip = zc.mapViewToImage(vp);
         switch (e.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
-                this.mDoubleTapViewPoint.set(vp);
-                this.mDoubleTapImagePoint.set(ip);
-                this.mDoubleTapScale = zc.getScaleFactor();
+                mDoubleTapViewPoint.set(vp);
+                mDoubleTapImagePoint.set(ip);
+                mDoubleTapScale = zc.getScaleFactor();
                 break;
             case MotionEvent.ACTION_MOVE:
-                this.mDoubleTapScroll = this.mDoubleTapScroll || this.shouldStartDoubleTapScroll(vp);
-                if (this.mDoubleTapScroll) {
-                    final float scale = this.calcScale(vp);
-                    zc.zoomToPoint(scale, this.mDoubleTapImagePoint, this.mDoubleTapViewPoint);
+                mDoubleTapScroll = mDoubleTapScroll || shouldStartDoubleTapScroll(vp);
+                if (mDoubleTapScroll) {
+                    float scale = calcScale(vp);
+                    zc.zoomToPoint(scale, mDoubleTapImagePoint, mDoubleTapViewPoint);
                 }
                 break;
             case MotionEvent.ACTION_UP:
-                if (this.mDoubleTapScroll) {
-                    final float scale = this.calcScale(vp);
-                    zc.zoomToPoint(scale, this.mDoubleTapImagePoint, this.mDoubleTapViewPoint);
+                if (mDoubleTapScroll) {
+                    float scale = calcScale(vp);
+                    zc.zoomToPoint(scale, mDoubleTapImagePoint, mDoubleTapViewPoint);
                 } else {
-                    float maxScale = zc.getMaxScaleFactor();
-                    float minScale = zc.getMinScaleFactor();
+                    final float maxScale = zc.getMaxScaleFactor();
+                    final float minScale = zc.getMinScaleFactor();
                     if (zc.getScaleFactor() < (maxScale + minScale) / 2) {
                         zc.zoomToPoint(
-                                maxScale, ip, vp, DefaultZoomableController.LIMIT_ALL, DoubleTapGestureListener.DURATION_MS, null);
+                                maxScale, ip, vp, DefaultZoomableController.LIMIT_ALL, DURATION_MS, null);
                     } else {
                         zc.zoomToPoint(
-                                minScale, ip, vp, DefaultZoomableController.LIMIT_ALL, DoubleTapGestureListener.DURATION_MS, null);
+                                minScale, ip, vp, DefaultZoomableController.LIMIT_ALL, DURATION_MS, null);
                     }
                 }
-                this.mDoubleTapScroll = false;
+                mDoubleTapScroll = false;
                 break;
         }
         return true;
     }
 
-    private boolean shouldStartDoubleTapScroll(final PointF viewPoint) {
-        final double dist =
-                Math.hypot(viewPoint.x - this.mDoubleTapViewPoint.x, viewPoint.y - this.mDoubleTapViewPoint.y);
-        return dist > DoubleTapGestureListener.DOUBLE_TAP_SCROLL_THRESHOLD;
+    private boolean shouldStartDoubleTapScroll(PointF viewPoint) {
+        double dist =
+                Math.hypot(viewPoint.x - mDoubleTapViewPoint.x, viewPoint.y - mDoubleTapViewPoint.y);
+        return dist > DOUBLE_TAP_SCROLL_THRESHOLD;
     }
 
-    private float calcScale(final PointF currentViewPoint) {
-        final float dy = (currentViewPoint.y - this.mDoubleTapViewPoint.y);
-        final float t = 1 + Math.abs(dy) * 0.001f;
-        return (dy < 0) ? this.mDoubleTapScale / t : this.mDoubleTapScale * t;
+    private float calcScale(PointF currentViewPoint) {
+        float dy = (currentViewPoint.y - mDoubleTapViewPoint.y);
+        float t = 1 + Math.abs(dy) * 0.001f;
+        return (dy < 0) ? mDoubleTapScale / t : mDoubleTapScale * t;
     }
 }

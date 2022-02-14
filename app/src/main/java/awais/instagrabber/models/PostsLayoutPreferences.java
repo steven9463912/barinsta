@@ -24,97 +24,97 @@ public final class PostsLayoutPreferences {
         private boolean hasGap = true;
         private boolean animationDisabled;
 
-        public Builder setType(PostsLayoutType type) {
+        public Builder setType(final PostsLayoutType type) {
             this.type = type;
             return this;
         }
 
-        public Builder setColCount(int colCount) {
+        public Builder setColCount(final int colCount) {
             this.colCount = (colCount <= 0 || colCount > 3) ? 1 : colCount;
             return this;
         }
 
-        public Builder setAvatarVisible(boolean avatarVisible) {
-            isAvatarVisible = avatarVisible;
+        public Builder setAvatarVisible(final boolean avatarVisible) {
+            this.isAvatarVisible = avatarVisible;
             return this;
         }
 
-        public Builder setNameVisible(boolean nameVisible) {
-            isNameVisible = nameVisible;
+        public Builder setNameVisible(final boolean nameVisible) {
+            this.isNameVisible = nameVisible;
             return this;
         }
 
-        public Builder setProfilePicSize(ProfilePicSize profilePicSize) {
+        public Builder setProfilePicSize(final ProfilePicSize profilePicSize) {
             this.profilePicSize = profilePicSize;
             return this;
         }
 
-        public Builder setHasRoundedCorners(boolean hasRoundedCorners) {
+        public Builder setHasRoundedCorners(final boolean hasRoundedCorners) {
             this.hasRoundedCorners = hasRoundedCorners;
             return this;
         }
 
-        public Builder setHasGap(boolean hasGap) {
+        public Builder setHasGap(final boolean hasGap) {
             this.hasGap = hasGap;
             return this;
         }
 
-        public Builder setAnimationDisabled(boolean animationDisabled) {
+        public Builder setAnimationDisabled(final boolean animationDisabled) {
             this.animationDisabled = animationDisabled;
             return this;
         }
 
         // Breaking builder pattern and adding getters to avoid too many object creations in PostsLayoutPreferencesDialogFragment
         public PostsLayoutType getType() {
-            return this.type;
+            return type;
         }
 
         public int getColCount() {
-            return this.colCount;
+            return colCount;
         }
 
         public boolean isAvatarVisible() {
-            return this.isAvatarVisible;
+            return isAvatarVisible;
         }
 
         public boolean isNameVisible() {
-            return this.isNameVisible;
+            return isNameVisible;
         }
 
         public ProfilePicSize getProfilePicSize() {
-            return this.profilePicSize;
+            return profilePicSize;
         }
 
         public boolean getHasRoundedCorners() {
-            return this.hasRoundedCorners;
+            return hasRoundedCorners;
         }
 
         public boolean getHasGap() {
-            return this.hasGap;
+            return hasGap;
         }
 
         public boolean isAnimationDisabled() {
-            return this.animationDisabled;
+            return animationDisabled;
         }
 
-        public Builder mergeFrom(PostsLayoutPreferences preferences) {
+        public Builder mergeFrom(final PostsLayoutPreferences preferences) {
             if (preferences == null) {
                 return this;
             }
-            this.setColCount(preferences.getColCount());
-            this.setAvatarVisible(preferences.isAvatarVisible());
-            this.setNameVisible(preferences.isNameVisible());
-            this.setType(preferences.getType());
-            this.setProfilePicSize(preferences.getProfilePicSize());
-            this.setHasRoundedCorners(preferences.getHasRoundedCorners());
-            this.setHasGap(preferences.getHasGap());
-            this.setAnimationDisabled(preferences.isAnimationDisabled());
+            setColCount(preferences.getColCount());
+            setAvatarVisible(preferences.isAvatarVisible());
+            setNameVisible(preferences.isNameVisible());
+            setType(preferences.getType());
+            setProfilePicSize(preferences.getProfilePicSize());
+            setHasRoundedCorners(preferences.getHasRoundedCorners());
+            setHasGap(preferences.getHasGap());
+            setAnimationDisabled(preferences.isAnimationDisabled());
             return this;
         }
 
         public PostsLayoutPreferences build() {
-            return new PostsLayoutPreferences(this.type, this.colCount, this.isAvatarVisible, this.isNameVisible, this.profilePicSize, this.hasRoundedCorners, this.hasGap,
-                    this.animationDisabled);
+            return new PostsLayoutPreferences(type, colCount, isAvatarVisible, isNameVisible, profilePicSize, hasRoundedCorners, hasGap,
+                    animationDisabled);
         }
     }
 
@@ -122,14 +122,14 @@ public final class PostsLayoutPreferences {
         return new Builder();
     }
 
-    private PostsLayoutPreferences(PostsLayoutType type,
-                                   int colCount,
-                                   boolean isAvatarVisible,
-                                   boolean isNameVisible,
-                                   ProfilePicSize profilePicSize,
-                                   boolean hasRoundedCorners,
-                                   boolean hasGap,
-                                   boolean animationDisabled) {
+    private PostsLayoutPreferences(final PostsLayoutType type,
+                                   final int colCount,
+                                   final boolean isAvatarVisible,
+                                   final boolean isNameVisible,
+                                   final ProfilePicSize profilePicSize,
+                                   final boolean hasRoundedCorners,
+                                   final boolean hasGap,
+                                   final boolean animationDisabled) {
 
         this.type = type;
         this.colCount = colCount;
@@ -142,75 +142,75 @@ public final class PostsLayoutPreferences {
     }
 
     public PostsLayoutType getType() {
-        return this.type;
+        return type;
     }
 
     public int getColCount() {
-        return this.colCount;
+        return colCount;
     }
 
     public boolean isAvatarVisible() {
-        return this.isAvatarVisible;
+        return isAvatarVisible;
     }
 
     public boolean isNameVisible() {
-        return this.isNameVisible;
+        return isNameVisible;
     }
 
     public ProfilePicSize getProfilePicSize() {
-        return this.profilePicSize;
+        return profilePicSize;
     }
 
     public boolean getHasRoundedCorners() {
-        return this.hasRoundedCorners;
+        return hasRoundedCorners;
     }
 
     public boolean getHasGap() {
-        return this.hasGap;
+        return hasGap;
     }
 
     public String getJson() {
         return new Gson().toJson(this);
     }
 
-    public static PostsLayoutPreferences fromJson(String json) {
+    public static PostsLayoutPreferences fromJson(final String json) {
         if (json == null) return null;
         return new Gson().fromJson(json, PostsLayoutPreferences.class);
     }
 
     public boolean isAnimationDisabled() {
-        return this.animationDisabled;
+        return animationDisabled;
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
-        if (o == null || this.getClass() != o.getClass()) return false;
-        PostsLayoutPreferences that = (PostsLayoutPreferences) o;
-        return this.colCount == that.colCount &&
-                this.isAvatarVisible == that.isAvatarVisible &&
-                this.isNameVisible == that.isNameVisible &&
-                this.type == that.type &&
-                this.profilePicSize == that.profilePicSize &&
-                this.animationDisabled == that.animationDisabled;
+        if (o == null || getClass() != o.getClass()) return false;
+        final PostsLayoutPreferences that = (PostsLayoutPreferences) o;
+        return colCount == that.colCount &&
+                isAvatarVisible == that.isAvatarVisible &&
+                isNameVisible == that.isNameVisible &&
+                type == that.type &&
+                profilePicSize == that.profilePicSize &&
+                animationDisabled == that.animationDisabled;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.type, this.colCount, this.isAvatarVisible, this.isNameVisible, this.profilePicSize, this.animationDisabled);
+        return Objects.hash(type, colCount, isAvatarVisible, isNameVisible, profilePicSize, animationDisabled);
     }
 
     @Override
     public String toString() {
         return "PostsLayoutPreferences{" +
-                "type=" + this.type +
-                ", colCount=" + this.colCount +
-                ", isAvatarVisible=" + this.isAvatarVisible +
-                ", isNameVisible=" + this.isNameVisible +
-                ", profilePicSize=" + this.profilePicSize +
-                ", hasRoundedCorners=" + this.hasRoundedCorners +
-                ", hasGap=" + this.hasGap +
-                ", animationDisabled=" + this.animationDisabled +
+                "type=" + type +
+                ", colCount=" + colCount +
+                ", isAvatarVisible=" + isAvatarVisible +
+                ", isNameVisible=" + isNameVisible +
+                ", profilePicSize=" + profilePicSize +
+                ", hasRoundedCorners=" + hasRoundedCorners +
+                ", hasGap=" + hasGap +
+                ", animationDisabled=" + animationDisabled +
                 '}';
     }
 

@@ -40,22 +40,22 @@ public class CreateBackupDialogFragment extends DialogFragment {
     private final OnResultListener onResultListener;
     private DialogCreateBackupBinding binding;
 
-    public CreateBackupDialogFragment(OnResultListener onResultListener) {
+    public CreateBackupDialogFragment(final OnResultListener onResultListener) {
         this.onResultListener = onResultListener;
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container,
-                             Bundle savedInstanceState) {
-        this.binding = DialogCreateBackupBinding.inflate(inflater, container, false);
-        return this.binding.getRoot();
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             final ViewGroup container,
+                             final Bundle savedInstanceState) {
+        binding = DialogCreateBackupBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @NonNull
     @Override
-    public Dialog onCreateDialog(final Bundle savedInstanceState) {
-        final Dialog dialog = super.onCreateDialog(savedInstanceState);
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Dialog dialog = super.onCreateDialog(savedInstanceState);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         return dialog;
     }
@@ -63,96 +63,96 @@ public class CreateBackupDialogFragment extends DialogFragment {
     @Override
     public void onStart() {
         super.onStart();
-        Dialog dialog = this.getDialog();
+        final Dialog dialog = getDialog();
         if (dialog == null) return;
-        Window window = dialog.getWindow();
+        final Window window = dialog.getWindow();
         if (window == null) return;
         final int height = ViewGroup.LayoutParams.WRAP_CONTENT;
-        int width = (int) (Utils.displayMetrics.widthPixels * 0.8);
+        final int width = (int) (Utils.displayMetrics.widthPixels * 0.8);
         window.setLayout(width, height);
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        this.init();
+        init();
     }
 
     private void init() {
-        this.binding.etPassword.addTextChangedListener(new TextWatcher() {
+        binding.etPassword.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(final CharSequence s, final int start, final int count, final int after) {}
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                CreateBackupDialogFragment.this.binding.btnSaveTo.setEnabled(!TextUtils.isEmpty(s));
+            public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
+                binding.btnSaveTo.setEnabled(!TextUtils.isEmpty(s));
             }
 
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(final Editable s) {}
         });
-        Context context = this.getContext();
+        final Context context = getContext();
         if (context == null) {
             return;
         }
-        this.binding.cbPassword.setOnCheckedChangeListener((buttonView, isChecked) -> {
+        binding.cbPassword.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
-                if (TextUtils.isEmpty(this.binding.etPassword.getText())) {
-                    this.binding.btnSaveTo.setEnabled(false);
+                if (TextUtils.isEmpty(binding.etPassword.getText())) {
+                    binding.btnSaveTo.setEnabled(false);
                 }
-                this.binding.passwordField.setVisibility(View.VISIBLE);
-                this.binding.etPassword.requestFocus();
-                InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                binding.passwordField.setVisibility(View.VISIBLE);
+                binding.etPassword.requestFocus();
+                final InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
                 if (imm == null) return;
-                imm.showSoftInput(this.binding.etPassword, InputMethodManager.SHOW_IMPLICIT);
+                imm.showSoftInput(binding.etPassword, InputMethodManager.SHOW_IMPLICIT);
                 return;
             }
-            this.binding.btnSaveTo.setEnabled(true);
-            this.binding.passwordField.setVisibility(View.GONE);
-            InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+            binding.btnSaveTo.setEnabled(true);
+            binding.passwordField.setVisibility(View.GONE);
+            final InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
             if (imm == null) return;
-            imm.hideSoftInputFromWindow(this.binding.etPassword.getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
+            imm.hideSoftInputFromWindow(binding.etPassword.getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
         });
-        this.binding.btnSaveTo.setOnClickListener(v -> {
-            this.createFile();
+        binding.btnSaveTo.setOnClickListener(v -> {
+            createFile();
         });
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    public void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
         if (data == null || data.getData() == null) return;
-        if (resultCode != RESULT_OK || requestCode != CreateBackupDialogFragment.CREATE_FILE_REQUEST_CODE) return;
-        Context context = this.getContext();
+        if (resultCode != RESULT_OK || requestCode != CREATE_FILE_REQUEST_CODE) return;
+        final Context context = getContext();
         if (context == null) return;
-        Editable passwordText = this.binding.etPassword.getText();
-        String password = this.binding.cbPassword.isChecked()
+        final Editable passwordText = binding.etPassword.getText();
+        final String password = binding.cbPassword.isChecked()
                                         && passwordText != null
                                         && !TextUtils.isEmpty(passwordText.toString())
                                 ? passwordText.toString().trim()
                                 : null;
         int flags = 0;
-        if (this.binding.cbExportFavorites.isChecked()) {
+        if (binding.cbExportFavorites.isChecked()) {
             flags |= ExportImportUtils.FLAG_FAVORITES;
         }
-        if (this.binding.cbExportSettings.isChecked()) {
+        if (binding.cbExportSettings.isChecked()) {
             flags |= ExportImportUtils.FLAG_SETTINGS;
         }
-        if (this.binding.cbExportLogins.isChecked()) {
+        if (binding.cbExportLogins.isChecked()) {
             flags |= ExportImportUtils.FLAG_COOKIES;
         }
         ExportImportUtils.exportData(context, flags, data.getData(), password, result -> {
-            if (this.onResultListener != null) {
-                this.onResultListener.onResult(result);
+            if (onResultListener != null) {
+                onResultListener.onResult(result);
             }
-            this.dismiss();
+            dismiss();
         });
     }
 
     private void createFile() {
-        final Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType("application/octet-stream");
-        String fileName = String.format("barinsta_%s.backup", LocalDateTime.now().format(CreateBackupDialogFragment.BACKUP_FILE_DATE_TIME_FORMAT));
+        final String fileName = String.format("barinsta_%s.backup", LocalDateTime.now().format(BACKUP_FILE_DATE_TIME_FORMAT));
         intent.putExtra(Intent.EXTRA_TITLE, fileName);
 
         // Optionally, specify a URI for the directory that should be opened in
@@ -161,7 +161,7 @@ public class CreateBackupDialogFragment extends DialogFragment {
             intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, DownloadUtils.getBackupsDir().getUri());
         }
 
-        this.startActivityForResult(intent, CreateBackupDialogFragment.CREATE_FILE_REQUEST_CODE);
+        startActivityForResult(intent, CREATE_FILE_REQUEST_CODE);
     }
 
 

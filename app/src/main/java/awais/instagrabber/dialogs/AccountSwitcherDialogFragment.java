@@ -45,13 +45,13 @@ public class AccountSwitcherDialogFragment extends DialogFragment {
 
     public AccountSwitcherDialogFragment() {}
 
-    public AccountSwitcherDialogFragment(OnAddAccountClickListener onAddAccountClickListener) {
+    public AccountSwitcherDialogFragment(final OnAddAccountClickListener onAddAccountClickListener) {
         this.onAddAccountClickListener = onAddAccountClickListener;
     }
 
     private final AccountSwitcherAdapter.OnAccountClickListener accountClickListener = (model, isCurrent) -> {
         if (isCurrent) {
-            this.dismiss();
+            dismiss();
             return;
         }
         CookieUtils.setupCookies(model.getCookie());
@@ -60,14 +60,14 @@ public class AccountSwitcherDialogFragment extends DialogFragment {
         // if (activity != null) activity.recreate();
         // dismiss();
         AppExecutors.INSTANCE.getMainThread().execute(() -> {
-            Context context = this.getContext();
+            Context context = getContext();
             if (context == null) return;
             ProcessPhoenix.triggerRebirth(context);
         }, 200);
     };
 
     private final AccountSwitcherAdapter.OnAccountLongClickListener accountLongClickListener = (model, isCurrent) -> {
-        Context context = this.getContext();
+        Context context = getContext();
         if (context == null) return false;
         if (isCurrent) {
             new AlertDialog.Builder(context)
@@ -77,78 +77,78 @@ public class AccountSwitcherDialogFragment extends DialogFragment {
             return true;
         }
         new AlertDialog.Builder(context)
-                .setMessage(this.getString(R.string.quick_access_confirm_delete, model.getUsername()))
+                .setMessage(getString(R.string.quick_access_confirm_delete, model.getUsername()))
                 .setPositiveButton(R.string.yes, (dialog, which) -> {
-                    if (this.accountRepository == null) return;
-                    this.accountRepository.deleteAccount(
+                    if (accountRepository == null) return;
+                    accountRepository.deleteAccount(
                             model,
                             CoroutineUtilsKt.getContinuation((unit, throwable) -> AppExecutors.INSTANCE.getMainThread().execute(() -> {
-                                this.dismiss();
+                                dismiss();
                                 if (throwable != null) {
-                                    Log.e(AccountSwitcherDialogFragment.TAG, "deleteAccount: ", throwable);
+                                    Log.e(TAG, "deleteAccount: ", throwable);
                                 }
                             }), Dispatchers.getIO())
                     );
                 })
                 .setNegativeButton(R.string.cancel, null)
                 .show();
-        this.dismiss();
+        dismiss();
         return true;
     };
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container,
-                             Bundle savedInstanceState) {
-        this.binding = DialogAccountSwitcherBinding.inflate(inflater, container, false);
-        this.binding.accounts.setLayoutManager(new LinearLayoutManager(this.getContext()));
-        return this.binding.getRoot();
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             final ViewGroup container,
+                             final Bundle savedInstanceState) {
+        binding = DialogAccountSwitcherBinding.inflate(inflater, container, false);
+        binding.accounts.setLayoutManager(new LinearLayoutManager(getContext()));
+        return binding.getRoot();
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        this.init();
+        init();
     }
 
     @Override
-    public void onAttach(@NonNull Context context) {
+    public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
-        this.accountRepository = AccountRepository.Companion.getInstance(context);
+        accountRepository = AccountRepository.Companion.getInstance(context);
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        Dialog dialog = this.getDialog();
+        final Dialog dialog = getDialog();
         if (dialog == null) return;
-        Window window = dialog.getWindow();
+        final Window window = dialog.getWindow();
         if (window == null) return;
         final int height = ViewGroup.LayoutParams.WRAP_CONTENT;
-        int width = (int) (Utils.displayMetrics.widthPixels * 0.8);
+        final int width = (int) (Utils.displayMetrics.widthPixels * 0.8);
         window.setLayout(width, height);
     }
 
     private void init() {
-        AccountSwitcherAdapter adapter = new AccountSwitcherAdapter(this.accountClickListener, this.accountLongClickListener);
-        this.binding.accounts.setAdapter(adapter);
-        if (this.accountRepository == null) return;
-        this.accountRepository.getAllAccounts(
+        final AccountSwitcherAdapter adapter = new AccountSwitcherAdapter(accountClickListener, accountLongClickListener);
+        binding.accounts.setAdapter(adapter);
+        if (accountRepository == null) return;
+        accountRepository.getAllAccounts(
                 CoroutineUtilsKt.getContinuation((accounts, throwable) -> AppExecutors.INSTANCE.getMainThread().execute(() -> {
                     if (throwable != null) {
-                        Log.e(AccountSwitcherDialogFragment.TAG, "init: ", throwable);
+                        Log.e(TAG, "init: ", throwable);
                         return;
                     }
                     if (accounts == null) return;
-                    String cookie = settingsHelper.getString(Constants.COOKIE);
-                    List<Account> copy = new ArrayList<>(accounts);
-                    this.sortUserList(cookie, copy);
+                    final String cookie = settingsHelper.getString(Constants.COOKIE);
+                    final List<Account> copy = new ArrayList<>(accounts);
+                    sortUserList(cookie, copy);
                     adapter.submitList(copy);
                 }), Dispatchers.getIO())
         );
-        this.binding.addAccountBtn.setOnClickListener(v -> {
-            if (this.onAddAccountClickListener == null) return;
-            this.onAddAccountClickListener.onAddAccountClick(this);
+        binding.addAccountBtn.setOnClickListener(v -> {
+            if (onAddAccountClickListener == null) return;
+            onAddAccountClickListener.onAddAccountClick(this);
         });
     }
 
@@ -164,15 +164,15 @@ public class AccountSwitcherDialogFragment extends DialogFragment {
      * @param cookie   active cookie
      * @param allUsers list of users
      */
-    private void sortUserList(String cookie, List<Account> allUsers) {
+    private void sortUserList(final String cookie, final List<Account> allUsers) {
         boolean sortByName = true;
-        for (Account user : allUsers) {
+        for (final Account user : allUsers) {
             if (TextUtils.isEmpty(user.getFullName())) {
                 sortByName = false;
                 break;
             }
         }
-        boolean finalSortByName = sortByName;
+        final boolean finalSortByName = sortByName;
         Collections.sort(allUsers, (o1, o2) -> {
             // keep current account at top
             if (o1.getCookie().equals(cookie)) return -1;

@@ -75,10 +75,10 @@ public class SimpleImeAnimationController {
          * Once the request is ready, call our [onRequestReady] function
          */
         @Override
-        public void onReady(@NonNull WindowInsetsAnimationControllerCompat controller, int types) {
-            SimpleImeAnimationController.this.onRequestReady(controller);
-            if (SimpleImeAnimationController.this.fwdListener != null) {
-                SimpleImeAnimationController.this.fwdListener.onReady(controller, types);
+        public void onReady(@NonNull final WindowInsetsAnimationControllerCompat controller, final int types) {
+            onRequestReady(controller);
+            if (fwdListener != null) {
+                fwdListener.onReady(controller, types);
             }
         }
 
@@ -86,10 +86,10 @@ public class SimpleImeAnimationController {
          * If the request is finished, we should reset our internal state
          */
         @Override
-        public void onFinished(@NonNull WindowInsetsAnimationControllerCompat controller) {
-            SimpleImeAnimationController.this.reset();
-            if (SimpleImeAnimationController.this.fwdListener != null) {
-                SimpleImeAnimationController.this.fwdListener.onFinished(controller);
+        public void onFinished(@NonNull final WindowInsetsAnimationControllerCompat controller) {
+            reset();
+            if (fwdListener != null) {
+                fwdListener.onFinished(controller);
             }
         }
 
@@ -97,10 +97,10 @@ public class SimpleImeAnimationController {
          * If the request is cancelled, we should reset our internal state
          */
         @Override
-        public void onCancelled(@Nullable WindowInsetsAnimationControllerCompat controller) {
-            SimpleImeAnimationController.this.reset();
-            if (SimpleImeAnimationController.this.fwdListener != null) {
-                SimpleImeAnimationController.this.fwdListener.onCancelled(controller);
+        public void onCancelled(@Nullable final WindowInsetsAnimationControllerCompat controller) {
+            reset();
+            if (fwdListener != null) {
+                fwdListener.onCancelled(controller);
             }
         }
     };
@@ -113,26 +113,26 @@ public class SimpleImeAnimationController {
      * @param onRequestReadyListener optional listener which will be called when the request is ready and
      *                               the animation can proceed
      */
-    public void startControlRequest(@NonNull View view,
-                                    @Nullable OnRequestReadyListener onRequestReadyListener) {
-        if (this.isInsetAnimationInProgress()) {
-            Log.w(SimpleImeAnimationController.TAG, "startControlRequest: Animation in progress. Can not start a new request to controlWindowInsetsAnimation()");
+    public void startControlRequest(@NonNull final View view,
+                                    @Nullable final OnRequestReadyListener onRequestReadyListener) {
+        if (isInsetAnimationInProgress()) {
+            Log.w(TAG, "startControlRequest: Animation in progress. Can not start a new request to controlWindowInsetsAnimation()");
             return;
         }
 
         // Keep track of the IME insets, and the IME visibility, at the start of the request
-        WindowInsetsCompat rootWindowInsets = ViewCompat.getRootWindowInsets(view);
+        final WindowInsetsCompat rootWindowInsets = ViewCompat.getRootWindowInsets(view);
         if (rootWindowInsets != null) {
-            this.isImeShownAtStart = rootWindowInsets.isVisible(WindowInsetsCompat.Type.ime());
+            isImeShownAtStart = rootWindowInsets.isVisible(WindowInsetsCompat.Type.ime());
         }
 
         // Create a cancellation signal, which we pass to controlWindowInsetsAnimation() below
-        this.pendingRequestCancellationSignal = new CancellationSignal();
+        pendingRequestCancellationSignal = new CancellationSignal();
         // Keep reference to the onReady callback
-        this.pendingRequestOnReadyListener = onRequestReadyListener;
+        pendingRequestOnReadyListener = onRequestReadyListener;
 
         // Finally we make a controlWindowInsetsAnimation() request:
-        WindowInsetsControllerCompat windowInsetsController = ViewCompat.getWindowInsetsController(view);
+        final WindowInsetsControllerCompat windowInsetsController = ViewCompat.getWindowInsetsController(view);
         if (windowInsetsController != null) {
             windowInsetsController.controlWindowInsetsAnimation(
                     // We're only catering for IME animations in this listener
@@ -146,11 +146,11 @@ public class SimpleImeAnimationController {
                     // we passed into setInsetsAndAlpha() which be passed into this interpolator before
                     // being used by the system to inset the IME. LinearInterpolator is a good type
                     // to use for scrolling gestures.
-                    this.linearInterpolator,
+                    linearInterpolator,
                     // A cancellation signal, which allows us to cancel the request to control
-                    this.pendingRequestCancellationSignal,
+                    pendingRequestCancellationSignal,
                     // The WindowInsetsAnimationControlListener
-                    this.animationControlListener
+                    animationControlListener
             );
         }
     }
@@ -164,9 +164,9 @@ public class SimpleImeAnimationController {
      * @param view      The view which is triggering this request
      * @param velocityY the velocity of the touch gesture which caused this call
      */
-    public void startAndFling(@NonNull View view, float velocityY) {
-        this.startControlRequest(view, null);
-        this.animateToFinish(velocityY);
+    public void startAndFling(@NonNull final View view, final float velocityY) {
+        startControlRequest(view, null);
+        animateToFinish(velocityY);
     }
 
     /**
@@ -177,15 +177,15 @@ public class SimpleImeAnimationController {
      *
      * @return the amount of [dy] consumed by the inset animation, in pixels
      */
-    public int insetBy(int dy) {
-        if (this.insetsAnimationController == null) {
+    public int insetBy(final int dy) {
+        if (insetsAnimationController == null) {
             throw new IllegalStateException("Current WindowInsetsAnimationController is null." +
                                                     "This should only be called if isAnimationInProgress() returns true");
         }
-        WindowInsetsAnimationControllerCompat controller = this.insetsAnimationController;
+        final WindowInsetsAnimationControllerCompat controller = insetsAnimationController;
 
         // Call updateInsetTo() with the new inset value
-        return this.insetTo(controller.getCurrentInsets().bottom - dy);
+        return insetTo(controller.getCurrentInsets().bottom - dy);
     }
 
     /**
@@ -196,22 +196,22 @@ public class SimpleImeAnimationController {
      *
      * @return the distance moved by the inset animation, in pixels
      */
-    public int insetTo(int inset) {
-        if (this.insetsAnimationController == null) {
+    public int insetTo(final int inset) {
+        if (insetsAnimationController == null) {
             throw new IllegalStateException("Current WindowInsetsAnimationController is null." +
                                                     "This should only be called if isAnimationInProgress() returns true");
         }
-        WindowInsetsAnimationControllerCompat controller = this.insetsAnimationController;
+        final WindowInsetsAnimationControllerCompat controller = insetsAnimationController;
 
-        int hiddenBottom = controller.getHiddenStateInsets().bottom;
-        int shownBottom = controller.getShownStateInsets().bottom;
-        int startBottom = this.isImeShownAtStart ? shownBottom : hiddenBottom;
-        int endBottom = this.isImeShownAtStart ? hiddenBottom : shownBottom;
+        final int hiddenBottom = controller.getHiddenStateInsets().bottom;
+        final int shownBottom = controller.getShownStateInsets().bottom;
+        final int startBottom = isImeShownAtStart ? shownBottom : hiddenBottom;
+        final int endBottom = isImeShownAtStart ? hiddenBottom : shownBottom;
 
         // We coerce the given inset within the limits of the hidden and shown insets
-        int coercedBottom = this.coerceIn(inset, hiddenBottom, shownBottom);
+        final int coercedBottom = coerceIn(inset, hiddenBottom, shownBottom);
 
-        int consumedDy = controller.getCurrentInsets().bottom - coercedBottom;
+        final int consumedDy = controller.getCurrentInsets().bottom - coercedBottom;
 
         // Finally update the insets in the WindowInsetsAnimationController using
         // setInsetsAndAlpha().
@@ -233,21 +233,21 @@ public class SimpleImeAnimationController {
      * Return `true` if an inset animation is in progress.
      */
     public boolean isInsetAnimationInProgress() {
-        return this.insetsAnimationController != null;
+        return insetsAnimationController != null;
     }
 
     /**
      * Return `true` if an inset animation is currently finishing.
      */
     public boolean isInsetAnimationFinishing() {
-        return this.currentSpringAnimation != null;
+        return currentSpringAnimation != null;
     }
 
     /**
      * Return `true` if a request to control an inset animation is in progress.
      */
     public boolean isInsetAnimationRequestPending() {
-        return this.pendingRequestCancellationSignal != null;
+        return pendingRequestCancellationSignal != null;
     }
 
     /**
@@ -255,36 +255,36 @@ public class SimpleImeAnimationController {
      * the animation, reverting back to the state at the start of the gesture.
      */
     public void cancel() {
-        if (this.insetsAnimationController != null) {
-            this.insetsAnimationController.finish(this.isImeShownAtStart);
+        if (insetsAnimationController != null) {
+            insetsAnimationController.finish(isImeShownAtStart);
         }
-        if (this.pendingRequestCancellationSignal != null) {
-            this.pendingRequestCancellationSignal.cancel();
+        if (pendingRequestCancellationSignal != null) {
+            pendingRequestCancellationSignal.cancel();
         }
-        if (this.currentSpringAnimation != null) {
+        if (currentSpringAnimation != null) {
             // Cancel the current spring animation
-            this.currentSpringAnimation.cancel();
+            currentSpringAnimation.cancel();
         }
-        this.reset();
+        reset();
     }
 
     /**
      * Finish the current [WindowInsetsAnimationControllerCompat] immediately.
      */
     public void finish() {
-        WindowInsetsAnimationControllerCompat controller = this.insetsAnimationController;
+        final WindowInsetsAnimationControllerCompat controller = insetsAnimationController;
 
         if (controller == null) {
             // If we don't currently have a controller, cancel any pending request and return
-            if (this.pendingRequestCancellationSignal != null) {
-                this.pendingRequestCancellationSignal.cancel();
+            if (pendingRequestCancellationSignal != null) {
+                pendingRequestCancellationSignal.cancel();
             }
             return;
         }
 
-        int current = controller.getCurrentInsets().bottom;
-        int shown = controller.getShownStateInsets().bottom;
-        int hidden = controller.getHiddenStateInsets().bottom;
+        final int current = controller.getCurrentInsets().bottom;
+        final int shown = controller.getShownStateInsets().bottom;
+        final int hidden = controller.getHiddenStateInsets().bottom;
 
         // The current inset matches either the shown/hidden inset, finish() immediately
         if (current == shown) {
@@ -293,12 +293,12 @@ public class SimpleImeAnimationController {
             controller.finish(false);
         } else {
             // Otherwise, we'll look at the current position...
-            if (controller.getCurrentFraction() >= SimpleImeAnimationController.SCROLL_THRESHOLD) {
+            if (controller.getCurrentFraction() >= SCROLL_THRESHOLD) {
                 // If the IME is past the 'threshold' we snap to the toggled state
-                controller.finish(!this.isImeShownAtStart);
+                controller.finish(!isImeShownAtStart);
             } else {
                 // ...otherwise, we snap back to the original visibility
-                controller.finish(this.isImeShownAtStart);
+                controller.finish(isImeShownAtStart);
             }
         }
     }
@@ -310,25 +310,25 @@ public class SimpleImeAnimationController {
      * @param velocityY the velocity of the touch gesture which caused this call to [animateToFinish].
      *                  Can be `null` if velocity is not available.
      */
-    public void animateToFinish(@Nullable Float velocityY) {
-        WindowInsetsAnimationControllerCompat controller = this.insetsAnimationController;
+    public void animateToFinish(@Nullable final Float velocityY) {
+        final WindowInsetsAnimationControllerCompat controller = insetsAnimationController;
 
         if (controller == null) {
             // If we don't currently have a controller, cancel any pending request and return
-            if (this.pendingRequestCancellationSignal != null) {
-                this.pendingRequestCancellationSignal.cancel();
+            if (pendingRequestCancellationSignal != null) {
+                pendingRequestCancellationSignal.cancel();
             }
             return;
         }
 
-        int current = controller.getCurrentInsets().bottom;
-        int shown = controller.getShownStateInsets().bottom;
-        int hidden = controller.getHiddenStateInsets().bottom;
+        final int current = controller.getCurrentInsets().bottom;
+        final int shown = controller.getShownStateInsets().bottom;
+        final int hidden = controller.getHiddenStateInsets().bottom;
 
         if (velocityY != null) {
             // If we have a velocity, we can use it's direction to determine
             // the visibility. Upwards == visible
-            this.animateImeToVisibility(velocityY > 0, velocityY);
+            animateImeToVisibility(velocityY > 0, velocityY);
         } else if (current == shown) {
             // The current inset matches either the shown/hidden inset, finish() immediately
             controller.finish(true);
@@ -336,27 +336,27 @@ public class SimpleImeAnimationController {
             controller.finish(false);
         } else {
             // Otherwise, we'll look at the current position...
-            if (controller.getCurrentFraction() >= SimpleImeAnimationController.SCROLL_THRESHOLD) {
+            if (controller.getCurrentFraction() >= SCROLL_THRESHOLD) {
                 // If the IME is past the 'threshold' we animate it to the toggled state
-                this.animateImeToVisibility(!this.isImeShownAtStart, null);
+                animateImeToVisibility(!isImeShownAtStart, null);
             } else {
                 // ...otherwise, we animate it back to the original visibility
-                this.animateImeToVisibility(this.isImeShownAtStart, null);
+                animateImeToVisibility(isImeShownAtStart, null);
             }
         }
     }
 
-    private void onRequestReady(@NonNull WindowInsetsAnimationControllerCompat controller) {
+    private void onRequestReady(@NonNull final WindowInsetsAnimationControllerCompat controller) {
         // The request is ready, so clear out the pending cancellation signal
-        this.pendingRequestCancellationSignal = null;
+        pendingRequestCancellationSignal = null;
         // Store the current WindowInsetsAnimationController
-        this.insetsAnimationController = controller;
+        insetsAnimationController = controller;
 
         // Call any pending callback
-        if (this.pendingRequestOnReadyListener != null) {
-            this.pendingRequestOnReadyListener.onRequestReady(controller);
+        if (pendingRequestOnReadyListener != null) {
+            pendingRequestOnReadyListener.onRequestReady(controller);
         }
-        this.pendingRequestOnReadyListener = null;
+        pendingRequestOnReadyListener = null;
     }
 
     /**
@@ -364,14 +364,14 @@ public class SimpleImeAnimationController {
      */
     private void reset() {
         // Clear all of our internal state
-        this.insetsAnimationController = null;
-        this.pendingRequestCancellationSignal = null;
-        this.isImeShownAtStart = false;
-        if (this.currentSpringAnimation != null) {
-            this.currentSpringAnimation.cancel();
+        insetsAnimationController = null;
+        pendingRequestCancellationSignal = null;
+        isImeShownAtStart = false;
+        if (currentSpringAnimation != null) {
+            currentSpringAnimation.cancel();
         }
-        this.currentSpringAnimation = null;
-        this.pendingRequestOnReadyListener = null;
+        currentSpringAnimation = null;
+        pendingRequestOnReadyListener = null;
     }
 
     /**
@@ -382,29 +382,29 @@ public class SimpleImeAnimationController {
      * @param velocityY the velocity of the touch gesture which caused this call. Can be `null`
      *                  if velocity is not available.
      */
-    private void animateImeToVisibility(boolean visible, @Nullable Float velocityY) {
-        if (this.insetsAnimationController == null) {
+    private void animateImeToVisibility(final boolean visible, @Nullable final Float velocityY) {
+        if (insetsAnimationController == null) {
             throw new IllegalStateException("Controller should not be null");
         }
-        WindowInsetsAnimationControllerCompat controller = this.insetsAnimationController;
+        final WindowInsetsAnimationControllerCompat controller = insetsAnimationController;
 
-        FloatPropertyCompat<Object> property = new FloatPropertyCompat<Object>("property") {
+        final FloatPropertyCompat<Object> property = new FloatPropertyCompat<Object>("property") {
             @Override
-            public float getValue(Object object) {
+            public float getValue(final Object object) {
                 return controller.getCurrentInsets().bottom;
             }
 
             @Override
-            public void setValue(Object object, float value) {
-                if (SimpleImeAnimationController.this.insetsAnimationController == null) {
+            public void setValue(final Object object, final float value) {
+                if (insetsAnimationController == null) {
                     return;
                 }
-                SimpleImeAnimationController.this.insetTo((int) value);
+                insetTo((int) value);
             }
         };
-        float finalPosition = visible ? controller.getShownStateInsets().bottom
+        final float finalPosition = visible ? controller.getShownStateInsets().bottom
                                             : controller.getHiddenStateInsets().bottom;
-        SpringForce force = new SpringForce(finalPosition)
+        final SpringForce force = new SpringForce(finalPosition)
                 // Tweak the damping value, to remove any bounciness.
                 .setDampingRatio(SpringForce.DAMPING_RATIO_NO_BOUNCY)
                 // The stiffness value controls the strength of the spring animation, which
@@ -415,15 +415,15 @@ public class SimpleImeAnimationController {
                  .setSpring(force)
                  .setStartVelocity(velocityY != null ? velocityY : 0)
                  .addEndListener((animation, canceled, value, velocity) -> {
-                     if (animation == this.currentSpringAnimation) {
-                         this.currentSpringAnimation = null;
+                     if (animation == currentSpringAnimation) {
+                         currentSpringAnimation = null;
                      }
                      // Once the animation has ended, finish the controller
-                     this.finish();
+                     finish();
                  }).start();
     }
 
-    private int coerceIn(int v, int min, int max) {
+    private int coerceIn(final int v, final int min, final int max) {
         if (v >= min && v <= max) {
             return v;
         }
@@ -433,8 +433,8 @@ public class SimpleImeAnimationController {
         return max;
     }
 
-    public void setAnimationControlListener(WindowInsetsAnimationControlListenerCompat listener) {
-        this.fwdListener = listener;
+    public void setAnimationControlListener(final WindowInsetsAnimationControlListenerCompat listener) {
+        fwdListener = listener;
     }
 
     public interface OnRequestReadyListener {

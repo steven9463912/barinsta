@@ -9,13 +9,13 @@ import androidx.preference.SwitchPreferenceCompat;
 
 public final class PreferenceHelper {
 
-    public static SwitchPreferenceCompat getSwitchPreference(@NonNull Context context,
-                                                             @NonNull String key,
-                                                             @StringRes int titleResId,
-                                                             @StringRes int summaryResId,
-                                                             boolean iconSpaceReserved,
-                                                             Preference.OnPreferenceChangeListener onPreferenceChangeListener) {
-        SwitchPreferenceCompat preference = new SwitchPreferenceCompat(context);
+    public static SwitchPreferenceCompat getSwitchPreference(@NonNull final Context context,
+                                                             @NonNull final String key,
+                                                             @StringRes final int titleResId,
+                                                             @StringRes final int summaryResId,
+                                                             final boolean iconSpaceReserved,
+                                                             final Preference.OnPreferenceChangeListener onPreferenceChangeListener) {
+        final SwitchPreferenceCompat preference = new SwitchPreferenceCompat(context);
         preference.setKey(key);
         preference.setTitle(titleResId);
         preference.setIconSpaceReserved(iconSpaceReserved);

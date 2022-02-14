@@ -65,118 +65,118 @@ public final class SavedViewerFragment extends Fragment implements SwipeRefreshL
     private final OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(false) {
         @Override
         public void handleOnBackPressed() {
-            SavedViewerFragment.this.binding.posts.endSelection();
+            binding.posts.endSelection();
         }
     };
     private final PrimaryActionModeCallback multiSelectAction = new PrimaryActionModeCallback(
             R.menu.multi_select_download_menu,
             new PrimaryActionModeCallback.CallbacksHelper() {
                 @Override
-                public void onDestroy(ActionMode mode) {
-                    SavedViewerFragment.this.binding.posts.endSelection();
+                public void onDestroy(final ActionMode mode) {
+                    binding.posts.endSelection();
                 }
 
                 @Override
-                public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                public boolean onActionItemClicked(final ActionMode mode, final MenuItem item) {
                     if (item.getItemId() == R.id.action_download) {
-                        if (selectedFeedModels == null) return false;
-                        Context context = SavedViewerFragment.this.getContext();
+                        if (SavedViewerFragment.this.selectedFeedModels == null) return false;
+                        final Context context = getContext();
                         if (context == null) return false;
-                        DownloadUtils.download(context, ImmutableList.copyOf(selectedFeedModels));
-                        SavedViewerFragment.this.binding.posts.endSelection();
+                        DownloadUtils.download(context, ImmutableList.copyOf(SavedViewerFragment.this.selectedFeedModels));
+                        binding.posts.endSelection();
                     }
                     return false;
                 }
             });
     private final FeedAdapterV2.FeedItemCallback feedItemCallback = new FeedAdapterV2.FeedItemCallback() {
         @Override
-        public void onPostClick(Media feedModel) {
-            this.openPostDialog(feedModel, -1);
+        public void onPostClick(final Media feedModel) {
+            openPostDialog(feedModel, -1);
         }
 
         @Override
-        public void onSliderClick(Media feedModel, int position) {
-            this.openPostDialog(feedModel, position);
+        public void onSliderClick(final Media feedModel, final int position) {
+            openPostDialog(feedModel, position);
         }
 
         @Override
-        public void onCommentsClick(Media feedModel) {
-            User user = feedModel.getUser();
+        public void onCommentsClick(final Media feedModel) {
+            final User user = feedModel.getUser();
             if (user == null) return;
             try {
-                NavDirections commentsAction = ProfileFragmentDirections.actionToComments(
+                final NavDirections commentsAction = ProfileFragmentDirections.actionToComments(
                         feedModel.getCode(),
                         feedModel.getPk(),
                         user.getPk()
                 );
                 NavHostFragment.findNavController(SavedViewerFragment.this).navigate(commentsAction);
-            } catch (final Exception e) {
-                Log.e(SavedViewerFragment.TAG, "onCommentsClick: ", e);
+            } catch (Exception e) {
+                Log.e(TAG, "onCommentsClick: ", e);
             }
         }
 
         @Override
-        public void onDownloadClick(Media feedModel, int childPosition, View popupLocation) {
-            Context context = SavedViewerFragment.this.getContext();
+        public void onDownloadClick(final Media feedModel, final int childPosition, final View popupLocation) {
+            final Context context = getContext();
             if (context == null) return;
             DownloadUtils.showDownloadDialog(context, feedModel, childPosition, popupLocation);
         }
 
         @Override
-        public void onHashtagClick(String hashtag) {
+        public void onHashtagClick(final String hashtag) {
             try {
-                NavDirections action = ProfileFragmentDirections.actionToHashtag(hashtag);
+                final NavDirections action = ProfileFragmentDirections.actionToHashtag(hashtag);
                 NavHostFragment.findNavController(SavedViewerFragment.this).navigate(action);
-            } catch (final Exception e) {
-                Log.e(SavedViewerFragment.TAG, "onHashtagClick: ", e);
+            } catch (Exception e) {
+                Log.e(TAG, "onHashtagClick: ", e);
             }
         }
 
         @Override
-        public void onLocationClick(Media feedModel) {
-            Location location = feedModel.getLocation();
+        public void onLocationClick(final Media feedModel) {
+            final Location location = feedModel.getLocation();
             if (location == null) return;
             try {
-                NavDirections action = ProfileFragmentDirections.actionToLocation(location.getPk());
+                final NavDirections action = ProfileFragmentDirections.actionToLocation(location.getPk());
                 NavHostFragment.findNavController(SavedViewerFragment.this).navigate(action);
-            } catch (final Exception e) {
-                Log.e(SavedViewerFragment.TAG, "onLocationClick: ", e);
+            } catch (Exception e) {
+                Log.e(TAG, "onLocationClick: ", e);
             }
         }
 
         @Override
-        public void onMentionClick(String mention) {
-            SavedViewerFragment.this.navigateToProfile(mention.trim());
+        public void onMentionClick(final String mention) {
+            navigateToProfile(mention.trim());
         }
 
         @Override
-        public void onNameClick(Media feedModel) {
-            SavedViewerFragment.this.navigateToProfile("@" + feedModel.getUser().getUsername());
+        public void onNameClick(final Media feedModel) {
+            navigateToProfile("@" + feedModel.getUser().getUsername());
         }
 
         @Override
-        public void onProfilePicClick(Media feedModel) {
-            User user = feedModel.getUser();
+        public void onProfilePicClick(final Media feedModel) {
+            final User user = feedModel.getUser();
             if (user == null) return;
-            SavedViewerFragment.this.navigateToProfile("@" + user.getUsername());
+            navigateToProfile("@" + user.getUsername());
         }
 
         @Override
-        public void onURLClick(String url) {
-            Utils.openURL(SavedViewerFragment.this.getContext(), url);
+        public void onURLClick(final String url) {
+            Utils.openURL(getContext(), url);
         }
 
         @Override
-        public void onEmailClick(String emailId) {
-            Utils.openEmailAddress(SavedViewerFragment.this.getContext(), emailId);
+        public void onEmailClick(final String emailId) {
+            Utils.openEmailAddress(getContext(), emailId);
         }
 
-        private void openPostDialog(Media feedModel, int position) {
+        private void openPostDialog(final Media feedModel, final int position) {
             try {
-                NavDirections action = SavedViewerFragmentDirections.actionToPost(feedModel, position);
+                final NavDirections action = SavedViewerFragmentDirections.actionToPost(feedModel, position);
                 NavHostFragment.findNavController(SavedViewerFragment.this).navigate(action);
-            } catch (final Exception e) {
-                Log.e(SavedViewerFragment.TAG, "openPostDialog: ", e);
+            } catch (Exception e) {
+                Log.e(TAG, "openPostDialog: ", e);
             }
         }
     };
@@ -184,75 +184,75 @@ public final class SavedViewerFragment extends Fragment implements SwipeRefreshL
 
         @Override
         public void onSelectionStart() {
-            if (!SavedViewerFragment.this.onBackPressedCallback.isEnabled()) {
-                OnBackPressedDispatcher onBackPressedDispatcher = SavedViewerFragment.this.fragmentActivity.getOnBackPressedDispatcher();
-                SavedViewerFragment.this.onBackPressedCallback.setEnabled(true);
-                onBackPressedDispatcher.addCallback(SavedViewerFragment.this.getViewLifecycleOwner(), SavedViewerFragment.this.onBackPressedCallback);
+            if (!onBackPressedCallback.isEnabled()) {
+                final OnBackPressedDispatcher onBackPressedDispatcher = fragmentActivity.getOnBackPressedDispatcher();
+                onBackPressedCallback.setEnabled(true);
+                onBackPressedDispatcher.addCallback(getViewLifecycleOwner(), onBackPressedCallback);
             }
-            if (SavedViewerFragment.this.actionMode == null) {
-                SavedViewerFragment.this.actionMode = SavedViewerFragment.this.fragmentActivity.startActionMode(SavedViewerFragment.this.multiSelectAction);
+            if (actionMode == null) {
+                actionMode = fragmentActivity.startActionMode(multiSelectAction);
             }
         }
 
         @Override
-        public void onSelectionChange(Set<Media> selectedFeedModels) {
-            String title = SavedViewerFragment.this.getString(R.string.number_selected, selectedFeedModels.size());
-            if (SavedViewerFragment.this.actionMode != null) {
-                SavedViewerFragment.this.actionMode.setTitle(title);
+        public void onSelectionChange(final Set<Media> selectedFeedModels) {
+            final String title = getString(R.string.number_selected, selectedFeedModels.size());
+            if (actionMode != null) {
+                actionMode.setTitle(title);
             }
             SavedViewerFragment.this.selectedFeedModels = selectedFeedModels;
         }
 
         @Override
         public void onSelectionEnd() {
-            if (SavedViewerFragment.this.onBackPressedCallback.isEnabled()) {
-                SavedViewerFragment.this.onBackPressedCallback.setEnabled(false);
-                SavedViewerFragment.this.onBackPressedCallback.remove();
+            if (onBackPressedCallback.isEnabled()) {
+                onBackPressedCallback.setEnabled(false);
+                onBackPressedCallback.remove();
             }
-            if (SavedViewerFragment.this.actionMode != null) {
-                SavedViewerFragment.this.actionMode.finish();
-                SavedViewerFragment.this.actionMode = null;
+            if (actionMode != null) {
+                actionMode.finish();
+                actionMode = null;
             }
         }
     };
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.fragmentActivity = (AppCompatActivity) this.getActivity();
-        this.setHasOptionsMenu(true);
+        fragmentActivity = (AppCompatActivity) getActivity();
+        setHasOptionsMenu(true);
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        String cookie = settingsHelper.getString(Constants.COOKIE);
-        this.isLoggedIn = !TextUtils.isEmpty(cookie) && CookieUtils.getUserIdFromCookie(cookie) > 0;
-        if (this.root != null) {
-            this.shouldRefresh = false;
-            return this.root;
+    public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable final Bundle savedInstanceState) {
+        final String cookie = settingsHelper.getString(Constants.COOKIE);
+        isLoggedIn = !TextUtils.isEmpty(cookie) && CookieUtils.getUserIdFromCookie(cookie) > 0;
+        if (root != null) {
+            shouldRefresh = false;
+            return root;
         }
-        this.binding = FragmentSavedBinding.inflate(this.getLayoutInflater(), container, false);
-        this.root = this.binding.getRoot();
-        return this.root;
+        binding = FragmentSavedBinding.inflate(getLayoutInflater(), container, false);
+        root = binding.getRoot();
+        return root;
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        if (!this.shouldRefresh) return;
-        this.binding.swipeRefreshLayout.setOnRefreshListener(this);
-        this.init();
-        this.shouldRefresh = false;
+    public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
+        if (!shouldRefresh) return;
+        binding.swipeRefreshLayout.setOnRefreshListener(this);
+        init();
+        shouldRefresh = false;
     }
 
     @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NonNull final Menu menu, @NonNull final MenuInflater inflater) {
         inflater.inflate(R.menu.saved_viewer_menu, menu);
     }
 
     @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         if (item.getItemId() == R.id.layout) {
-            this.showPostsLayoutPreferences();
+            showPostsLayoutPreferences();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -261,40 +261,40 @@ public final class SavedViewerFragment extends Fragment implements SwipeRefreshL
     @Override
     public void onResume() {
         super.onResume();
-        this.setTitle();
+        setTitle();
     }
 
     @Override
     public void onRefresh() {
-        this.binding.posts.refresh();
+        binding.posts.refresh();
     }
 
     private void init() {
-        Bundle arguments = this.getArguments();
+        final Bundle arguments = getArguments();
         if (arguments == null) return;
-        SavedViewerFragmentArgs fragmentArgs = SavedViewerFragmentArgs.fromBundle(arguments);
-        this.username = fragmentArgs.getUsername();
-        this.profileId = fragmentArgs.getProfileId();
-        this.type = fragmentArgs.getType();
-        this.layoutPreferences = Utils.getPostsLayoutPreferences(this.getPostsLayoutPreferenceKey());
-        this.setupPosts();
+        final SavedViewerFragmentArgs fragmentArgs = SavedViewerFragmentArgs.fromBundle(arguments);
+        username = fragmentArgs.getUsername();
+        profileId = fragmentArgs.getProfileId();
+        type = fragmentArgs.getType();
+        layoutPreferences = Utils.getPostsLayoutPreferences(getPostsLayoutPreferenceKey());
+        setupPosts();
     }
 
     private void setupPosts() {
-        this.binding.posts.setViewModelStoreOwner(this)
+        binding.posts.setViewModelStoreOwner(this)
                      .setLifeCycleOwner(this)
-                     .setPostFetchService(new SavedPostFetchService(this.profileId, this.type, this.isLoggedIn, null))
-                     .setLayoutPreferences(this.layoutPreferences)
-                     .addFetchStatusChangeListener(fetching -> this.updateSwipeRefreshState())
-                     .setFeedItemCallback(this.feedItemCallback)
-                     .setSelectionModeCallback(this.selectionModeCallback)
+                     .setPostFetchService(new SavedPostFetchService(profileId, type, isLoggedIn, null))
+                     .setLayoutPreferences(layoutPreferences)
+                     .addFetchStatusChangeListener(fetching -> updateSwipeRefreshState())
+                     .setFeedItemCallback(feedItemCallback)
+                     .setSelectionModeCallback(selectionModeCallback)
                      .init();
-        this.binding.swipeRefreshLayout.setRefreshing(true);
+        binding.swipeRefreshLayout.setRefreshing(true);
     }
 
     @NonNull
     private String getPostsLayoutPreferenceKey() {
-        switch (this.type) {
+        switch (type) {
             case LIKED:
                 return Constants.PREF_LIKED_POSTS_LAYOUT;
             case TAGGED:
@@ -306,10 +306,10 @@ public final class SavedViewerFragment extends Fragment implements SwipeRefreshL
     }
 
     private void setTitle() {
-        ActionBar actionBar = this.fragmentActivity.getSupportActionBar();
+        final ActionBar actionBar = fragmentActivity.getSupportActionBar();
         if (actionBar == null) return;
-        int titleRes;
-        switch (this.type) {
+        final int titleRes;
+        switch (type) {
             case LIKED:
                 titleRes = R.string.liked;
                 break;
@@ -322,31 +322,31 @@ public final class SavedViewerFragment extends Fragment implements SwipeRefreshL
                 break;
         }
         actionBar.setTitle(titleRes);
-        actionBar.setSubtitle(this.username);
+        actionBar.setSubtitle(username);
     }
 
     private void updateSwipeRefreshState() {
         AppExecutors.INSTANCE.getMainThread().execute(() ->
-                this.binding.swipeRefreshLayout.setRefreshing(this.binding.posts.isFetching())
+                binding.swipeRefreshLayout.setRefreshing(binding.posts.isFetching())
         );
     }
 
-    private void navigateToProfile(String username) {
+    private void navigateToProfile(final String username) {
         try {
-            NavDirections action = SavedViewerFragmentDirections.actionToProfile().setUsername(username);
+            final NavDirections action = SavedViewerFragmentDirections.actionToProfile().setUsername(username);
             NavHostFragment.findNavController(this).navigate(action);
-        } catch (final Exception e) {
-            Log.e(SavedViewerFragment.TAG, "navigateToProfile: ", e);
+        } catch (Exception e) {
+            Log.e(TAG, "navigateToProfile: ", e);
         }
     }
 
     private void showPostsLayoutPreferences() {
-        PostsLayoutPreferencesDialogFragment fragment = new PostsLayoutPreferencesDialogFragment(
-                this.getPostsLayoutPreferenceKey(),
+        final PostsLayoutPreferencesDialogFragment fragment = new PostsLayoutPreferencesDialogFragment(
+                getPostsLayoutPreferenceKey(),
                 preferences -> {
-                    this.layoutPreferences = preferences;
-                    new Handler().postDelayed(() -> this.binding.posts.setLayoutPreferences(preferences), 200);
+                    layoutPreferences = preferences;
+                    new Handler().postDelayed(() -> binding.posts.setLayoutPreferences(preferences), 200);
                 });
-        fragment.show(this.getChildFragmentManager(), "posts_layout_preferences");
+        fragment.show(getChildFragmentManager(), "posts_layout_preferences");
     }
 }

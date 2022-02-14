@@ -52,12 +52,12 @@ public class ProfilePicDialogFragment extends DialogFragment {
     private DialogProfilepicBinding binding;
     private String url;
 
-    public static ProfilePicDialogFragment getInstance(long id, String name, String fallbackUrl) {
-        Bundle args = new Bundle();
+    public static ProfilePicDialogFragment getInstance(final long id, final String name, final String fallbackUrl) {
+        final Bundle args = new Bundle();
         args.putLong("id", id);
         args.putString("name", name);
         args.putString("fallbackUrl", fallbackUrl);
-        ProfilePicDialogFragment fragment = new ProfilePicDialogFragment();
+        final ProfilePicDialogFragment fragment = new ProfilePicDialogFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -65,19 +65,19 @@ public class ProfilePicDialogFragment extends DialogFragment {
     public ProfilePicDialogFragment() {}
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container,
-                             Bundle savedInstanceState) {
-        this.binding = DialogProfilepicBinding.inflate(inflater, container, false);
-        String cookie = settingsHelper.getString(Constants.COOKIE);
-        this.isLoggedIn = !TextUtils.isEmpty(cookie) && CookieUtils.getUserIdFromCookie(cookie) > 0;
-        return this.binding.getRoot();
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             final ViewGroup container,
+                             final Bundle savedInstanceState) {
+        binding = DialogProfilepicBinding.inflate(inflater, container, false);
+        final String cookie = settingsHelper.getString(Constants.COOKIE);
+        isLoggedIn = !TextUtils.isEmpty(cookie) && CookieUtils.getUserIdFromCookie(cookie) > 0;
+        return binding.getRoot();
     }
 
     @NonNull
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Dialog dialog = super.onCreateDialog(savedInstanceState);
+    public Dialog onCreateDialog(final Bundle savedInstanceState) {
+        final Dialog dialog = super.onCreateDialog(savedInstanceState);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         return dialog;
     }
@@ -85,9 +85,9 @@ public class ProfilePicDialogFragment extends DialogFragment {
     @Override
     public void onStart() {
         super.onStart();
-        Dialog dialog = this.getDialog();
+        final Dialog dialog = getDialog();
         if (dialog == null) return;
-        Window window = dialog.getWindow();
+        final Window window = dialog.getWindow();
         if (window == null) return;
         window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         final int width = ViewGroup.LayoutParams.MATCH_PARENT;
@@ -96,26 +96,26 @@ public class ProfilePicDialogFragment extends DialogFragment {
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        this.init();
-        this.fetchAvatar();
+        init();
+        fetchAvatar();
     }
 
     private void init() {
-        Bundle arguments = this.getArguments();
+        final Bundle arguments = getArguments();
         if (arguments == null) {
-            this.dismiss();
+            dismiss();
             return;
         }
-        this.id = arguments.getLong("id");
-        this.name = arguments.getString("name");
-        this.fallbackUrl = arguments.getString("fallbackUrl");
-        this.binding.download.setOnClickListener(v -> {
-            Context context = this.getContext();
+        id = arguments.getLong("id");
+        name = arguments.getString("name");
+        fallbackUrl = arguments.getString("fallbackUrl");
+        binding.download.setOnClickListener(v -> {
+            final Context context = getContext();
             if (context == null) return;
             // if (ContextCompat.checkSelfPermission(context, DownloadUtils.PERMS[0]) == PackageManager.PERMISSION_GRANTED) {
-            this.downloadProfilePicture();
+            downloadProfilePicture();
             // return;
             // }
             // requestPermissions(DownloadUtils.PERMS, 8020);
@@ -123,89 +123,89 @@ public class ProfilePicDialogFragment extends DialogFragment {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions, @NonNull final int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 8020 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            this.downloadProfilePicture();
+            downloadProfilePicture();
         }
     }
 
     private void fetchAvatar() {
-        if (this.isLoggedIn) {
-            UserRepository repository = UserRepository.Companion.getInstance();
-            repository.getUserInfo(this.id, CoroutineUtilsKt.getContinuation((user, throwable) -> AppExecutors.INSTANCE.getMainThread().execute(() -> {
+        if (isLoggedIn) {
+            final UserRepository repository = UserRepository.Companion.getInstance();
+            repository.getUserInfo(id, CoroutineUtilsKt.getContinuation((user, throwable) -> AppExecutors.INSTANCE.getMainThread().execute(() -> {
                 if (throwable != null) {
-                    Context context = this.getContext();
+                    final Context context = getContext();
                     if (context == null) {
-                        this.dismiss();
+                        dismiss();
                         return;
                     }
                     Toast.makeText(context, throwable.getMessage(), Toast.LENGTH_SHORT).show();
-                    this.dismiss();
+                    dismiss();
                     return;
                 }
                 if (user != null) {
-                    String url = user.getHDProfilePicUrl();
+                    final String url = user.getHDProfilePicUrl();
                     if (TextUtils.isEmpty(url)) {
-                        Context context = this.getContext();
+                        final Context context = getContext();
                         if (context == null) return;
                         Toast.makeText(context, R.string.no_profile_pic_found, Toast.LENGTH_LONG).show();
                         return;
                     }
-                    this.setupPhoto(url);
+                    setupPhoto(url);
                 }
             }), Dispatchers.getIO()));
-        } else this.setupPhoto(this.fallbackUrl);
+        } else setupPhoto(fallbackUrl);
     }
 
-    private void setupPhoto(String result) {
-        if (TextUtils.isEmpty(result)) this.url = this.fallbackUrl;
-        else this.url = result;
-        DraweeController controller = Fresco
+    private void setupPhoto(final String result) {
+        if (TextUtils.isEmpty(result)) url = fallbackUrl;
+        else url = result;
+        final DraweeController controller = Fresco
                 .newDraweeControllerBuilder()
-                .setUri(this.url)
-                .setOldController(this.binding.imageViewer.getController())
+                .setUri(url)
+                .setOldController(binding.imageViewer.getController())
                 .setControllerListener(new BaseControllerListener<ImageInfo>() {
                     @Override
-                    public void onFailure(String id, Throwable throwable) {
+                    public void onFailure(final String id, final Throwable throwable) {
                         super.onFailure(id, throwable);
-                        ProfilePicDialogFragment.this.binding.download.setVisibility(View.GONE);
-                        ProfilePicDialogFragment.this.binding.progressView.setVisibility(View.GONE);
+                        binding.download.setVisibility(View.GONE);
+                        binding.progressView.setVisibility(View.GONE);
                     }
 
                     @Override
-                    public void onFinalImageSet(String id,
-                                                ImageInfo imageInfo,
-                                                Animatable animatable) {
+                    public void onFinalImageSet(final String id,
+                                                final ImageInfo imageInfo,
+                                                final Animatable animatable) {
                         super.onFinalImageSet(id, imageInfo, animatable);
-                        ProfilePicDialogFragment.this.binding.download.setVisibility(View.VISIBLE);
-                        ProfilePicDialogFragment.this.binding.progressView.setVisibility(View.GONE);
+                        binding.download.setVisibility(View.VISIBLE);
+                        binding.progressView.setVisibility(View.GONE);
                     }
                 })
                 .build();
-        this.binding.imageViewer.setController(controller);
-        AnimatedZoomableController zoomableController = (AnimatedZoomableController) this.binding.imageViewer.getZoomableController();
+        binding.imageViewer.setController(controller);
+        final AnimatedZoomableController zoomableController = (AnimatedZoomableController) binding.imageViewer.getZoomableController();
         zoomableController.setMaxScaleFactor(3f);
         zoomableController.setGestureZoomEnabled(true);
         zoomableController.setEnabled(true);
-        this.binding.imageViewer.setZoomingEnabled(true);
-        DoubleTapGestureListener tapListener = new DoubleTapGestureListener(this.binding.imageViewer);
-        this.binding.imageViewer.setTapListener(tapListener);
+        binding.imageViewer.setZoomingEnabled(true);
+        final DoubleTapGestureListener tapListener = new DoubleTapGestureListener(binding.imageViewer);
+        binding.imageViewer.setTapListener(tapListener);
     }
 
     private void downloadProfilePicture() {
-        if (this.url == null) return;
+        if (url == null) return;
         // final File dir = new File(Environment.getExternalStorageDirectory(), "Download");
-        Context context = this.getContext();
+        final Context context = getContext();
         if (context == null) return;
         // if (dir.exists() || dir.mkdirs()) {
         //
         // }
-        String fileName = this.name + '_' + System.currentTimeMillis() + ".jpg";
+        final String fileName = name + '_' + System.currentTimeMillis() + ".jpg";
         // final File saveFile = new File(dir, fileName);
-        DocumentFile downloadDir = DownloadUtils.getDownloadDir();
-        DocumentFile saveFile = downloadDir.createFile(Utils.mimeTypeMap.getMimeTypeFromExtension("jpg"), fileName);
-        DownloadUtils.download(context, this.url, saveFile);
+        final DocumentFile downloadDir = DownloadUtils.getDownloadDir();
+        final DocumentFile saveFile = downloadDir.createFile(Utils.mimeTypeMap.getMimeTypeFromExtension("jpg"), fileName);
+        DownloadUtils.download(context, url, saveFile);
         // return;
         // Toast.makeText(context, R.string.downloader_error_creating_folder, Toast.LENGTH_SHORT).show();
     }

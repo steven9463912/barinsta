@@ -12,30 +12,30 @@ public class ExpandableListPosition {
     public int type;
 
     @NonNull
-    public static ExpandableListPosition obtain(int type, int groupPos, int childPos, int flatListPos) {
-        ExpandableListPosition.LIST_POSITION.type = type;
-        ExpandableListPosition.LIST_POSITION.groupPos = groupPos;
-        ExpandableListPosition.LIST_POSITION.childPos = childPos;
-        ExpandableListPosition.LIST_POSITION.flatListPos = flatListPos;
-        return ExpandableListPosition.LIST_POSITION;
+    public static ExpandableListPosition obtain(final int type, final int groupPos, final int childPos, final int flatListPos) {
+        LIST_POSITION.type = type;
+        LIST_POSITION.groupPos = groupPos;
+        LIST_POSITION.childPos = childPos;
+        LIST_POSITION.flatListPos = flatListPos;
+        return LIST_POSITION;
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         //if (o != null && getClass() == o.getClass()) {
         if (o instanceof ExpandableListPosition) {
-            ExpandableListPosition that = (ExpandableListPosition) o;
-            if (this.groupPos != that.groupPos) return false;
-            if (this.childPos != that.childPos) return false;
-            if (this.flatListPos != that.flatListPos) return false;
-            return this.type == that.type;
+            final ExpandableListPosition that = (ExpandableListPosition) o;
+            if (groupPos != that.groupPos) return false;
+            if (childPos != that.childPos) return false;
+            if (flatListPos != that.flatListPos) return false;
+            return type == that.type;
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return 31 * (31 * (31 * this.groupPos + this.childPos) + this.flatListPos) + this.type;
+        return 31 * (31 * (31 * groupPos + childPos) + flatListPos) + type;
     }
 }

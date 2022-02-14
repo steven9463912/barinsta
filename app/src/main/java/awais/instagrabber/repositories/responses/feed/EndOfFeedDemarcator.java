@@ -7,30 +7,30 @@ public class EndOfFeedDemarcator implements Serializable {
     private final long id;
     private final EndOfFeedGroupSet groupSet;
 
-    public EndOfFeedDemarcator(long id, EndOfFeedGroupSet groupSet) {
+    public EndOfFeedDemarcator(final long id, final EndOfFeedGroupSet groupSet) {
         this.id = id;
         this.groupSet = groupSet;
     }
 
     public long getId() {
-        return this.id;
+        return id;
     }
 
     public EndOfFeedGroupSet getGroupSet() {
-        return this.groupSet;
+        return groupSet;
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
-        if (o == null || this.getClass() != o.getClass()) return false;
-        EndOfFeedDemarcator that = (EndOfFeedDemarcator) o;
-        return this.id == that.id &&
-                Objects.equals(this.groupSet, that.groupSet);
+        if (o == null || getClass() != o.getClass()) return false;
+        final EndOfFeedDemarcator that = (EndOfFeedDemarcator) o;
+        return id == that.id &&
+                Objects.equals(groupSet, that.groupSet);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.id, this.groupSet);
+        return Objects.hash(id, groupSet);
     }
 }

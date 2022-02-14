@@ -26,76 +26,76 @@ public class FeedSliderViewHolder extends FeedItemViewHolder {
     private final FeedAdapterV2.FeedItemCallback feedItemCallback;
     private final LayoutPostViewBottomBinding bottom;
 
-    public FeedSliderViewHolder(@NonNull ItemFeedSliderBinding binding,
-                                FeedAdapterV2.FeedItemCallback feedItemCallback) {
+    public FeedSliderViewHolder(@NonNull final ItemFeedSliderBinding binding,
+                                final FeedAdapterV2.FeedItemCallback feedItemCallback) {
         super(binding.getRoot(), feedItemCallback);
         this.binding = binding;
         this.feedItemCallback = feedItemCallback;
-        this.bottom = LayoutPostViewBottomBinding.bind(binding.getRoot());
-        this.bottom.viewsCount.setVisibility(View.GONE);
+        bottom = LayoutPostViewBottomBinding.bind(binding.getRoot());
+        bottom.viewsCount.setVisibility(View.GONE);
         // bottom.btnMute.setVisibility(View.GONE);
-        ViewGroup.LayoutParams layoutParams = binding.mediaList.getLayoutParams();
+        final ViewGroup.LayoutParams layoutParams = binding.mediaList.getLayoutParams();
         layoutParams.height = Utils.displayMetrics.widthPixels + 1;
         binding.mediaList.setLayoutParams(layoutParams);
         // final Context context = binding.getRoot().getContext();
     }
 
     @Override
-    public void bindItem(Media feedModel) {
-        List<Media> sliderItems = feedModel.getCarouselMedia();
-        int sliderItemLen = sliderItems != null ? sliderItems.size() : 0;
+    public void bindItem(final Media feedModel) {
+        final List<Media> sliderItems = feedModel.getCarouselMedia();
+        final int sliderItemLen = sliderItems != null ? sliderItems.size() : 0;
         if (sliderItemLen <= 0) return;
-        String text = "1/" + sliderItemLen;
-        this.binding.mediaCounter.setText(text);
-        this.binding.mediaList.setOffscreenPageLimit(1);
-        SliderItemsAdapter adapter = new SliderItemsAdapter(false, new SliderCallbackAdapter() {
+        final String text = "1/" + sliderItemLen;
+        binding.mediaCounter.setText(text);
+        binding.mediaList.setOffscreenPageLimit(1);
+        final SliderItemsAdapter adapter = new SliderItemsAdapter(false, new SliderCallbackAdapter() {
             @Override
-            public void onItemClicked(int position, Media media, View view) {
-                FeedSliderViewHolder.this.feedItemCallback.onSliderClick(feedModel, position);
+            public void onItemClicked(final int position, final Media media, final View view) {
+                feedItemCallback.onSliderClick(feedModel, position);
             }
         });
-        this.binding.mediaList.setAdapter(adapter);
-        this.binding.mediaList.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+        binding.mediaList.setAdapter(adapter);
+        binding.mediaList.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
-            public void onPageSelected(int position) {
+            public void onPageSelected(final int position) {
                 if (position >= sliderItemLen) return;
-                String text = (position + 1) + "/" + sliderItemLen;
-                FeedSliderViewHolder.this.binding.mediaCounter.setText(text);
-                FeedSliderViewHolder.this.setDimensions(FeedSliderViewHolder.this.binding.mediaList, sliderItems.get(position));
-                FeedSliderViewHolder.this.bottom.download.setOnClickListener(v ->
-                        FeedSliderViewHolder.this.feedItemCallback.onDownloadClick(feedModel, position, FeedSliderViewHolder.this.bottom.download)
+                final String text = (position + 1) + "/" + sliderItemLen;
+                binding.mediaCounter.setText(text);
+                setDimensions(binding.mediaList, sliderItems.get(position));
+                bottom.download.setOnClickListener(v ->
+                        feedItemCallback.onDownloadClick(feedModel, position, bottom.download)
                 );
             }
         });
-        this.setDimensions(this.binding.mediaList, sliderItems.get(0));
-        this.bottom.download.setOnClickListener(v ->
-                this.feedItemCallback.onDownloadClick(feedModel, 0, this.bottom.download)
+        setDimensions(binding.mediaList, sliderItems.get(0));
+        bottom.download.setOnClickListener(v ->
+                feedItemCallback.onDownloadClick(feedModel, 0, bottom.download)
         );
         adapter.submitList(sliderItems);
     }
 
-    private void setDimensions(View view, Media model) {
-        ViewGroup.LayoutParams layoutParams = this.binding.mediaList.getLayoutParams();
-        final int requiredWidth = layoutParams.width;
+    private void setDimensions(final View view, final Media model) {
+        final ViewGroup.LayoutParams layoutParams = binding.mediaList.getLayoutParams();
+        int requiredWidth = layoutParams.width;
         if (requiredWidth <= 0) {
-            ViewTreeObserver.OnPreDrawListener preDrawListener = new ViewTreeObserver.OnPreDrawListener() {
+            final ViewTreeObserver.OnPreDrawListener preDrawListener = new ViewTreeObserver.OnPreDrawListener() {
                 @Override
                 public boolean onPreDraw() {
                     view.getViewTreeObserver().removeOnPreDrawListener(this);
-                    FeedSliderViewHolder.this.setLayoutParamDimens(FeedSliderViewHolder.this.binding.mediaList, model);
+                    setLayoutParamDimens(binding.mediaList, model);
                     return true;
                 }
             };
             view.getViewTreeObserver().addOnPreDrawListener(preDrawListener);
             return;
         }
-        this.setLayoutParamDimens(this.binding.mediaList, model);
+        setLayoutParamDimens(binding.mediaList, model);
     }
 
-    private void setLayoutParamDimens(View view, Media model) {
-        int requiredWidth = view.getMeasuredWidth();
-        ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
-        int spanHeight = NumberUtils.getResultingHeight(requiredWidth, model.getOriginalHeight(), model.getOriginalWidth());
+    private void setLayoutParamDimens(final View view, final Media model) {
+        final int requiredWidth = view.getMeasuredWidth();
+        final ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
+        final int spanHeight = NumberUtils.getResultingHeight(requiredWidth, model.getOriginalHeight(), model.getOriginalWidth());
         layoutParams.height = spanHeight == 0 ? requiredWidth + 1 : spanHeight;
         view.requestLayout();
     }

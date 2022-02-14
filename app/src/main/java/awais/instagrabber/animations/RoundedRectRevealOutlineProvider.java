@@ -32,11 +32,11 @@ public class RoundedRectRevealOutlineProvider extends RevealOutlineAnimation {
     private final Rect mStartRect;
     private final Rect mEndRect;
 
-    public RoundedRectRevealOutlineProvider(final float startRadius, final float endRadius, final Rect startRect, final Rect endRect) {
-        this.mStartRadius = startRadius;
-        this.mEndRadius = endRadius;
-        this.mStartRect = startRect;
-        this.mEndRect = endRect;
+    public RoundedRectRevealOutlineProvider(float startRadius, float endRadius, Rect startRect, Rect endRect) {
+        mStartRadius = startRadius;
+        mEndRadius = endRadius;
+        mStartRect = startRect;
+        mEndRect = endRect;
     }
 
     @Override
@@ -45,12 +45,12 @@ public class RoundedRectRevealOutlineProvider extends RevealOutlineAnimation {
     }
 
     @Override
-    public void setProgress(final float progress) {
-        this.mOutlineRadius = (1 - progress) * this.mStartRadius + progress * this.mEndRadius;
+    public void setProgress(float progress) {
+        mOutlineRadius = (1 - progress) * mStartRadius + progress * mEndRadius;
 
-        this.mOutline.left = (int) ((1 - progress) * this.mStartRect.left + progress * this.mEndRect.left);
-        this.mOutline.top = (int) ((1 - progress) * this.mStartRect.top + progress * this.mEndRect.top);
-        this.mOutline.right = (int) ((1 - progress) * this.mStartRect.right + progress * this.mEndRect.right);
-        this.mOutline.bottom = (int) ((1 - progress) * this.mStartRect.bottom + progress * this.mEndRect.bottom);
+        mOutline.left = (int) ((1 - progress) * mStartRect.left + progress * mEndRect.left);
+        mOutline.top = (int) ((1 - progress) * mStartRect.top + progress * mEndRect.top);
+        mOutline.right = (int) ((1 - progress) * mStartRect.right + progress * mEndRect.right);
+        mOutline.bottom = (int) ((1 - progress) * mStartRect.bottom + progress * mEndRect.bottom);
     }
 }

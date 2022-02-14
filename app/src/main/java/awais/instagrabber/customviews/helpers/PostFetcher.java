@@ -14,39 +14,39 @@ public class PostFetcher {
     private final FetchListener<List<Media>> fetchListener;
     private boolean fetching;
 
-    public PostFetcher(PostFetchService postFetchService,
-                       FetchListener<List<Media>> fetchListener) {
+    public PostFetcher(final PostFetchService postFetchService,
+                       final FetchListener<List<Media>> fetchListener) {
         this.postFetchService = postFetchService;
         this.fetchListener = fetchListener;
     }
 
     public void fetch() {
-        if (this.fetching) return;
-        this.fetching = true;
-        this.postFetchService.fetch(new FetchListener<List<Media>>() {
+        if (fetching) return;
+        fetching = true;
+        postFetchService.fetch(new FetchListener<List<Media>>() {
             @Override
-            public void onResult(List<Media> result) {
-                PostFetcher.this.fetching = false;
-                PostFetcher.this.fetchListener.onResult(result);
+            public void onResult(final List<Media> result) {
+                fetching = false;
+                fetchListener.onResult(result);
             }
 
             @Override
-            public void onFailure(Throwable t) {
-                Log.e(PostFetcher.TAG, "onFailure: ", t);
+            public void onFailure(final Throwable t) {
+                Log.e(TAG, "onFailure: ", t);
             }
         });
     }
 
     public void reset() {
-        this.postFetchService.reset();
+        postFetchService.reset();
     }
 
     public boolean isFetching() {
-        return this.fetching;
+        return fetching;
     }
 
     public boolean hasMore() {
-        return this.postFetchService.hasNextPage();
+        return postFetchService.hasNextPage();
     }
 
     public interface PostFetchService {

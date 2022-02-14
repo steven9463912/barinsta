@@ -9,32 +9,32 @@ import androidx.emoji.widget.EmojiEditText;
 public class KeyNotifyingEmojiEditText extends EmojiEditText {
     private OnKeyEventListener onKeyEventListener;
 
-    public KeyNotifyingEmojiEditText(Context context) {
+    public KeyNotifyingEmojiEditText(final Context context) {
         super(context);
     }
 
-    public KeyNotifyingEmojiEditText(Context context, AttributeSet attrs) {
+    public KeyNotifyingEmojiEditText(final Context context, final AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public KeyNotifyingEmojiEditText(Context context, AttributeSet attrs, int defStyleAttr) {
+    public KeyNotifyingEmojiEditText(final Context context, final AttributeSet attrs, final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
-    public KeyNotifyingEmojiEditText(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public KeyNotifyingEmojiEditText(final Context context, final AttributeSet attrs, final int defStyleAttr, final int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
     @Override
-    public boolean onKeyPreIme(int keyCode, KeyEvent event) {
-        if (this.onKeyEventListener != null) {
-            boolean listenerResult = this.onKeyEventListener.onKeyPreIme(keyCode, event);
+    public boolean onKeyPreIme(final int keyCode, final KeyEvent event) {
+        if (onKeyEventListener != null) {
+            final boolean listenerResult = onKeyEventListener.onKeyPreIme(keyCode, event);
             if (listenerResult) return true;
         }
         return super.onKeyPreIme(keyCode, event);
     }
 
-    public void setOnKeyEventListener(OnKeyEventListener onKeyEventListener) {
+    public void setOnKeyEventListener(final OnKeyEventListener onKeyEventListener) {
         this.onKeyEventListener = onKeyEventListener;
     }
 

@@ -25,48 +25,48 @@ import awais.instagrabber.repositories.responses.directmessages.DirectThreadLast
 import awais.instagrabber.repositories.responses.directmessages.RavenExpiringMediaActionSummary;
 
 public final class DMUtils {
-    public static boolean isRead(@NonNull DirectItem item,
-                                 @NonNull Map<Long, DirectThreadLastSeenAt> lastSeenAt,
-                                 @NonNull List<Long> userIdsToCheck) {
+    public static boolean isRead(@NonNull final DirectItem item,
+                                 @NonNull final Map<Long, DirectThreadLastSeenAt> lastSeenAt,
+                                 @NonNull final List<Long> userIdsToCheck) {
         return lastSeenAt.entrySet()
                          .stream()
                          .filter(entry -> userIdsToCheck.contains(entry.getKey()))
                          .anyMatch(entry -> {
-                             DirectThreadLastSeenAt threadLastSeenAt = entry.getValue();
+                             final DirectThreadLastSeenAt threadLastSeenAt = entry.getValue();
                              if (threadLastSeenAt == null) return false;
-                             String userLastSeenTsString = threadLastSeenAt.getTimestamp();
+                             final String userLastSeenTsString = threadLastSeenAt.getTimestamp();
                              if (userLastSeenTsString == null) return false;
-                             long userTs = Long.parseLong(userLastSeenTsString);
-                             long itemTs = item.getTimestamp();
+                             final long userTs = Long.parseLong(userLastSeenTsString);
+                             final long itemTs = item.getTimestamp();
                              return userTs >= itemTs;
                          });
     }
 
-    public static boolean isRead(@NonNull DirectThread thread) {
-        boolean read;
+    public static boolean isRead(@NonNull final DirectThread thread) {
+        final boolean read;
         // if (thread.getDirectStory() != null) {
         //     return false;
         // }
-        DirectItem item = thread.getFirstDirectItem();
-        long viewerId = thread.getViewerId();
+        final DirectItem item = thread.getFirstDirectItem();
+        final long viewerId = thread.getViewerId();
         if (item != null && item.getUserId() == viewerId) {
             // if last item was sent by user, then it is read (even though we have auto read unchecked?)
             read = true;
         } else {
-            Map<Long, DirectThreadLastSeenAt> lastSeenAtMap = thread.getLastSeenAt();
-            read = item != null && DMUtils.isRead(item, lastSeenAtMap, Collections.singletonList(viewerId));
+            final Map<Long, DirectThreadLastSeenAt> lastSeenAtMap = thread.getLastSeenAt();
+            read = item != null && isRead(item, lastSeenAtMap, Collections.singletonList(viewerId));
         }
         return read;
     }
 
-    public static String getMessageString(@NonNull DirectThread thread,
-                                          Resources resources,
-                                          long viewerId,
-                                          DirectItem item) {
-        long senderId = item.getUserId();
-        DirectItemType itemType = item.getItemType();
+    public static String getMessageString(@NonNull final DirectThread thread,
+                                          final Resources resources,
+                                          final long viewerId,
+                                          final DirectItem item) {
+        final long senderId = item.getUserId();
+        final DirectItemType itemType = item.getItemType();
         String subtitle = null;
-        String username = DMUtils.getUsername(thread.getUsers(), senderId, viewerId, resources);
+        final String username = getUsername(thread.getUsers(), senderId, viewerId, resources);
         String message = "";
         if (itemType == null) {
             message = resources.getString(R.string.dms_inbox_raven_message_unknown);
@@ -85,7 +85,7 @@ public final class DMUtils {
                     message = item.getPlaceholder().getMessage();
                     break;
                 case MEDIA_SHARE:
-                    Media mediaShare = item.getMediaShare();
+                    final Media mediaShare = item.getMediaShare();
                     User mediaShareUser = null;
                     if (mediaShare != null) {
                         mediaShareUser = mediaShare.getUser();
@@ -95,7 +95,7 @@ public final class DMUtils {
                                                    mediaShareUser == null ? "" : mediaShareUser.getUsername());
                     break;
                 case ANIMATED_MEDIA:
-                    DirectItemAnimatedMedia animatedMedia = item.getAnimatedMedia();
+                    final DirectItemAnimatedMedia animatedMedia = item.getAnimatedMedia();
                     subtitle = resources.getString(animatedMedia.isSticker() ? R.string.dms_inbox_shared_sticker
                                                                              : R.string.dms_inbox_shared_gif,
                                                    username != null ? username : "");
@@ -109,19 +109,19 @@ public final class DMUtils {
                             .getString(R.string.dms_inbox_shared_location, username != null ? username : "", item.getLocation().getName());
                     break;
                 case MEDIA: {
-                    MediaItemType mediaType = item.getMedia().getType();
-                    subtitle = DMUtils.getMediaSpecificSubtitle(username, resources, mediaType);
+                    final MediaItemType mediaType = item.getMedia().getType();
+                    subtitle = getMediaSpecificSubtitle(username, resources, mediaType);
                     break;
                 }
                 case STORY_SHARE: {
-                    String reelType = item.getStoryShare().getReelType();
+                    final String reelType = item.getStoryShare().getReelType();
                     if (reelType == null) {
                         subtitle = item.getStoryShare().getTitle();
                     } else {
-                        int format = reelType.equals("highlight_reel")
+                        final int format = reelType.equals("highlight_reel")
                                            ? R.string.dms_inbox_shared_highlight
                                            : R.string.dms_inbox_shared_story;
-                        Media media = item.getStoryShare().getMedia();
+                        final Media media = item.getStoryShare().getMedia();
                         User storyShareMediaUser = null;
                         if (media != null) {
                             storyShareMediaUser = media.getUser();
@@ -142,7 +142,7 @@ public final class DMUtils {
                     subtitle = item.getVideoCallEvent().getDescription();
                     break;
                 case CLIP:
-                    Media clip = item.getClip().getClip();
+                    final Media clip = item.getClip().getClip();
                     User clipUser = null;
                     if (clip != null) {
                         clipUser = clip.getUser();
@@ -152,7 +152,7 @@ public final class DMUtils {
                                                    clipUser == null ? "" : clipUser.getUsername());
                     break;
                 case FELIX_SHARE:
-                    Media video = item.getFelixShare().getVideo();
+                    final Media video = item.getFelixShare().getVideo();
                     User felixShareVideoUser = null;
                     if (video != null) {
                         felixShareVideoUser = video.getUser();
@@ -162,15 +162,15 @@ public final class DMUtils {
                                                    felixShareVideoUser == null ? "" : felixShareVideoUser.getUsername());
                     break;
                 case RAVEN_MEDIA:
-                    subtitle = DMUtils.getRavenMediaSubtitle(item, resources, username);
+                    subtitle = getRavenMediaSubtitle(item, resources, username);
                     break;
                 case REEL_SHARE:
-                    DirectItemReelShare reelShare = item.getReelShare();
+                    final DirectItemReelShare reelShare = item.getReelShare();
                     if (reelShare == null) {
                         subtitle = "";
                         break;
                     }
-                    String reelType = reelShare.getType();
+                    final String reelType = reelShare.getType();
                     switch (reelType) {
                         case "reply":
                             if (viewerId == item.getUserId()) {
@@ -183,8 +183,8 @@ public final class DMUtils {
                         case "mention":
                             if (viewerId == item.getUserId()) {
                                 // You mentioned the other person
-                                long mentionedUserId = item.getReelShare().getMentionedUserId();
-                                String otherUsername = DMUtils.getUsername(thread.getUsers(), mentionedUserId, viewerId, resources);
+                                final long mentionedUserId = item.getReelShare().getMentionedUserId();
+                                final String otherUsername = getUsername(thread.getUsers(), mentionedUserId, viewerId, resources);
                                 subtitle = resources.getString(R.string.dms_inbox_mentioned_story_outgoing, otherUsername);
                             } else {
                                 // They mentioned you
@@ -221,20 +221,20 @@ public final class DMUtils {
         return subtitle;
     }
 
-    public static String getUsername(List<User> users,
-                                     long userId,
-                                     long viewerId,
-                                     Resources resources) {
+    public static String getUsername(final List<User> users,
+                                     final long userId,
+                                     final long viewerId,
+                                     final Resources resources) {
         if (userId == viewerId) {
             return resources.getString(R.string.you);
         }
-        Optional<User> senderOptional = users.stream()
+        final Optional<User> senderOptional = users.stream()
                                                    .filter(Objects::nonNull)
                                                    .filter(user -> user.getPk() == userId)
                                                    .findFirst();
         return senderOptional.map(user -> {
             // return full name for fb users
-            String username = user.getUsername();
+            final String username = user.getUsername();
             if (TextUtils.isEmpty(username)) {
                 return user.getFullName();
             }
@@ -242,11 +242,11 @@ public final class DMUtils {
         }).orElse(null);
     }
 
-    public static String getMediaSpecificSubtitle(String username, Resources resources, MediaItemType mediaType) {
-        String userSharedAnImage = resources.getString(R.string.dms_inbox_shared_image, username != null ? username : "");
-        String userSharedAVideo = resources.getString(R.string.dms_inbox_shared_video, username != null ? username : "");
-        String userSentAMessage = resources.getString(R.string.dms_inbox_shared_message, username != null ? username : "");
-        final String subtitle;
+    public static String getMediaSpecificSubtitle(final String username, final Resources resources, final MediaItemType mediaType) {
+        final String userSharedAnImage = resources.getString(R.string.dms_inbox_shared_image, username != null ? username : "");
+        final String userSharedAVideo = resources.getString(R.string.dms_inbox_shared_video, username != null ? username : "");
+        final String userSentAMessage = resources.getString(R.string.dms_inbox_shared_message, username != null ? username : "");
+        String subtitle;
         switch (mediaType) {
             case MEDIA_TYPE_IMAGE:
                 subtitle = userSharedAnImage;
@@ -261,14 +261,14 @@ public final class DMUtils {
         return subtitle;
     }
 
-    private static String getRavenMediaSubtitle(DirectItem item,
-                                                Resources resources,
-                                                String username) {
+    private static String getRavenMediaSubtitle(final DirectItem item,
+                                                final Resources resources,
+                                                final String username) {
         String subtitle = "↗ ";
-        DirectItemVisualMedia visualMedia = item.getVisualMedia();
-        RavenExpiringMediaActionSummary summary = visualMedia.getExpiringMediaActionSummary();
+        final DirectItemVisualMedia visualMedia = item.getVisualMedia();
+        final RavenExpiringMediaActionSummary summary = visualMedia.getExpiringMediaActionSummary();
         if (summary != null) {
-            ActionType expiringMediaType = summary.getType();
+            final ActionType expiringMediaType = summary.getType();
             int textRes = 0;
             switch (expiringMediaType) {
                 case DELIVERED:
@@ -304,8 +304,8 @@ public final class DMUtils {
             }
             return subtitle;
         }
-        MediaItemType mediaType = visualMedia.getMedia().getType();
-        subtitle = DMUtils.getMediaSpecificSubtitle(username, resources, mediaType);
+        final MediaItemType mediaType = visualMedia.getMedia().getType();
+        subtitle = getMediaSpecificSubtitle(username, resources, mediaType);
         return subtitle;
     }
 }

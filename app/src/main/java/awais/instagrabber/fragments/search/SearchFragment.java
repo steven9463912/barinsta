@@ -57,124 +57,124 @@ public class SearchFragment extends Fragment implements SearchCategoryFragment.O
 
     private final TextWatcherAdapter textWatcher = new TextWatcherAdapter() {
         @Override
-        public void afterTextChanged(Editable s) {
+        public void afterTextChanged(final Editable s) {
             if (s == null) return;
-            SearchFragment.this.viewModel.submitQuery(s.toString().trim());
+            viewModel.submitQuery(s.toString().trim());
         }
     };
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        FragmentActivity fragmentActivity = this.getActivity();
+        final FragmentActivity fragmentActivity = getActivity();
         if (!(fragmentActivity instanceof MainActivity)) return;
-        this.mainActivity = (MainActivity) fragmentActivity;
-        this.viewModel = new ViewModelProvider(this.mainActivity).get(SearchFragmentViewModel.class);
+        mainActivity = (MainActivity) fragmentActivity;
+        viewModel = new ViewModelProvider(mainActivity).get(SearchFragmentViewModel.class);
     }
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        if (this.root != null) {
-            this.shouldRefresh = false;
-            return this.root;
+    public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable final Bundle savedInstanceState) {
+        if (root != null) {
+            shouldRefresh = false;
+            return root;
         }
-        this.binding = FragmentSearchBinding.inflate(inflater, container, false);
-        this.root = this.binding.getRoot();
-        return this.root;
+        binding = FragmentSearchBinding.inflate(inflater, container, false);
+        root = binding.getRoot();
+        return root;
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        if (!this.shouldRefresh) return;
-        this.init(savedInstanceState);
-        this.shouldRefresh = false;
+    public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
+        if (!shouldRefresh) return;
+        init(savedInstanceState);
+        shouldRefresh = false;
     }
 
     @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        String current = this.viewModel.getQuery().getValue();
+        final String current = viewModel.getQuery().getValue();
         if (TextUtils.isEmpty(current)) return;
-        outState.putString(SearchFragment.QUERY, current);
+        outState.putString(QUERY, current);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (this.mainActivity != null) {
-            this.mainActivity.hideSearchView();
+        if (mainActivity != null) {
+            mainActivity.hideSearchView();
         }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (this.mainActivity != null) {
-            this.mainActivity.hideSearchView();
+        if (mainActivity != null) {
+            mainActivity.hideSearchView();
         }
-        if (this.searchInput != null) {
-            this.searchInput.removeTextChangedListener(this.textWatcher);
-            this.searchInput.setText("");
+        if (searchInput != null) {
+            searchInput.removeTextChangedListener(textWatcher);
+            searchInput.setText("");
         }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (this.mainActivity != null) {
-            this.mainActivity.showSearchView();
+        if (mainActivity != null) {
+            mainActivity.showSearchView();
         }
         if (settingsHelper.getBoolean(PREF_SEARCH_FOCUS_KEYBOARD)) {
-            if (this.searchInput != null) {
-                this.searchInput.requestFocus();
+            if (searchInput != null) {
+                searchInput.requestFocus();
             }
-            InputMethodManager imm = (InputMethodManager) this.requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-            if (imm != null) imm.showSoftInput(this.searchInput, InputMethodManager.SHOW_IMPLICIT);
+            final InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) imm.showSoftInput(searchInput, InputMethodManager.SHOW_IMPLICIT);
         }
     }
 
-    private void init(@Nullable Bundle savedInstanceState) {
-        if (this.mainActivity == null) return;
-        this.searchInput = this.mainActivity.showSearchView().getEditText();
-        this.setupObservers();
-        this.setupViewPager();
-        this.setupSearchInput(savedInstanceState);
+    private void init(@Nullable final Bundle savedInstanceState) {
+        if (mainActivity == null) return;
+        searchInput = mainActivity.showSearchView().getEditText();
+        setupObservers();
+        setupViewPager();
+        setupSearchInput(savedInstanceState);
     }
 
     private void setupObservers() {
-        this.viewModel.getQuery().observe(this.getViewLifecycleOwner(), q -> {}); // need to observe, so that getQuery returns proper value
+        viewModel.getQuery().observe(getViewLifecycleOwner(), q -> {}); // need to observe, so that getQuery returns proper value
     }
 
-    private void setupSearchInput(@Nullable Bundle savedInstanceState) {
-        if (this.searchInput == null) return;
-        this.searchInput.removeTextChangedListener(this.textWatcher); // make sure we add only 1 instance of textWatcher
-        this.searchInput.addTextChangedListener(this.textWatcher);
+    private void setupSearchInput(@Nullable final Bundle savedInstanceState) {
+        if (searchInput == null) return;
+        searchInput.removeTextChangedListener(textWatcher); // make sure we add only 1 instance of textWatcher
+        searchInput.addTextChangedListener(textWatcher);
         boolean triggerEmptyQuery = true;
         if (savedInstanceState != null) {
-            String savedQuery = savedInstanceState.getString(SearchFragment.QUERY);
+            final String savedQuery = savedInstanceState.getString(QUERY);
             if (TextUtils.isEmpty(savedQuery)) return;
-            this.searchInput.setText(savedQuery);
+            searchInput.setText(savedQuery);
             triggerEmptyQuery = false;
         }
         if (settingsHelper.getBoolean(PREF_SEARCH_FOCUS_KEYBOARD)) {
-            this.searchInput.requestFocus();
-            InputMethodManager imm = (InputMethodManager) this.requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-            if (imm != null) imm.showSoftInput(this.searchInput, InputMethodManager.SHOW_IMPLICIT);
+            searchInput.requestFocus();
+            final InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) imm.showSoftInput(searchInput, InputMethodManager.SHOW_IMPLICIT);
         }
         if (triggerEmptyQuery) {
-            this.viewModel.submitQuery("");
+            viewModel.submitQuery("");
         }
     }
 
     private void setupViewPager() {
-        this.binding.pager.setSaveEnabled(false);
-        List<FavoriteType> categories = Arrays.asList(FavoriteType.values());
-        this.binding.pager.setAdapter(new SearchCategoryAdapter(this, categories));
-        TabLayoutMediator mediator = new TabLayoutMediator(this.binding.tabLayout, this.binding.pager, (tab, position) -> {
+        binding.pager.setSaveEnabled(false);
+        final List<FavoriteType> categories = Arrays.asList(FavoriteType.values());
+        binding.pager.setAdapter(new SearchCategoryAdapter(this, categories));
+        final TabLayoutMediator mediator = new TabLayoutMediator(binding.tabLayout, binding.pager, (tab, position) -> {
             try {
-                FavoriteType type = categories.get(position);
-                int resId;
+                final FavoriteType type = categories.get(position);
+                final int resId;
                 switch (type) {
                     case TOP:
                         resId = R.string.top;
@@ -192,23 +192,23 @@ public class SearchFragment extends Fragment implements SearchCategoryFragment.O
                         throw new IllegalStateException("Unexpected value: " + type);
                 }
                 tab.setText(resId);
-            } catch (final Exception e) {
-                Log.e(SearchFragment.TAG, "setupViewPager: ", e);
+            } catch (Exception e) {
+                Log.e(TAG, "setupViewPager: ", e);
             }
         });
         mediator.attach();
     }
 
     @Override
-    public void onSearchItemClick(SearchItem searchItem) {
+    public void onSearchItemClick(final SearchItem searchItem) {
         if (searchItem == null) return;
-        FavoriteType type = searchItem.getType();
+        final FavoriteType type = searchItem.getType();
         if (type == null) return;
         try {
             if (!searchItem.isFavorite()) {
-                this.viewModel.saveToRecentSearches(searchItem); // insert or update recent
+                viewModel.saveToRecentSearches(searchItem); // insert or update recent
             }
-            NavDirections action;
+            final NavDirections action;
             switch (type) {
                 case USER:
                     action = SearchFragmentDirections.actionToProfile().setUsername(searchItem.getUser().getUsername());
@@ -223,27 +223,27 @@ public class SearchFragment extends Fragment implements SearchCategoryFragment.O
                     return;
             }
             NavHostFragment.findNavController(this).navigate(action);
-        } catch (final Exception e) {
-            Log.e(SearchFragment.TAG, "onSearchItemClick: ", e);
+        } catch (Exception e) {
+            Log.e(TAG, "onSearchItemClick: ", e);
         }
     }
 
     @Override
-    public void onSearchItemDelete(SearchItem searchItem, FavoriteType type) {
-        LiveData<Resource<Object>> liveData = this.viewModel.deleteRecentSearch(searchItem);
+    public void onSearchItemDelete(final SearchItem searchItem, final FavoriteType type) {
+        final LiveData<Resource<Object>> liveData = viewModel.deleteRecentSearch(searchItem);
         if (liveData == null) return;
-        liveData.observe(this.getViewLifecycleOwner(), new Observer<Resource<Object>>() {
+        liveData.observe(getViewLifecycleOwner(), new Observer<Resource<Object>>() {
             @Override
-            public void onChanged(Resource<Object> resource) {
+            public void onChanged(final Resource<Object> resource) {
                 if (resource == null) return;
                 switch (resource.status) {
                     case SUCCESS:
-                        SearchFragment.this.viewModel.search("", type);
-                        SearchFragment.this.viewModel.search("", FavoriteType.TOP);
+                        viewModel.search("", type);
+                        viewModel.search("", FavoriteType.TOP);
                         liveData.removeObserver(this);
                         break;
                     case ERROR:
-                        Snackbar.make(SearchFragment.this.binding.getRoot(), R.string.error, BaseTransientBottomBar.LENGTH_SHORT).show();
+                        Snackbar.make(binding.getRoot(), R.string.error, BaseTransientBottomBar.LENGTH_SHORT).show();
                         liveData.removeObserver(this);
                         break;
                     case LOADING:

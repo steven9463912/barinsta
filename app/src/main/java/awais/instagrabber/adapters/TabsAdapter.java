@@ -26,13 +26,13 @@ import awais.instagrabber.utils.Utils;
 public class TabsAdapter extends ListAdapter<TabsAdapter.TabOrHeader, RecyclerView.ViewHolder> {
     private static final DiffUtil.ItemCallback<TabOrHeader> DIFF_CALLBACK = new DiffUtil.ItemCallback<TabOrHeader>() {
         @Override
-        public boolean areItemsTheSame(@NonNull TabOrHeader oldItem, @NonNull TabOrHeader newItem) {
+        public boolean areItemsTheSame(@NonNull final TabOrHeader oldItem, @NonNull final TabOrHeader newItem) {
             if (oldItem.isHeader() && newItem.isHeader()) {
                 return oldItem.header == newItem.header;
             }
             if (!oldItem.isHeader() && !newItem.isHeader()) {
-                Tab oldTab = oldItem.tab;
-                Tab newTab = newItem.tab;
+                final Tab oldTab = oldItem.tab;
+                final Tab newTab = newItem.tab;
                 return oldTab.getIconResId() == newTab.getIconResId()
                         && Objects.equals(oldTab.getTitle(), newTab.getTitle());
             }
@@ -40,13 +40,13 @@ public class TabsAdapter extends ListAdapter<TabsAdapter.TabOrHeader, RecyclerVi
         }
 
         @Override
-        public boolean areContentsTheSame(@NonNull TabOrHeader oldItem, @NonNull TabOrHeader newItem) {
+        public boolean areContentsTheSame(@NonNull final TabOrHeader oldItem, @NonNull final TabOrHeader newItem) {
             if (oldItem.isHeader() && newItem.isHeader()) {
                 return oldItem.header == newItem.header;
             }
             if (!oldItem.isHeader() && !newItem.isHeader()) {
-                Tab oldTab = oldItem.tab;
-                Tab newTab = newItem.tab;
+                final Tab oldTab = oldItem.tab;
+                final Tab newTab = newItem.tab;
                 return oldTab.getIconResId() == newTab.getIconResId()
                         && Objects.equals(oldTab.getTitle(), newTab.getTitle());
             }
@@ -59,42 +59,42 @@ public class TabsAdapter extends ListAdapter<TabsAdapter.TabOrHeader, RecyclerVi
     private List<Tab> current = new ArrayList<>();
     private List<Tab> others = new ArrayList<>();
 
-    public TabsAdapter(@NonNull TabAdapterCallback tabAdapterCallback) {
-        super(TabsAdapter.DIFF_CALLBACK);
+    public TabsAdapter(@NonNull final TabAdapterCallback tabAdapterCallback) {
+        super(DIFF_CALLBACK);
         this.tabAdapterCallback = tabAdapterCallback;
     }
 
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull final ViewGroup parent, final int viewType) {
+        final LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
         if (viewType == 1) {
-            ItemTabOrderPrefBinding binding = ItemTabOrderPrefBinding.inflate(layoutInflater, parent, false);
-            return new TabViewHolder(binding, this.tabAdapterCallback);
+            final ItemTabOrderPrefBinding binding = ItemTabOrderPrefBinding.inflate(layoutInflater, parent, false);
+            return new TabViewHolder(binding, tabAdapterCallback);
         }
-        ItemFavSectionHeaderBinding headerBinding = ItemFavSectionHeaderBinding.inflate(layoutInflater, parent, false);
+        final ItemFavSectionHeaderBinding headerBinding = ItemFavSectionHeaderBinding.inflate(layoutInflater, parent, false);
         return new DirectUsersAdapter.HeaderViewHolder(headerBinding);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position) {
         if (holder instanceof DirectUsersAdapter.HeaderViewHolder) {
             ((DirectUsersAdapter.HeaderViewHolder) holder).bind(R.string.other_tabs);
             return;
         }
         if (holder instanceof TabViewHolder) {
-            Tab tab = this.getItem(position).tab;
-            ((TabViewHolder) holder).bind(tab, this.others.contains(tab), this.current.size() == 5);
+            final Tab tab = getItem(position).tab;
+            ((TabViewHolder) holder).bind(tab, others.contains(tab), current.size() == 5);
         }
     }
 
     @Override
-    public int getItemViewType(int position) {
-        return this.getItem(position).isHeader() ? 0 : 1;
+    public int getItemViewType(final int position) {
+        return getItem(position).isHeader() ? 0 : 1;
     }
 
-    public void submitList(List<Tab> current, List<Tab> others, Runnable commitCallback) {
-        ImmutableList.Builder<TabOrHeader> builder = ImmutableList.builder();
+    public void submitList(final List<Tab> current, final List<Tab> others, final Runnable commitCallback) {
+        final ImmutableList.Builder<TabOrHeader> builder = ImmutableList.builder();
         if (current != null) {
             builder.addAll(current.stream()
                                   .map(TabOrHeader::new)
@@ -109,38 +109,38 @@ public class TabsAdapter extends ListAdapter<TabsAdapter.TabOrHeader, RecyclerVi
         // Mutable non-null copies
         this.current = current != null ? new ArrayList<>(current) : new ArrayList<>();
         this.others = others != null ? new ArrayList<>(others) : new ArrayList<>();
-        this.submitList(builder.build(), commitCallback);
+        submitList(builder.build(), commitCallback);
     }
 
-    public void submitList(List<Tab> current, List<Tab> others) {
-        this.submitList(current, others, null);
+    public void submitList(final List<Tab> current, final List<Tab> others) {
+        submitList(current, others, null);
     }
 
-    public void moveItem(int from, int to) {
-        List<Tab> currentCopy = new ArrayList<>(this.current);
+    public void moveItem(final int from, final int to) {
+        final List<Tab> currentCopy = new ArrayList<>(current);
         Utils.moveItem(from, to, currentCopy);
-        this.submitList(currentCopy, this.others);
-        this.tabAdapterCallback.onOrderChange(currentCopy);
+        submitList(currentCopy, others);
+        tabAdapterCallback.onOrderChange(currentCopy);
     }
 
     public int getCurrentCount() {
-        return this.current.size();
+        return current.size();
     }
 
     public static class TabOrHeader {
         Tab tab;
         int header;
 
-        public TabOrHeader(Tab tab) {
+        public TabOrHeader(final Tab tab) {
             this.tab = tab;
         }
 
-        public TabOrHeader(@StringRes int header) {
+        public TabOrHeader(@StringRes final int header) {
             this.header = header;
         }
 
         boolean isHeader() {
-            return this.header != 0;
+            return header != 0;
         }
     }
 

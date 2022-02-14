@@ -43,7 +43,7 @@ public class RecordView extends RelativeLayout {
     private float initialX;
     private float basketInitialY;
     private float difX;
-    private float cancelBounds = RecordView.DEFAULT_CANCEL_BOUNDS;
+    private float cancelBounds = DEFAULT_CANCEL_BOUNDS;
     private long startTime;
     private final Context context;
     private OnRecordListener onRecordListener;
@@ -58,87 +58,87 @@ public class RecordView extends RelativeLayout {
     private int minMillis = 1000;
 
 
-    public RecordView(final Context context) {
+    public RecordView(Context context) {
         super(context);
         this.context = context;
-        this.init(context, null, -1, -1);
+        init(context, null, -1, -1);
     }
 
 
-    public RecordView(final Context context, @Nullable final AttributeSet attrs) {
+    public RecordView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         this.context = context;
-        this.init(context, attrs, -1, -1);
+        init(context, attrs, -1, -1);
     }
 
-    public RecordView(final Context context, @Nullable final AttributeSet attrs, final int defStyleAttr) {
+    public RecordView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         this.context = context;
-        this.init(context, attrs, defStyleAttr, -1);
+        init(context, attrs, defStyleAttr, -1);
     }
 
-    private void init(final Context context, final AttributeSet attrs, final int defStyleAttr, final int defStyleRes) {
-        this.binding = RecordViewLayoutBinding.inflate(LayoutInflater.from(context), this, false);
-        this.addView(this.binding.getRoot());
-        this.hideViews(true);
+    private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        binding = RecordViewLayoutBinding.inflate(LayoutInflater.from(context), this, false);
+        addView(binding.getRoot());
+        hideViews(true);
         if (attrs != null && defStyleAttr == -1 && defStyleRes == -1) {
-            final TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.RecordView, -1, defStyleRes);
-            final int slideArrowResource = typedArray.getResourceId(R.styleable.RecordView_slide_to_cancel_arrow, -1);
-            final String slideToCancelText = typedArray.getString(R.styleable.RecordView_slide_to_cancel_text);
-            final int slideToCancelTextColor = typedArray.getResourceId(R.styleable.RecordView_slide_to_cancel_text_color, -1);
-            final int slideMarginRight = (int) typedArray.getDimension(R.styleable.RecordView_slide_to_cancel_margin_right, 30);
-            final int counterTimeColor = typedArray.getResourceId(R.styleable.RecordView_counter_time_color, -1);
-            final int arrowColor = typedArray.getResourceId(R.styleable.RecordView_slide_to_cancel_arrow_color, -1);
-            final int cancelBounds = typedArray.getDimensionPixelSize(R.styleable.RecordView_slide_to_cancel_bounds, -1);
+            TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.RecordView, -1, -1);
+            int slideArrowResource = typedArray.getResourceId(R.styleable.RecordView_slide_to_cancel_arrow, -1);
+            String slideToCancelText = typedArray.getString(R.styleable.RecordView_slide_to_cancel_text);
+            int slideToCancelTextColor = typedArray.getResourceId(R.styleable.RecordView_slide_to_cancel_text_color, -1);
+            int slideMarginRight = (int) typedArray.getDimension(R.styleable.RecordView_slide_to_cancel_margin_right, 30);
+            int counterTimeColor = typedArray.getResourceId(R.styleable.RecordView_counter_time_color, -1);
+            int arrowColor = typedArray.getResourceId(R.styleable.RecordView_slide_to_cancel_arrow_color, -1);
+            int cancelBounds = typedArray.getDimensionPixelSize(R.styleable.RecordView_slide_to_cancel_bounds, -1);
             if (cancelBounds != -1) {
-                this.setCancelBounds(cancelBounds, false);//don't convert it to pixels since it's already in pixels
+                setCancelBounds(cancelBounds, false);//don't convert it to pixels since it's already in pixels
             }
             if (slideToCancelText != null) {
-                this.setSlideToCancelText(slideToCancelText);
+                setSlideToCancelText(slideToCancelText);
             }
             if (slideToCancelTextColor != -1) {
-                this.setSlideToCancelTextColor(this.getResources().getColor(slideToCancelTextColor));
+                setSlideToCancelTextColor(getResources().getColor(slideToCancelTextColor));
             }
             if (slideArrowResource != -1) {
-                this.setSlideArrowDrawable(slideArrowResource);
+                setSlideArrowDrawable(slideArrowResource);
             }
             if (arrowColor != -1) {
-                this.setSlideToCancelArrowColor(this.getResources().getColor(arrowColor));
+                setSlideToCancelArrowColor(getResources().getColor(arrowColor));
             }
             if (counterTimeColor != -1) {
-                this.setCounterTimeColor(this.getResources().getColor(counterTimeColor));
+                setCounterTimeColor(getResources().getColor(counterTimeColor));
             }
-            this.setMarginRight(slideMarginRight, true);
+            setMarginRight(slideMarginRight, true);
             typedArray.recycle();
         }
-        this.recordViewAnimationHelper = new RecordViewAnimationHelper(context, this.binding.basketImg, this.binding.glowingMic);
+        recordViewAnimationHelper = new RecordViewAnimationHelper(context, binding.basketImg, binding.glowingMic);
     }
 
-    private void hideViews(final boolean hideSmallMic) {
-        this.binding.slideToCancel.setVisibility(View.GONE);
-        this.binding.basketImg.setVisibility(View.GONE);
-        this.binding.counterTv.setVisibility(View.GONE);
+    private void hideViews(boolean hideSmallMic) {
+        binding.slideToCancel.setVisibility(View.GONE);
+        binding.basketImg.setVisibility(View.GONE);
+        binding.counterTv.setVisibility(View.GONE);
         if (hideSmallMic) {
-            this.binding.glowingMic.setVisibility(View.GONE);
+            binding.glowingMic.setVisibility(View.GONE);
         }
     }
 
     private void showViews() {
-        this.binding.slideToCancel.setVisibility(View.VISIBLE);
-        this.binding.glowingMic.setVisibility(View.VISIBLE);
-        this.binding.counterTv.setVisibility(View.VISIBLE);
+        binding.slideToCancel.setVisibility(View.VISIBLE);
+        binding.glowingMic.setVisibility(View.VISIBLE);
+        binding.counterTv.setVisibility(View.VISIBLE);
     }
 
-    private boolean isLessThanMin(final long time) {
-        return time <= this.minMillis;
+    private boolean isLessThanMin(long time) {
+        return time <= minMillis;
     }
 
-    private void playSound(final int soundRes) {
-        if (!this.isSoundEnabled) return;
+    private void playSound(int soundRes) {
+        if (!isSoundEnabled) return;
         if (soundRes == 0) return;
         try {
-            MediaPlayer player = new MediaPlayer();
-            final AssetFileDescriptor afd = this.context.getResources().openRawResourceFd(soundRes);
+            final MediaPlayer player = new MediaPlayer();
+            AssetFileDescriptor afd = context.getResources().openRawResourceFd(soundRes);
             if (afd == null) return;
             player.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
             afd.close();
@@ -146,193 +146,193 @@ public class RecordView extends RelativeLayout {
             player.start();
             player.setOnCompletionListener(MediaPlayer::release);
             player.setLooping(false);
-        } catch (final IOException e) {
-            Log.e(RecordView.TAG, "playSound", e);
+        } catch (IOException e) {
+            Log.e(TAG, "playSound", e);
         }
     }
 
-    protected void onActionDown(final RecordButton recordBtn, final MotionEvent motionEvent) {
-        if (this.onRecordListener != null) {
-            this.onRecordListener.onStart();
+    protected void onActionDown(RecordButton recordBtn, MotionEvent motionEvent) {
+        if (onRecordListener != null) {
+            onRecordListener.onStart();
         }
-        this.recordViewAnimationHelper.setStartRecorded(true);
-        this.recordViewAnimationHelper.resetBasketAnimation();
-        this.recordViewAnimationHelper.resetSmallMic();
+        recordViewAnimationHelper.setStartRecorded(true);
+        recordViewAnimationHelper.resetBasketAnimation();
+        recordViewAnimationHelper.resetSmallMic();
         recordBtn.startScale();
         // slideToCancelLayout.startShimmerAnimation();
 
-        this.initialX = recordBtn.getX();
-        this.basketInitialY = this.binding.basketImg.getY() + 90;
+        initialX = recordBtn.getX();
+        basketInitialY = binding.basketImg.getY() + 90;
         // playSound(RECORD_START);
-        this.showViews();
+        showViews();
 
-        this.recordViewAnimationHelper.animateSmallMicAlpha();
-        this.binding.counterTv.setBase(SystemClock.elapsedRealtime());
-        this.startTime = System.currentTimeMillis();
-        this.binding.counterTv.start();
-        this.isSwiped = false;
+        recordViewAnimationHelper.animateSmallMicAlpha();
+        binding.counterTv.setBase(SystemClock.elapsedRealtime());
+        startTime = System.currentTimeMillis();
+        binding.counterTv.start();
+        isSwiped = false;
     }
 
-    protected void onActionMove(final RecordButton recordBtn, final MotionEvent motionEvent, boolean forceCancel) {
-        final long time = System.currentTimeMillis() - this.startTime;
-        if (this.isSwiped) return;
+    protected void onActionMove(RecordButton recordBtn, MotionEvent motionEvent, final boolean forceCancel) {
+        long time = System.currentTimeMillis() - startTime;
+        if (isSwiped) return;
         //Swipe To Cancel
-        if (forceCancel || (this.binding.slideToCancel.getX() != 0 && this.binding.slideToCancel.getX() <= this.binding.counterTv.getRight() + this.cancelBounds)) {
+        if (forceCancel || (binding.slideToCancel.getX() != 0 && binding.slideToCancel.getX() <= binding.counterTv.getRight() + cancelBounds)) {
             //if the time was less than one second then do not start basket animation
-            if (this.isLessThanMin(time)) {
-                this.hideViews(true);
-                this.recordViewAnimationHelper.clearAlphaAnimation(false);
-                if (this.onRecordListener != null) {
-                    this.onRecordListener.onLessThanMin();
+            if (isLessThanMin(time)) {
+                hideViews(true);
+                recordViewAnimationHelper.clearAlphaAnimation(false);
+                if (onRecordListener != null) {
+                    onRecordListener.onLessThanMin();
                 }
-                this.recordViewAnimationHelper.onAnimationEnd();
+                recordViewAnimationHelper.onAnimationEnd();
             } else {
-                this.hideViews(false);
-                this.recordViewAnimationHelper.animateBasket(this.basketInitialY);
+                hideViews(false);
+                recordViewAnimationHelper.animateBasket(basketInitialY);
             }
-            this.recordViewAnimationHelper.moveRecordButtonAndSlideToCancelBack(recordBtn, this.binding.slideToCancel, this.initialX, this.difX);
-            this.binding.counterTv.stop();
+            recordViewAnimationHelper.moveRecordButtonAndSlideToCancelBack(recordBtn, binding.slideToCancel, initialX, difX);
+            binding.counterTv.stop();
             // slideToCancelLayout.stopShimmerAnimation();
-            this.isSwiped = true;
-            this.recordViewAnimationHelper.setStartRecorded(false);
-            if (this.onRecordListener != null) {
-                this.onRecordListener.onCancel();
+            isSwiped = true;
+            recordViewAnimationHelper.setStartRecorded(false);
+            if (onRecordListener != null) {
+                onRecordListener.onCancel();
             }
             return;
         }
         //if statement is to Prevent Swiping out of bounds
-        if (!(motionEvent.getRawX() < this.initialX)) return;
+        if (!(motionEvent.getRawX() < initialX)) return;
         recordBtn.animate()
                  .x(motionEvent.getRawX())
                  .setDuration(0)
                  .start();
-        if (this.difX == 0) {
-            this.difX = (this.initialX - this.binding.slideToCancel.getX());
+        if (difX == 0) {
+            difX = (initialX - binding.slideToCancel.getX());
         }
-        this.binding.slideToCancel.animate()
-                             .x(motionEvent.getRawX() - this.difX)
+        binding.slideToCancel.animate()
+                             .x(motionEvent.getRawX() - difX)
                              .setDuration(0)
                              .start();
     }
 
-    protected void onActionUp(final RecordButton recordBtn) {
-        long elapsedTime = System.currentTimeMillis() - this.startTime;
-        if (!this.isLessThanMinAllowed && this.isLessThanMin(elapsedTime) && !this.isSwiped) {
-            if (this.onRecordListener != null) {
-                this.onRecordListener.onLessThanMin();
+    protected void onActionUp(RecordButton recordBtn) {
+        final long elapsedTime = System.currentTimeMillis() - startTime;
+        if (!isLessThanMinAllowed && isLessThanMin(elapsedTime) && !isSwiped) {
+            if (onRecordListener != null) {
+                onRecordListener.onLessThanMin();
             }
-            this.recordViewAnimationHelper.setStartRecorded(false);
+            recordViewAnimationHelper.setStartRecorded(false);
             // playSound(RECORD_ERROR);
         } else {
-            if (this.onRecordListener != null && !this.isSwiped) {
-                this.onRecordListener.onFinish(elapsedTime);
+            if (onRecordListener != null && !isSwiped) {
+                onRecordListener.onFinish(elapsedTime);
             }
-            this.recordViewAnimationHelper.setStartRecorded(false);
-            if (!this.isSwiped) {
+            recordViewAnimationHelper.setStartRecorded(false);
+            if (!isSwiped) {
                 // playSound(RECORD_FINISHED);
             }
         }
         //if user has swiped then do not hide SmallMic since it will be hidden after swipe Animation
-        this.hideViews(!this.isSwiped);
-        if (!this.isSwiped) {
-            this.recordViewAnimationHelper.clearAlphaAnimation(true);
+        hideViews(!isSwiped);
+        if (!isSwiped) {
+            recordViewAnimationHelper.clearAlphaAnimation(true);
         }
-        this.recordViewAnimationHelper.moveRecordButtonAndSlideToCancelBack(recordBtn, this.binding.slideToCancel, this.initialX, this.difX);
-        this.binding.counterTv.stop();
+        recordViewAnimationHelper.moveRecordButtonAndSlideToCancelBack(recordBtn, binding.slideToCancel, initialX, difX);
+        binding.counterTv.stop();
         // slideToCancelLayout.stopShimmerAnimation();
     }
 
-    private void setMarginRight(final int marginRight, final boolean convertToDp) {
-        final ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) this.binding.slideToCancel.getLayoutParams();
+    private void setMarginRight(int marginRight, boolean convertToDp) {
+        ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) binding.slideToCancel.getLayoutParams();
         if (convertToDp) {
             layoutParams.rightMargin = Utils.convertDpToPx(marginRight);
         } else {
             layoutParams.rightMargin = marginRight;
         }
-        this.binding.slideToCancel.setLayoutParams(layoutParams);
+        binding.slideToCancel.setLayoutParams(layoutParams);
     }
 
-    private void setSlideArrowDrawable(@DrawableRes int slideArrowResource) {
-        final Drawable slideArrow = AppCompatResources.getDrawable(this.getContext(), slideArrowResource);
+    private void setSlideArrowDrawable(@DrawableRes final int slideArrowResource) {
+        Drawable slideArrow = AppCompatResources.getDrawable(getContext(), slideArrowResource);
         // Log.d(TAG, "setSlideArrowDrawable: slideArrow: " + slideArrow);
         if (slideArrow == null) return;
         slideArrow.setBounds(0, 0, slideArrow.getIntrinsicWidth(), slideArrow.getIntrinsicHeight());
-        this.binding.slideToCancel.setCompoundDrawablesRelative(slideArrow, null, null, null);
+        binding.slideToCancel.setCompoundDrawablesRelative(slideArrow, null, null, null);
     }
 
-    public void setOnRecordListener(final OnRecordListener onRecordListener) {
+    public void setOnRecordListener(OnRecordListener onRecordListener) {
         this.onRecordListener = onRecordListener;
     }
 
-    public void setOnBasketAnimationEndListener(final OnBasketAnimationEnd onBasketAnimationEndListener) {
-        this.recordViewAnimationHelper.setOnBasketAnimationEndListener(onBasketAnimationEndListener);
+    public void setOnBasketAnimationEndListener(OnBasketAnimationEnd onBasketAnimationEndListener) {
+        recordViewAnimationHelper.setOnBasketAnimationEndListener(onBasketAnimationEndListener);
     }
 
-    public void setSoundEnabled(final boolean isEnabled) {
-        this.isSoundEnabled = isEnabled;
+    public void setSoundEnabled(boolean isEnabled) {
+        isSoundEnabled = isEnabled;
     }
 
-    public void setLessThanMinAllowed(final boolean isAllowed) {
-        this.isLessThanMinAllowed = isAllowed;
+    public void setLessThanMinAllowed(boolean isAllowed) {
+        isLessThanMinAllowed = isAllowed;
     }
 
-    public void setSlideToCancelText(final String text) {
-        this.binding.slideToCancel.setText(text);
+    public void setSlideToCancelText(String text) {
+        binding.slideToCancel.setText(text);
     }
 
-    public void setSlideToCancelTextColor(final int color) {
-        this.binding.slideToCancel.setTextColor(color);
+    public void setSlideToCancelTextColor(int color) {
+        binding.slideToCancel.setTextColor(color);
     }
 
-    public void setSmallMicColor(final int color) {
-        this.binding.glowingMic.setColorFilter(color);
+    public void setSmallMicColor(int color) {
+        binding.glowingMic.setColorFilter(color);
     }
 
-    public void setSmallMicIcon(final int icon) {
-        this.binding.glowingMic.setImageResource(icon);
+    public void setSmallMicIcon(int icon) {
+        binding.glowingMic.setImageResource(icon);
     }
 
-    public void setSlideMarginRight(final int marginRight) {
-        this.setMarginRight(marginRight, true);
+    public void setSlideMarginRight(int marginRight) {
+        setMarginRight(marginRight, true);
     }
 
-    public void setCustomSounds(final int startSound, final int finishedSound, final int errorSound) {
+    public void setCustomSounds(int startSound, int finishedSound, int errorSound) {
         //0 means do not play sound
-        this.RECORD_START = startSound;
-        this.RECORD_FINISHED = finishedSound;
-        this.RECORD_ERROR = errorSound;
+        RECORD_START = startSound;
+        RECORD_FINISHED = finishedSound;
+        RECORD_ERROR = errorSound;
     }
 
     public float getCancelBounds() {
-        return this.cancelBounds;
+        return cancelBounds;
     }
 
-    public void setCancelBounds(final float cancelBounds) {
-        this.setCancelBounds(cancelBounds, true);
+    public void setCancelBounds(float cancelBounds) {
+        setCancelBounds(cancelBounds, true);
     }
 
     //set Chronometer color
-    public void setCounterTimeColor(@ColorInt final int color) {
-        this.binding.counterTv.setTextColor(color);
+    public void setCounterTimeColor(@ColorInt int color) {
+        binding.counterTv.setTextColor(color);
     }
 
-    public void setSlideToCancelArrowColor(@ColorInt final int color) {
-        Drawable drawable = this.binding.slideToCancel.getCompoundDrawablesRelative()[0];
+    public void setSlideToCancelArrowColor(@ColorInt int color) {
+        Drawable drawable = binding.slideToCancel.getCompoundDrawablesRelative()[0];
         drawable = DrawableCompat.wrap(drawable);
         DrawableCompat.setTint(drawable.mutate(), color);
-        this.binding.slideToCancel.setCompoundDrawablesRelative(drawable, null, null, null);
+        binding.slideToCancel.setCompoundDrawablesRelative(drawable, null, null, null);
     }
 
-    private void setCancelBounds(final float cancelBounds, final boolean convertDpToPixel) {
+    private void setCancelBounds(float cancelBounds, boolean convertDpToPixel) {
         this.cancelBounds = convertDpToPixel ? Utils.convertDpToPx(cancelBounds) : cancelBounds;
     }
 
-    public void setMinMillis(int minMillis) {
+    public void setMinMillis(final int minMillis) {
         this.minMillis = minMillis;
     }
 
-    public void cancelRecording(RecordButton recordBtn) {
-        this.onActionMove(recordBtn, null, true);
+    public void cancelRecording(final RecordButton recordBtn) {
+        onActionMove(recordBtn, null, true);
     }
 
     public interface OnBasketAnimationEnd {

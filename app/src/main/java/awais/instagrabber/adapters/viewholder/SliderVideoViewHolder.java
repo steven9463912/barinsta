@@ -33,35 +33,35 @@ public class SliderVideoViewHolder extends SliderItemViewHolder {
     private VideoPlayerViewHelper videoPlayerViewHelper;
 
     @SuppressLint("ClickableViewAccessibility")
-    public SliderVideoViewHolder(@NonNull LayoutVideoPlayerWithThumbnailBinding binding,
-                                 boolean loadVideoOnItemClick) {
+    public SliderVideoViewHolder(@NonNull final LayoutVideoPlayerWithThumbnailBinding binding,
+                                 final boolean loadVideoOnItemClick) {
         super(binding.getRoot());
         this.binding = binding;
         this.loadVideoOnItemClick = loadVideoOnItemClick;
-        GestureDetector.OnGestureListener videoPlayerViewGestureListener = new GestureDetector.SimpleOnGestureListener() {
+        final GestureDetector.OnGestureListener videoPlayerViewGestureListener = new GestureDetector.SimpleOnGestureListener() {
             @Override
-            public boolean onSingleTapConfirmed(MotionEvent e) {
+            public boolean onSingleTapConfirmed(final MotionEvent e) {
                 binding.playerView.performClick();
                 return true;
             }
         };
-        GestureDetector gestureDetector = new GestureDetector(this.itemView.getContext(), videoPlayerViewGestureListener);
+        final GestureDetector gestureDetector = new GestureDetector(itemView.getContext(), videoPlayerViewGestureListener);
         binding.playerView.setOnTouchListener((v, event) -> {
             gestureDetector.onTouchEvent(event);
             return true;
         });
     }
 
-    public void bind(@NonNull Media media,
-                     int position,
-                     SliderItemsAdapter.SliderCallback sliderCallback) {
-        float vol = settingsHelper.getBoolean(PreferenceKeys.MUTED_VIDEOS) ? 0f : 1f;
-        VideoPlayerViewHelper.VideoPlayerCallback videoPlayerCallback = new VideoPlayerCallbackAdapter() {
+    public void bind(@NonNull final Media media,
+                     final int position,
+                     final SliderItemsAdapter.SliderCallback sliderCallback) {
+        final float vol = settingsHelper.getBoolean(PreferenceKeys.MUTED_VIDEOS) ? 0f : 1f;
+        final VideoPlayerViewHelper.VideoPlayerCallback videoPlayerCallback = new VideoPlayerCallbackAdapter() {
 
             @Override
             public void onThumbnailClick() {
                 if (sliderCallback != null) {
-                    sliderCallback.onItemClicked(position, media, SliderVideoViewHolder.this.binding.getRoot());
+                    sliderCallback.onItemClicked(position, media, binding.getRoot());
                 }
             }
 
@@ -75,12 +75,12 @@ public class SliderVideoViewHolder extends SliderItemViewHolder {
             @Override
             public void onPlayerViewLoaded() {
                 // binding.itemFeedBottom.btnMute.setVisibility(View.VISIBLE);
-                ViewGroup.LayoutParams layoutParams = SliderVideoViewHolder.this.binding.playerView.getLayoutParams();
-                int requiredWidth = Utils.displayMetrics.widthPixels;
-                int resultingHeight = NumberUtils.getResultingHeight(requiredWidth, media.getOriginalHeight(), media.getOriginalWidth());
+                final ViewGroup.LayoutParams layoutParams = binding.playerView.getLayoutParams();
+                final int requiredWidth = Utils.displayMetrics.widthPixels;
+                final int resultingHeight = NumberUtils.getResultingHeight(requiredWidth, media.getOriginalHeight(), media.getOriginalWidth());
                 layoutParams.width = requiredWidth;
                 layoutParams.height = resultingHeight;
-                SliderVideoViewHolder.this.binding.playerView.requestLayout();
+                binding.playerView.requestLayout();
                 // setMuteIcon(vol == 0f && Utils.sessionVolumeFull ? 1f : vol);
             }
 
@@ -106,7 +106,7 @@ public class SliderVideoViewHolder extends SliderItemViewHolder {
             }
 
             @Override
-            public void onFullScreenModeChanged(boolean isFullScreen, StyledPlayerView playerView) {
+            public void onFullScreenModeChanged(final boolean isFullScreen, final StyledPlayerView playerView) {
                 if (sliderCallback != null) {
                     sliderCallback.onFullScreenModeChanged(isFullScreen, playerView);
                 }
@@ -120,38 +120,38 @@ public class SliderVideoViewHolder extends SliderItemViewHolder {
                 return false;
             }
         };
-        float aspectRatio = (float) media.getOriginalWidth() / media.getOriginalHeight();
+        final float aspectRatio = (float) media.getOriginalWidth() / media.getOriginalHeight();
         String videoUrl = null;
-        List<MediaCandidate> videoVersions = media.getVideoVersions();
+        final List<MediaCandidate> videoVersions = media.getVideoVersions();
         if (videoVersions != null && !videoVersions.isEmpty()) {
-            MediaCandidate videoVersion = videoVersions.get(0);
+            final MediaCandidate videoVersion = videoVersions.get(0);
             if (videoVersion != null) {
                 videoUrl = videoVersion.getUrl();
             }
         }
         if (videoUrl == null) return;
-        this.videoPlayerViewHelper = new VideoPlayerViewHelper(this.binding.getRoot().getContext(),
-                this.binding,
+        videoPlayerViewHelper = new VideoPlayerViewHelper(binding.getRoot().getContext(),
+                binding,
                                                           videoUrl,
                                                           vol,
                                                           aspectRatio,
                                                           ResponseBodyUtils.getThumbUrl(media),
-                this.loadVideoOnItemClick,
+                loadVideoOnItemClick,
                                                           videoPlayerCallback);
-        this.binding.playerView.setOnClickListener(v -> {
+        binding.playerView.setOnClickListener(v -> {
             if (sliderCallback != null) {
-                sliderCallback.onItemClicked(position, media, this.binding.getRoot());
+                sliderCallback.onItemClicked(position, media, binding.getRoot());
             }
         });
     }
 
     public void pause() {
-        if (this.videoPlayerViewHelper == null) return;
-        this.videoPlayerViewHelper.pause();
+        if (videoPlayerViewHelper == null) return;
+        videoPlayerViewHelper.pause();
     }
 
     public void releasePlayer() {
-        if (this.videoPlayerViewHelper == null) return;
-        this.videoPlayerViewHelper.releasePlayer();
+        if (videoPlayerViewHelper == null) return;
+        videoPlayerViewHelper.releasePlayer();
     }
 }

@@ -7,35 +7,35 @@ import awais.instagrabber.repositories.responses.Media;
 
 public class FeedItemCallbackAdapter implements FeedAdapterV2.FeedItemCallback {
     @Override
-    public void onPostClick(Media media) {}
+    public void onPostClick(final Media media) {}
 
     @Override
-    public void onProfilePicClick(Media media) {}
+    public void onProfilePicClick(final Media media) {}
 
     @Override
-    public void onNameClick(Media media) {}
+    public void onNameClick(final Media media) {}
 
     @Override
-    public void onLocationClick(Media media) {}
+    public void onLocationClick(final Media media) {}
 
     @Override
-    public void onMentionClick(String mention) {}
+    public void onMentionClick(final String mention) {}
 
     @Override
-    public void onHashtagClick(String hashtag) {}
+    public void onHashtagClick(final String hashtag) {}
 
     @Override
-    public void onCommentsClick(Media media) {}
+    public void onCommentsClick(final Media media) {}
 
     @Override
-    public void onDownloadClick(Media media, int childPosition, View popupLocation) {}
+    public void onDownloadClick(final Media media, final int childPosition, final View popupLocation) {}
 
     @Override
-    public void onEmailClick(String emailId) {}
+    public void onEmailClick(final String emailId) {}
 
     @Override
-    public void onURLClick(String url) {}
+    public void onURLClick(final String url) {}
 
     @Override
-    public void onSliderClick(Media media, int position) {}
+    public void onSliderClick(final Media media, final int position) {}
 }

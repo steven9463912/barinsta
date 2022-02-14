@@ -19,15 +19,15 @@ public class NotificationArgs {
     private final String fullName; // for AYML, not naturally generated
     private final boolean isVerified; // mostly for AYML, not sure about notif
 
-    public NotificationArgs(String text,
-                            String richText, // for AYML, this is the algorithm
-                            long profileId,
-                            String profileImage,
-                            List<NotificationImage> media,
-                            double timestamp,
-                            String profileName,
-                            String fullName,
-                            boolean isVerified) {
+    public NotificationArgs(final String text,
+                            final String richText, // for AYML, this is the algorithm
+                            final long profileId,
+                            final String profileImage,
+                            final List<NotificationImage> media,
+                            final double timestamp,
+                            final String profileName,
+                            final String fullName,
+                            final boolean isVerified) {
         this.text = text;
         this.richText = richText;
         this.profileId = profileId;
@@ -40,49 +40,49 @@ public class NotificationArgs {
     }
 
     public String getText() {
-        return this.text == null ? this.cleanRichText(this.richText) : this.text;
+        return text == null ? cleanRichText(richText) : text;
     }
 
     public long getUserId() {
-        return this.profileId;
+        return profileId;
     }
 
     public String getProfilePic() {
-        return this.profileImage;
+        return profileImage;
     }
 
     public String getUsername() {
-        return this.profileName;
+        return profileName;
     }
 
     public String getFullName() {
-        return this.fullName;
+        return fullName;
     }
 
     public List<NotificationImage> getMedia() {
-        return this.media;
+        return media;
     }
 
     public double getTimestamp() {
-        return this.timestamp;
+        return timestamp;
     }
 
     public boolean isVerified() {
-        return this.isVerified;
+        return isVerified;
     }
 
     @NonNull
     public String getDateTime() {
-        return TextUtils.epochSecondToString(Math.round(this.timestamp));
+        return TextUtils.epochSecondToString(Math.round(timestamp));
     }
 
-    private String cleanRichText(String raw) {
+    private String cleanRichText(final String raw) {
         if (raw == null) return null;
-        Matcher matcher = Pattern.compile("\\{[\\p{L}\\d._]+\\|000000\\|1\\|user\\?id=\\d+\\}").matcher(raw);
+        final Matcher matcher = Pattern.compile("\\{[\\p{L}\\d._]+\\|000000\\|1\\|user\\?id=\\d+\\}").matcher(raw);
         String result = raw;
         while (matcher.find()) {
-            String richObject = raw.substring(matcher.start(), matcher.end());
-            String username = richObject.split("\\|")[0].substring(1);
+            final String richObject = raw.substring(matcher.start(), matcher.end());
+            final String username = richObject.split("\\|")[0].substring(1);
             result = result.replace(richObject, username);
         }
         return result;
