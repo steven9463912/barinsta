@@ -14,13 +14,13 @@ def getGitHash = { ->
 }
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 32
 
     defaultConfig {
         applicationId 'me.avalos.barinsta'
 
         minSdkVersion 21
-        targetSdkVersion 30
+        targetSdkVersion 32
 
         versionCode 65
         versionName '19.2.4'
@@ -49,6 +49,10 @@ android {
 
         targetCompatibility JavaVersion.VERSION_1_8
         sourceCompatibility JavaVersion.VERSION_1_8
+    }
+
+    lintOptions {
+        abortOnError false
     }
 
     buildFeatures { viewBinding true }
