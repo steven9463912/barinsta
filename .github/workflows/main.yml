@@ -47,6 +47,18 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: barinsta_pre-release_${{ steps.date.outputs.date }}
-        # path: ${{steps.sign_app.outputs.signedReleaseFile}}
         path: app/build/outputs/apk/fdroid/debug/app-fdroid-debug.apk
         
+        
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+         tag_name: ${{ github.ref }}
+         release_name: Release ${{ github.ref }}
+         body: |
+            Release
+         draft: false
+         prerelease: false
