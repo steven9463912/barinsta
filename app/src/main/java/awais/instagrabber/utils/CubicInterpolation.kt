@@ -1,14 +1,13 @@
 package awais.instagrabber.utils
 
-import java.util.*
 import kotlin.math.floor
 import kotlin.math.max
 import kotlin.math.min
 
 class CubicInterpolation @JvmOverloads constructor(array: FloatArray, cubicTension: Int = 0) {
-    private val array: FloatArray = Arrays.copyOf(array, array.size)
-    private val tangentFactor: Int
-    private val length: Int
+    private val array: FloatArray = array.copyOf(array.size)
+    private val tangentFactor: Int = 1 - max(0, min(1, cubicTension))
+    private val length: Int = array.size
     private fun getTangent(k: Int): Float {
         return tangentFactor * (getClippedInput(k + 1) - getClippedInput(k - 1)) / 2
     }
@@ -33,8 +32,4 @@ class CubicInterpolation @JvmOverloads constructor(array: FloatArray, cubicTensi
         return max(0, min(i, n - 1))
     }
 
-    init {
-        length = array.size
-        tangentFactor = 1 - max(0, min(1, cubicTension))
-    }
 }
