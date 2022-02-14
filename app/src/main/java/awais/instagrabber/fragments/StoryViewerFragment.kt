@@ -243,7 +243,7 @@ class StoryViewerFragment : Fragment() {
             storiesAdapter!!.paginate(it)
         }
         storiesViewModel.getOptions().observe(fragmentActivity) {
-            binding.stickers.isEnabled = it.first.size > 0
+            binding.stickers.isEnabled = it.first.isNotEmpty()
         }
     }
 
