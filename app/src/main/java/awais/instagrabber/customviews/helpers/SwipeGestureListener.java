@@ -11,21 +11,21 @@ public final class SwipeGestureListener extends GestureDetector.SimpleOnGestureL
     public static final int SWIPE_VELOCITY_THRESHOLD = 200;
     private final SwipeEvent swipeEvent;
 
-    public SwipeGestureListener(final SwipeEvent swipeEvent) {
+    public SwipeGestureListener(SwipeEvent swipeEvent) {
         this.swipeEvent = swipeEvent;
     }
 
     @Override
-    public boolean onFling(final MotionEvent e1, final MotionEvent e2, final float velocityX, final float velocityY) {
+    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
         try {
-            final float diffY = e2.getY() - e1.getY();
-            final float diffX = e2.getX() - e1.getX();
-            final float diffXAbs = Math.abs(diffX);
-            if (diffXAbs > Math.abs(diffY) && diffXAbs > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
-                swipeEvent.onSwipe(diffX > 0);
+            float diffY = e2.getY() - e1.getY();
+            float diffX = e2.getX() - e1.getX();
+            float diffXAbs = Math.abs(diffX);
+            if (diffXAbs > Math.abs(diffY) && diffXAbs > SwipeGestureListener.SWIPE_THRESHOLD && Math.abs(velocityX) > SwipeGestureListener.SWIPE_VELOCITY_THRESHOLD) {
+                this.swipeEvent.onSwipe(diffX > 0);
                 return true;
             }
-        } catch (final Exception e) {
+        } catch (Exception e) {
             Log.e("AWAISKING_APP", "", e);
         }
         return false;

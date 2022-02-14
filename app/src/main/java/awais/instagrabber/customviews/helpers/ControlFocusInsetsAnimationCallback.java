@@ -38,7 +38,7 @@ public class ControlFocusInsetsAnimationCallback extends WindowInsetsAnimationCo
 
     private final View view;
 
-    public ControlFocusInsetsAnimationCallback(@NonNull final View view) {
+    public ControlFocusInsetsAnimationCallback(@NonNull View view) {
         this(view, WindowInsetsAnimation.Callback.DISPATCH_MODE_STOP);
     }
 
@@ -47,42 +47,42 @@ public class ControlFocusInsetsAnimationCallback extends WindowInsetsAnimationCo
      * @param dispatchMode The dispatch mode for this callback.
      * @see WindowInsetsAnimationCompat.Callback.DispatchMode
      */
-    public ControlFocusInsetsAnimationCallback(@NonNull final View view, final int dispatchMode) {
+    public ControlFocusInsetsAnimationCallback(@NonNull View view, int dispatchMode) {
         super(dispatchMode);
         this.view = view;
     }
 
     @NonNull
     @Override
-    public WindowInsetsCompat onProgress(@NonNull final WindowInsetsCompat insets,
-                                         @NonNull final List<WindowInsetsAnimationCompat> runningAnimations) {
+    public WindowInsetsCompat onProgress(@NonNull WindowInsetsCompat insets,
+                                         @NonNull List<WindowInsetsAnimationCompat> runningAnimations) {
         // no-op and return the insets
         return insets;
     }
 
     @Override
-    public void onEnd(final WindowInsetsAnimationCompat animation) {
+    public void onEnd(WindowInsetsAnimationCompat animation) {
         if ((animation.getTypeMask() & WindowInsetsCompat.Type.ime()) != 0) {
             // The animation has now finished, so we can check the view's focus state.
             // We post the check because the rootWindowInsets has not yet been updated, but will
             // be in the next message traversal
-            view.post(this::checkFocus);
+            this.view.post(this::checkFocus);
         }
     }
 
     private void checkFocus() {
-        final WindowInsetsCompat rootWindowInsets = ViewCompat.getRootWindowInsets(view);
+        WindowInsetsCompat rootWindowInsets = ViewCompat.getRootWindowInsets(this.view);
         boolean imeVisible = false;
         if (rootWindowInsets != null) {
             imeVisible = rootWindowInsets.isVisible(WindowInsetsCompat.Type.ime());
         }
-        if (imeVisible && view.getRootView().findFocus() == null) {
+        if (imeVisible && this.view.getRootView().findFocus() == null) {
             // If the IME will be visible, and there is not a currently focused view in
             // the hierarchy, request focus on our view
-            view.requestFocus();
-        } else if (!imeVisible && view.isFocused()) {
+            this.view.requestFocus();
+        } else if (!imeVisible && this.view.isFocused()) {
             // If the IME will not be visible and our view is currently focused, clear the focus
-            view.clearFocus();
+            this.view.clearFocus();
         }
     }
 }

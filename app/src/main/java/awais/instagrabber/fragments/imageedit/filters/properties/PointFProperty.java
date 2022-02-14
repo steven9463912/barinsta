@@ -11,29 +11,29 @@ public class PointFProperty extends Property<PointF> {
     private final int label;
     private final PointF defaultValue;
 
-    public PointFProperty(@StringRes final int label,
-                          final PointF defaultValue) {
+    public PointFProperty(@StringRes int label,
+                          PointF defaultValue) {
         this.label = label;
         this.defaultValue = defaultValue;
     }
 
     @Override
     public int getLabel() {
-        return label;
+        return this.label;
     }
 
     @Override
     public PointF getDefaultValue() {
-        return defaultValue;
+        return this.defaultValue;
     }
 
     @Override
     public PointF getMinValue() {
-        return defaultValue;
+        return this.defaultValue;
     }
 
     @Override
     public PointF getMaxValue() {
-        return defaultValue;
+        return this.defaultValue;
     }
 }

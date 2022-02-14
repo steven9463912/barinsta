@@ -35,19 +35,19 @@ import static awais.instagrabber.models.PostsLayoutPreferences.PostsLayoutType.S
 public class FeedGridItemViewHolder extends RecyclerView.ViewHolder {
     private final ItemFeedGridBinding binding;
 
-    public FeedGridItemViewHolder(@NonNull final ItemFeedGridBinding binding) {
+    public FeedGridItemViewHolder(@NonNull ItemFeedGridBinding binding) {
         super(binding.getRoot());
         this.binding = binding;
     }
 
-    public void bind(final int position,
-                     @NonNull final Media media,
-                     @NonNull final PostsLayoutPreferences layoutPreferences,
-                     final FeedAdapterV2.FeedItemCallback feedItemCallback,
-                     final FeedAdapterV2.AdapterSelectionCallback adapterSelectionCallback,
-                     final boolean selectionModeActive,
-                     final boolean selected) {
-        itemView.setOnClickListener(v -> {
+    public void bind(int position,
+                     @NonNull Media media,
+                     @NonNull PostsLayoutPreferences layoutPreferences,
+                     FeedAdapterV2.FeedItemCallback feedItemCallback,
+                     FeedAdapterV2.AdapterSelectionCallback adapterSelectionCallback,
+                     boolean selectionModeActive,
+                     boolean selected) {
+        this.itemView.setOnClickListener(v -> {
             if (!selectionModeActive && feedItemCallback != null) {
                 feedItemCallback.onPostClick(media);
                 return;
@@ -57,21 +57,21 @@ public class FeedGridItemViewHolder extends RecyclerView.ViewHolder {
             }
         });
         if (adapterSelectionCallback != null) {
-            itemView.setOnLongClickListener(v -> adapterSelectionCallback.onPostLongClick(position, media));
+            this.itemView.setOnLongClickListener(v -> adapterSelectionCallback.onPostLongClick(position, media));
         }
-        binding.selectedView.setVisibility(selected ? View.VISIBLE : View.GONE);
+        this.binding.selectedView.setVisibility(selected ? View.VISIBLE : View.GONE);
         // for rounded borders (clip view to background shape)
-        itemView.setClipToOutline(layoutPreferences.getHasRoundedCorners());
+        this.itemView.setClipToOutline(layoutPreferences.getHasRoundedCorners());
         if (layoutPreferences.getType() == STAGGERED_GRID) {
-            final float aspectRatio = (float) media.getOriginalWidth() / media.getOriginalHeight();
-            binding.postImage.setAspectRatio(aspectRatio);
+            float aspectRatio = (float) media.getOriginalWidth() / media.getOriginalHeight();
+            this.binding.postImage.setAspectRatio(aspectRatio);
         } else {
-            binding.postImage.setAspectRatio(1);
+            this.binding.postImage.setAspectRatio(1);
         }
-        setUserDetails(media, layoutPreferences);
+        this.setUserDetails(media, layoutPreferences);
         String thumbnailUrl = null;
-        final int typeIconRes;
-        final MediaItemType mediaType = media.getType();
+        int typeIconRes;
+        MediaItemType mediaType = media.getType();
         if (mediaType == null) return;
         switch (mediaType) {
             case MEDIA_TYPE_IMAGE:
@@ -83,14 +83,14 @@ public class FeedGridItemViewHolder extends RecyclerView.ViewHolder {
                 typeIconRes = R.drawable.exo_icon_play;
                 break;
             case MEDIA_TYPE_SLIDER:
-                final List<Media> sliderItems = media.getCarouselMedia();
+                List<Media> sliderItems = media.getCarouselMedia();
                 if (sliderItems != null) {
-                    final Media child = sliderItems.get(0);
+                    Media child = sliderItems.get(0);
                     if (child != null) {
                         thumbnailUrl = ResponseBodyUtils.getThumbUrl(child);
                         if (layoutPreferences.getType() == STAGGERED_GRID) {
-                            final float childAspectRatio = (float) child.getOriginalWidth() / child.getOriginalHeight();
-                            binding.postImage.setAspectRatio(childAspectRatio);
+                            float childAspectRatio = (float) child.getOriginalWidth() / child.getOriginalHeight();
+                            this.binding.postImage.setAspectRatio(childAspectRatio);
                         }
                     }
                 }
@@ -100,20 +100,20 @@ public class FeedGridItemViewHolder extends RecyclerView.ViewHolder {
                 typeIconRes = -1;
                 thumbnailUrl = null;
         }
-        setThumbImage(thumbnailUrl);
+        this.setThumbImage(thumbnailUrl);
         if (typeIconRes <= 0) {
-            binding.typeIcon.setVisibility(View.GONE);
+            this.binding.typeIcon.setVisibility(View.GONE);
         } else {
-            binding.typeIcon.setVisibility(View.VISIBLE);
-            binding.typeIcon.setImageResource(typeIconRes);
+            this.binding.typeIcon.setVisibility(View.VISIBLE);
+            this.binding.typeIcon.setImageResource(typeIconRes);
         }
-        binding.downloaded.setVisibility(View.GONE);
-        final Context context = itemView.getContext();
+        this.binding.downloaded.setVisibility(View.GONE);
+        Context context = this.itemView.getContext();
         if (context == null) {
             return;
         }
         AppExecutors.INSTANCE.getTasksThread().execute(() -> {
-            final List<Boolean> checkList = DownloadUtils.checkDownloaded(media, context);
+            List<Boolean> checkList = DownloadUtils.checkDownloaded(media, context);
             if (checkList.isEmpty()) {
                 return;
             }
@@ -121,17 +121,17 @@ public class FeedGridItemViewHolder extends RecyclerView.ViewHolder {
                 switch (media.getType()) {
                     case MEDIA_TYPE_IMAGE:
                     case MEDIA_TYPE_VIDEO:
-                        binding.downloaded.setVisibility(checkList.get(0) ? View.VISIBLE : View.GONE);
-                        binding.downloaded.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.green_A400)));
+                        this.binding.downloaded.setVisibility(checkList.get(0) ? View.VISIBLE : View.GONE);
+                        this.binding.downloaded.setImageTintList(ColorStateList.valueOf(this.itemView.getResources().getColor(R.color.green_A400)));
                         break;
                     case MEDIA_TYPE_SLIDER:
-                        binding.downloaded.setVisibility(checkList.get(0) ? View.VISIBLE : View.GONE);
-                        final List<Media> carouselMedia = media.getCarouselMedia();
+                        this.binding.downloaded.setVisibility(checkList.get(0) ? View.VISIBLE : View.GONE);
+                        List<Media> carouselMedia = media.getCarouselMedia();
                         boolean allDownloaded = checkList.size() == (carouselMedia == null ? 0 : carouselMedia.size());
                         if (allDownloaded) {
                             allDownloaded = checkList.stream().allMatch(downloaded -> downloaded);
                         }
-                        binding.downloaded.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(
+                        this.binding.downloaded.setImageTintList(ColorStateList.valueOf(this.itemView.getResources().getColor(
                                 allDownloaded ? R.color.green_A400 : R.color.yellow_400)));
                         break;
                     default:
@@ -140,40 +140,40 @@ public class FeedGridItemViewHolder extends RecyclerView.ViewHolder {
         });
     }
 
-    private void setThumbImage(final String thumbnailUrl) {
+    private void setThumbImage(String thumbnailUrl) {
         if (TextUtils.isEmpty(thumbnailUrl)) {
-            binding.postImage.setController(null);
+            this.binding.postImage.setController(null);
             return;
         }
-        final ImageRequest requestBuilder = ImageRequestBuilder.newBuilderWithSource(Uri.parse(thumbnailUrl))
-                                                               .setResizeOptions(ResizeOptions.forDimensions(binding.postImage.getWidth(),
-                                                                       binding.postImage.getHeight()))
+        ImageRequest requestBuilder = ImageRequestBuilder.newBuilderWithSource(Uri.parse(thumbnailUrl))
+                                                               .setResizeOptions(ResizeOptions.forDimensions(this.binding.postImage.getWidth(),
+                                                                       this.binding.postImage.getHeight()))
                                                                .setLocalThumbnailPreviewsEnabled(true)
                                                                .setProgressiveRenderingEnabled(true)
                                                                .build();
-        final PipelineDraweeControllerBuilder builder = Fresco.newDraweeControllerBuilder()
+        PipelineDraweeControllerBuilder builder = Fresco.newDraweeControllerBuilder()
                                                               .setImageRequest(requestBuilder)
-                                                              .setOldController(binding.postImage.getController());
-        binding.postImage.setController(builder.build());
+                                                              .setOldController(this.binding.postImage.getController());
+        this.binding.postImage.setController(builder.build());
     }
 
-    private void setUserDetails(@NonNull final Media media,
-                                @NonNull final PostsLayoutPreferences layoutPreferences) {
-        final User user = media.getUser();
+    private void setUserDetails(@NonNull Media media,
+                                @NonNull PostsLayoutPreferences layoutPreferences) {
+        User user = media.getUser();
         if (layoutPreferences.isAvatarVisible()) {
             if (user == null) {
-                binding.profilePic.setVisibility(View.GONE);
+                this.binding.profilePic.setVisibility(View.GONE);
             } else {
-                final String profilePicUrl = user.getProfilePicUrl();
+                String profilePicUrl = user.getProfilePicUrl();
                 if (TextUtils.isEmpty(profilePicUrl)) {
-                    binding.profilePic.setVisibility(View.GONE);
+                    this.binding.profilePic.setVisibility(View.GONE);
                 } else {
-                    binding.profilePic.setVisibility(View.VISIBLE);
-                    binding.profilePic.setImageURI(profilePicUrl);
+                    this.binding.profilePic.setVisibility(View.VISIBLE);
+                    this.binding.profilePic.setImageURI(profilePicUrl);
                 }
             }
-            final ViewGroup.LayoutParams layoutParams = binding.profilePic.getLayoutParams();
-            @DimenRes final int dimenRes;
+            ViewGroup.LayoutParams layoutParams = this.binding.profilePic.getLayoutParams();
+            @DimenRes int dimenRes;
             switch (layoutPreferences.getProfilePicSize()) {
                 case SMALL:
                     dimenRes = R.dimen.profile_pic_size_small;
@@ -186,27 +186,27 @@ public class FeedGridItemViewHolder extends RecyclerView.ViewHolder {
                     dimenRes = R.dimen.profile_pic_size_regular;
                     break;
             }
-            final int dimensionPixelSize = itemView.getResources().getDimensionPixelSize(dimenRes);
+            int dimensionPixelSize = this.itemView.getResources().getDimensionPixelSize(dimenRes);
             layoutParams.width = dimensionPixelSize;
             layoutParams.height = dimensionPixelSize;
-            binding.profilePic.requestLayout();
+            this.binding.profilePic.requestLayout();
         } else {
-            binding.profilePic.setVisibility(View.GONE);
+            this.binding.profilePic.setVisibility(View.GONE);
         }
         if (layoutPreferences.isNameVisible()) {
             if (user == null) {
-                binding.name.setVisibility(View.GONE);
+                this.binding.name.setVisibility(View.GONE);
             } else {
-                final String username = user.getUsername();
+                String username = user.getUsername();
                 if (username == null) {
-                    binding.name.setVisibility(View.GONE);
+                    this.binding.name.setVisibility(View.GONE);
                 } else {
-                    binding.name.setVisibility(View.VISIBLE);
-                    binding.name.setText(username);
+                    this.binding.name.setVisibility(View.VISIBLE);
+                    this.binding.name.setText(username);
                 }
             }
         } else {
-            binding.name.setVisibility(View.GONE);
+            this.binding.name.setVisibility(View.GONE);
         }
     }
 }

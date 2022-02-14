@@ -58,36 +58,36 @@ public final class CommentsViewerFragment extends BottomSheetDialogFragment {
     @Override
     public void onStart() {
         super.onStart();
-        final Dialog dialog = getDialog();
+        Dialog dialog = this.getDialog();
         if (dialog == null) return;
-        final BottomSheetDialog bottomSheetDialog = (BottomSheetDialog) dialog;
-        final View bottomSheetInternal = bottomSheetDialog.findViewById(com.google.android.material.R.id.design_bottom_sheet);
+        BottomSheetDialog bottomSheetDialog = (BottomSheetDialog) dialog;
+        View bottomSheetInternal = bottomSheetDialog.findViewById(com.google.android.material.R.id.design_bottom_sheet);
         if (bottomSheetInternal == null) return;
         bottomSheetInternal.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
         bottomSheetInternal.requestLayout();
-        final BottomSheetBehavior<View> behavior = BottomSheetBehavior.from(bottomSheetInternal);
+        BottomSheetBehavior<View> behavior = BottomSheetBehavior.from(bottomSheetInternal);
         behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         behavior.setSkipCollapsed(true);
     }
 
     @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final FragmentActivity activity = getActivity();
+        FragmentActivity activity = this.getActivity();
         if (activity == null) return;
-        viewModel = new ViewModelProvider(this).get(CommentsViewerViewModel.class);
-        appStateViewModel = new ViewModelProvider(activity).get(AppStateViewModel.class);
+        this.viewModel = new ViewModelProvider(this).get(CommentsViewerViewModel.class);
+        this.appStateViewModel = new ViewModelProvider(activity).get(AppStateViewModel.class);
     }
 
     @NonNull
     @Override
-    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        return new BottomSheetDialog(requireContext(), getTheme()) {
+    public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+        return new BottomSheetDialog(this.requireContext(), this.getTheme()) {
             @Override
             public void onBackPressed() {
-                if (showingReplies) {
-                    getChildFragmentManager().popBackStack();
-                    showingReplies = false;
+                if (CommentsViewerFragment.this.showingReplies) {
+                    CommentsViewerFragment.this.getChildFragmentManager().popBackStack();
+                    CommentsViewerFragment.this.showingReplies = false;
                     return;
                 }
                 super.onBackPressed();
@@ -97,66 +97,66 @@ public final class CommentsViewerFragment extends BottomSheetDialogFragment {
 
     @NonNull
     @Override
-    public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable final Bundle savedInstanceState) {
-        if (root != null) {
-            shouldRefresh = false;
-            return root;
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        if (this.root != null) {
+            this.shouldRefresh = false;
+            return this.root;
         }
-        binding = FragmentCommentsBinding.inflate(getLayoutInflater());
-        binding.swipeRefreshLayout.setEnabled(false);
-        binding.swipeRefreshLayout.setNestedScrollingEnabled(false);
-        root = binding.getRoot();
-        appStateViewModel.getCurrentUserLiveData().observe(getViewLifecycleOwner(), userResource -> {
+        this.binding = FragmentCommentsBinding.inflate(this.getLayoutInflater());
+        this.binding.swipeRefreshLayout.setEnabled(false);
+        this.binding.swipeRefreshLayout.setNestedScrollingEnabled(false);
+        this.root = this.binding.getRoot();
+        this.appStateViewModel.getCurrentUserLiveData().observe(this.getViewLifecycleOwner(), userResource -> {
             if (userResource == null || userResource.status == Resource.Status.LOADING) return;
-            viewModel.setCurrentUser(userResource.data);
+            this.viewModel.setCurrentUser(userResource.data);
             if (userResource.data == null) {
-                viewModel.fetchComments();
+                this.viewModel.fetchComments();
                 return;
             }
-            viewModel.getCurrentUserId().observe(getViewLifecycleOwner(), new Observer<Long>() {
+            this.viewModel.getCurrentUserId().observe(this.getViewLifecycleOwner(), new Observer<Long>() {
                 @Override
-                public void onChanged(final Long i) {
+                public void onChanged(Long i) {
                     if (i != 0L) {
-                        viewModel.fetchComments();
-                        viewModel.getCurrentUserId().removeObserver(this);
+                        CommentsViewerFragment.this.viewModel.fetchComments();
+                        CommentsViewerFragment.this.viewModel.getCurrentUserId().removeObserver(this);
                     }
                 }
             });
         });
-        if (getArguments() == null) return root;
-        final CommentsViewerFragmentArgs args = CommentsViewerFragmentArgs.fromBundle(getArguments());
-        viewModel.setPostDetails(args.getShortCode(), args.getPostId(), args.getPostUserId());
-        return root;
+        if (this.getArguments() == null) return this.root;
+        CommentsViewerFragmentArgs args = CommentsViewerFragmentArgs.fromBundle(this.getArguments());
+        this.viewModel.setPostDetails(args.getShortCode(), args.getPostId(), args.getPostUserId());
+        return this.root;
     }
 
     @Override
-    public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
-        if (!shouldRefresh) return;
-        shouldRefresh = false;
-        init();
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        if (!this.shouldRefresh) return;
+        this.shouldRefresh = false;
+        this.init();
     }
 
     private void init() {
-        setupToolbar();
-        setupList();
-        setupObservers();
+        this.setupToolbar();
+        this.setupList();
+        this.setupObservers();
     }
 
     private void setupObservers() {
-        viewModel.getCurrentUserId().observe(getViewLifecycleOwner(), currentUserId -> {
+        this.viewModel.getCurrentUserId().observe(this.getViewLifecycleOwner(), currentUserId -> {
             long userId = 0;
             if (currentUserId != null) {
                 userId = currentUserId;
             }
-            setupAdapter(userId);
+            this.setupAdapter(userId);
             if (userId == 0) return;
-            Helper.setupCommentInput(binding.commentField, binding.commentText, false, text -> {
-                final LiveData<Resource<Object>> resourceLiveData = viewModel.comment(text, false);
-                resourceLiveData.observe(getViewLifecycleOwner(), new Observer<Resource<Object>>() {
+            Helper.setupCommentInput(this.binding.commentField, this.binding.commentText, false, text -> {
+                LiveData<Resource<Object>> resourceLiveData = this.viewModel.comment(text, false);
+                resourceLiveData.observe(this.getViewLifecycleOwner(), new Observer<Resource<Object>>() {
                     @Override
-                    public void onChanged(final Resource<Object> objectResource) {
+                    public void onChanged(Resource<Object> objectResource) {
                         if (objectResource == null) return;
-                        final Context context = getContext();
+                        Context context = CommentsViewerFragment.this.getContext();
                         if (context == null) return;
                         Helper.handleCommentResource(
                                 context,
@@ -164,87 +164,87 @@ public final class CommentsViewerFragment extends BottomSheetDialogFragment {
                                 objectResource.message,
                                 resourceLiveData,
                                 this,
-                                binding.commentField,
-                                binding.commentText,
-                                binding.comments);
+                                CommentsViewerFragment.this.binding.commentField,
+                                CommentsViewerFragment.this.binding.commentText,
+                                CommentsViewerFragment.this.binding.comments);
                     }
                 });
                 return null;
             });
         });
-        viewModel.getRootList().observe(getViewLifecycleOwner(), listResource -> {
+        this.viewModel.getRootList().observe(this.getViewLifecycleOwner(), listResource -> {
             if (listResource == null) return;
             switch (listResource.status) {
                 case SUCCESS:
-                    binding.swipeRefreshLayout.setRefreshing(false);
-                    if (commentsAdapter != null) {
-                        commentsAdapter.submitList(listResource.data);
+                    this.binding.swipeRefreshLayout.setRefreshing(false);
+                    if (this.commentsAdapter != null) {
+                        this.commentsAdapter.submitList(listResource.data);
                     }
                     break;
                 case ERROR:
-                    binding.swipeRefreshLayout.setRefreshing(false);
+                    this.binding.swipeRefreshLayout.setRefreshing(false);
                     if (!TextUtils.isEmpty(listResource.message)) {
-                        Snackbar.make(binding.getRoot(), listResource.message, BaseTransientBottomBar.LENGTH_LONG).show();
+                        Snackbar.make(this.binding.getRoot(), listResource.message, BaseTransientBottomBar.LENGTH_LONG).show();
                     }
                     break;
                 case LOADING:
-                    binding.swipeRefreshLayout.setRefreshing(true);
+                    this.binding.swipeRefreshLayout.setRefreshing(true);
                     break;
             }
         });
-        viewModel.getRootCommentsCount().observe(getViewLifecycleOwner(), count -> {
+        this.viewModel.getRootCommentsCount().observe(this.getViewLifecycleOwner(), count -> {
             if (count == null || count == 0) {
-                binding.toolbar.setTitle(R.string.title_comments);
+                this.binding.toolbar.setTitle(R.string.title_comments);
                 return;
             }
-            final String titleComments = getString(R.string.title_comments);
-            final String countString = String.valueOf(count);
-            final SpannableString titleWithCount = new SpannableString(String.format("%s   %s", titleComments, countString));
+            String titleComments = this.getString(R.string.title_comments);
+            String countString = String.valueOf(count);
+            SpannableString titleWithCount = new SpannableString(String.format("%s   %s", titleComments, countString));
             titleWithCount.setSpan(new RelativeSizeSpan(0.8f),
                                    titleWithCount.length() - countString.length(),
                                    titleWithCount.length(),
                                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            binding.toolbar.setTitle(titleWithCount);
+            this.binding.toolbar.setTitle(titleWithCount);
         });
     }
 
     private void setupToolbar() {
-        binding.toolbar.setTitle(R.string.title_comments);
+        this.binding.toolbar.setTitle(R.string.title_comments);
     }
 
-    private void setupAdapter(final long currentUserId) {
-        final Context context = getContext();
+    private void setupAdapter(long currentUserId) {
+        Context context = this.getContext();
         if (context == null) return;
-        commentsAdapter = new CommentsAdapter(currentUserId, false, Helper.getCommentCallback(
+        this.commentsAdapter = new CommentsAdapter(currentUserId, false, Helper.getCommentCallback(
                 context,
-                getViewLifecycleOwner(),
-                getNavController(),
-                viewModel,
+                this.getViewLifecycleOwner(),
+                this.getNavController(),
+                this.viewModel,
                 (comment, focusInput) -> {
                     if (comment == null) return null;
-                    final boolean disableTransition = Utils.settingsHelper.getBoolean(PreferenceKeys.PREF_DISABLE_SCREEN_TRANSITIONS);
-                    final RepliesFragment repliesFragment = RepliesFragment.newInstance(comment, focusInput != null && focusInput);
-                    final FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+                    boolean disableTransition = Utils.settingsHelper.getBoolean(PreferenceKeys.PREF_DISABLE_SCREEN_TRANSITIONS);
+                    RepliesFragment repliesFragment = RepliesFragment.newInstance(comment, focusInput != null && focusInput);
+                    FragmentTransaction transaction = this.getChildFragmentManager().beginTransaction();
                     if (!disableTransition) {
                         transaction.setCustomAnimations(R.anim.slide_left, R.anim.slide_right, 0, R.anim.slide_right);
                     }
                     transaction.add(R.id.replies_container_view, repliesFragment)
                                .addToBackStack(RepliesFragment.TAG)
                                .commit();
-                    showingReplies = true;
+                    this.showingReplies = true;
                     return null;
                 }));
-        final Resource<List<Comment>> listResource = viewModel.getRootList().getValue();
-        binding.comments.setAdapter(commentsAdapter);
-        commentsAdapter.submitList(listResource != null ? listResource.data : Collections.emptyList());
+        Resource<List<Comment>> listResource = this.viewModel.getRootList().getValue();
+        this.binding.comments.setAdapter(this.commentsAdapter);
+        this.commentsAdapter.submitList(listResource != null ? listResource.data : Collections.emptyList());
     }
 
     private void setupList() {
-        final Context context = getContext();
+        Context context = this.getContext();
         if (context == null) return;
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(context);
-        final RecyclerLazyLoader lazyLoader = new RecyclerLazyLoader(layoutManager, (page, totalItemsCount) -> viewModel.fetchComments());
-        Helper.setupList(context, binding.comments, layoutManager, lazyLoader);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(context);
+        RecyclerLazyLoader lazyLoader = new RecyclerLazyLoader(layoutManager, (page, totalItemsCount) -> this.viewModel.fetchComments());
+        Helper.setupList(context, this.binding.comments, layoutManager, lazyLoader);
     }
 
     @Nullable
@@ -252,8 +252,8 @@ public final class CommentsViewerFragment extends BottomSheetDialogFragment {
         NavController navController = null;
         try {
             navController = NavHostFragment.findNavController(this);
-        } catch (IllegalStateException e) {
-            Log.e(TAG, "navigateToProfile", e);
+        } catch (final IllegalStateException e) {
+            Log.e(CommentsViewerFragment.TAG, "navigateToProfile", e);
         }
         return navController;
     }

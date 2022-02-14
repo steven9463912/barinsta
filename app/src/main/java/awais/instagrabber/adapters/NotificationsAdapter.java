@@ -24,55 +24,55 @@ public final class NotificationsAdapter extends ListAdapter<Notification, Notifi
 
     private static final DiffUtil.ItemCallback<Notification> DIFF_CALLBACK = new DiffUtil.ItemCallback<Notification>() {
         @Override
-        public boolean areItemsTheSame(final Notification oldItem, final Notification newItem) {
+        public boolean areItemsTheSame(Notification oldItem, Notification newItem) {
             return Objects.requireNonNull(oldItem.getPk()).equals(newItem.getPk());
         }
 
         @Override
-        public boolean areContentsTheSame(@NonNull final Notification oldItem, @NonNull final Notification newItem) {
+        public boolean areContentsTheSame(@NonNull Notification oldItem, @NonNull Notification newItem) {
             return Objects.requireNonNull(oldItem.getPk()).equals(newItem.getPk()) && Objects.equals(oldItem.getType(), newItem.getType());
         }
     };
 
-    public NotificationsAdapter(final OnNotificationClickListener notificationClickListener) {
-        super(DIFF_CALLBACK);
+    public NotificationsAdapter(OnNotificationClickListener notificationClickListener) {
+        super(NotificationsAdapter.DIFF_CALLBACK);
         this.notificationClickListener = notificationClickListener;
     }
 
     @NonNull
     @Override
-    public NotificationViewHolder onCreateViewHolder(@NonNull final ViewGroup parent, final int type) {
-        final LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        final ItemNotificationBinding binding = ItemNotificationBinding.inflate(layoutInflater, parent, false);
+    public NotificationViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int type) {
+        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+        ItemNotificationBinding binding = ItemNotificationBinding.inflate(layoutInflater, parent, false);
         return new NotificationViewHolder(binding);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final NotificationViewHolder holder, final int position) {
-        final Notification Notification = getItem(position);
-        holder.bind(Notification, notificationClickListener);
+    public void onBindViewHolder(@NonNull NotificationViewHolder holder, int position) {
+        Notification Notification = this.getItem(position);
+        holder.bind(Notification, this.notificationClickListener);
     }
 
     @Override
-    public void submitList(@Nullable final List<Notification> list, @Nullable final Runnable commitCallback) {
+    public void submitList(@Nullable List<Notification> list, @Nullable Runnable commitCallback) {
         if (list == null) {
             super.submitList(null, commitCallback);
             return;
         }
-        super.submitList(sort(list), commitCallback);
+        super.submitList(this.sort(list), commitCallback);
     }
 
     @Override
-    public void submitList(@Nullable final List<Notification> list) {
+    public void submitList(@Nullable List<Notification> list) {
         if (list == null) {
             super.submitList(null);
             return;
         }
-        super.submitList(sort(list));
+        super.submitList(this.sort(list));
     }
 
-    private List<Notification> sort(final List<Notification> list) {
-        final List<Notification> listCopy = new ArrayList<>(list).stream()
+    private List<Notification> sort(List<Notification> list) {
+        List<Notification> listCopy = new ArrayList<>(list).stream()
                                                                  .filter(i -> i.getType() != null)
                                                                  .collect(Collectors.toList());
         Collections.sort(listCopy, (o1, o2) -> {

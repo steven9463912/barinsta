@@ -27,13 +27,13 @@ public class TabViewHolder extends RecyclerView.ViewHolder {
     private boolean draggable = true;
 
     @SuppressLint("ClickableViewAccessibility")
-    public TabViewHolder(@NonNull final ItemTabOrderPrefBinding binding,
-                         @NonNull final TabsAdapter.TabAdapterCallback tabAdapterCallback) {
+    public TabViewHolder(@NonNull ItemTabOrderPrefBinding binding,
+                         @NonNull TabsAdapter.TabAdapterCallback tabAdapterCallback) {
         super(binding.getRoot());
         this.binding = binding;
         this.tabAdapterCallback = tabAdapterCallback;
-        highlightColor = MaterialColors.getColor(itemView.getContext(), R.attr.colorControlHighlight, 0);
-        originalBgColor = itemView.getBackground();
+        this.highlightColor = MaterialColors.getColor(this.itemView.getContext(), R.attr.colorControlHighlight, 0);
+        this.originalBgColor = this.itemView.getBackground();
         binding.handle.setOnTouchListener((v, event) -> {
             if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
                 tabAdapterCallback.onStartDrag(this);
@@ -42,47 +42,47 @@ public class TabViewHolder extends RecyclerView.ViewHolder {
         });
     }
 
-    public void bind(@NonNull final Tab tab,
-                     final boolean isInOthers,
-                     final boolean isCurrentFull) {
-        draggable = !isInOthers;
-        binding.icon.setImageResource(tab.getIconResId());
-        binding.title.setText(tab.getTitle());
-        binding.handle.setVisibility(isInOthers ? View.GONE : View.VISIBLE);
-        binding.addRemove.setImageResource(isInOthers ? R.drawable.ic_round_add_circle_24
+    public void bind(@NonNull Tab tab,
+                     boolean isInOthers,
+                     boolean isCurrentFull) {
+        this.draggable = !isInOthers;
+        this.binding.icon.setImageResource(tab.getIconResId());
+        this.binding.title.setText(tab.getTitle());
+        this.binding.handle.setVisibility(isInOthers ? View.GONE : View.VISIBLE);
+        this.binding.addRemove.setImageResource(isInOthers ? R.drawable.ic_round_add_circle_24
                                                       : R.drawable.ic_round_remove_circle_24);
-        final ColorStateList tintList = ColorStateList.valueOf(ContextCompat.getColor(
-                itemView.getContext(),
+        ColorStateList tintList = ColorStateList.valueOf(ContextCompat.getColor(
+                this.itemView.getContext(),
                 isInOthers ? R.color.green_500
                            : R.color.red_500));
-        ImageViewCompat.setImageTintList(binding.addRemove, tintList);
-        binding.addRemove.setOnClickListener(v -> {
+        ImageViewCompat.setImageTintList(this.binding.addRemove, tintList);
+        this.binding.addRemove.setOnClickListener(v -> {
             if (isInOthers) {
-                tabAdapterCallback.onAdd(tab);
+                this.tabAdapterCallback.onAdd(tab);
                 return;
             }
-            tabAdapterCallback.onRemove(tab);
+            this.tabAdapterCallback.onRemove(tab);
         });
-        final boolean enabled = tab.isRemovable()
+        boolean enabled = tab.isRemovable()
                 && !(isInOthers && isCurrentFull); // All slots are full in current
-        binding.addRemove.setEnabled(enabled);
-        binding.addRemove.setAlpha(enabled ? 1 : 0.5F);
+        this.binding.addRemove.setEnabled(enabled);
+        this.binding.addRemove.setAlpha(enabled ? 1 : 0.5F);
     }
 
     public boolean isDraggable() {
-        return draggable;
+        return this.draggable;
     }
 
-    public void setDragging(final boolean isDragging) {
+    public void setDragging(boolean isDragging) {
         if (isDragging) {
-            if (highlightColor != 0) {
-                itemView.setBackgroundColor(highlightColor);
+            if (this.highlightColor != 0) {
+                this.itemView.setBackgroundColor(this.highlightColor);
             } else {
-                itemView.setAlpha(0.5F);
+                this.itemView.setAlpha(0.5F);
             }
             return;
         }
-        itemView.setAlpha(1);
-        itemView.setBackground(originalBgColor);
+        this.itemView.setAlpha(1);
+        this.itemView.setBackground(this.originalBgColor);
     }
 }

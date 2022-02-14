@@ -26,31 +26,31 @@ public class EditTextDialogFragment extends DialogFragment {
     private Context context;
     private EditTextDialogFragmentCallback callback;
 
-    public static EditTextDialogFragment newInstance(@StringRes final int title,
-                                                     @StringRes final int positiveText,
-                                                     @StringRes final int negativeText,
-                                                     @Nullable final String initialText) {
-        Bundle args = new Bundle();
+    public static EditTextDialogFragment newInstance(@StringRes int title,
+                                                     @StringRes int positiveText,
+                                                     @StringRes int negativeText,
+                                                     @Nullable String initialText) {
+        final Bundle args = new Bundle();
         args.putInt("title", title);
         args.putInt("positive", positiveText);
         args.putInt("negative", negativeText);
         args.putString("initial", initialText);
-        EditTextDialogFragment fragment = new EditTextDialogFragment();
+        final EditTextDialogFragment fragment = new EditTextDialogFragment();
         fragment.setArguments(args);
         return fragment;
     }
 
     public EditTextDialogFragment() {
-        margin = Utils.convertDpToPx(20);
-        topMargin = Utils.convertDpToPx(8);
+        this.margin = Utils.convertDpToPx(20);
+        this.topMargin = Utils.convertDpToPx(8);
     }
 
     @Override
-    public void onAttach(@NonNull final Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         try {
-            callback = (EditTextDialogFragmentCallback) getParentFragment();
-        } catch (ClassCastException e) {
+            this.callback = (EditTextDialogFragmentCallback) this.getParentFragment();
+        } catch (final ClassCastException e) {
             throw new ClassCastException("Calling fragment must implement EditTextDialogFragmentCallback interface");
         }
         this.context = context;
@@ -58,8 +58,8 @@ public class EditTextDialogFragment extends DialogFragment {
 
     @NonNull
     @Override
-    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        final Bundle arguments = getArguments();
+    public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+        Bundle arguments = this.getArguments();
         int title = -1;
         int positiveButtonText = R.string.ok;
         int negativeButtonText = R.string.cancel;
@@ -70,29 +70,29 @@ public class EditTextDialogFragment extends DialogFragment {
             negativeButtonText = arguments.getInt("negative", R.string.cancel);
             initialText = arguments.getString("initial", null);
         }
-        final AppCompatEditText input = new AppCompatEditText(context);
+        AppCompatEditText input = new AppCompatEditText(this.context);
         if (!TextUtils.isEmpty(initialText)) {
             input.setText(initialText);
         }
-        final FrameLayout container = new FrameLayout(context);
-        final FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+        FrameLayout container = new FrameLayout(this.context);
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                                                                                    ViewGroup.LayoutParams.WRAP_CONTENT);
-        layoutParams.leftMargin = margin;
-        layoutParams.rightMargin = margin;
-        layoutParams.topMargin = topMargin;
+        layoutParams.leftMargin = this.margin;
+        layoutParams.rightMargin = this.margin;
+        layoutParams.topMargin = this.topMargin;
         input.setLayoutParams(layoutParams);
         container.addView(input);
-        final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context)
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this.context)
                 .setView(container)
                 .setPositiveButton(positiveButtonText, (d, w) -> {
-                    final String string = input.getText() != null ? input.getText().toString() : "";
-                    if (callback != null) {
-                        callback.onPositiveButtonClicked(string);
+                    String string = input.getText() != null ? input.getText().toString() : "";
+                    if (this.callback != null) {
+                        this.callback.onPositiveButtonClicked(string);
                     }
                 })
                 .setNegativeButton(negativeButtonText, (dialog, which) -> {
-                    if (callback != null) {
-                        callback.onNegativeButtonClicked();
+                    if (this.callback != null) {
+                        this.callback.onNegativeButtonClicked();
                     }
                 });
         if (title > 0) {

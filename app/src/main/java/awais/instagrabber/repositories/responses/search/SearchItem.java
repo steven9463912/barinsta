@@ -29,10 +29,10 @@ public class SearchItem {
     private boolean isRecent;
     private boolean isFavorite;
 
-    public SearchItem(final User user,
-                      final Place place,
-                      final Hashtag hashtag,
-                      final int position) {
+    public SearchItem(User user,
+                      Place place,
+                      Hashtag hashtag,
+                      int position) {
         this.user = user;
         this.place = place;
         this.hashtag = hashtag;
@@ -40,80 +40,80 @@ public class SearchItem {
     }
 
     public User getUser() {
-        return user;
+        return this.user;
     }
 
     public Place getPlace() {
-        return place;
+        return this.place;
     }
 
     public Hashtag getHashtag() {
-        return hashtag;
+        return this.hashtag;
     }
 
     public int getPosition() {
-        return position;
+        return this.position;
     }
 
     public boolean isRecent() {
-        return isRecent;
+        return this.isRecent;
     }
 
-    public void setRecent(final boolean recent) {
-        isRecent = recent;
+    public void setRecent(boolean recent) {
+        this.isRecent = recent;
     }
 
     public boolean isFavorite() {
-        return isFavorite;
+        return this.isFavorite;
     }
 
-    public void setFavorite(final boolean favorite) {
-        isFavorite = favorite;
+    public void setFavorite(boolean favorite) {
+        this.isFavorite = favorite;
     }
 
     @Nullable
     public FavoriteType getType() {
-        if (user != null) {
+        if (this.user != null) {
             return FavoriteType.USER;
         }
-        if (hashtag != null) {
+        if (this.hashtag != null) {
             return FavoriteType.HASHTAG;
         }
-        if (place != null) {
+        if (this.place != null) {
             return FavoriteType.LOCATION;
         }
         return null;
     }
 
     @Override
-    public boolean equals(final Object o) {
+    public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        final SearchItem that = (SearchItem) o;
-        return Objects.equals(user, that.user) &&
-                Objects.equals(place, that.place) &&
-                Objects.equals(hashtag, that.hashtag);
+        if (o == null || this.getClass() != o.getClass()) return false;
+        SearchItem that = (SearchItem) o;
+        return Objects.equals(this.user, that.user) &&
+                Objects.equals(this.place, that.place) &&
+                Objects.equals(this.hashtag, that.hashtag);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(user, place, hashtag);
+        return Objects.hash(this.user, this.place, this.hashtag);
     }
 
     @NonNull
     @Override
     public String toString() {
         return "SearchItem{" +
-                "user=" + user +
-                ", place=" + place +
-                ", hashtag=" + hashtag +
-                ", position=" + position +
-                ", isRecent=" + isRecent +
+                "user=" + this.user +
+                ", place=" + this.place +
+                ", hashtag=" + this.hashtag +
+                ", position=" + this.position +
+                ", isRecent=" + this.isRecent +
                 '}';
     }
 
     @NonNull
-    public static List<SearchItem> fromRecentSearch(final List<RecentSearch> recentSearches) {
+    public static List<SearchItem> fromRecentSearch(List<RecentSearch> recentSearches) {
         if (recentSearches == null) return Collections.emptyList();
         return recentSearches.stream()
                              .map(SearchItem::fromRecentSearch)
@@ -122,33 +122,33 @@ public class SearchItem {
     }
 
     @Nullable
-    private static SearchItem fromRecentSearch(final RecentSearch recentSearch) {
+    private static SearchItem fromRecentSearch(RecentSearch recentSearch) {
         if (recentSearch == null) return null;
         try {
-            final FavoriteType type = recentSearch.getType();
-            final SearchItem searchItem;
+            FavoriteType type = recentSearch.getType();
+            SearchItem searchItem;
             switch (type) {
                 case USER:
-                    searchItem = new SearchItem(getUser(recentSearch), null, null, 0);
+                    searchItem = new SearchItem(SearchItem.getUser(recentSearch), null, null, 0);
                     break;
                 case HASHTAG:
-                    searchItem = new SearchItem(null, null, getHashtag(recentSearch), 0);
+                    searchItem = new SearchItem(null, null, SearchItem.getHashtag(recentSearch), 0);
                     break;
                 case LOCATION:
-                    searchItem = new SearchItem(null, getPlace(recentSearch), null, 0);
+                    searchItem = new SearchItem(null, SearchItem.getPlace(recentSearch), null, 0);
                     break;
                 default:
                     return null;
             }
             searchItem.setRecent(true);
             return searchItem;
-        } catch (Exception e) {
-            Log.e(TAG, "fromRecentSearch: ", e);
+        } catch (final Exception e) {
+            Log.e(SearchItem.TAG, "fromRecentSearch: ", e);
         }
         return null;
     }
 
-    public static List<SearchItem> fromFavorite(final List<Favorite> favorites) {
+    public static List<SearchItem> fromFavorite(List<Favorite> favorites) {
         if (favorites == null) {
             return Collections.emptyList();
         }
@@ -159,20 +159,20 @@ public class SearchItem {
     }
 
     @Nullable
-    private static SearchItem fromFavorite(final Favorite favorite) {
+    private static SearchItem fromFavorite(Favorite favorite) {
         if (favorite == null) return null;
-        final FavoriteType type = favorite.getType();
+        FavoriteType type = favorite.getType();
         if (type == null) return null;
-        final SearchItem searchItem;
+        SearchItem searchItem;
         switch (type) {
             case USER:
-                searchItem = new SearchItem(getUser(favorite), null, null, 0);
+                searchItem = new SearchItem(SearchItem.getUser(favorite), null, null, 0);
                 break;
             case HASHTAG:
-                searchItem = new SearchItem(null, null, getHashtag(favorite), 0);
+                searchItem = new SearchItem(null, null, SearchItem.getHashtag(favorite), 0);
                 break;
             case LOCATION:
-                final Place place = getPlace(favorite);
+                Place place = SearchItem.getPlace(favorite);
                 if (place == null) return null;
                 searchItem = new SearchItem(null, place, null, 0);
                 break;
@@ -184,7 +184,7 @@ public class SearchItem {
     }
 
     @NonNull
-    private static User getUser(@NonNull final RecentSearch recentSearch) {
+    private static User getUser(@NonNull RecentSearch recentSearch) {
         return new User(
                 Long.parseLong(recentSearch.getIgId()),
                 recentSearch.getUsername(),
@@ -196,7 +196,7 @@ public class SearchItem {
     }
 
     @NonNull
-    private static User getUser(@NonNull final Favorite favorite) {
+    private static User getUser(@NonNull Favorite favorite) {
         return new User(
                 0,
                 favorite.getQuery(),
@@ -208,7 +208,7 @@ public class SearchItem {
     }
 
     @NonNull
-    private static Hashtag getHashtag(@NonNull final RecentSearch recentSearch) {
+    private static Hashtag getHashtag(@NonNull RecentSearch recentSearch) {
         return new Hashtag(
                 recentSearch.getIgId(),
                 recentSearch.getName(),
@@ -219,7 +219,7 @@ public class SearchItem {
     }
 
     @NonNull
-    private static Hashtag getHashtag(@NonNull final Favorite favorite) {
+    private static Hashtag getHashtag(@NonNull Favorite favorite) {
         return new Hashtag(
                 "0",
                 favorite.getQuery(),
@@ -230,8 +230,8 @@ public class SearchItem {
     }
 
     @NonNull
-    private static Place getPlace(@NonNull final RecentSearch recentSearch) {
-        final Location location = new Location(
+    private static Place getPlace(@NonNull RecentSearch recentSearch) {
+        Location location = new Location(
                 Long.parseLong(recentSearch.getIgId()),
                 recentSearch.getName(),
                 recentSearch.getName(),
@@ -247,9 +247,9 @@ public class SearchItem {
     }
 
     @Nullable
-    private static Place getPlace(@NonNull final Favorite favorite) {
+    private static Place getPlace(@NonNull Favorite favorite) {
         try {
-            final Location location = new Location(
+            Location location = new Location(
                     Long.parseLong(favorite.getQuery()),
                     favorite.getDisplayName(),
                     favorite.getDisplayName(),
@@ -262,8 +262,8 @@ public class SearchItem {
                     null,
                     null
             );
-        } catch (Exception e) {
-            Log.e(TAG, "getPlace: ", e);
+        } catch (final Exception e) {
+            Log.e(SearchItem.TAG, "getPlace: ", e);
             return null;
         }
     }

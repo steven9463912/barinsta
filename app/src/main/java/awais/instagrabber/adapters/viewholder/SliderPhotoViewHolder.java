@@ -24,33 +24,33 @@ public class SliderPhotoViewHolder extends SliderItemViewHolder {
 
     private final ItemSliderPhotoBinding binding;
 
-    public SliderPhotoViewHolder(@NonNull final ItemSliderPhotoBinding binding) {
+    public SliderPhotoViewHolder(@NonNull ItemSliderPhotoBinding binding) {
         super(binding.getRoot());
         this.binding = binding;
     }
 
-    public void bind(@NonNull final Media model,
-                     final int position,
-                     final SliderItemsAdapter.SliderCallback sliderCallback) {
-        final ImageRequest requestBuilder = ImageRequestBuilder
+    public void bind(@NonNull Media model,
+                     int position,
+                     SliderItemsAdapter.SliderCallback sliderCallback) {
+        ImageRequest requestBuilder = ImageRequestBuilder
                 .newBuilderWithSource(Uri.parse(ResponseBodyUtils.getImageUrl(model)))
                 .setLocalThumbnailPreviewsEnabled(true)
                 .build();
-        binding.getRoot()
+        this.binding.getRoot()
                .setController(Fresco.newDraweeControllerBuilder()
                                     .setImageRequest(requestBuilder)
                                     .setControllerListener(new BaseControllerListener<ImageInfo>() {
                                         @Override
-                                        public void onFailure(final String id, final Throwable throwable) {
+                                        public void onFailure(String id, Throwable throwable) {
                                             if (sliderCallback != null) {
                                                 sliderCallback.onThumbnailLoaded(position);
                                             }
                                         }
 
                                         @Override
-                                        public void onFinalImageSet(final String id,
-                                                                    final ImageInfo imageInfo,
-                                                                    final Animatable animatable) {
+                                        public void onFinalImageSet(String id,
+                                                                    ImageInfo imageInfo,
+                                                                    Animatable animatable) {
                                             if (sliderCallback != null) {
                                                 sliderCallback.onThumbnailLoaded(position);
                                             }
@@ -58,19 +58,19 @@ public class SliderPhotoViewHolder extends SliderItemViewHolder {
                                     })
                                     .setLowResImageRequest(ImageRequest.fromUri(ResponseBodyUtils.getThumbUrl(model)))
                                     .build());
-        final DoubleTapGestureListener tapListener = new DoubleTapGestureListener(binding.getRoot()) {
+        DoubleTapGestureListener tapListener = new DoubleTapGestureListener(this.binding.getRoot()) {
             @Override
-            public boolean onSingleTapConfirmed(final MotionEvent e) {
+            public boolean onSingleTapConfirmed(MotionEvent e) {
                 if (sliderCallback != null) {
-                    sliderCallback.onItemClicked(position, model, binding.getRoot());
+                    sliderCallback.onItemClicked(position, model, SliderPhotoViewHolder.this.binding.getRoot());
                 }
                 return super.onSingleTapConfirmed(e);
             }
         };
-        binding.getRoot().setTapListener(tapListener);
-        final AnimatedZoomableController zoomableController = AnimatedZoomableController.newInstance();
+        this.binding.getRoot().setTapListener(tapListener);
+        AnimatedZoomableController zoomableController = AnimatedZoomableController.newInstance();
         zoomableController.setMaxScaleFactor(3f);
-        binding.getRoot().setZoomableController(zoomableController);
-        binding.getRoot().setZoomingEnabled(true);
+        this.binding.getRoot().setZoomableController(zoomableController);
+        this.binding.getRoot().setZoomingEnabled(true);
     }
 }

@@ -11,9 +11,9 @@ public class SavedCollectionsViewModel extends ViewModel {
     private MutableLiveData<List<SavedCollection>> list;
 
     public MutableLiveData<List<SavedCollection>> getList() {
-        if (list == null) {
-            list = new MutableLiveData<>();
+        if (this.list == null) {
+            this.list = new MutableLiveData<>();
         }
-        return list;
+        return this.list;
     }
 }

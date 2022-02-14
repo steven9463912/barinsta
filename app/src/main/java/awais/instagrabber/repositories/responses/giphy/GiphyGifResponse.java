@@ -8,39 +8,39 @@ public class GiphyGifResponse {
     private final GiphyGifResults results;
     private final String status;
 
-    public GiphyGifResponse(final GiphyGifResults results, final String status) {
+    public GiphyGifResponse(GiphyGifResults results, String status) {
         this.results = results;
         this.status = status;
     }
 
     public GiphyGifResults getResults() {
-        return results;
+        return this.results;
     }
 
     public String getStatus() {
-        return status;
+        return this.status;
     }
 
     @Override
-    public boolean equals(final Object o) {
+    public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        final GiphyGifResponse that = (GiphyGifResponse) o;
-        return Objects.equals(results, that.results) &&
-                Objects.equals(status, that.status);
+        if (o == null || this.getClass() != o.getClass()) return false;
+        GiphyGifResponse that = (GiphyGifResponse) o;
+        return Objects.equals(this.results, that.results) &&
+                Objects.equals(this.status, that.status);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(results, status);
+        return Objects.hash(this.results, this.status);
     }
 
     @NonNull
     @Override
     public String toString() {
         return "GiphyGifResponse{" +
-                "results=" + results +
-                ", status='" + status + '\'' +
+                "results=" + this.results +
+                ", status='" + this.status + '\'' +
                 '}';
     }
 }

@@ -63,200 +63,200 @@ public class CommentsViewerViewModel extends ViewModel {
 
     private final ServiceCallback<CommentsFetchResponse> ccb = new ServiceCallback<CommentsFetchResponse>() {
         @Override
-        public void onSuccess(final CommentsFetchResponse result) {
+        public void onSuccess(CommentsFetchResponse result) {
             // Log.d(TAG, "onSuccess: " + result);
             if (result == null) {
-                rootList.postValue(Resource.error(R.string.generic_null_response, getPrevList(rootList)));
+                CommentsViewerViewModel.this.rootList.postValue(Resource.error(R.string.generic_null_response, CommentsViewerViewModel.this.getPrevList(CommentsViewerViewModel.this.rootList)));
                 return;
             }
             List<Comment> comments = result.getComments();
-            if (rootCursor == null) {
-                rootCount.postValue(result.getCommentCount());
+            if (CommentsViewerViewModel.this.rootCursor == null) {
+                CommentsViewerViewModel.this.rootCount.postValue(result.getCommentCount());
             }
-            if (rootCursor != null) {
-                comments = mergeList(rootList, comments);
+            if (CommentsViewerViewModel.this.rootCursor != null) {
+                comments = CommentsViewerViewModel.this.mergeList(CommentsViewerViewModel.this.rootList, comments);
             }
-            rootCursor = result.getNextMinId();
-            rootHasNext = !TextUtils.isEmpty(rootCursor);
-            rootList.postValue(Resource.success(comments));
+            CommentsViewerViewModel.this.rootCursor = result.getNextMinId();
+            CommentsViewerViewModel.this.rootHasNext = !TextUtils.isEmpty(CommentsViewerViewModel.this.rootCursor);
+            CommentsViewerViewModel.this.rootList.postValue(Resource.success(comments));
         }
 
         @Override
-        public void onFailure(final Throwable t) {
-            Log.e(TAG, "onFailure: ", t);
-            rootList.postValue(Resource.error(t.getMessage(), getPrevList(rootList)));
+        public void onFailure(Throwable t) {
+            Log.e(CommentsViewerViewModel.TAG, "onFailure: ", t);
+            CommentsViewerViewModel.this.rootList.postValue(Resource.error(t.getMessage(), CommentsViewerViewModel.this.getPrevList(CommentsViewerViewModel.this.rootList)));
         }
     };
     private final ServiceCallback<ChildCommentsFetchResponse> rcb = new ServiceCallback<ChildCommentsFetchResponse>() {
         @Override
-        public void onSuccess(final ChildCommentsFetchResponse result) {
+        public void onSuccess(ChildCommentsFetchResponse result) {
             // Log.d(TAG, "onSuccess: " + result);
             if (result == null) {
-                rootList.postValue(Resource.error(R.string.generic_null_response, getPrevList(replyList)));
+                CommentsViewerViewModel.this.rootList.postValue(Resource.error(R.string.generic_null_response, CommentsViewerViewModel.this.getPrevList(CommentsViewerViewModel.this.replyList)));
                 return;
             }
             List<Comment> comments = result.getChildComments();
             // Replies
-            if (repliesCursor == null) {
+            if (CommentsViewerViewModel.this.repliesCursor == null) {
                 // add parent to top of replies
                 comments = ImmutableList.<Comment>builder()
-                        .add(repliesParent)
+                        .add(CommentsViewerViewModel.this.repliesParent)
                         .addAll(comments)
                         .build();
             }
-            if (repliesCursor != null) {
-                comments = mergeList(replyList, comments);
+            if (CommentsViewerViewModel.this.repliesCursor != null) {
+                comments = CommentsViewerViewModel.this.mergeList(CommentsViewerViewModel.this.replyList, comments);
             }
-            repliesCursor = result.getNextMaxChildCursor();
-            repliesHasNext = result.getHasMoreTailChildComments();
-            replyList.postValue(Resource.success(comments));
+            CommentsViewerViewModel.this.repliesCursor = result.getNextMaxChildCursor();
+            CommentsViewerViewModel.this.repliesHasNext = result.getHasMoreTailChildComments();
+            CommentsViewerViewModel.this.replyList.postValue(Resource.success(comments));
         }
 
         @Override
-        public void onFailure(final Throwable t) {
-            Log.e(TAG, "onFailure: ", t);
-            replyList.postValue(Resource.error(t.getMessage(), getPrevList(replyList)));
+        public void onFailure(Throwable t) {
+            Log.e(CommentsViewerViewModel.TAG, "onFailure: ", t);
+            CommentsViewerViewModel.this.replyList.postValue(Resource.error(t.getMessage(), CommentsViewerViewModel.this.getPrevList(CommentsViewerViewModel.this.replyList)));
         }
     };
 
     public CommentsViewerViewModel() {
-        graphQLRepository = GraphQLRepository.Companion.getInstance();
-        final String cookie = settingsHelper.getString(Constants.COOKIE);
-        final String deviceUuid = settingsHelper.getString(Constants.DEVICE_UUID);
-        final String csrfToken = CookieUtils.getCsrfTokenFromCookie(cookie);
-        final long userIdFromCookie = CookieUtils.getUserIdFromCookie(cookie);
-        commentService = CommentService.getInstance(deviceUuid, csrfToken, userIdFromCookie);
+        this.graphQLRepository = GraphQLRepository.Companion.getInstance();
+        String cookie = settingsHelper.getString(Constants.COOKIE);
+        String deviceUuid = settingsHelper.getString(Constants.DEVICE_UUID);
+        String csrfToken = CookieUtils.getCsrfTokenFromCookie(cookie);
+        long userIdFromCookie = CookieUtils.getUserIdFromCookie(cookie);
+        this.commentService = CommentService.getInstance(deviceUuid, csrfToken, userIdFromCookie);
     }
 
-    public void setCurrentUser(final User currentUser) {
-        currentUserId.postValue(currentUser == null ? 0 : currentUser.getPk());
+    public void setCurrentUser(User currentUser) {
+        this.currentUserId.postValue(currentUser == null ? 0 : currentUser.getPk());
     }
 
-    public void setPostDetails(final String shortCode, final String postId, final long postUserId) {
+    public void setPostDetails(String shortCode, String postId, long postUserId) {
         this.shortCode = shortCode;
         this.postId = postId;
     }
 
     public LiveData<Long> getCurrentUserId() {
-        return currentUserId;
+        return this.currentUserId;
     }
 
     @Nullable
     public Comment getRepliesParent() {
-        return repliesParent;
+        return this.repliesParent;
     }
 
     @Nullable
-    public void setReplyTo(final Comment replyTo) {
+    public void setReplyTo(Comment replyTo) {
         this.replyTo = replyTo;
     }
 
     public LiveData<Resource<List<Comment>>> getRootList() {
-        return rootList;
+        return this.rootList;
     }
 
     public LiveData<Resource<List<Comment>>> getReplyList() {
-        return replyList;
+        return this.replyList;
     }
 
     public LiveData<Integer> getRootCommentsCount() {
-        return rootCount;
+        return this.rootCount;
     }
 
     public void fetchComments() {
-        if (shortCode == null || postId == null) return;
-        if (!rootHasNext) return;
-        rootList.postValue(Resource.loading(getPrevList(rootList)));
-        if (currentUserId.getValue() != 0L) {
-            commentService.fetchComments(postId, rootCursor, ccb);
+        if (this.shortCode == null || this.postId == null) return;
+        if (!this.rootHasNext) return;
+        this.rootList.postValue(Resource.loading(this.getPrevList(this.rootList)));
+        if (this.currentUserId.getValue() != 0L) {
+            this.commentService.fetchComments(this.postId, this.rootCursor, this.ccb);
             return;
         }
-        graphQLRepository.fetchComments(
-                shortCode,
+        this.graphQLRepository.fetchComments(
+                this.shortCode,
                 true,
-                rootCursor,
-                enqueueRequest(true, shortCode, ccb)
+                this.rootCursor,
+                this.enqueueRequest(true, this.shortCode, this.ccb)
         );
     }
 
     public void fetchReplies() {
-        if (repliesParent == null) return;
-        fetchReplies(repliesParent.getPk());
+        if (this.repliesParent == null) return;
+        this.fetchReplies(this.repliesParent.getPk());
     }
 
-    public void fetchReplies(@NonNull final String commentId) {
-        if (!repliesHasNext) return;
-        final List<Comment> list;
-        if (repliesParent != null && !Objects.equals(repliesParent.getPk(), commentId)) {
-            repliesCursor = null;
-            repliesHasNext = false;
+    public void fetchReplies(@NonNull String commentId) {
+        if (!this.repliesHasNext) return;
+        List<Comment> list;
+        if (this.repliesParent != null && !Objects.equals(this.repliesParent.getPk(), commentId)) {
+            this.repliesCursor = null;
+            this.repliesHasNext = false;
             list = Collections.emptyList();
         } else {
-            list = getPrevList(replyList);
+            list = this.getPrevList(this.replyList);
         }
-        replyList.postValue(Resource.loading(list));
-        if (currentUserId.getValue() != 0L) {
-            commentService.fetchChildComments(postId, commentId, repliesCursor, rcb);
+        this.replyList.postValue(Resource.loading(list));
+        if (this.currentUserId.getValue() != 0L) {
+            this.commentService.fetchChildComments(this.postId, commentId, this.repliesCursor, this.rcb);
             return;
         }
-        graphQLRepository.fetchComments(commentId, false, repliesCursor, enqueueRequest(false, commentId, rcb));
+        this.graphQLRepository.fetchComments(commentId, false, this.repliesCursor, this.enqueueRequest(false, commentId, this.rcb));
     }
 
-    private Continuation<String> enqueueRequest(final boolean root,
-                                                final String shortCodeOrCommentId,
-                                                @SuppressWarnings("rawtypes") final ServiceCallback callback) {
+    private Continuation<String> enqueueRequest(boolean root,
+                                                String shortCodeOrCommentId,
+                                                @SuppressWarnings("rawtypes") ServiceCallback callback) {
         return CoroutineUtilsKt.getContinuation((response, throwable) -> {
             if (throwable != null) {
                 callback.onFailure(throwable);
                 return;
             }
             if (response == null) {
-                Log.e(TAG, "Error occurred while fetching gql comments of " + shortCodeOrCommentId);
+                Log.e(CommentsViewerViewModel.TAG, "Error occurred while fetching gql comments of " + shortCodeOrCommentId);
                 //noinspection unchecked
                 callback.onSuccess(null);
                 return;
             }
             try {
-                final JSONObject body = root ? new JSONObject(response).getJSONObject("data")
+                JSONObject body = root ? new JSONObject(response).getJSONObject("data")
                                                                        .getJSONObject("shortcode_media")
                                                                        .getJSONObject("edge_media_to_parent_comment")
                                              : new JSONObject(response).getJSONObject("data")
                                                                        .getJSONObject("comment")
                                                                        .getJSONObject("edge_threaded_comments");
-                final int count = body.optInt("count");
-                final JSONObject pageInfo = body.getJSONObject("page_info");
-                final boolean hasNextPage = pageInfo.getBoolean("has_next_page");
-                final String endCursor = pageInfo.isNull("end_cursor") || !hasNextPage ? null : pageInfo.optString("end_cursor");
-                final JSONArray commentsJsonArray = body.getJSONArray("edges");
-                final ImmutableList.Builder<Comment> builder = ImmutableList.builder();
+                int count = body.optInt("count");
+                JSONObject pageInfo = body.getJSONObject("page_info");
+                boolean hasNextPage = pageInfo.getBoolean("has_next_page");
+                String endCursor = pageInfo.isNull("end_cursor") || !hasNextPage ? null : pageInfo.optString("end_cursor");
+                JSONArray commentsJsonArray = body.getJSONArray("edges");
+                ImmutableList.Builder<Comment> builder = ImmutableList.builder();
                 for (int i = 0; i < commentsJsonArray.length(); i++) {
-                    final Comment commentModel = getComment(commentsJsonArray.getJSONObject(i).getJSONObject("node"), root);
+                    Comment commentModel = this.getComment(commentsJsonArray.getJSONObject(i).getJSONObject("node"), root);
                     builder.add(commentModel);
                 }
-                final Object result = root ? new CommentsFetchResponse(count, endCursor, builder.build())
+                Object result = root ? new CommentsFetchResponse(count, endCursor, builder.build())
                                            : new ChildCommentsFetchResponse(count, endCursor, builder.build(), hasNextPage);
                 //noinspection unchecked
                 callback.onSuccess(result);
-            } catch (Exception e) {
-                Log.e(TAG, "onResponse", e);
+            } catch (final Exception e) {
+                Log.e(CommentsViewerViewModel.TAG, "onResponse", e);
                 callback.onFailure(e);
             }
         }, Dispatchers.getIO());
     }
 
     @NonNull
-    private Comment getComment(@NonNull final JSONObject commentJsonObject, final boolean root) throws JSONException {
-        final JSONObject owner = commentJsonObject.getJSONObject("owner");
-        final User user = new User(
+    private Comment getComment(@NonNull JSONObject commentJsonObject, boolean root) throws JSONException {
+        JSONObject owner = commentJsonObject.getJSONObject("owner");
+        User user = new User(
                 owner.optLong(Constants.EXTRAS_ID, 0),
                 owner.getString(Constants.EXTRAS_USERNAME),
                 null,
                 false,
                 owner.getString("profile_pic_url"),
                 owner.optBoolean("is_verified"));
-        final JSONObject likedBy = commentJsonObject.optJSONObject("edge_liked_by");
-        final String commentId = commentJsonObject.getString("id");
-        final JSONObject childCommentsJsonObject = commentJsonObject.optJSONObject("edge_threaded_comments");
+        JSONObject likedBy = commentJsonObject.optJSONObject("edge_liked_by");
+        String commentId = commentJsonObject.getString("id");
+        JSONObject childCommentsJsonObject = commentJsonObject.optJSONObject("edge_threaded_comments");
         int replyCount = 0;
         if (childCommentsJsonObject != null) {
             replyCount = childCommentsJsonObject.optInt("count");
@@ -271,16 +271,16 @@ public class CommentsViewerViewModel extends ViewModel {
     }
 
     @NonNull
-    private List<Comment> getPrevList(@NonNull final LiveData<Resource<List<Comment>>> list) {
+    private List<Comment> getPrevList(@NonNull LiveData<Resource<List<Comment>>> list) {
         if (list.getValue() == null) return Collections.emptyList();
-        final Resource<List<Comment>> listResource = list.getValue();
+        Resource<List<Comment>> listResource = list.getValue();
         if (listResource.data == null) return Collections.emptyList();
         return listResource.data;
     }
 
-    private List<Comment> mergeList(@NonNull final LiveData<Resource<List<Comment>>> list,
-                                    final List<Comment> comments) {
-        final List<Comment> prevList = getPrevList(list);
+    private List<Comment> mergeList(@NonNull LiveData<Resource<List<Comment>>> list,
+                                    List<Comment> comments) {
+        List<Comment> prevList = this.getPrevList(list);
         if (comments == null) {
             return prevList;
         }
@@ -290,112 +290,112 @@ public class CommentsViewerViewModel extends ViewModel {
                 .build();
     }
 
-    public void showReplies(final Comment comment) {
+    public void showReplies(Comment comment) {
         if (comment == null) return;
-        if (repliesParent == null || !Objects.equals(repliesParent.getPk(), comment.getPk())) {
-            repliesParent = comment;
-            replyTo = comment;
-            prevReplies = null;
-            prevRepliesCursor = null;
-            prevRepliesHasNext = true;
-            fetchReplies(comment.getPk());
+        if (this.repliesParent == null || !Objects.equals(this.repliesParent.getPk(), comment.getPk())) {
+            this.repliesParent = comment;
+            this.replyTo = comment;
+            this.prevReplies = null;
+            this.prevRepliesCursor = null;
+            this.prevRepliesHasNext = true;
+            this.fetchReplies(comment.getPk());
             return;
         }
-        if (prevReplies != null && !prevReplies.isEmpty()) {
+        if (this.prevReplies != null && !this.prevReplies.isEmpty()) {
             // user clicked same comment, show prev loaded replies
-            repliesCursor = prevRepliesCursor;
-            repliesHasNext = prevRepliesHasNext;
-            replyList.postValue(Resource.success(prevReplies));
+            this.repliesCursor = this.prevRepliesCursor;
+            this.repliesHasNext = this.prevRepliesHasNext;
+            this.replyList.postValue(Resource.success(this.prevReplies));
             return;
         }
         // prev list was null or empty, fetch
-        prevRepliesCursor = null;
-        prevRepliesHasNext = true;
-        fetchReplies(comment.getPk());
+        this.prevRepliesCursor = null;
+        this.prevRepliesHasNext = true;
+        this.fetchReplies(comment.getPk());
     }
 
-    public LiveData<Resource<Object>> likeComment(@NonNull final Comment comment, final boolean liked, final boolean isReply) {
-        final MutableLiveData<Resource<Object>> data = new MutableLiveData<>(Resource.loading(null));
-        final ServiceCallback<Boolean> callback = new ServiceCallback<Boolean>() {
+    public LiveData<Resource<Object>> likeComment(@NonNull Comment comment, boolean liked, boolean isReply) {
+        MutableLiveData<Resource<Object>> data = new MutableLiveData<>(Resource.loading(null));
+        ServiceCallback<Boolean> callback = new ServiceCallback<Boolean>() {
             @Override
-            public void onSuccess(final Boolean result) {
+            public void onSuccess(Boolean result) {
                 if (result == null || !result) {
                     data.postValue(Resource.error(R.string.downloader_unknown_error, null));
                     return;
                 }
                 data.postValue(Resource.success(new Object()));
-                setLiked(isReply, comment, liked);
+                CommentsViewerViewModel.this.setLiked(isReply, comment, liked);
             }
 
             @Override
-            public void onFailure(final Throwable t) {
-                Log.e(TAG, "Error liking comment", t);
+            public void onFailure(Throwable t) {
+                Log.e(CommentsViewerViewModel.TAG, "Error liking comment", t);
                 data.postValue(Resource.error(t.getMessage(), null));
             }
         };
         if (liked) {
-            commentService.commentLike(comment.getPk(), callback);
+            this.commentService.commentLike(comment.getPk(), callback);
         } else {
-            commentService.commentUnlike(comment.getPk(), callback);
+            this.commentService.commentUnlike(comment.getPk(), callback);
         }
         return data;
     }
 
-    private void setLiked(final boolean isReply,
-                          @NonNull final Comment comment,
-                          final boolean liked) {
-        final List<Comment> list = getPrevList(isReply ? replyList : rootList);
+    private void setLiked(boolean isReply,
+                          @NonNull Comment comment,
+                          boolean liked) {
+        List<Comment> list = this.getPrevList(isReply ? this.replyList : this.rootList);
         if (list == null) return;
-        final List<Comment> copy = new ArrayList<>(list);
-        OptionalInt indexOpt = IntStream.range(0, copy.size())
+        List<Comment> copy = new ArrayList<>(list);
+        final OptionalInt indexOpt = IntStream.range(0, copy.size())
                                         .filter(i -> copy.get(i) != null && Objects.equals(copy.get(i).getPk(), comment.getPk()))
                                         .findFirst();
         if (!indexOpt.isPresent()) return;
         try {
-            final Comment clone = (Comment) comment.clone();
+            Comment clone = (Comment) comment.clone();
             clone.setLiked(liked);
             copy.set(indexOpt.getAsInt(), clone);
-            final MutableLiveData<Resource<List<Comment>>> liveData = isReply ? replyList : rootList;
+            MutableLiveData<Resource<List<Comment>>> liveData = isReply ? this.replyList : this.rootList;
             liveData.postValue(Resource.success(copy));
-        } catch (Exception e) {
-            Log.e(TAG, "setLiked: ", e);
+        } catch (final Exception e) {
+            Log.e(CommentsViewerViewModel.TAG, "setLiked: ", e);
         }
     }
 
-    public LiveData<Resource<Object>> comment(@NonNull final String text,
-                                              final boolean isReply) {
-        final MutableLiveData<Resource<Object>> data = new MutableLiveData<>(Resource.loading(null));
+    public LiveData<Resource<Object>> comment(@NonNull String text,
+                                              boolean isReply) {
+        MutableLiveData<Resource<Object>> data = new MutableLiveData<>(Resource.loading(null));
         String replyToId = null;
-        if (isReply && replyTo != null) {
-            replyToId = replyTo.getPk();
+        if (isReply && this.replyTo != null) {
+            replyToId = this.replyTo.getPk();
         }
         if (isReply && replyToId == null) {
             data.postValue(Resource.error(null, null));
             return data;
         }
-        commentService.comment(postId, text, replyToId, new ServiceCallback<Comment>() {
+        this.commentService.comment(this.postId, text, replyToId, new ServiceCallback<Comment>() {
             @Override
-            public void onSuccess(final Comment result) {
+            public void onSuccess(Comment result) {
                 if (result == null) {
                     data.postValue(Resource.error(R.string.downloader_unknown_error, null));
                     return;
                 }
-                addComment(result, isReply);
+                CommentsViewerViewModel.this.addComment(result, isReply);
                 data.postValue(Resource.success(new Object()));
             }
 
             @Override
-            public void onFailure(final Throwable t) {
-                Log.e(TAG, "Error during comment", t);
+            public void onFailure(Throwable t) {
+                Log.e(CommentsViewerViewModel.TAG, "Error during comment", t);
                 data.postValue(Resource.error(t.getMessage(), null));
             }
         });
         return data;
     }
 
-    private void addComment(@NonNull final Comment comment, final boolean isReply) {
-        final List<Comment> list = getPrevList(isReply ? replyList : rootList);
-        final ImmutableList.Builder<Comment> builder = ImmutableList.builder();
+    private void addComment(@NonNull Comment comment, boolean isReply) {
+        List<Comment> list = this.getPrevList(isReply ? this.replyList : this.rootList);
+        ImmutableList.Builder<Comment> builder = ImmutableList.builder();
         if (isReply) {
             // replies are added to the bottom of the list to preserve chronological order
             builder.addAll(list)
@@ -404,54 +404,54 @@ public class CommentsViewerViewModel extends ViewModel {
             builder.add(comment)
                    .addAll(list);
         }
-        final MutableLiveData<Resource<List<Comment>>> liveData = isReply ? replyList : rootList;
+        MutableLiveData<Resource<List<Comment>>> liveData = isReply ? this.replyList : this.rootList;
         liveData.postValue(Resource.success(builder.build()));
     }
 
-    public void translate(@NonNull final Comment comment,
-                          @NonNull final ServiceCallback<String> callback) {
-        commentService.translate(comment.getPk(), callback);
+    public void translate(@NonNull Comment comment,
+                          @NonNull ServiceCallback<String> callback) {
+        this.commentService.translate(comment.getPk(), callback);
     }
 
-    public LiveData<Resource<Object>> deleteComment(@NonNull final Comment comment, final boolean isReply) {
-        final MutableLiveData<Resource<Object>> data = new MutableLiveData<>(Resource.loading(null));
-        commentService.deleteComment(postId, comment.getPk(), new ServiceCallback<Boolean>() {
+    public LiveData<Resource<Object>> deleteComment(@NonNull Comment comment, boolean isReply) {
+        MutableLiveData<Resource<Object>> data = new MutableLiveData<>(Resource.loading(null));
+        this.commentService.deleteComment(this.postId, comment.getPk(), new ServiceCallback<Boolean>() {
             @Override
-            public void onSuccess(final Boolean result) {
+            public void onSuccess(Boolean result) {
                 if (result == null || !result) {
                     data.postValue(Resource.error(R.string.downloader_unknown_error, null));
                     return;
                 }
-                removeComment(comment, isReply);
+                CommentsViewerViewModel.this.removeComment(comment, isReply);
                 data.postValue(Resource.success(new Object()));
             }
 
             @Override
-            public void onFailure(final Throwable t) {
-                Log.e(TAG, "Error deleting comment", t);
+            public void onFailure(Throwable t) {
+                Log.e(CommentsViewerViewModel.TAG, "Error deleting comment", t);
                 data.postValue(Resource.error(t.getMessage(), null));
             }
         });
         return data;
     }
 
-    private void removeComment(@NonNull final Comment comment, final boolean isReply) {
-        final List<Comment> list = getPrevList(isReply ? replyList : rootList);
-        final List<Comment> updated = list.stream()
+    private void removeComment(@NonNull Comment comment, boolean isReply) {
+        List<Comment> list = this.getPrevList(isReply ? this.replyList : this.rootList);
+        List<Comment> updated = list.stream()
                                           .filter(Objects::nonNull)
                                           .filter(c -> !Objects.equals(c.getPk(), comment.getPk()))
                                           .collect(Collectors.toList());
-        final MutableLiveData<Resource<List<Comment>>> liveData = isReply ? replyList : rootList;
+        MutableLiveData<Resource<List<Comment>>> liveData = isReply ? this.replyList : this.rootList;
         liveData.postValue(Resource.success(updated));
     }
 
     public void clearReplies() {
-        prevRepliesCursor = repliesCursor;
-        prevRepliesHasNext = repliesHasNext;
-        repliesCursor = null;
-        repliesHasNext = true;
+        this.prevRepliesCursor = this.repliesCursor;
+        this.prevRepliesHasNext = this.repliesHasNext;
+        this.repliesCursor = null;
+        this.repliesHasNext = true;
         // cache prev reply list to save time and data if user clicks same comment again
-        prevReplies = getPrevList(replyList);
-        replyList.postValue(Resource.success(Collections.emptyList()));
+        this.prevReplies = this.getPrevList(this.replyList);
+        this.replyList.postValue(Resource.success(Collections.emptyList()));
     }
 }

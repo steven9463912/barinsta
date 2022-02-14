@@ -6,20 +6,20 @@ import android.util.AttributeSet;
 import androidx.appcompat.widget.AppCompatImageView;
 
 public final class FixedImageView extends AppCompatImageView {
-    public FixedImageView(final Context context) {
+    public FixedImageView(Context context) {
         super(context);
     }
 
-    public FixedImageView(final Context context, final AttributeSet attrs) {
+    public FixedImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public FixedImageView(final Context context, final AttributeSet attrs, final int defStyleAttr) {
+    public FixedImageView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
     @Override
-    protected void onMeasure(final int wMeasure, final int hMeasure) {
+    protected void onMeasure(int wMeasure, int hMeasure) {
         super.onMeasure(wMeasure, wMeasure);
     }
 }

@@ -26,8 +26,8 @@ public class MigrationTest {
     public MigrationTestHelper helper;
 
     public MigrationTest() {
-        final String canonicalName = AppDatabase.class.getCanonicalName();
-        helper = new MigrationTestHelper(InstrumentationRegistry.getInstrumentation(),
+        String canonicalName = AppDatabase.class.getCanonicalName();
+        this.helper = new MigrationTestHelper(InstrumentationRegistry.getInstrumentation(),
                                          canonicalName,
                                          new FrameworkSQLiteOpenHelperFactory());
     }
@@ -35,15 +35,15 @@ public class MigrationTest {
     @Test
     public void migrateAll() throws IOException {
         // Create earliest version of the database. Have to start with 4 since that is the version we migrated to Room.
-        SupportSQLiteDatabase db = helper.createDatabase(TEST_DB, 4);
+        final SupportSQLiteDatabase db = this.helper.createDatabase(MigrationTest.TEST_DB, 4);
         db.close();
 
         // Open latest version of the database. Room will validate the schema
         // once all migrations execute.
-        AppDatabase appDb = Room.databaseBuilder(InstrumentationRegistry.getInstrumentation().getTargetContext(),
+        final AppDatabase appDb = Room.databaseBuilder(InstrumentationRegistry.getInstrumentation().getTargetContext(),
                                                  AppDatabase.class,
-                TEST_DB)
-                                .addMigrations(ALL_MIGRATIONS).build();
+                MigrationTest.TEST_DB)
+                                .addMigrations(MigrationTest.ALL_MIGRATIONS).build();
         appDb.getOpenHelper().getWritableDatabase();
         appDb.close();
     }

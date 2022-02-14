@@ -10,14 +10,14 @@ import awais.instagrabber.R;
 
 public class NotificationsPreferencesFragment extends BasePreferencesFragment {
     @Override
-    void setupPreferenceScreen(final PreferenceScreen screen) {
-        final Context context = getContext();
+    void setupPreferenceScreen(PreferenceScreen screen) {
+        Context context = this.getContext();
         if (context == null) return;
-        screen.addPreference(getActivityNotificationsPreference(context));
+        screen.addPreference(this.getActivityNotificationsPreference(context));
         // screen.addPreference(getDMNotificationsPreference(context));
     }
 
-    private Preference getActivityNotificationsPreference(@NonNull final Context context) {
+    private Preference getActivityNotificationsPreference(@NonNull Context context) {
         return PreferenceHelper.getSwitchPreference(
                 context,
                 PreferenceKeys.CHECK_ACTIVITY,
@@ -25,12 +25,12 @@ public class NotificationsPreferencesFragment extends BasePreferencesFragment {
                 -1,
                 false,
                 (preference, newValue) -> {
-                    shouldRecreate();
+                    this.shouldRecreate();
                     return true;
                 });
     }
 
-    private Preference getDMNotificationsPreference(@NonNull final Context context) {
+    private Preference getDMNotificationsPreference(@NonNull Context context) {
         return PreferenceHelper.getSwitchPreference(
                 context,
                 PreferenceKeys.PREF_ENABLE_DM_NOTIFICATIONS,

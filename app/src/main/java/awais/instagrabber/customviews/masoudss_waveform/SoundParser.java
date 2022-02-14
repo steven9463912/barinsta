@@ -25,57 +25,57 @@ final class SoundParser {
     private static final String[] supportedExtensions = {"mp3", "wav", "3gpp", "3gp", "amr", "aac", "m4a", "ogg"};
     private static final ArrayList<String> additionalExtensions = new ArrayList<>();
 
-    static void addCustomExtension(final String extension) {
-        additionalExtensions.add(extension);
+    static void addCustomExtension(String extension) {
+        SoundParser.additionalExtensions.add(extension);
     }
 
-    static void removeCustomExtension(final String extension) {
-        additionalExtensions.remove(extension);
+    static void removeCustomExtension(String extension) {
+        SoundParser.additionalExtensions.remove(extension);
     }
 
-    static void addCustomExtensions(final List<String> extensions) {
-        additionalExtensions.addAll(extensions);
+    static void addCustomExtensions(List<String> extensions) {
+        SoundParser.additionalExtensions.addAll(extensions);
     }
 
-    static void removeCustomExtensions(final List<String> extensions) {
-        additionalExtensions.removeAll(extensions);
+    static void removeCustomExtensions(List<String> extensions) {
+        SoundParser.additionalExtensions.removeAll(extensions);
     }
 
-    private static boolean isFilenameSupported(final String filename) {
-        for (final String supportedExtension : supportedExtensions)
+    private static boolean isFilenameSupported(String filename) {
+        for (String supportedExtension : SoundParser.supportedExtensions)
             if (filename.endsWith('.' + supportedExtension)) return true;
-        for (final String additionalExtension : additionalExtensions)
+        for (String additionalExtension : SoundParser.additionalExtensions)
             if (filename.endsWith('.' + additionalExtension)) return true;
         return false;
     }
 
     @NonNull
-    public static SoundParser create(final String fileName, final boolean ignoreExtension) throws IOException, FormatException {
-        if (!ignoreExtension && !isFilenameSupported(fileName))
+    public static SoundParser create(String fileName, boolean ignoreExtension) throws IOException, FormatException {
+        if (!ignoreExtension && !SoundParser.isFilenameSupported(fileName))
             throw new FormatException("Not supported file extension.");
 
-        final File f = new File(fileName);
+        File f = new File(fileName);
         if (!f.exists()) throw new FileNotFoundException(fileName);
 
-        final SoundParser soundFile = new SoundParser();
+        SoundParser soundFile = new SoundParser();
         soundFile.readFile(f);
 
         return soundFile;
     }
 
-    public void setProgressListener(final ProgressListener progressListener) {
+    public void setProgressListener(ProgressListener progressListener) {
         this.progressListener = progressListener;
     }
 
     @SuppressWarnings("deprecation")
-    private void readFile(@NonNull final File inputFile) throws IOException, FormatException {
-        final MediaExtractor extractor = new MediaExtractor();
+    private void readFile(@NonNull File inputFile) throws IOException, FormatException {
+        MediaExtractor extractor = new MediaExtractor();
         MediaFormat format = null;
 
-        final int fileSizeBytes = (int) inputFile.length();
+        int fileSizeBytes = (int) inputFile.length();
         extractor.setDataSource(inputFile.getPath());
 
-        final int numTracks = extractor.getTrackCount();
+        int numTracks = extractor.getTrackCount();
 
         int i = 0;
         while (i < numTracks) {
@@ -90,17 +90,17 @@ final class SoundParser {
         if (i == numTracks) throw new FormatException("No audio track found in " + inputFile);
         assert format != null;
 
-        final int channels = format.getInteger(MediaFormat.KEY_CHANNEL_COUNT);
-        final int sampleRate = format.getInteger(MediaFormat.KEY_SAMPLE_RATE);
+        int channels = format.getInteger(MediaFormat.KEY_CHANNEL_COUNT);
+        int sampleRate = format.getInteger(MediaFormat.KEY_SAMPLE_RATE);
 
-        final int expectedNumSamples = (int) (format.getLong(MediaFormat.KEY_DURATION) / 1000000f * sampleRate + 0.5f);
+        int expectedNumSamples = (int) (format.getLong(MediaFormat.KEY_DURATION) / 1000000f * sampleRate + 0.5f);
 
-        final MediaCodec codec = MediaCodec.createDecoderByType(Objects.requireNonNull(format.getString(MediaFormat.KEY_MIME)));
+        MediaCodec codec = MediaCodec.createDecoderByType(Objects.requireNonNull(format.getString(MediaFormat.KEY_MIME)));
         codec.configure(format, null, null, 0);
         codec.start();
 
-        final MediaCodec.BufferInfo info = new MediaCodec.BufferInfo();
-        final ByteBuffer[] inputBuffers = codec.getInputBuffers();
+        MediaCodec.BufferInfo info = new MediaCodec.BufferInfo();
+        ByteBuffer[] inputBuffers = codec.getInputBuffers();
 
         boolean firstSampleData = true, doneReading = false;
         long presentationTime;
@@ -110,7 +110,7 @@ final class SoundParser {
         ByteBuffer[] outputBuffers = codec.getOutputBuffers();
 
         while (true) {
-            final int inputBufferIndex = codec.dequeueInputBuffer(100);
+            int inputBufferIndex = codec.dequeueInputBuffer(100);
 
             if (!doneReading && inputBufferIndex >= 0) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
@@ -130,7 +130,7 @@ final class SoundParser {
                     extractor.advance();
                     totSizeRead += sampleSize;
 
-                    if (progressListener != null && !progressListener.reportProgress((double) totSizeRead / fileSizeBytes)) {
+                    if (this.progressListener != null && !this.progressListener.reportProgress((double) totSizeRead / fileSizeBytes)) {
                         // We are asked to stop reading the file. Returning immediately.
                         // The SoundFile object is invalid and should NOT be used afterward!
                         extractor.release();
@@ -144,7 +144,7 @@ final class SoundParser {
             }
 
             // Get decoded stream from the decoder output buffers.
-            final int outputBufferIndex = codec.dequeueOutputBuffer(info, 100);
+            int outputBufferIndex = codec.dequeueOutputBuffer(info, 100);
             if (outputBufferIndex >= 0 && info.size > 0) {
                 if (decodedSamplesSize < info.size) {
                     decodedSamplesSize = info.size;
@@ -152,7 +152,7 @@ final class SoundParser {
                 }
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    final ByteBuffer outputBuffer = codec.getOutputBuffer(outputBufferIndex);
+                    ByteBuffer outputBuffer = codec.getOutputBuffer(outputBufferIndex);
                     assert outputBuffer != null;
                     outputBuffer.get(decodedSamples, 0, info.size);
                     outputBuffer.clear();
@@ -165,10 +165,10 @@ final class SoundParser {
                 if (mDecodedBytes.remaining() < info.size) {
                     // Getting a rough estimate of the total size, allocate 20% more, and
                     // make sure to allocate at least 5MB more than the initial size.
-                    final int position = mDecodedBytes.position();
+                    int position = mDecodedBytes.position();
 
                     int newSize = (int) (position * (1.0 * fileSizeBytes / totSizeRead) * 1.2);
-                    final int infoSize = info.size + 5 * (1 << 20);
+                    int infoSize = info.size + 5 * (1 << 20);
                     if (newSize - position < infoSize)
                         newSize = position + infoSize;
 
@@ -180,7 +180,7 @@ final class SoundParser {
                         try {
                             newDecodedBytes = ByteBuffer.allocate(newSize);
                             break;
-                        } catch (final OutOfMemoryError e) {
+                        } catch (OutOfMemoryError e) {
                             retry--;
                         }
                     }
@@ -203,10 +203,10 @@ final class SoundParser {
                 break;
         }
 
-        final int numSamples = mDecodedBytes.position() / (channels * 2);  // One sample = 2 bytes.
+        int numSamples = mDecodedBytes.position() / (channels * 2);  // One sample = 2 bytes.
         mDecodedBytes.rewind();
         mDecodedBytes.order(ByteOrder.LITTLE_ENDIAN);
-        final ShortBuffer mDecodedSamples = mDecodedBytes.asShortBuffer();
+        ShortBuffer mDecodedSamples = mDecodedBytes.asShortBuffer();
         // final int avgBitrateKbps = (int) (fileSizeBytes * 8F * ((float) sampleRate / numSamples) / 1000F);
 
         extractor.release();
@@ -216,7 +216,7 @@ final class SoundParser {
         final int samplesPerFrame = 1024;
         int numFrames = numSamples / samplesPerFrame;
         if (numSamples % samplesPerFrame != 0) numFrames++;
-        frameGains = new int[numFrames];
+        this.frameGains = new int[numFrames];
         // final int[] mFrameLens = new int[numFrames];
         // final int[] mFrameOffsets = new int[numFrames];
         // final int frameLens = (int) (1000F * avgBitrateKbps / 8F * ((float) samplesPerFrame / sampleRate));
@@ -237,7 +237,7 @@ final class SoundParser {
                 j++;
             }
 
-            frameGains[i] = (int) Math.sqrt(gain);
+            this.frameGains[i] = (int) Math.sqrt(gain);
             // mFrameLens[i] = frameLens;
             // mFrameOffsets[i] = (int) ((float) i * (1000F * avgBitrateKbps / 8F) * ((float) samplesPerFrame / sampleRate));
             i++;

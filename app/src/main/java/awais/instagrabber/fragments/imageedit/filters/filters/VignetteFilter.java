@@ -26,52 +26,52 @@ public class VignetteFilter extends Filter<GPUImageVignetteFilter> {
 
     public VignetteFilter() {
         super(FiltersHelper.FilterType.VIGNETTE, R.string.vignette);
-        properties = ImmutableMap.of(
-                PROP_CENTER, new PointFProperty(R.string.center, new PointF(0.5f, 0.5f)),
-                PROP_COLOR, new ColorProperty(R.string.color, Color.BLACK),
-                PROP_START, new FloatProperty(R.string.start, 0.3f),
-                PROP_END, new FloatProperty(R.string.end, 0.75f)
+        this.properties = ImmutableMap.of(
+                VignetteFilter.PROP_CENTER, new PointFProperty(R.string.center, new PointF(0.5f, 0.5f)),
+                VignetteFilter.PROP_COLOR, new ColorProperty(R.string.color, Color.BLACK),
+                VignetteFilter.PROP_START, new FloatProperty(R.string.start, 0.3f),
+                VignetteFilter.PROP_END, new FloatProperty(R.string.end, 0.75f)
         );
-        filter = new GPUImageVignetteFilter(
-                (PointF) getProperty(PROP_CENTER).getDefaultValue(),
-                getFloatArrayFromColor((Integer) getProperty(PROP_COLOR).getDefaultValue()),
-                (Float) getProperty(PROP_START).getDefaultValue(),
-                (Float) getProperty(PROP_END).getDefaultValue()
+        this.filter = new GPUImageVignetteFilter(
+                (PointF) this.getProperty(VignetteFilter.PROP_CENTER).getDefaultValue(),
+                this.getFloatArrayFromColor((Integer) this.getProperty(VignetteFilter.PROP_COLOR).getDefaultValue()),
+                (Float) this.getProperty(VignetteFilter.PROP_START).getDefaultValue(),
+                (Float) this.getProperty(VignetteFilter.PROP_END).getDefaultValue()
         );
     }
 
     @Override
     public Map<Integer, Property<?>> getProperties() {
-        return properties;
+        return this.properties;
     }
 
     @Override
-    public void adjust(final int property, final Object value) {
+    public void adjust(int property, Object value) {
         super.adjust(property, value);
         switch (property) {
-            case PROP_CENTER:
-                filter.setVignetteCenter((PointF) value);
+            case VignetteFilter.PROP_CENTER:
+                this.filter.setVignetteCenter((PointF) value);
                 return;
-            case PROP_COLOR:
-                final int color = (int) value;
-                filter.setVignetteColor(getFloatArrayFromColor(color));
+            case VignetteFilter.PROP_COLOR:
+                int color = (int) value;
+                this.filter.setVignetteColor(this.getFloatArrayFromColor(color));
                 return;
-            case PROP_START:
-                filter.setVignetteStart((float) value);
+            case VignetteFilter.PROP_START:
+                this.filter.setVignetteStart((float) value);
                 return;
-            case PROP_END:
-                filter.setVignetteEnd((float) value);
+            case VignetteFilter.PROP_END:
+                this.filter.setVignetteEnd((float) value);
                 return;
             default:
         }
     }
 
-    private float[] getFloatArrayFromColor(final int color) {
+    private float[] getFloatArrayFromColor(int color) {
         return new float[]{Color.red(color) / 255f, Color.green(color) / 255f, Color.blue(color) / 255f};
     }
 
     @Override
     public GPUImageVignetteFilter getInstance() {
-        return filter;
+        return this.filter;
     }
 }

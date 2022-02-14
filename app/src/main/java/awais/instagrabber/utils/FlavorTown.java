@@ -25,23 +25,23 @@ public final class FlavorTown {
 
     private static boolean checking;
 
-    public static void updateCheck(@NonNull final AppCompatActivity context) {
-        updateCheck(context, false);
+    public static void updateCheck(@NonNull AppCompatActivity context) {
+        FlavorTown.updateCheck(context, false);
     }
 
-    public static void updateCheck(@NonNull final AppCompatActivity context,
-                                   final boolean force) {
-        if (checking) return;
-        checking = true;
+    public static void updateCheck(@NonNull AppCompatActivity context,
+                                   boolean force) {
+        if (FlavorTown.checking) return;
+        FlavorTown.checking = true;
         AppExecutors.INSTANCE.getNetworkIO().execute(() -> {
-            final String onlineVersionName = UPDATE_CHECKER.getLatestVersion();
+            String onlineVersionName = FlavorTown.UPDATE_CHECKER.getLatestVersion();
             if (onlineVersionName == null) return;
-            final String onlineVersion = getVersion(onlineVersionName);
-            final String localVersion = getVersion(BuildConfig.VERSION_NAME);
+            String onlineVersion = FlavorTown.getVersion(onlineVersionName);
+            String localVersion = FlavorTown.getVersion(BuildConfig.VERSION_NAME);
             if (Objects.equals(onlineVersion, localVersion)) {
                 if (force) {
                     AppExecutors.INSTANCE.getMainThread().execute(() -> {
-                        final Context applicationContext = context.getApplicationContext();
+                        Context applicationContext = context.getApplicationContext();
                         // Check if app was closed or crashed before reaching here
                         if (applicationContext == null) return;
                         // Show toast if version number preference was tapped
@@ -50,27 +50,27 @@ public final class FlavorTown {
                 }
                 return;
             }
-            final boolean shouldShowDialog = UpdateCheckCommon.shouldShowUpdateDialog(force, onlineVersionName);
+            boolean shouldShowDialog = UpdateCheckCommon.shouldShowUpdateDialog(force, onlineVersionName);
             if (!shouldShowDialog) return;
             UpdateCheckCommon.showUpdateDialog(context, onlineVersionName, (dialog, which) -> {
-                UPDATE_CHECKER.onDownload(context);
+                FlavorTown.UPDATE_CHECKER.onDownload(context);
                 dialog.dismiss();
             });
         });
     }
 
-    private static String getVersion(@NonNull final String versionName) {
-        final Matcher matcher = VERSION_NAME_PATTERN.matcher(versionName);
+    private static String getVersion(@NonNull String versionName) {
+        Matcher matcher = FlavorTown.VERSION_NAME_PATTERN.matcher(versionName);
         if (!matcher.matches()) return versionName;
         try {
             return matcher.group(1);
-        } catch (Exception e) {
-            Log.e(TAG, "getVersion: ", e);
+        } catch (final Exception e) {
+            Log.e(FlavorTown.TAG, "getVersion: ", e);
         }
         return versionName;
     }
 
-    public static void changelogCheck(@NonNull final Context context) {
+    public static void changelogCheck(@NonNull Context context) {
         if (settingsHelper.getInteger(Constants.PREV_INSTALL_VERSION) >= BuildConfig.VERSION_CODE) return;
         int appUaCode = settingsHelper.getInteger(Constants.APP_UA_CODE);
         int browserUaCode = settingsHelper.getInteger(Constants.BROWSER_UA_CODE);
@@ -82,9 +82,9 @@ public final class FlavorTown {
             appUaCode = ThreadLocalRandom.current().nextInt(0, UserAgentUtils.devices.length);
             settingsHelper.putInteger(Constants.APP_UA_CODE, appUaCode);
         }
-        final String appUa = UserAgentUtils.generateAppUA(appUaCode, LocaleUtils.getCurrentLocale().getLanguage());
+        String appUa = UserAgentUtils.generateAppUA(appUaCode, LocaleUtils.getCurrentLocale().getLanguage());
         settingsHelper.putString(Constants.APP_UA, appUa);
-        final String browserUa = UserAgentUtils.generateBrowserUA(browserUaCode);
+        String browserUa = UserAgentUtils.generateBrowserUA(browserUaCode);
         settingsHelper.putString(Constants.BROWSER_UA, browserUa);
         AppExecutors.INSTANCE.getDiskIO().execute(() -> CrashReporterHelper.deleteAllStacktraceFiles(context));
         Toast.makeText(context, R.string.updated, Toast.LENGTH_SHORT).show();

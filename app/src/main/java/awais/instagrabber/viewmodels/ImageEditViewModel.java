@@ -37,7 +37,7 @@ public class ImageEditViewModel extends AndroidViewModel {
     private static final String RESULT = "result";
     private static final String FILE_FORMAT = "yyyyMMddHHmmssSSS";
     private static final String MIME_TYPE = Utils.mimeTypeMap.getMimeTypeFromExtension("jpg");
-    private static final DateTimeFormatter SIMPLE_DATE_FORMAT = DateTimeFormatter.ofPattern(FILE_FORMAT, Locale.US);
+    private static final DateTimeFormatter SIMPLE_DATE_FORMAT = DateTimeFormatter.ofPattern(ImageEditViewModel.FILE_FORMAT, Locale.US);
 
     private Uri originalUri;
     private SavedImageEditState savedImageEditState;
@@ -56,152 +56,152 @@ public class ImageEditViewModel extends AndroidViewModel {
     private Filter<? extends GPUImageFilter> appliedFilter;
     private final DocumentFile destinationFile;
 
-    public ImageEditViewModel(final Application application) {
+    public ImageEditViewModel(Application application) {
         super(application);
-        sessionId = LocalDateTime.now().format(SIMPLE_DATE_FORMAT);
-        outputDir = DownloadUtils.getImageEditDir(sessionId, application);
-        destinationFile = outputDir.createFile(MIME_TYPE, RESULT + ".jpg");
-        destinationUri = destinationFile.getUri();
-        cropDestinationUri = outputDir.createFile(MIME_TYPE, CROP + ".jpg").getUri();
+        this.sessionId = LocalDateTime.now().format(ImageEditViewModel.SIMPLE_DATE_FORMAT);
+        this.outputDir = DownloadUtils.getImageEditDir(this.sessionId, application);
+        this.destinationFile = this.outputDir.createFile(ImageEditViewModel.MIME_TYPE, ImageEditViewModel.RESULT + ".jpg");
+        this.destinationUri = this.destinationFile.getUri();
+        this.cropDestinationUri = this.outputDir.createFile(ImageEditViewModel.MIME_TYPE, ImageEditViewModel.CROP + ".jpg").getUri();
     }
 
     public String getSessionId() {
-        return sessionId;
+        return this.sessionId;
     }
 
     public Uri getOriginalUri() {
-        return originalUri;
+        return this.originalUri;
     }
 
-    public void setOriginalUri(final Uri originalUri) {
+    public void setOriginalUri(Uri originalUri) {
         if (originalUri == null) return;
         this.originalUri = originalUri;
-        savedImageEditState = new SavedImageEditState(sessionId, originalUri.toString());
-        if (resultUri.getValue() == null) {
-            resultUri.postValue(originalUri);
+        this.savedImageEditState = new SavedImageEditState(this.sessionId, originalUri.toString());
+        if (this.resultUri.getValue() == null) {
+            this.resultUri.postValue(originalUri);
         }
     }
 
     public Uri getDestinationUri() {
-        return destinationUri;
+        return this.destinationUri;
     }
 
     public Uri getCropDestinationUri() {
-        return cropDestinationUri;
+        return this.cropDestinationUri;
     }
 
     public LiveData<Boolean> isLoading() {
-        return loading;
+        return this.loading;
     }
 
     public LiveData<Uri> getResultUri() {
-        return resultUri;
+        return this.resultUri;
     }
 
     public LiveData<Boolean> isCropped() {
-        return isCropped;
+        return this.isCropped;
     }
 
     public LiveData<Boolean> isTuned() {
-        return isTuned;
+        return this.isTuned;
     }
 
     public LiveData<Boolean> isFiltered() {
-        return isFiltered;
+        return this.isFiltered;
     }
 
-    public void setResultUri(final Uri uri) {
+    public void setResultUri(Uri uri) {
         if (uri == null) return;
-        resultUri.postValue(uri);
+        this.resultUri.postValue(uri);
     }
 
     public LiveData<Tab> getCurrentTab() {
-        return currentTab;
+        return this.currentTab;
     }
 
-    public void setCurrentTab(final Tab tab) {
+    public void setCurrentTab(Tab tab) {
         if (tab == null) return;
-        this.currentTab.postValue(tab);
+        currentTab.postValue(tab);
     }
 
     public SavedImageEditState getSavedImageEditState() {
-        return savedImageEditState;
+        return this.savedImageEditState;
     }
 
-    public void setCropResult(final float[] imageMatrixValues, final RectF cropRect) {
-        savedImageEditState.setCropImageMatrixValues(imageMatrixValues);
-        savedImageEditState.setCropRect(cropRect);
-        isCropped.postValue(true);
-        applyFilters();
+    public void setCropResult(float[] imageMatrixValues, RectF cropRect) {
+        this.savedImageEditState.setCropImageMatrixValues(imageMatrixValues);
+        this.savedImageEditState.setCropRect(cropRect);
+        this.isCropped.postValue(true);
+        this.applyFilters();
     }
 
     private void applyFilters() {
-        final GPUImage gpuImage = new GPUImage(getApplication());
-        if ((tuningFilters != null && !tuningFilters.isEmpty()) || appliedFilter != null) {
+        GPUImage gpuImage = new GPUImage(this.getApplication());
+        if ((this.tuningFilters != null && !this.tuningFilters.isEmpty()) || this.appliedFilter != null) {
             AppExecutors.INSTANCE.getTasksThread().submit(() -> {
-                final List<GPUImageFilter> list = new ArrayList<>();
-                if (tuningFilters != null) {
-                    for (Filter<? extends GPUImageFilter> tuningFilter : tuningFilters) {
+                List<GPUImageFilter> list = new ArrayList<>();
+                if (this.tuningFilters != null) {
+                    for (final Filter<? extends GPUImageFilter> tuningFilter : this.tuningFilters) {
                         list.add(tuningFilter.getInstance());
                     }
                 }
-                if (appliedFilter != null) {
-                    list.add(appliedFilter.getInstance());
+                if (this.appliedFilter != null) {
+                    list.add(this.appliedFilter.getInstance());
                 }
                 gpuImage.setFilter(new GPUImageFilterGroup(list));
-                final Uri uri = cropDestinationUri != null ? cropDestinationUri : originalUri;
+                Uri uri = this.cropDestinationUri != null ? this.cropDestinationUri : this.originalUri;
                 gpuImage.setImage(uri);
-                gpuImage.saveToPictures(new File(destinationUri.toString()), false, uri1 -> setResultUri(destinationUri));
+                gpuImage.saveToPictures(new File(this.destinationUri.toString()), false, uri1 -> this.setResultUri(this.destinationUri));
             });
             return;
         }
-        setResultUri(cropDestinationUri);
+        this.setResultUri(this.cropDestinationUri);
     }
 
     public void cancel() {
-        delete(outputDir);
+        this.delete(this.outputDir);
     }
 
-    private void delete(@NonNull final DocumentFile file) {
+    private void delete(@NonNull DocumentFile file) {
         if (file.isDirectory()) {
-            final DocumentFile[] files = file.listFiles();
+            DocumentFile[] files = file.listFiles();
             if (files != null) {
-                for (DocumentFile f : files) {
-                    delete(f);
+                for (final DocumentFile f : files) {
+                    this.delete(f);
                 }
             }
         }
         file.delete();
     }
 
-    public void setAppliedFilters(final List<Filter<?>> tuningFilters, final Filter<?> filter) {
+    public void setAppliedFilters(List<Filter<?>> tuningFilters, Filter<?> filter) {
         this.tuningFilters = tuningFilters;
-        this.appliedFilter = filter;
-        if (savedImageEditState != null) {
-            final HashMap<FiltersHelper.FilterType, Map<Integer, Object>> tuningFiltersMap = new HashMap<>();
-            for (Filter<?> tuningFilter : tuningFilters) {
-                SerializablePair<FiltersHelper.FilterType, Map<Integer, Object>> filterValuesMap = this.getFilterValuesMap(tuningFilter);
+        appliedFilter = filter;
+        if (this.savedImageEditState != null) {
+            HashMap<FiltersHelper.FilterType, Map<Integer, Object>> tuningFiltersMap = new HashMap<>();
+            for (final Filter<?> tuningFilter : tuningFilters) {
+                final SerializablePair<FiltersHelper.FilterType, Map<Integer, Object>> filterValuesMap = getFilterValuesMap(tuningFilter);
                 tuningFiltersMap.put(filterValuesMap.first, filterValuesMap.second);
             }
-            this.savedImageEditState.setAppliedTuningFilters(tuningFiltersMap);
-            this.savedImageEditState.setAppliedFilter(this.getFilterValuesMap(filter));
+            savedImageEditState.setAppliedTuningFilters(tuningFiltersMap);
+            savedImageEditState.setAppliedFilter(getFilterValuesMap(filter));
         }
-        this.isTuned.postValue(!tuningFilters.isEmpty());
-        this.isFiltered.postValue(filter != null);
-        this.setResultUri(this.destinationUri);
+        isTuned.postValue(!tuningFilters.isEmpty());
+        isFiltered.postValue(filter != null);
+        setResultUri(destinationUri);
     }
 
-    private SerializablePair<FiltersHelper.FilterType, Map<Integer, Object>> getFilterValuesMap(Filter<?> filter) {
+    private SerializablePair<FiltersHelper.FilterType, Map<Integer, Object>> getFilterValuesMap(final Filter<?> filter) {
         if (filter == null) return null;
-        FiltersHelper.FilterType type = filter.getType();
-        final Map<Integer, Property<?>> properties = filter.getProperties();
-        final Map<Integer, Object> propertyValueMap = new HashMap<>();
+        final FiltersHelper.FilterType type = filter.getType();
+        Map<Integer, Property<?>> properties = filter.getProperties();
+        Map<Integer, Object> propertyValueMap = new HashMap<>();
         if (properties != null) {
-            final Set<Map.Entry<Integer, Property<?>>> entries = properties.entrySet();
-            for (final Map.Entry<Integer, Property<?>> entry : entries) {
-                final Integer propId = entry.getKey();
-                final Property<?> property = entry.getValue();
-                final Object value = property.getValue();
+            Set<Map.Entry<Integer, Property<?>>> entries = properties.entrySet();
+            for (Map.Entry<Integer, Property<?>> entry : entries) {
+                Integer propId = entry.getKey();
+                Property<?> property = entry.getValue();
+                Object value = property.getValue();
                 propertyValueMap.put(propId, value);
             }
         }

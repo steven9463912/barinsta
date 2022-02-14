@@ -21,22 +21,22 @@ public class DirectItemTextViewHolder extends DirectItemViewHolder {
 
     private final LayoutDmTextBinding binding;
 
-    public DirectItemTextViewHolder(@NonNull final LayoutDmBaseBinding baseBinding,
-                                    @NonNull final LayoutDmTextBinding binding,
-                                    final User currentUser,
-                                    final DirectThread thread,
-                                    @NonNull final DirectItemsAdapter.DirectItemCallback callback) {
+    public DirectItemTextViewHolder(@NonNull LayoutDmBaseBinding baseBinding,
+                                    @NonNull LayoutDmTextBinding binding,
+                                    User currentUser,
+                                    DirectThread thread,
+                                    @NonNull DirectItemsAdapter.DirectItemCallback callback) {
         super(baseBinding, currentUser, thread, callback);
         this.binding = binding;
-        setItemView(binding.getRoot());
+        this.setItemView(binding.getRoot());
     }
 
     @Override
-    public void bindItem(final DirectItem directItemModel, final MessageDirection messageDirection) {
-        final String text = directItemModel.getText();
+    public void bindItem(DirectItem directItemModel, MessageDirection messageDirection) {
+        String text = directItemModel.getText();
         if (text == null) return;
-        binding.tvMessage.setText(text);
-        setupRamboTextListeners(binding.tvMessage);
+        this.binding.tvMessage.setText(text);
+        this.setupRamboTextListeners(this.binding.tvMessage);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class DirectItemTextViewHolder extends DirectItemViewHolder {
         return ImmutableList.of(
                 new DirectItemContextMenu.MenuItem(R.id.copy, R.string.copy, item -> {
                     if (TextUtils.isEmpty(item.getText())) return null;
-                    Utils.copyText(itemView.getContext(), item.getText());
+                    Utils.copyText(this.itemView.getContext(), item.getText());
                     return null;
                 })
         );

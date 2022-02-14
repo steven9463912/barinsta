@@ -26,63 +26,63 @@ public class DirectPendingUserViewHolder extends RecyclerView.ViewHolder {
 
     private VerticalImageSpan verifiedSpan;
 
-    public DirectPendingUserViewHolder(@NonNull LayoutDmPendingUserItemBinding binding,
-                                       DirectPendingUsersAdapter.PendingUserCallback callback) {
+    public DirectPendingUserViewHolder(@NonNull final LayoutDmPendingUserItemBinding binding,
+                                       final DirectPendingUsersAdapter.PendingUserCallback callback) {
         super(binding.getRoot());
         this.binding = binding;
         this.callback = callback;
-        drawableSize = Utils.convertDpToPx(24);
+        this.drawableSize = Utils.convertDpToPx(24);
     }
 
-    public void bind(final int position, final DirectPendingUsersAdapter.PendingUser pendingUser) {
+    public void bind(int position, DirectPendingUsersAdapter.PendingUser pendingUser) {
         if (pendingUser == null) return;
-        this.binding.getRoot().setOnClickListener(v -> {
-            if (this.callback == null) return;
-            this.callback.onClick(position, pendingUser);
+        binding.getRoot().setOnClickListener(v -> {
+            if (callback == null) return;
+            callback.onClick(position, pendingUser);
         });
-        this.setUsername(pendingUser);
-        this.binding.requester.setText(this.itemView.getResources().getString(R.string.added_by, pendingUser.getRequester()));
-        this.binding.profilePic.setImageURI(pendingUser.getUser().getProfilePicUrl());
+        setUsername(pendingUser);
+        binding.requester.setText(itemView.getResources().getString(R.string.added_by, pendingUser.getRequester()));
+        binding.profilePic.setImageURI(pendingUser.getUser().getProfilePicUrl());
         if (pendingUser.isInProgress()) {
-            this.binding.approve.setVisibility(View.GONE);
-            this.binding.deny.setVisibility(View.GONE);
-            this.binding.progress.setVisibility(View.VISIBLE);
+            binding.approve.setVisibility(View.GONE);
+            binding.deny.setVisibility(View.GONE);
+            binding.progress.setVisibility(View.VISIBLE);
             return;
         }
-        this.binding.approve.setVisibility(View.VISIBLE);
-        this.binding.deny.setVisibility(View.VISIBLE);
-        this.binding.progress.setVisibility(View.GONE);
-        this.binding.approve.setOnClickListener(v -> {
-            if (this.callback == null) return;
-            this.callback.onApprove(position, pendingUser);
+        binding.approve.setVisibility(View.VISIBLE);
+        binding.deny.setVisibility(View.VISIBLE);
+        binding.progress.setVisibility(View.GONE);
+        binding.approve.setOnClickListener(v -> {
+            if (callback == null) return;
+            callback.onApprove(position, pendingUser);
         });
-        this.binding.deny.setOnClickListener(v -> {
-            if (this.callback == null) return;
-            this.callback.onDeny(position, pendingUser);
+        binding.deny.setOnClickListener(v -> {
+            if (callback == null) return;
+            callback.onDeny(position, pendingUser);
         });
     }
 
-    private void setUsername(DirectPendingUsersAdapter.PendingUser pendingUser) {
-        final User user = pendingUser.getUser();
-        final SpannableStringBuilder sb = new SpannableStringBuilder(user.getUsername());
+    private void setUsername(final DirectPendingUsersAdapter.PendingUser pendingUser) {
+        User user = pendingUser.getUser();
+        SpannableStringBuilder sb = new SpannableStringBuilder(user.getUsername());
         if (user.isVerified()) {
-            if (verifiedSpan == null) {
-                final Drawable verifiedDrawable = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.verified);
+            if (this.verifiedSpan == null) {
+                Drawable verifiedDrawable = AppCompatResources.getDrawable(this.itemView.getContext(), R.drawable.verified);
                 if (verifiedDrawable != null) {
-                    final Drawable drawable = verifiedDrawable.mutate();
-                    drawable.setBounds(0, 0, drawableSize, drawableSize);
-                    verifiedSpan = new VerticalImageSpan(drawable);
+                    Drawable drawable = verifiedDrawable.mutate();
+                    drawable.setBounds(0, 0, this.drawableSize, this.drawableSize);
+                    this.verifiedSpan = new VerticalImageSpan(drawable);
                 }
             }
             try {
-                if (verifiedSpan != null) {
+                if (this.verifiedSpan != null) {
                     sb.append("  ");
-                    sb.setSpan(verifiedSpan, sb.length() - 1, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    sb.setSpan(this.verifiedSpan, sb.length() - 1, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 }
-            } catch (Exception e) {
-                Log.e(TAG, "bind: ", e);
+            } catch (final Exception e) {
+                Log.e(DirectPendingUserViewHolder.TAG, "bind: ", e);
             }
         }
-        binding.username.setText(sb);
+        this.binding.username.setText(sb);
     }
 }

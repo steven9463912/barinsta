@@ -16,33 +16,33 @@ public final class HighlightStoriesListAdapter extends ListAdapter<Story, StoryL
 
     private static final DiffUtil.ItemCallback<Story> diffCallback = new DiffUtil.ItemCallback<Story>() {
         @Override
-        public boolean areItemsTheSame(@NonNull final Story oldItem, @NonNull final Story newItem) {
+        public boolean areItemsTheSame(@NonNull Story oldItem, @NonNull Story newItem) {
             return oldItem.getId().equals(newItem.getId());
         }
 
         @Override
-        public boolean areContentsTheSame(@NonNull final Story oldItem, @NonNull final Story newItem) {
+        public boolean areContentsTheSame(@NonNull Story oldItem, @NonNull Story newItem) {
             return oldItem.getId().equals(newItem.getId());
         }
     };
 
-    public HighlightStoriesListAdapter(final OnHighlightStoryClickListener listener) {
-        super(diffCallback);
+    public HighlightStoriesListAdapter(OnHighlightStoryClickListener listener) {
+        super(HighlightStoriesListAdapter.diffCallback);
         this.listener = listener;
     }
 
     @NonNull
     @Override
-    public StoryListViewHolder onCreateViewHolder(@NonNull final ViewGroup parent, final int viewType) {
-        final LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        final ItemNotificationBinding binding = ItemNotificationBinding.inflate(layoutInflater, parent, false);
+    public StoryListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+        ItemNotificationBinding binding = ItemNotificationBinding.inflate(layoutInflater, parent, false);
         return new StoryListViewHolder(binding);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final StoryListViewHolder holder, final int position) {
-        final Story model = getItem(position);
-        holder.bind(model, position, listener);
+    public void onBindViewHolder(@NonNull StoryListViewHolder holder, int position) {
+        Story model = this.getItem(position);
+        holder.bind(model, position, this.listener);
     }
 
     public interface OnHighlightStoryClickListener {

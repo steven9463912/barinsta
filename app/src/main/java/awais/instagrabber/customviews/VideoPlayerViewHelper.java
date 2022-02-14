@@ -59,21 +59,21 @@ public class VideoPlayerViewHelper implements Player.EventListener {
 
     private final AudioListener audioListener = new AudioListener() {
         @Override
-        public void onVolumeChanged(final float volume) {
-            updateMuteIcon(volume);
+        public void onVolumeChanged(float volume) {
+            VideoPlayerViewHelper.this.updateMuteIcon(volume);
         }
     };
-    private final View.OnClickListener muteOnClickListener = v -> toggleMute();
+    private final View.OnClickListener muteOnClickListener = v -> this.toggleMute();
     private Object layoutManager;
 
-    public VideoPlayerViewHelper(@NonNull final Context context,
-                                 @NonNull final LayoutVideoPlayerWithThumbnailBinding binding,
-                                 @NonNull final String videoUrl,
-                                 final float initialVolume,
-                                 final float thumbnailAspectRatio,
-                                 final String thumbnailUrl,
-                                 final boolean loadPlayerOnClick,
-                                 final VideoPlayerCallback videoPlayerCallback) {
+    public VideoPlayerViewHelper(@NonNull Context context,
+                                 @NonNull LayoutVideoPlayerWithThumbnailBinding binding,
+                                 @NonNull String videoUrl,
+                                 float initialVolume,
+                                 float thumbnailAspectRatio,
+                                 String thumbnailUrl,
+                                 boolean loadPlayerOnClick,
+                                 VideoPlayerCallback videoPlayerCallback) {
         this.context = context;
         this.binding = binding;
         this.initialVolume = initialVolume;
@@ -82,144 +82,144 @@ public class VideoPlayerViewHelper implements Player.EventListener {
         this.loadPlayerOnClick = loadPlayerOnClick;
         this.videoPlayerCallback = videoPlayerCallback;
         this.videoUrl = videoUrl;
-        this.dataSourceFactory = new DefaultDataSourceFactory(binding.getRoot().getContext(), "instagram");
-        bind();
+        dataSourceFactory = new DefaultDataSourceFactory(binding.getRoot().getContext(), "instagram");
+        this.bind();
     }
 
     private void bind() {
-        binding.thumbnailParent.setOnClickListener(v -> {
-            if (videoPlayerCallback != null) {
-                videoPlayerCallback.onThumbnailClick();
+        this.binding.thumbnailParent.setOnClickListener(v -> {
+            if (this.videoPlayerCallback != null) {
+                this.videoPlayerCallback.onThumbnailClick();
             }
-            if (loadPlayerOnClick) {
-                loadPlayer();
+            if (this.loadPlayerOnClick) {
+                this.loadPlayer();
             }
         });
-        setThumbnail();
+        this.setThumbnail();
     }
 
     private void setThumbnail() {
-        binding.thumbnail.setAspectRatio(thumbnailAspectRatio);
+        this.binding.thumbnail.setAspectRatio(this.thumbnailAspectRatio);
         ImageRequest thumbnailRequest = null;
-        if (thumbnailUrl != null) {
-            thumbnailRequest = ImageRequestBuilder.newBuilderWithSource(Uri.parse(thumbnailUrl)).build();
+        if (this.thumbnailUrl != null) {
+            thumbnailRequest = ImageRequestBuilder.newBuilderWithSource(Uri.parse(this.thumbnailUrl)).build();
         }
-        final PipelineDraweeControllerBuilder builder = Fresco
+        PipelineDraweeControllerBuilder builder = Fresco
                 .newDraweeControllerBuilder()
                 .setControllerListener(new BaseControllerListener<ImageInfo>() {
                     @Override
-                    public void onFailure(final String id, final Throwable throwable) {
-                        if (videoPlayerCallback != null) {
-                            videoPlayerCallback.onThumbnailLoaded();
+                    public void onFailure(String id, Throwable throwable) {
+                        if (VideoPlayerViewHelper.this.videoPlayerCallback != null) {
+                            VideoPlayerViewHelper.this.videoPlayerCallback.onThumbnailLoaded();
                         }
                     }
 
                     @Override
-                    public void onFinalImageSet(final String id,
-                                                final ImageInfo imageInfo,
-                                                final Animatable animatable) {
-                        if (videoPlayerCallback != null) {
-                            videoPlayerCallback.onThumbnailLoaded();
+                    public void onFinalImageSet(String id,
+                                                ImageInfo imageInfo,
+                                                Animatable animatable) {
+                        if (VideoPlayerViewHelper.this.videoPlayerCallback != null) {
+                            VideoPlayerViewHelper.this.videoPlayerCallback.onThumbnailLoaded();
                         }
                     }
                 });
         if (thumbnailRequest != null) {
             builder.setImageRequest(thumbnailRequest);
         }
-        binding.thumbnail.setController(builder.build());
+        this.binding.thumbnail.setController(builder.build());
     }
 
     private void loadPlayer() {
-        if (videoUrl == null) return;
-        if (binding.getRoot().getDisplayedChild() == 0) {
-            binding.getRoot().showNext();
+        if (this.videoUrl == null) return;
+        if (this.binding.getRoot().getDisplayedChild() == 0) {
+            this.binding.getRoot().showNext();
         }
-        if (videoPlayerCallback != null) {
-            videoPlayerCallback.onPlayerViewLoaded();
+        if (this.videoPlayerCallback != null) {
+            this.videoPlayerCallback.onPlayerViewLoaded();
         }
-        player = (SimpleExoPlayer) binding.playerView.getPlayer();
-        if (player != null) {
-            player.release();
+        this.player = (SimpleExoPlayer) this.binding.playerView.getPlayer();
+        if (this.player != null) {
+            this.player.release();
         }
-        final ViewGroup.LayoutParams playerViewLayoutParams = binding.playerView.getLayoutParams();
+        ViewGroup.LayoutParams playerViewLayoutParams = this.binding.playerView.getLayoutParams();
         if (playerViewLayoutParams.height > Utils.displayMetrics.heightPixels * 0.8) {
             playerViewLayoutParams.height = (int) (Utils.displayMetrics.heightPixels * 0.8);
         }
-        player = new SimpleExoPlayer.Builder(context)
+        this.player = new SimpleExoPlayer.Builder(this.context)
                 .setLooper(Looper.getMainLooper())
                 .build();
-        player.addListener(this);
-        player.addAudioListener(audioListener);
-        player.setVolume(initialVolume);
-        player.setPlayWhenReady(true);
-        player.setRepeatMode(Player.REPEAT_MODE_ALL);
-        final ProgressiveMediaSource.Factory sourceFactory = new ProgressiveMediaSource.Factory(dataSourceFactory);
-        final MediaItem mediaItem = MediaItem.fromUri(videoUrl);
-        final ProgressiveMediaSource mediaSource = sourceFactory.createMediaSource(mediaItem);
-        player.setMediaSource(mediaSource);
-        player.prepare();
-        binding.playerView.setPlayer(player);
-        binding.playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
-        binding.playerView.setShowNextButton(false);
-        binding.playerView.setShowPreviousButton(false);
-        binding.playerView.setControllerOnFullScreenModeChangedListener(isFullScreen -> {
-            if (videoPlayerCallback == null) return;
-            videoPlayerCallback.onFullScreenModeChanged(isFullScreen, binding.playerView);
+        this.player.addListener(this);
+        this.player.addAudioListener(this.audioListener);
+        this.player.setVolume(this.initialVolume);
+        this.player.setPlayWhenReady(true);
+        this.player.setRepeatMode(Player.REPEAT_MODE_ALL);
+        ProgressiveMediaSource.Factory sourceFactory = new ProgressiveMediaSource.Factory(this.dataSourceFactory);
+        MediaItem mediaItem = MediaItem.fromUri(this.videoUrl);
+        ProgressiveMediaSource mediaSource = sourceFactory.createMediaSource(mediaItem);
+        this.player.setMediaSource(mediaSource);
+        this.player.prepare();
+        this.binding.playerView.setPlayer(this.player);
+        this.binding.playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
+        this.binding.playerView.setShowNextButton(false);
+        this.binding.playerView.setShowPreviousButton(false);
+        this.binding.playerView.setControllerOnFullScreenModeChangedListener(isFullScreen -> {
+            if (this.videoPlayerCallback == null) return;
+            this.videoPlayerCallback.onFullScreenModeChanged(isFullScreen, this.binding.playerView);
         });
-        setupControllerView();
+        this.setupControllerView();
     }
 
     private void setupControllerView() {
         try {
-            final StyledPlayerControlView controllerView = getStyledPlayerControlView();
+            StyledPlayerControlView controllerView = this.getStyledPlayerControlView();
             if (controllerView == null) return;
-            layoutManager = setControlViewLayoutManager(controllerView);
-            if (videoPlayerCallback != null && videoPlayerCallback.isInFullScreen()) {
-                setControllerViewToFullScreenMode(controllerView);
+            this.layoutManager = this.setControlViewLayoutManager(controllerView);
+            if (this.videoPlayerCallback != null && this.videoPlayerCallback.isInFullScreen()) {
+                this.setControllerViewToFullScreenMode(controllerView);
             }
-            final ViewGroup exoBasicControls = controllerView.findViewById(R.id.exo_basic_controls);
+            ViewGroup exoBasicControls = controllerView.findViewById(R.id.exo_basic_controls);
             if (exoBasicControls == null) return;
-            mute = new AppCompatImageButton(context);
-            final Resources resources = context.getResources();
+            this.mute = new AppCompatImageButton(this.context);
+            Resources resources = this.context.getResources();
             if (resources == null) return;
-            final int width = resources.getDimensionPixelSize(R.dimen.exo_small_icon_width);
-            final int height = resources.getDimensionPixelSize(R.dimen.exo_small_icon_height);
-            final int margin = resources.getDimensionPixelSize(R.dimen.exo_small_icon_horizontal_margin);
-            final int paddingHorizontal = resources.getDimensionPixelSize(R.dimen.exo_small_icon_padding_horizontal);
-            final int paddingVertical = resources.getDimensionPixelSize(R.dimen.exo_small_icon_padding_vertical);
-            final ViewGroup.MarginLayoutParams layoutParams = new ViewGroup.MarginLayoutParams(width, height);
+            int width = resources.getDimensionPixelSize(R.dimen.exo_small_icon_width);
+            int height = resources.getDimensionPixelSize(R.dimen.exo_small_icon_height);
+            int margin = resources.getDimensionPixelSize(R.dimen.exo_small_icon_horizontal_margin);
+            int paddingHorizontal = resources.getDimensionPixelSize(R.dimen.exo_small_icon_padding_horizontal);
+            int paddingVertical = resources.getDimensionPixelSize(R.dimen.exo_small_icon_padding_vertical);
+            ViewGroup.MarginLayoutParams layoutParams = new ViewGroup.MarginLayoutParams(width, height);
             layoutParams.setMargins(margin, 0, margin, 0);
-            mute.setLayoutParams(layoutParams);
-            mute.setPadding(paddingHorizontal, paddingVertical, paddingHorizontal, paddingVertical);
-            mute.setScaleType(ImageView.ScaleType.FIT_XY);
-            mute.setBackgroundResource(Utils.getAttrResId(context, android.R.attr.selectableItemBackground));
-            mute.setImageTintList(ColorStateList.valueOf(resources.getColor(R.color.white)));
-            updateMuteIcon(player.getVolume());
-            exoBasicControls.addView(mute, 0);
-            mute.setOnClickListener(muteOnClickListener);
-        } catch (Exception e) {
-            Log.e(TAG, "loadPlayer: ", e);
+            this.mute.setLayoutParams(layoutParams);
+            this.mute.setPadding(paddingHorizontal, paddingVertical, paddingHorizontal, paddingVertical);
+            this.mute.setScaleType(ImageView.ScaleType.FIT_XY);
+            this.mute.setBackgroundResource(Utils.getAttrResId(this.context, android.R.attr.selectableItemBackground));
+            this.mute.setImageTintList(ColorStateList.valueOf(resources.getColor(R.color.white)));
+            this.updateMuteIcon(this.player.getVolume());
+            exoBasicControls.addView(this.mute, 0);
+            this.mute.setOnClickListener(this.muteOnClickListener);
+        } catch (final Exception e) {
+            Log.e(VideoPlayerViewHelper.TAG, "loadPlayer: ", e);
         }
     }
 
     @Nullable
-    private Object setControlViewLayoutManager(@NonNull final StyledPlayerControlView controllerView)
+    private Object setControlViewLayoutManager(@NonNull StyledPlayerControlView controllerView)
             throws NoSuchFieldException, IllegalAccessException {
-        final Field controlViewLayoutManagerField = controllerView.getClass().getDeclaredField("controlViewLayoutManager");
+        Field controlViewLayoutManagerField = controllerView.getClass().getDeclaredField("controlViewLayoutManager");
         controlViewLayoutManagerField.setAccessible(true);
         return controlViewLayoutManagerField.get(controllerView);
     }
 
-    private void setControllerViewToFullScreenMode(@NonNull final StyledPlayerControlView controllerView)
+    private void setControllerViewToFullScreenMode(@NonNull StyledPlayerControlView controllerView)
             throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         // Exoplayer doesn't expose the fullscreen state, so using reflection
-        final Field fullScreenButtonField = controllerView.getClass().getDeclaredField("fullScreenButton");
+        Field fullScreenButtonField = controllerView.getClass().getDeclaredField("fullScreenButton");
         fullScreenButtonField.setAccessible(true);
-        final ImageView fullScreenButton = (ImageView) fullScreenButtonField.get(controllerView);
-        final Field isFullScreen = controllerView.getClass().getDeclaredField("isFullScreen");
+        ImageView fullScreenButton = (ImageView) fullScreenButtonField.get(controllerView);
+        Field isFullScreen = controllerView.getClass().getDeclaredField("isFullScreen");
         isFullScreen.setAccessible(true);
         isFullScreen.set(controllerView, true);
-        final Method updateFullScreenButtonForState = controllerView
+        Method updateFullScreenButtonForState = controllerView
                 .getClass()
                 .getDeclaredMethod("updateFullScreenButtonForState", ImageView.class, boolean.class);
         updateFullScreenButtonForState.setAccessible(true);
@@ -229,88 +229,88 @@ public class VideoPlayerViewHelper implements Player.EventListener {
 
     @Nullable
     private StyledPlayerControlView getStyledPlayerControlView() throws NoSuchFieldException, IllegalAccessException {
-        final Field controller = binding.playerView.getClass().getDeclaredField("controller");
+        Field controller = this.binding.playerView.getClass().getDeclaredField("controller");
         controller.setAccessible(true);
-        return (StyledPlayerControlView) controller.get(binding.playerView);
+        return (StyledPlayerControlView) controller.get(this.binding.playerView);
     }
 
     @Override
-    public void onTracksChanged(@NonNull TrackGroupArray trackGroups, @NonNull TrackSelectionArray trackSelections) {
+    public void onTracksChanged(@NonNull final TrackGroupArray trackGroups, @NonNull final TrackSelectionArray trackSelections) {
         if (trackGroups.isEmpty()) {
-            setHasAudio(false);
+            this.setHasAudio(false);
             return;
         }
         boolean hasAudio = false;
         for (int i = 0; i < trackGroups.length; i++) {
             for (int g = 0; g < trackGroups.get(i).length; g++) {
-                final String sampleMimeType = trackGroups.get(i).getFormat(g).sampleMimeType;
+                String sampleMimeType = trackGroups.get(i).getFormat(g).sampleMimeType;
                 if (sampleMimeType != null && sampleMimeType.contains("audio")) {
                     hasAudio = true;
                     break;
                 }
             }
         }
-        setHasAudio(hasAudio);
+        this.setHasAudio(hasAudio);
     }
 
-    private void setHasAudio(final boolean hasAudio) {
-        if (mute == null) return;
-        mute.setEnabled(hasAudio);
-        mute.setAlpha(hasAudio ? 1f : 0.5f);
-        updateMuteIcon(hasAudio ? 1f : 0f);
+    private void setHasAudio(boolean hasAudio) {
+        if (this.mute == null) return;
+        this.mute.setEnabled(hasAudio);
+        this.mute.setAlpha(hasAudio ? 1f : 0.5f);
+        this.updateMuteIcon(hasAudio ? 1f : 0f);
     }
 
-    private void updateMuteIcon(final float volume) {
-        if (mute == null) return;
+    private void updateMuteIcon(float volume) {
+        if (this.mute == null) return;
         if (volume == 0) {
-            mute.setImageResource(R.drawable.ic_volume_off_24);
+            this.mute.setImageResource(R.drawable.ic_volume_off_24);
             return;
         }
-        mute.setImageResource(R.drawable.ic_volume_up_24);
+        this.mute.setImageResource(R.drawable.ic_volume_up_24);
     }
 
     @Override
-    public void onPlayWhenReadyChanged(final boolean playWhenReady, final int reason) {
-        if (videoPlayerCallback == null) return;
+    public void onPlayWhenReadyChanged(boolean playWhenReady, int reason) {
+        if (this.videoPlayerCallback == null) return;
         if (playWhenReady) {
-            videoPlayerCallback.onPlay();
+            this.videoPlayerCallback.onPlay();
             return;
         }
-        videoPlayerCallback.onPause();
+        this.videoPlayerCallback.onPause();
     }
 
     @Override
-    public void onPlayerError(@NonNull final ExoPlaybackException error) {
-        Log.e(TAG, "onPlayerError", error);
+    public void onPlayerError(@NonNull ExoPlaybackException error) {
+        Log.e(VideoPlayerViewHelper.TAG, "onPlayerError", error);
     }
 
     private void toggleMute() {
-        if (player == null) return;
-        if (layoutManager != null) {
+        if (this.player == null) return;
+        if (this.layoutManager != null) {
             try {
-                final Method resetHideCallbacks = layoutManager.getClass().getDeclaredMethod("resetHideCallbacks");
-                resetHideCallbacks.invoke(layoutManager);
-            } catch (Exception e) {
-                Log.e(TAG, "toggleMute: ", e);
+                Method resetHideCallbacks = this.layoutManager.getClass().getDeclaredMethod("resetHideCallbacks");
+                resetHideCallbacks.invoke(this.layoutManager);
+            } catch (final Exception e) {
+                Log.e(VideoPlayerViewHelper.TAG, "toggleMute: ", e);
             }
         }
-        final float vol = player.getVolume() == 0f ? 1f : 0f;
-        player.setVolume(vol);
+        float vol = this.player.getVolume() == 0f ? 1f : 0f;
+        this.player.setVolume(vol);
     }
 
     public void releasePlayer() {
-        if (videoPlayerCallback != null) {
-            videoPlayerCallback.onRelease();
+        if (this.videoPlayerCallback != null) {
+            this.videoPlayerCallback.onRelease();
         }
-        if (player != null) {
-            player.release();
-            player = null;
+        if (this.player != null) {
+            this.player.release();
+            this.player = null;
         }
     }
 
     public void pause() {
-        if (player != null) {
-            player.pause();
+        if (this.player != null) {
+            this.player.pause();
         }
     }
 

@@ -9,15 +9,15 @@ public final class HighlightViewHolder extends RecyclerView.ViewHolder {
 
     private final ItemHighlightBinding binding;
 
-    public HighlightViewHolder(final ItemHighlightBinding binding) {
+    public HighlightViewHolder(ItemHighlightBinding binding) {
         super(binding.getRoot());
         this.binding = binding;
     }
 
-    public void bind(final Story model) {
+    public void bind(Story model) {
         if (model == null) return;
-        binding.title.setText(model.getTitle());
-        binding.icon.setImageURI(model.getCoverMedia().getCroppedImageVersion().getUrl());
+        this.binding.title.setText(model.getTitle());
+        this.binding.icon.setImageURI(model.getCoverMedia().getCroppedImageVersion().getUrl());
         // binding.getRoot().setOnClickListener(v -> {
         //     if (listener == null) return;
         //     listener.onFeedStoryClick(model, position);

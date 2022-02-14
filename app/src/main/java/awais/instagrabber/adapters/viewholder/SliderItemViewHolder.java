@@ -11,7 +11,7 @@ import awais.instagrabber.repositories.responses.Media;
 public abstract class SliderItemViewHolder extends RecyclerView.ViewHolder {
     private static final String TAG = "FeedSliderItemViewHolder";
 
-    public SliderItemViewHolder(@NonNull final View itemView) {
+    public SliderItemViewHolder(@NonNull View itemView) {
         super(itemView);
     }
 

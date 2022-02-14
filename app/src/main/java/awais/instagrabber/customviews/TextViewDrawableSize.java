@@ -21,58 +21,58 @@ public class TextViewDrawableSize extends EmojiAppCompatTextView {
     private int mDrawableHeight;
     private Boolean calledFromInit;
 
-    public TextViewDrawableSize(final Context context) {
+    public TextViewDrawableSize(Context context) {
         this(context, null);
     }
 
-    public TextViewDrawableSize(final Context context, final AttributeSet attrs) {
+    public TextViewDrawableSize(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public TextViewDrawableSize(final Context context, final AttributeSet attrs, final int defStyleAttr) {
+    public TextViewDrawableSize(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init(context, attrs, defStyleAttr);
+        this.init(context, attrs, defStyleAttr);
     }
 
-    private void init(@NonNull final Context context, final AttributeSet attrs, final int defStyleAttr) {
-        final TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.TextViewDrawableSize, defStyleAttr, 0);
+    private void init(@NonNull Context context, AttributeSet attrs, int defStyleAttr) {
+        TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.TextViewDrawableSize, defStyleAttr, 0);
 
         try {
-            mDrawableWidth = array.getDimensionPixelSize(R.styleable.TextViewDrawableSize_compoundDrawableWidth, -1);
-            mDrawableHeight = array.getDimensionPixelSize(R.styleable.TextViewDrawableSize_compoundDrawableHeight, -1);
+            this.mDrawableWidth = array.getDimensionPixelSize(R.styleable.TextViewDrawableSize_compoundDrawableWidth, -1);
+            this.mDrawableHeight = array.getDimensionPixelSize(R.styleable.TextViewDrawableSize_compoundDrawableHeight, -1);
         } finally {
             array.recycle();
         }
 
-        if (mDrawableWidth > 0 || mDrawableHeight > 0) {
-            initCompoundDrawableSize();
+        if (this.mDrawableWidth > 0 || this.mDrawableHeight > 0) {
+            this.initCompoundDrawableSize();
         }
     }
 
     private void initCompoundDrawableSize() {
-        final Drawable[] drawables = getCompoundDrawablesRelative();
-        for (Drawable drawable : drawables) {
+        Drawable[] drawables = this.getCompoundDrawablesRelative();
+        for (final Drawable drawable : drawables) {
             if (drawable == null) {
                 continue;
             }
 
-            final Rect realBounds = drawable.getBounds();
-            float scaleFactor = drawable.getIntrinsicHeight() / (float) drawable.getIntrinsicWidth();
+            Rect realBounds = drawable.getBounds();
+            final float scaleFactor = drawable.getIntrinsicHeight() / (float) drawable.getIntrinsicWidth();
 
             float drawableWidth = drawable.getIntrinsicWidth();
             float drawableHeight = drawable.getIntrinsicHeight();
 
-            if (mDrawableWidth > 0) {
+            if (this.mDrawableWidth > 0) {
                 // save scale factor of image
-                if (drawableWidth > mDrawableWidth) {
-                    drawableWidth = mDrawableWidth;
+                if (drawableWidth > this.mDrawableWidth) {
+                    drawableWidth = this.mDrawableWidth;
                     drawableHeight = drawableWidth * scaleFactor;
                 }
             }
-            if (mDrawableHeight > 0) {
+            if (this.mDrawableHeight > 0) {
                 // save scale factor of image
-                if (drawableHeight > mDrawableHeight) {
-                    drawableHeight = mDrawableHeight;
+                if (drawableHeight > this.mDrawableHeight) {
+                    drawableHeight = this.mDrawableHeight;
                     drawableWidth = drawableHeight / scaleFactor;
                 }
             }
@@ -82,14 +82,14 @@ public class TextViewDrawableSize extends EmojiAppCompatTextView {
 
             drawable.setBounds(realBounds);
         }
-        setCompoundDrawablesRelative(drawables[0], drawables[1], drawables[2], drawables[3]);
+        this.setCompoundDrawablesRelative(drawables[0], drawables[1], drawables[2], drawables[3]);
     }
 
-    public void setCompoundDrawablesRelativeWithSize(@Nullable final Drawable start,
-                                                     @Nullable final Drawable top,
-                                                     @Nullable final Drawable end,
-                                                     @Nullable final Drawable bottom) {
-        setCompoundDrawablesRelative(start, top, end, bottom);
-        initCompoundDrawableSize();
+    public void setCompoundDrawablesRelativeWithSize(@Nullable Drawable start,
+                                                     @Nullable Drawable top,
+                                                     @Nullable Drawable end,
+                                                     @Nullable Drawable bottom) {
+        this.setCompoundDrawablesRelative(start, top, end, bottom);
+        this.initCompoundDrawableSize();
     }
 }

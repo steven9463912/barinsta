@@ -30,48 +30,48 @@ public class DirectItemActionLogViewHolder extends DirectItemViewHolder {
 
     private final LayoutDmActionLogBinding binding;
 
-    public DirectItemActionLogViewHolder(@NonNull final LayoutDmBaseBinding baseBinding,
-                                         final LayoutDmActionLogBinding binding,
-                                         final User currentUser,
-                                         final DirectThread thread,
-                                         final DirectItemsAdapter.DirectItemCallback callback) {
+    public DirectItemActionLogViewHolder(@NonNull LayoutDmBaseBinding baseBinding,
+                                         LayoutDmActionLogBinding binding,
+                                         User currentUser,
+                                         DirectThread thread,
+                                         DirectItemsAdapter.DirectItemCallback callback) {
         super(baseBinding, currentUser, thread, callback);
         this.binding = binding;
-        setItemView(binding.getRoot());
+        this.setItemView(binding.getRoot());
         binding.tvMessage.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     @Override
-    public void bindItem(final DirectItem directItemModel, final MessageDirection messageDirection) {
-        final DirectItemActionLog actionLog = directItemModel.getActionLog();
-        final String text = actionLog.getDescription();
-        final SpannableStringBuilder sb = new SpannableStringBuilder(text);
-        final List<TextRange> bold = actionLog.getBold();
+    public void bindItem(DirectItem directItemModel, MessageDirection messageDirection) {
+        DirectItemActionLog actionLog = directItemModel.getActionLog();
+        String text = actionLog.getDescription();
+        SpannableStringBuilder sb = new SpannableStringBuilder(text);
+        List<TextRange> bold = actionLog.getBold();
         if (bold != null && !bold.isEmpty()) {
-            for (final TextRange textRange : bold) {
-                final StyleSpan boldStyleSpan = new StyleSpan(Typeface.BOLD);
+            for (TextRange textRange : bold) {
+                StyleSpan boldStyleSpan = new StyleSpan(Typeface.BOLD);
                 sb.setSpan(boldStyleSpan, textRange.getStart(), textRange.getEnd(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
             }
         }
-        final List<TextRange> textAttributes = actionLog.getTextAttributes();
+        List<TextRange> textAttributes = actionLog.getTextAttributes();
         if (textAttributes != null && !textAttributes.isEmpty()) {
-            for (final TextRange textAttribute : textAttributes) {
+            for (TextRange textAttribute : textAttributes) {
                 if (!TextUtils.isEmpty(textAttribute.getColor())) {
-                    final ForegroundColorSpan colorSpan = new ForegroundColorSpan(itemView.getResources().getColor(R.color.deep_orange_400));
+                    ForegroundColorSpan colorSpan = new ForegroundColorSpan(this.itemView.getResources().getColor(R.color.deep_orange_400));
                     sb.setSpan(colorSpan, textAttribute.getStart(), textAttribute.getEnd(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
                 }
                 if (!TextUtils.isEmpty(textAttribute.getIntent())) {
-                    final ClickableSpan clickableSpan = new ClickableSpan() {
+                    ClickableSpan clickableSpan = new ClickableSpan() {
                         @Override
-                        public void onClick(@NonNull final View widget) {
-                            handleDeepLink(textAttribute.getIntent());
+                        public void onClick(@NonNull View widget) {
+                            DirectItemActionLogViewHolder.this.handleDeepLink(textAttribute.getIntent());
                         }
                     };
                     sb.setSpan(clickableSpan, textAttribute.getStart(), textAttribute.getEnd(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
                 }
             }
         }
-        binding.tvMessage.setText(sb);
+        this.binding.tvMessage.setText(sb);
     }
 
     @Override

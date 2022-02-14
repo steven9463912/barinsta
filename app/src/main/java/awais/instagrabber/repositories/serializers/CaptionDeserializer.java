@@ -18,11 +18,11 @@ public class CaptionDeserializer implements JsonDeserializer<Caption> {
     private static final String TAG = CaptionDeserializer.class.getSimpleName();
 
     @Override
-    public Caption deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-        final Caption caption = new Gson().fromJson(json, Caption.class);
-        final JsonObject jsonObject = json.getAsJsonObject();
+    public Caption deserialize(final JsonElement json, final Type typeOfT, final JsonDeserializationContext context) throws JsonParseException {
+        Caption caption = new Gson().fromJson(json, Caption.class);
+        JsonObject jsonObject = json.getAsJsonObject();
         if (jsonObject.has("pk")) {
-            JsonElement elem = jsonObject.get("pk");
+            final JsonElement elem = jsonObject.get("pk");
             if (elem != null && !elem.isJsonNull()) {
                 if (!elem.isJsonPrimitive()) return caption;
                 String pkString = elem.getAsString();
@@ -31,8 +31,8 @@ public class CaptionDeserializer implements JsonDeserializer<Caption> {
                 }
                 try {
                     caption.setPk(pkString);
-                } catch (NumberFormatException e) {
-                    Log.e(TAG, "deserialize: ", e);
+                } catch (final NumberFormatException e) {
+                    Log.e(CaptionDeserializer.TAG, "deserialize: ", e);
                 }
             }
         }

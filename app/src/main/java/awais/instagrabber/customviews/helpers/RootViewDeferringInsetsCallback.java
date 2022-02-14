@@ -70,7 +70,7 @@ public class RootViewDeferringInsetsCallback extends WindowInsetsAnimationCompat
      * @param deferredInsetTypes   the bitmask of insets types which should be deferred until after
      *                             any related [WindowInsetsAnimationCompat]s have ended
      */
-    public RootViewDeferringInsetsCallback(final int persistentInsetTypes, final int deferredInsetTypes) {
+    public RootViewDeferringInsetsCallback(int persistentInsetTypes, int deferredInsetTypes) {
         super(WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_CONTINUE_ON_SUBTREE);
         if ((persistentInsetTypes & deferredInsetTypes) != 0) {
             throw new IllegalArgumentException("persistentInsetTypes and deferredInsetTypes can not contain " +
@@ -81,19 +81,19 @@ public class RootViewDeferringInsetsCallback extends WindowInsetsAnimationCompat
     }
 
     @Override
-    public WindowInsetsCompat onApplyWindowInsets(@NonNull final View v, @NonNull final WindowInsetsCompat windowInsets) {
+    public WindowInsetsCompat onApplyWindowInsets(@NonNull View v, @NonNull WindowInsetsCompat windowInsets) {
         // Store the view and insets for us in onEnd() below
-        view = v;
-        lastWindowInsets = windowInsets;
+        this.view = v;
+        this.lastWindowInsets = windowInsets;
 
-        final int types = deferredInsets
+        int types = this.deferredInsets
                           // When the deferred flag is enabled, we only use the systemBars() insets
-                          ? persistentInsetTypes
+                          ? this.persistentInsetTypes
                           // Otherwise we handle the combination of the the systemBars() and ime() insets
-                          : persistentInsetTypes | deferredInsetTypes;
+                          : this.persistentInsetTypes | this.deferredInsetTypes;
 
         // Finally we apply the resolved insets by setting them as padding
-        final Insets typeInsets = windowInsets.getInsets(types);
+        Insets typeInsets = windowInsets.getInsets(types);
         v.setPadding(typeInsets.left, typeInsets.top, typeInsets.right, typeInsets.bottom);
 
         // We return the new WindowInsetsCompat.CONSUMED to stop the insets being dispatched any
@@ -103,36 +103,36 @@ public class RootViewDeferringInsetsCallback extends WindowInsetsAnimationCompat
     }
 
     @Override
-    public void onPrepare(WindowInsetsAnimationCompat animation) {
-        if ((animation.getTypeMask() & deferredInsetTypes) != 0) {
+    public void onPrepare(final WindowInsetsAnimationCompat animation) {
+        if ((animation.getTypeMask() & this.deferredInsetTypes) != 0) {
             // We defer the WindowInsetsCompat.Type.ime() insets if the IME is currently not visible.
             // This results in only the WindowInsetsCompat.Type.systemBars() being applied, allowing
             // the scrolling view to remain at it's larger size.
-            deferredInsets = true;
+            this.deferredInsets = true;
         }
     }
 
     @NonNull
     @Override
-    public WindowInsetsCompat onProgress(@NonNull final WindowInsetsCompat insets,
-                                         @NonNull final List<WindowInsetsAnimationCompat> runningAnims) {
+    public WindowInsetsCompat onProgress(@NonNull WindowInsetsCompat insets,
+                                         @NonNull List<WindowInsetsAnimationCompat> runningAnims) {
         // This is a no-op. We don't actually want to handle any WindowInsetsAnimations
         return insets;
     }
 
     @Override
-    public void onEnd(@NonNull final WindowInsetsAnimationCompat animation) {
-        if (deferredInsets && (animation.getTypeMask() & deferredInsetTypes) != 0) {
+    public void onEnd(@NonNull WindowInsetsAnimationCompat animation) {
+        if (this.deferredInsets && (animation.getTypeMask() & this.deferredInsetTypes) != 0) {
             // If we deferred the IME insets and an IME animation has finished, we need to reset
             // the flag
-            deferredInsets = false;
+            this.deferredInsets = false;
 
             // And finally dispatch the deferred insets to the view now.
             // Ideally we would just call view.requestApplyInsets() and let the normal dispatch
             // cycle happen, but this happens too late resulting in a visual flicker.
             // Instead we manually dispatch the most recent WindowInsets to the view.
-            if (lastWindowInsets != null && view != null) {
-                ViewCompat.dispatchApplyWindowInsets(view, lastWindowInsets);
+            if (this.lastWindowInsets != null && this.view != null) {
+                ViewCompat.dispatchApplyWindowInsets(this.view, this.lastWindowInsets);
             }
         }
     }

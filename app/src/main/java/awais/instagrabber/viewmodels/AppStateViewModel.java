@@ -32,55 +32,55 @@ public class AppStateViewModel extends AndroidViewModel {
 
     private UserRepository userRepository;
 
-    public AppStateViewModel(@NonNull final Application application) {
+    public AppStateViewModel(@NonNull Application application) {
         super(application);
         // Log.d(TAG, "AppStateViewModel: constructor");
-        cookie = settingsHelper.getString(Constants.COOKIE);
-        final boolean isLoggedIn = !TextUtils.isEmpty(cookie) && CookieUtils.getUserIdFromCookie(cookie) != 0;
+        this.cookie = settingsHelper.getString(Constants.COOKIE);
+        boolean isLoggedIn = !TextUtils.isEmpty(this.cookie) && CookieUtils.getUserIdFromCookie(this.cookie) != 0;
         if (!isLoggedIn) {
-            currentUser.postValue(Resource.success(null));
+            this.currentUser.postValue(Resource.success(null));
             return;
         }
-        userRepository = UserRepository.Companion.getInstance();
-        accountRepository = AccountRepository.Companion.getInstance(application);
-        fetchProfileDetails();
+        this.userRepository = UserRepository.Companion.getInstance();
+        this.accountRepository = AccountRepository.Companion.getInstance(application);
+        this.fetchProfileDetails();
     }
 
     @Nullable
     public Resource<User> getCurrentUser() {
-        return currentUser.getValue();
+        return this.currentUser.getValue();
     }
 
     public LiveData<Resource<User>> getCurrentUserLiveData() {
-        return currentUser;
+        return this.currentUser;
     }
 
     public void fetchProfileDetails() {
-        currentUser.postValue(Resource.loading(null));
-        final long uid = CookieUtils.getUserIdFromCookie(cookie);
+        this.currentUser.postValue(Resource.loading(null));
+        long uid = CookieUtils.getUserIdFromCookie(this.cookie);
         if (uid == 0L) {
-            currentUser.postValue(Resource.success(null));
+            this.currentUser.postValue(Resource.success(null));
             return;
         }
-        userRepository.getUserInfo(uid, CoroutineUtilsKt.getContinuation((user, throwable) -> {
+        this.userRepository.getUserInfo(uid, CoroutineUtilsKt.getContinuation((user, throwable) -> {
             if (throwable != null) {
-                Log.e(TAG, "onFailure: ", throwable);
-                final Resource<User> userResource = currentUser.getValue();
-                final User backup = userResource != null && userResource.data != null ? userResource.data : new User(uid);
-                currentUser.postValue(Resource.error(throwable.getMessage(), backup));
+                Log.e(AppStateViewModel.TAG, "onFailure: ", throwable);
+                Resource<User> userResource = this.currentUser.getValue();
+                User backup = userResource != null && userResource.data != null ? userResource.data : new User(uid);
+                this.currentUser.postValue(Resource.error(throwable.getMessage(), backup));
                 return;
             }
-            currentUser.postValue(Resource.success(user));
-            if (accountRepository != null && user != null) {
-                accountRepository.insertOrUpdateAccount(
+            this.currentUser.postValue(Resource.success(user));
+            if (this.accountRepository != null && user != null) {
+                this.accountRepository.insertOrUpdateAccount(
                         user.getPk(),
                         user.getUsername(),
-                        cookie,
+                        this.cookie,
                         user.getFullName() != null ? user.getFullName() : "",
                         user.getProfilePicUrl(),
                         CoroutineUtilsKt.getContinuation((account, throwable1) -> AppExecutors.INSTANCE.getMainThread().execute(() -> {
                             if (throwable1 != null) {
-                                Log.e(TAG, "updateAccountInfo: ", throwable1);
+                                Log.e(AppStateViewModel.TAG, "updateAccountInfo: ", throwable1);
                             }
                         }), Dispatchers.getIO())
                 );

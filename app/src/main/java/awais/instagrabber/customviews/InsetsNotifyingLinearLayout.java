@@ -8,27 +8,27 @@ import android.widget.LinearLayout;
 import androidx.annotation.Nullable;
 
 public class InsetsNotifyingLinearLayout extends LinearLayout {
-    public InsetsNotifyingLinearLayout(final Context context) {
+    public InsetsNotifyingLinearLayout(Context context) {
         super(context);
     }
 
-    public InsetsNotifyingLinearLayout(final Context context, @Nullable final AttributeSet attrs) {
+    public InsetsNotifyingLinearLayout(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public InsetsNotifyingLinearLayout(final Context context, @Nullable final AttributeSet attrs, final int defStyleAttr) {
+    public InsetsNotifyingLinearLayout(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
-    public InsetsNotifyingLinearLayout(final Context context, final AttributeSet attrs, final int defStyleAttr, final int defStyleRes) {
+    public InsetsNotifyingLinearLayout(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
     @Override
-    public WindowInsets onApplyWindowInsets(WindowInsets insets) {
-        int childCount = getChildCount();
+    public WindowInsets onApplyWindowInsets(final WindowInsets insets) {
+        final int childCount = this.getChildCount();
         for (int index = 0; index < childCount; index++) {
-            getChildAt(index).dispatchApplyWindowInsets(insets);
+            this.getChildAt(index).dispatchApplyWindowInsets(insets);
         }
         return insets;
     }

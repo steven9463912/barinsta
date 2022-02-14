@@ -11,21 +11,21 @@ public class GifService {
     private static GifService instance;
 
     private GifService() {
-        repository = RetrofitFactory.INSTANCE
+        this.repository = RetrofitFactory.INSTANCE
                                     .getRetrofit()
                                     .create(GifRepository.class);
     }
 
     public static GifService getInstance() {
-        if (instance == null) {
-            instance = new GifService();
+        if (GifService.instance == null) {
+            GifService.instance = new GifService();
         }
-        return instance;
+        return GifService.instance;
     }
 
-    public Call<GiphyGifResponse> searchGiphyGifs(final String query,
-                                                  final boolean includeGifs) {
-        final String mediaTypes = includeGifs ? "[\"giphy_gifs\",\"giphy\"]" : "[\"giphy\"]";
-        return repository.searchGiphyGifs("direct", query, mediaTypes);
+    public Call<GiphyGifResponse> searchGiphyGifs(String query,
+                                                  boolean includeGifs) {
+        String mediaTypes = includeGifs ? "[\"giphy_gifs\",\"giphy\"]" : "[\"giphy\"]";
+        return this.repository.searchGiphyGifs("direct", query, mediaTypes);
     }
 }

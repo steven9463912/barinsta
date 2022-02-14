@@ -71,7 +71,7 @@ public class DirectItemContextMenu extends PopupWindow {
     private OnOptionSelectListener onOptionSelectListener;
     private OnAddReactionClickListener onAddReactionListener;
 
-    public DirectItemContextMenu(@NonNull final Context context, final boolean showReactions, final List<MenuItem> options) {
+    public DirectItemContextMenu(@NonNull Context context, boolean showReactions, List<MenuItem> options) {
         super(context);
         this.context = context;
         this.showReactions = showReactions;
@@ -79,91 +79,91 @@ public class DirectItemContextMenu extends PopupWindow {
         if (!showReactions && (options == null || options.isEmpty())) {
             throw new IllegalArgumentException("showReactions is set false and options are empty");
         }
-        reactionsManager = ReactionsManager.getInstance(context);
-        final Resources resources = context.getResources();
-        emojiSize = resources.getDimensionPixelSize(R.dimen.reaction_picker_emoji_size);
-        emojiMargin = resources.getDimensionPixelSize(R.dimen.reaction_picker_emoji_margin);
-        emojiMarginHalf = emojiMargin / 2;
-        addAdjust = resources.getDimensionPixelSize(R.dimen.reaction_picker_add_padding_adjustment);
-        dividerHeight = resources.getDimensionPixelSize(R.dimen.horizontal_divider_height);
-        optionHeight = resources.getDimensionPixelSize(R.dimen.reaction_picker_option_height);
-        optionPadding = resources.getDimensionPixelSize(R.dimen.dm_message_card_radius);
-        widthWithoutReactions = resources.getDimensionPixelSize(R.dimen.dm_item_context_min_width);
-        exitAnimationListener = new AnimatorListenerAdapter() {
+        this.reactionsManager = ReactionsManager.getInstance(context);
+        Resources resources = context.getResources();
+        this.emojiSize = resources.getDimensionPixelSize(R.dimen.reaction_picker_emoji_size);
+        this.emojiMargin = resources.getDimensionPixelSize(R.dimen.reaction_picker_emoji_margin);
+        this.emojiMarginHalf = this.emojiMargin / 2;
+        this.addAdjust = resources.getDimensionPixelSize(R.dimen.reaction_picker_add_padding_adjustment);
+        this.dividerHeight = resources.getDimensionPixelSize(R.dimen.horizontal_divider_height);
+        this.optionHeight = resources.getDimensionPixelSize(R.dimen.reaction_picker_option_height);
+        this.optionPadding = resources.getDimensionPixelSize(R.dimen.dm_message_card_radius);
+        this.widthWithoutReactions = resources.getDimensionPixelSize(R.dimen.dm_item_context_min_width);
+        this.exitAnimationListener = new AnimatorListenerAdapter() {
             @Override
-            public void onAnimationEnd(final Animator animation) {
-                openCloseAnimator = null;
-                point = null;
-                getContentView().post(DirectItemContextMenu.super::dismiss);
+            public void onAnimationEnd(Animator animation) {
+                DirectItemContextMenu.this.openCloseAnimator = null;
+                DirectItemContextMenu.this.point = null;
+                DirectItemContextMenu.this.getContentView().post(DirectItemContextMenu.super::dismiss);
             }
         };
-        selectableItemBackgroundBorderless = new TypedValue();
-        context.getTheme().resolveAttribute(android.R.attr.selectableItemBackgroundBorderless, selectableItemBackgroundBorderless, true);
-        selectableItemBackground = new TypedValue();
-        context.getTheme().resolveAttribute(android.R.attr.selectableItemBackground, selectableItemBackground, true);
-        hasOptions = options != null && !options.isEmpty();
+        this.selectableItemBackgroundBorderless = new TypedValue();
+        context.getTheme().resolveAttribute(android.R.attr.selectableItemBackgroundBorderless, this.selectableItemBackgroundBorderless, true);
+        this.selectableItemBackground = new TypedValue();
+        context.getTheme().resolveAttribute(android.R.attr.selectableItemBackground, this.selectableItemBackground, true);
+        this.hasOptions = options != null && !options.isEmpty();
     }
 
-    public void show(@NonNull View rootView, @NonNull final Point location) {
-        final View content = createContentView();
+    public void show(@NonNull final View rootView, @NonNull Point location) {
+        View content = this.createContentView();
         content.measure(makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED), makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-        setup(content);
+        this.setup(content);
         // rootView.getParent().requestDisallowInterceptTouchEvent(true);
         // final Point correctedLocation = new Point(location.x, location.y - emojiSize * 2);
         this.location = location;
-        showAtLocation(rootView, Gravity.TOP | Gravity.START, location.x, location.y);
+        this.showAtLocation(rootView, Gravity.TOP | Gravity.START, location.x, location.y);
         // fixPopupLocation(popupWindow, correctedLocation);
-        animateOpen();
+        this.animateOpen();
     }
 
-    private void setup(final View content) {
-        setContentView(content);
-        setWindowLayoutMode(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        setFocusable(true);
-        setOutsideTouchable(true);
-        setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
-        setBackgroundDrawable(null);
+    private void setup(View content) {
+        this.setContentView(content);
+        this.setWindowLayoutMode(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        this.setFocusable(true);
+        this.setOutsideTouchable(true);
+        this.setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
+        this.setBackgroundDrawable(null);
     }
 
-    public void setOnOptionSelectListener(final OnOptionSelectListener onOptionSelectListener) {
+    public void setOnOptionSelectListener(OnOptionSelectListener onOptionSelectListener) {
         this.onOptionSelectListener = onOptionSelectListener;
     }
 
-    public void setOnReactionClickListener(final OnReactionClickListener onReactionClickListener) {
+    public void setOnReactionClickListener(OnReactionClickListener onReactionClickListener) {
         this.onReactionClickListener = onReactionClickListener;
     }
 
-    public void setOnAddReactionListener(final OnAddReactionClickListener onAddReactionListener) {
+    public void setOnAddReactionListener(OnAddReactionClickListener onAddReactionListener) {
         this.onAddReactionListener = onAddReactionListener;
     }
 
     private void animateOpen() {
-        final View contentView = getContentView();
+        View contentView = this.getContentView();
         contentView.setVisibility(View.INVISIBLE);
         contentView.post(() -> {
-            final AnimatorSet openAnim = new AnimatorSet();
+            AnimatorSet openAnim = new AnimatorSet();
             // Rectangular reveal.
-            final ValueAnimator revealAnim = createOpenCloseOutlineProvider().createRevealAnimator(contentView, false);
-            revealAnim.setDuration(DURATION);
-            revealAnim.setInterpolator(revealInterpolator);
+            ValueAnimator revealAnim = this.createOpenCloseOutlineProvider().createRevealAnimator(contentView, false);
+            revealAnim.setDuration(DirectItemContextMenu.DURATION);
+            revealAnim.setInterpolator(this.revealInterpolator);
 
-            ValueAnimator fadeIn = ValueAnimator.ofFloat(0, 1);
-            fadeIn.setDuration(DURATION);
-            fadeIn.setInterpolator(revealInterpolator);
+            final ValueAnimator fadeIn = ValueAnimator.ofFloat(0, 1);
+            fadeIn.setDuration(DirectItemContextMenu.DURATION);
+            fadeIn.setInterpolator(this.revealInterpolator);
             fadeIn.addUpdateListener(anim -> {
-                float alpha = (float) anim.getAnimatedValue();
+                final float alpha = (float) anim.getAnimatedValue();
                 contentView.setAlpha(revealAnim.isStarted() ? alpha : 0);
             });
             openAnim.play(fadeIn);
             openAnim.addListener(new AnimatorListenerAdapter() {
                 @Override
-                public void onAnimationEnd(Animator animation) {
+                public void onAnimationEnd(final Animator animation) {
                     contentView.setAlpha(1f);
-                    openCloseAnimator = null;
+                    DirectItemContextMenu.this.openCloseAnimator = null;
                 }
             });
 
-            openCloseAnimator = openAnim;
+            this.openCloseAnimator = openAnim;
             openAnim.playSequentially(revealAnim);
             contentView.setVisibility(View.VISIBLE);
             openAnim.start();
@@ -171,85 +171,85 @@ public class DirectItemContextMenu extends PopupWindow {
     }
 
     protected void animateClose() {
-        endRect.setEmpty();
-        if (openCloseAnimator != null) {
-            openCloseAnimator.cancel();
+        this.endRect.setEmpty();
+        if (this.openCloseAnimator != null) {
+            this.openCloseAnimator.cancel();
         }
-        final View contentView = getContentView();
-        final AnimatorSet closeAnim = new AnimatorSet();
+        View contentView = this.getContentView();
+        AnimatorSet closeAnim = new AnimatorSet();
         // Rectangular reveal (reversed).
-        final ValueAnimator revealAnim = createOpenCloseOutlineProvider().createRevealAnimator(contentView, true);
-        revealAnim.setDuration(DURATION);
-        revealAnim.setInterpolator(revealInterpolator);
+        ValueAnimator revealAnim = this.createOpenCloseOutlineProvider().createRevealAnimator(contentView, true);
+        revealAnim.setDuration(DirectItemContextMenu.DURATION);
+        revealAnim.setInterpolator(this.revealInterpolator);
         closeAnim.play(revealAnim);
 
-        ValueAnimator fadeOut = ValueAnimator.ofFloat(contentView.getAlpha(), 0);
-        fadeOut.setDuration(DURATION);
-        fadeOut.setInterpolator(revealInterpolator);
+        final ValueAnimator fadeOut = ValueAnimator.ofFloat(contentView.getAlpha(), 0);
+        fadeOut.setDuration(DirectItemContextMenu.DURATION);
+        fadeOut.setInterpolator(this.revealInterpolator);
         fadeOut.addUpdateListener(anim -> {
-            float alpha = (float) anim.getAnimatedValue();
+            final float alpha = (float) anim.getAnimatedValue();
             contentView.setAlpha(revealAnim.isStarted() ? alpha : contentView.getAlpha());
         });
         closeAnim.playTogether(fadeOut);
-        closeAnim.addListener(exitAnimationListener);
-        openCloseAnimator = closeAnim;
+        closeAnim.addListener(this.exitAnimationListener);
+        this.openCloseAnimator = closeAnim;
         closeAnim.start();
     }
 
     private RoundedRectRevealOutlineProvider createOpenCloseOutlineProvider() {
-        final View contentView = getContentView();
-        final int radius = context.getResources().getDimensionPixelSize(R.dimen.dm_message_card_radius_small);
+        View contentView = this.getContentView();
+        int radius = this.context.getResources().getDimensionPixelSize(R.dimen.dm_message_card_radius_small);
         // Log.d(TAG, "createOpenCloseOutlineProvider: " + locationOnScreen(contentView) + " " + contentView.getMeasuredWidth() + " " + contentView
         //         .getMeasuredHeight());
-        if (point == null) {
-            point = locationOnScreen(contentView);
+        if (this.point == null) {
+            this.point = this.locationOnScreen(contentView);
         }
-        final int left = location.x - point.x;
-        final int top = location.y - point.y;
-        startRect.set(left, top, left, top);
-        endRect.set(0, 0, contentView.getMeasuredWidth(), contentView.getMeasuredHeight());
-        return new RoundedRectRevealOutlineProvider(radius, radius, startRect, endRect);
+        int left = this.location.x - this.point.x;
+        int top = this.location.y - this.point.y;
+        this.startRect.set(left, top, left, top);
+        this.endRect.set(0, 0, contentView.getMeasuredWidth(), contentView.getMeasuredHeight());
+        return new RoundedRectRevealOutlineProvider(radius, radius, this.startRect, this.endRect);
     }
 
     public void dismiss() {
-        animateClose();
+        this.animateClose();
     }
 
     private View createContentView() {
-        final LayoutInflater layoutInflater = LayoutInflater.from(context);
-        final LayoutDirectItemOptionsBinding binding = LayoutDirectItemOptionsBinding.inflate(layoutInflater, null, false);
+        LayoutInflater layoutInflater = LayoutInflater.from(this.context);
+        LayoutDirectItemOptionsBinding binding = LayoutDirectItemOptionsBinding.inflate(layoutInflater, null, false);
         Pair<View, View> firstLastEmojiView = null;
-        if (showReactions) {
-            firstLastEmojiView = addReactions(layoutInflater, binding.container);
+        if (this.showReactions) {
+            firstLastEmojiView = this.addReactions(layoutInflater, binding.container);
         }
-        if (hasOptions) {
+        if (this.hasOptions) {
             View divider = null;
-            if (showReactions) {
+            if (this.showReactions) {
                 if (firstLastEmojiView == null) {
                     throw new IllegalStateException("firstLastEmojiView is null even though reactions were added");
                 }
                 // add divider if reactions were added
-                divider = addDivider(binding.container,
+                divider = this.addDivider(binding.container,
                                      firstLastEmojiView.first.getId(),
                                      firstLastEmojiView.first.getId(),
                                      firstLastEmojiView.second.getId());
                 ((ConstraintLayout.LayoutParams) firstLastEmojiView.first.getLayoutParams()).bottomToTop = divider.getId();
             }
-            addOptions(layoutInflater, binding.container, divider);
+            this.addOptions(layoutInflater, binding.container, divider);
         }
         return binding.getRoot();
     }
 
-    private Pair<View, View> addReactions(final LayoutInflater layoutInflater, final ConstraintLayout container) {
-        final List<Emoji> reactions = reactionsManager.getReactions();
+    private Pair<View, View> addReactions(LayoutInflater layoutInflater, ConstraintLayout container) {
+        List<Emoji> reactions = this.reactionsManager.getReactions();
         AppCompatImageView prevSquareImageView = null;
         View firstImageView = null;
         View lastImageView = null;
         for (int i = 0; i < reactions.size(); i++) {
-            final Emoji reaction = reactions.get(i);
-            final AppCompatImageView imageView = getEmojiImageView();
-            final ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) imageView.getLayoutParams();
-            if (i == 0 && !hasOptions) {
+            Emoji reaction = reactions.get(i);
+            AppCompatImageView imageView = this.getEmojiImageView();
+            ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) imageView.getLayoutParams();
+            if (i == 0 && !this.hasOptions) {
                 // only connect bottom to parent bottom if there are no options
                 layoutParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
             }
@@ -257,43 +257,43 @@ public class DirectItemContextMenu extends PopupWindow {
                 layoutParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
                 layoutParams.startToStart = ConstraintLayout.LayoutParams.PARENT_ID;
                 firstImageView = imageView;
-                layoutParams.setMargins(emojiMargin, emojiMargin, emojiMarginHalf, emojiMargin);
+                layoutParams.setMargins(this.emojiMargin, this.emojiMargin, this.emojiMarginHalf, this.emojiMargin);
             } else {
                 layoutParams.startToEnd = prevSquareImageView.getId();
-                final ConstraintLayout.LayoutParams prevViewLayoutParams = (ConstraintLayout.LayoutParams) prevSquareImageView.getLayoutParams();
+                ConstraintLayout.LayoutParams prevViewLayoutParams = (ConstraintLayout.LayoutParams) prevSquareImageView.getLayoutParams();
                 prevViewLayoutParams.endToStart = imageView.getId();
                 // always connect the other image view's top and bottom to the first image view top and bottom
                 layoutParams.topToTop = firstImageView.getId();
                 layoutParams.bottomToBottom = firstImageView.getId();
-                layoutParams.setMargins(emojiMarginHalf, emojiMargin, emojiMarginHalf, emojiMargin);
+                layoutParams.setMargins(this.emojiMarginHalf, this.emojiMargin, this.emojiMarginHalf, this.emojiMargin);
             }
             imageView.setImageDrawable(reaction.getDrawable());
             imageView.setOnClickListener(view -> {
-                if (onReactionClickListener != null) {
-                    onReactionClickListener.onClick(reaction);
+                if (this.onReactionClickListener != null) {
+                    this.onReactionClickListener.onClick(reaction);
                 }
-                dismiss();
+                this.dismiss();
             });
             container.addView(imageView);
             prevSquareImageView = imageView;
         }
         // add the + icon
         if (prevSquareImageView != null) {
-            final AppCompatImageView imageView = getEmojiImageView();
-            final ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) imageView.getLayoutParams();
+            AppCompatImageView imageView = this.getEmojiImageView();
+            ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) imageView.getLayoutParams();
             layoutParams.topToTop = firstImageView.getId();
             layoutParams.bottomToBottom = firstImageView.getId();
             layoutParams.startToEnd = prevSquareImageView.getId();
-            final ConstraintLayout.LayoutParams prevViewLayoutParams = (ConstraintLayout.LayoutParams) prevSquareImageView.getLayoutParams();
+            ConstraintLayout.LayoutParams prevViewLayoutParams = (ConstraintLayout.LayoutParams) prevSquareImageView.getLayoutParams();
             prevViewLayoutParams.endToStart = imageView.getId();
             layoutParams.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID;
-            layoutParams.setMargins(emojiMarginHalf - addAdjust, emojiMargin - addAdjust, emojiMargin - addAdjust, emojiMargin - addAdjust);
+            layoutParams.setMargins(this.emojiMarginHalf - this.addAdjust, this.emojiMargin - this.addAdjust, this.emojiMargin - this.addAdjust, this.emojiMargin - this.addAdjust);
             imageView.setImageResource(R.drawable.ic_add);
             imageView.setOnClickListener(view -> {
-                if (onAddReactionListener != null) {
-                    onAddReactionListener.onAdd();
+                if (this.onAddReactionListener != null) {
+                    this.onAddReactionListener.onAdd();
                 }
-                dismiss();
+                this.dismiss();
             });
             lastImageView = imageView;
             container.addView(imageView);
@@ -303,26 +303,26 @@ public class DirectItemContextMenu extends PopupWindow {
 
     @NonNull
     private AppCompatImageView getEmojiImageView() {
-        final AppCompatImageView imageView = new AppCompatImageView(context);
-        final ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(emojiSize, emojiSize);
-        imageView.setBackgroundResource(selectableItemBackgroundBorderless.resourceId);
+        AppCompatImageView imageView = new AppCompatImageView(this.context);
+        ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(this.emojiSize, this.emojiSize);
+        imageView.setBackgroundResource(this.selectableItemBackgroundBorderless.resourceId);
         imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
         imageView.setId(View.generateViewId());
         imageView.setLayoutParams(layoutParams);
         return imageView;
     }
 
-    private void addOptions(final LayoutInflater layoutInflater,
-                            final ConstraintLayout container,
-                            @Nullable final View divider) {
+    private void addOptions(LayoutInflater layoutInflater,
+                            ConstraintLayout container,
+                            @Nullable View divider) {
         View prevOptionView = null;
-        if (!showReactions) {
-            container.getLayoutParams().width = widthWithoutReactions;
+        if (!this.showReactions) {
+            container.getLayoutParams().width = this.widthWithoutReactions;
         }
-        for (int i = 0; i < options.size(); i++) {
-            final MenuItem menuItem = options.get(i);
-            final AppCompatTextView textView = getTextView();
-            final ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) textView.getLayoutParams();
+        for (int i = 0; i < this.options.size(); i++) {
+            MenuItem menuItem = this.options.get(i);
+            AppCompatTextView textView = this.getTextView();
+            ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) textView.getLayoutParams();
             layoutParams.startToStart = ConstraintLayout.LayoutParams.PARENT_ID;
             layoutParams.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID;
             if (i == 0) {
@@ -332,23 +332,23 @@ public class DirectItemContextMenu extends PopupWindow {
                 } else {
                     // if divider is null mean reactions were not added, so connect top to top of parent
                     layoutParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
-                    layoutParams.topMargin = emojiMargin; // material design spec (https://material.io/components/menus#specs)
+                    layoutParams.topMargin = this.emojiMargin; // material design spec (https://material.io/components/menus#specs)
                 }
             } else {
                 layoutParams.topToBottom = prevOptionView.getId();
-                final ConstraintLayout.LayoutParams prevLayoutParams = (ConstraintLayout.LayoutParams) prevOptionView.getLayoutParams();
+                ConstraintLayout.LayoutParams prevLayoutParams = (ConstraintLayout.LayoutParams) prevOptionView.getLayoutParams();
                 prevLayoutParams.bottomToTop = textView.getId();
             }
-            if (i == options.size() - 1) {
+            if (i == this.options.size() - 1) {
                 layoutParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
-                layoutParams.bottomMargin = emojiMargin; // material design spec (https://material.io/components/menus#specs)
+                layoutParams.bottomMargin = this.emojiMargin; // material design spec (https://material.io/components/menus#specs)
             }
-            textView.setText(context.getString(menuItem.getTitleRes()));
+            textView.setText(this.context.getString(menuItem.getTitleRes()));
             textView.setOnClickListener(v -> {
-                if (onOptionSelectListener != null) {
-                    onOptionSelectListener.onSelect(menuItem.getItemId(), menuItem.getCallback());
+                if (this.onOptionSelectListener != null) {
+                    this.onOptionSelectListener.onSelect(menuItem.getItemId(), menuItem.getCallback());
                 }
-                dismiss();
+                this.dismiss();
             });
             container.addView(textView);
             prevOptionView = textView;
@@ -356,27 +356,27 @@ public class DirectItemContextMenu extends PopupWindow {
     }
 
     private AppCompatTextView getTextView() {
-        final AppCompatTextView textView = new AppCompatTextView(context);
+        AppCompatTextView textView = new AppCompatTextView(this.context);
         textView.setId(View.generateViewId());
-        textView.setBackgroundResource(selectableItemBackground.resourceId);
+        textView.setBackgroundResource(this.selectableItemBackground.resourceId);
         textView.setGravity(Gravity.CENTER_VERTICAL);
-        textView.setPaddingRelative(optionPadding, 0, optionPadding, 0);
-        textView.setTextAppearance(context, R.style.TextAppearance_MaterialComponents_Body1);
-        final ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_CONSTRAINT,
-                optionHeight);
+        textView.setPaddingRelative(this.optionPadding, 0, this.optionPadding, 0);
+        textView.setTextAppearance(this.context, R.style.TextAppearance_MaterialComponents_Body1);
+        ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_CONSTRAINT,
+                this.optionHeight);
         textView.setLayoutParams(layoutParams);
         return textView;
     }
 
-    private View addDivider(final ConstraintLayout container,
-                            final int topViewId,
-                            final int startViewId,
-                            final int endViewId) {
-        final View dividerView = new View(context);
+    private View addDivider(ConstraintLayout container,
+                            int topViewId,
+                            int startViewId,
+                            int endViewId) {
+        View dividerView = new View(this.context);
         dividerView.setId(View.generateViewId());
         dividerView.setBackgroundResource(R.drawable.pref_list_divider_material);
-        final ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_CONSTRAINT,
-                dividerHeight);
+        ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_CONSTRAINT,
+                this.dividerHeight);
         layoutParams.topToBottom = topViewId;
         layoutParams.startToStart = startViewId;
         layoutParams.endToEnd = endViewId;
@@ -386,8 +386,8 @@ public class DirectItemContextMenu extends PopupWindow {
     }
 
     @NonNull
-    private Point locationOnScreen(@NonNull final View view) {
-        final int[] location = new int[2];
+    private Point locationOnScreen(@NonNull View view) {
+        int[] location = new int[2];
         view.getLocationOnScreen(location);
         return new Point(location[0], location[1]);
     }
@@ -403,26 +403,26 @@ public class DirectItemContextMenu extends PopupWindow {
          */
         private final Function<DirectItem, Void> callback;
 
-        public MenuItem(@IdRes final int itemId, @StringRes final int titleRes) {
+        public MenuItem(@IdRes int itemId, @StringRes int titleRes) {
             this(itemId, titleRes, null);
         }
 
-        public MenuItem(@IdRes final int itemId, @StringRes final int titleRes, @Nullable final Function<DirectItem, Void> callback) {
+        public MenuItem(@IdRes int itemId, @StringRes int titleRes, @Nullable Function<DirectItem, Void> callback) {
             this.itemId = itemId;
             this.titleRes = titleRes;
             this.callback = callback;
         }
 
         public int getItemId() {
-            return itemId;
+            return this.itemId;
         }
 
         public int getTitleRes() {
-            return titleRes;
+            return this.titleRes;
         }
 
         public Function<DirectItem, Void> getCallback() {
-            return callback;
+            return this.callback;
         }
     }
 

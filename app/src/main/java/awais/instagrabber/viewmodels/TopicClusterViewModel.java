@@ -11,9 +11,9 @@ public class TopicClusterViewModel extends ViewModel {
     private MutableLiveData<List<TopicCluster>> list;
 
     public MutableLiveData<List<TopicCluster>> getList() {
-        if (list == null) {
-            list = new MutableLiveData<>();
+        if (this.list == null) {
+            this.list = new MutableLiveData<>();
         }
-        return list;
+        return this.list;
     }
 }

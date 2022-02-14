@@ -44,32 +44,32 @@ public class DirectItemMediaShareViewHolder extends DirectItemViewHolder {
     private DirectItemType itemType;
     private Caption caption;
 
-    public DirectItemMediaShareViewHolder(@NonNull final LayoutDmBaseBinding baseBinding,
-                                          @NonNull final LayoutDmMediaShareBinding binding,
-                                          final User currentUser,
-                                          final DirectThread thread,
-                                          final DirectItemsAdapter.DirectItemCallback callback) {
+    public DirectItemMediaShareViewHolder(@NonNull LayoutDmBaseBinding baseBinding,
+                                          @NonNull LayoutDmMediaShareBinding binding,
+                                          User currentUser,
+                                          DirectThread thread,
+                                          DirectItemsAdapter.DirectItemCallback callback) {
         super(baseBinding, currentUser, thread, callback);
         this.binding = binding;
-        incomingRoundingParams = RoundingParams.fromCornersRadii(dmRadiusSmall, dmRadius, dmRadius, dmRadius);
-        outgoingRoundingParams = RoundingParams.fromCornersRadii(dmRadius, dmRadiusSmall, dmRadius, dmRadius);
-        setItemView(binding.getRoot());
+        this.incomingRoundingParams = RoundingParams.fromCornersRadii(this.dmRadiusSmall, this.dmRadius, this.dmRadius, this.dmRadius);
+        this.outgoingRoundingParams = RoundingParams.fromCornersRadii(this.dmRadius, this.dmRadiusSmall, this.dmRadius, this.dmRadius);
+        this.setItemView(binding.getRoot());
     }
 
     @Override
-    public void bindItem(final DirectItem item, final MessageDirection messageDirection) {
-        binding.topBg.setBackgroundResource(messageDirection == MessageDirection.INCOMING
+    public void bindItem(DirectItem item, MessageDirection messageDirection) {
+        this.binding.topBg.setBackgroundResource(messageDirection == MessageDirection.INCOMING
                                             ? R.drawable.bg_media_share_top_incoming
                                             : R.drawable.bg_media_share_top_outgoing);
-        Media media = getMedia(item);
+        final Media media = this.getMedia(item);
         if (media == null) return;
-        itemView.post(() -> {
-            setupUser(media);
-            setupCaption(media);
+        this.itemView.post(() -> {
+            this.setupUser(media);
+            this.setupCaption(media);
         });
-        final int index;
-        final Media toDisplay;
-        final MediaItemType mediaType = media.getType();
+        int index;
+        Media toDisplay;
+        MediaItemType mediaType = media.getType();
         switch (mediaType) {
             case MEDIA_TYPE_SLIDER:
                 toDisplay = media.getCarouselMedia().stream()
@@ -83,87 +83,87 @@ public class DirectItemMediaShareViewHolder extends DirectItemViewHolder {
                 toDisplay = media;
                 index = 0;
         }
-        itemView.post(() -> {
-            setupTypeIndicator(mediaType);
-            setupPreview(toDisplay, messageDirection);
+        this.itemView.post(() -> {
+            this.setupTypeIndicator(mediaType);
+            this.setupPreview(toDisplay, messageDirection);
         });
-        itemView.setOnClickListener(v -> openMedia(media, index));
+        this.itemView.setOnClickListener(v -> this.openMedia(media, index));
     }
 
-    private void setupTypeIndicator(final MediaItemType mediaType) {
-        final boolean showTypeIcon = mediaType == MediaItemType.MEDIA_TYPE_VIDEO || mediaType == MediaItemType.MEDIA_TYPE_SLIDER;
+    private void setupTypeIndicator(MediaItemType mediaType) {
+        boolean showTypeIcon = mediaType == MediaItemType.MEDIA_TYPE_VIDEO || mediaType == MediaItemType.MEDIA_TYPE_SLIDER;
         if (!showTypeIcon) {
-            binding.typeIcon.setVisibility(View.GONE);
+            this.binding.typeIcon.setVisibility(View.GONE);
         } else {
-            binding.typeIcon.setVisibility(View.VISIBLE);
-            binding.typeIcon.setImageResource(mediaType == MediaItemType.MEDIA_TYPE_VIDEO
+            this.binding.typeIcon.setVisibility(View.VISIBLE);
+            this.binding.typeIcon.setImageResource(mediaType == MediaItemType.MEDIA_TYPE_VIDEO
                                               ? R.drawable.ic_video_24
                                               : R.drawable.ic_checkbox_multiple_blank_stroke);
         }
     }
 
-    private void setupPreview(@NonNull final Media media,
-                              final MessageDirection messageDirection) {
-        final String url = ResponseBodyUtils.getThumbUrl(media);
-        if (Objects.equals(url, binding.mediaPreview.getTag())) {
+    private void setupPreview(@NonNull Media media,
+                              MessageDirection messageDirection) {
+        String url = ResponseBodyUtils.getThumbUrl(media);
+        if (Objects.equals(url, this.binding.mediaPreview.getTag())) {
             return;
         }
-        final RoundingParams roundingParams = messageDirection == MessageDirection.INCOMING ? incomingRoundingParams : outgoingRoundingParams;
-        binding.mediaPreview.setHierarchy(new GenericDraweeHierarchyBuilder(itemView.getResources())
+        RoundingParams roundingParams = messageDirection == MessageDirection.INCOMING ? this.incomingRoundingParams : this.outgoingRoundingParams;
+        this.binding.mediaPreview.setHierarchy(new GenericDraweeHierarchyBuilder(this.itemView.getResources())
                                                   .setActualImageScaleType(ScalingUtils.ScaleType.CENTER_CROP)
                                                   .setRoundingParams(roundingParams)
                                                   .build());
-        final NullSafePair<Integer, Integer> widthHeight = NumberUtils.calculateWidthHeight(
+        NullSafePair<Integer, Integer> widthHeight = NumberUtils.calculateWidthHeight(
                 media.getOriginalHeight(),
                 media.getOriginalWidth(),
-                mediaImageMaxHeight,
-                mediaImageMaxWidth
+                this.mediaImageMaxHeight,
+                this.mediaImageMaxWidth
         );
-        final ViewGroup.LayoutParams layoutParams = binding.mediaPreview.getLayoutParams();
+        ViewGroup.LayoutParams layoutParams = this.binding.mediaPreview.getLayoutParams();
         layoutParams.width = widthHeight.first;
         layoutParams.height = widthHeight.second;
-        binding.mediaPreview.requestLayout();
-        binding.mediaPreview.setTag(url);
-        binding.mediaPreview.setImageURI(url);
+        this.binding.mediaPreview.requestLayout();
+        this.binding.mediaPreview.setTag(url);
+        this.binding.mediaPreview.setImageURI(url);
     }
 
-    private void setupCaption(@NonNull final Media media) {
-        caption = media.getCaption();
-        if (caption != null) {
-            binding.caption.setVisibility(View.VISIBLE);
-            binding.caption.setText(caption.getText());
-            binding.caption.setEllipsize(TextUtils.TruncateAt.END);
-            binding.caption.setMaxLines(2);
+    private void setupCaption(@NonNull Media media) {
+        this.caption = media.getCaption();
+        if (this.caption != null) {
+            this.binding.caption.setVisibility(View.VISIBLE);
+            this.binding.caption.setText(this.caption.getText());
+            this.binding.caption.setEllipsize(TextUtils.TruncateAt.END);
+            this.binding.caption.setMaxLines(2);
         } else {
-            binding.caption.setVisibility(View.GONE);
+            this.binding.caption.setVisibility(View.GONE);
         }
     }
 
-    private void setupUser(@NonNull final Media media) {
-        final User user = media.getUser();
+    private void setupUser(@NonNull Media media) {
+        User user = media.getUser();
         if (user != null) {
-            binding.username.setVisibility(View.VISIBLE);
-            binding.profilePic.setVisibility(View.VISIBLE);
-            binding.username.setText(user.getUsername());
-            binding.profilePic.setImageURI(user.getProfilePicUrl());
+            this.binding.username.setVisibility(View.VISIBLE);
+            this.binding.profilePic.setVisibility(View.VISIBLE);
+            this.binding.username.setText(user.getUsername());
+            this.binding.profilePic.setImageURI(user.getProfilePicUrl());
         } else {
-            binding.username.setVisibility(View.GONE);
-            binding.profilePic.setVisibility(View.GONE);
+            this.binding.username.setVisibility(View.GONE);
+            this.binding.profilePic.setVisibility(View.GONE);
         }
     }
 
     @Nullable
-    private Media getMedia(@NonNull final DirectItem item) {
+    private Media getMedia(@NonNull DirectItem item) {
         Media media = null;
-        itemType = item.getItemType();
-        if (itemType == DirectItemType.MEDIA_SHARE) {
+        this.itemType = item.getItemType();
+        if (this.itemType == DirectItemType.MEDIA_SHARE) {
             media = item.getMediaShare();
-        } else if (itemType == DirectItemType.CLIP) {
-            final DirectItemClip clip = item.getClip();
+        } else if (this.itemType == DirectItemType.CLIP) {
+            DirectItemClip clip = item.getClip();
             if (clip == null) return null;
             media = clip.getClip();
-        } else if (itemType == DirectItemType.FELIX_SHARE) {
-            final DirectItemFelixShare felixShare = item.getFelixShare();
+        } else if (this.itemType == DirectItemType.FELIX_SHARE) {
+            DirectItemFelixShare felixShare = item.getFelixShare();
             if (felixShare == null) return null;
             media = felixShare.getVideo();
         }
@@ -172,12 +172,12 @@ public class DirectItemMediaShareViewHolder extends DirectItemViewHolder {
 
     @Override
     protected int getReactionsTranslationY() {
-        return reactionTranslationYType2;
+        return this.reactionTranslationYType2;
     }
 
     @Override
     public int getSwipeDirection() {
-        if (itemType != null && (itemType == DirectItemType.CLIP || itemType == DirectItemType.FELIX_SHARE)) {
+        if (this.itemType != null && (this.itemType == DirectItemType.CLIP || this.itemType == DirectItemType.FELIX_SHARE)) {
             return ItemTouchHelper.ACTION_STATE_IDLE;
         }
         return super.getSwipeDirection();
@@ -185,10 +185,10 @@ public class DirectItemMediaShareViewHolder extends DirectItemViewHolder {
 
     @Override
     protected List<DirectItemContextMenu.MenuItem> getLongClickOptions() {
-        final ImmutableList.Builder<DirectItemContextMenu.MenuItem> builder = ImmutableList.builder();
-        if (caption != null && !TextUtils.isEmpty(caption.getText())) {
+        ImmutableList.Builder<DirectItemContextMenu.MenuItem> builder = ImmutableList.builder();
+        if (this.caption != null && !TextUtils.isEmpty(this.caption.getText())) {
             builder.add(new DirectItemContextMenu.MenuItem(R.id.copy, R.string.copy_caption, item -> {
-                Utils.copyText(itemView.getContext(), caption.getText());
+                Utils.copyText(this.itemView.getContext(), this.caption.getText());
                 return null;
             }));
         }

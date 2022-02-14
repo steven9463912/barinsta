@@ -26,16 +26,16 @@ public class EmojiPickerInsetsAnimationCallback extends WindowInsetsAnimationCom
     private onKbVisibilityChangeListener listener;
     private boolean shouldTranslate;
 
-    public EmojiPickerInsetsAnimationCallback(final View view,
-                                              final int persistentInsetTypes,
-                                              final int deferredInsetTypes) {
+    public EmojiPickerInsetsAnimationCallback(View view,
+                                              int persistentInsetTypes,
+                                              int deferredInsetTypes) {
         this(view, persistentInsetTypes, deferredInsetTypes, WindowInsetsAnimation.Callback.DISPATCH_MODE_STOP);
     }
 
-    public EmojiPickerInsetsAnimationCallback(final View view,
-                                              final int persistentInsetTypes,
-                                              final int deferredInsetTypes,
-                                              final int dispatchMode) {
+    public EmojiPickerInsetsAnimationCallback(View view,
+                                              int persistentInsetTypes,
+                                              int deferredInsetTypes,
+                                              int dispatchMode) {
         super(dispatchMode);
         if ((persistentInsetTypes & deferredInsetTypes) != 0) {
             throw new IllegalArgumentException("persistentInsetTypes and deferredInsetTypes can not contain " +
@@ -48,67 +48,67 @@ public class EmojiPickerInsetsAnimationCallback extends WindowInsetsAnimationCom
 
     @NonNull
     @Override
-    public WindowInsetsCompat onProgress(@NonNull final WindowInsetsCompat insets,
-                                         @NonNull final List<WindowInsetsAnimationCompat> runningAnimations) {
+    public WindowInsetsCompat onProgress(@NonNull WindowInsetsCompat insets,
+                                         @NonNull List<WindowInsetsAnimationCompat> runningAnimations) {
         // onProgress() is called when any of the running animations progress...
 
         // First we get the insets which are potentially deferred
-        final Insets typesInset = insets.getInsets(deferredInsetTypes);
+        Insets typesInset = insets.getInsets(this.deferredInsetTypes);
         // Then we get the persistent inset types which are applied as padding during layout
-        final Insets otherInset = insets.getInsets(persistentInsetTypes);
+        Insets otherInset = insets.getInsets(this.persistentInsetTypes);
 
         // Now that we subtract the two insets, to calculate the difference. We also coerce
         // the insets to be >= 0, to make sure we don't use negative insets.
-        final Insets subtract = Insets.subtract(typesInset, otherInset);
-        final Insets diff = Insets.max(subtract, Insets.NONE);
+        Insets subtract = Insets.subtract(typesInset, otherInset);
+        Insets diff = Insets.max(subtract, Insets.NONE);
 
         // The resulting `diff` insets contain the values for us to apply as a translation
         // to the view
-        view.setTranslationX(diff.left - diff.right);
-        view.setTranslationY(shouldTranslate ? diff.top - diff.bottom : -kbHeight);
+        this.view.setTranslationX(diff.left - diff.right);
+        this.view.setTranslationY(this.shouldTranslate ? diff.top - diff.bottom : -this.kbHeight);
 
         return insets;
     }
 
     @Override
-    public void onEnd(@NonNull final WindowInsetsAnimationCompat animation) {
+    public void onEnd(@NonNull WindowInsetsAnimationCompat animation) {
         try {
-            final WindowInsetsCompat rootWindowInsets = ViewCompat.getRootWindowInsets(view);
-            if (kbHeight == 0) {
+            WindowInsetsCompat rootWindowInsets = ViewCompat.getRootWindowInsets(this.view);
+            if (this.kbHeight == 0) {
                 if (rootWindowInsets == null) return;
-                final Insets imeInsets = rootWindowInsets.getInsets(WindowInsetsCompat.Type.ime());
-                final Insets navBarInsets = rootWindowInsets.getInsets(WindowInsetsCompat.Type.navigationBars());
-                kbHeight = imeInsets.bottom - navBarInsets.bottom;
-                final ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+                Insets imeInsets = rootWindowInsets.getInsets(WindowInsetsCompat.Type.ime());
+                Insets navBarInsets = rootWindowInsets.getInsets(WindowInsetsCompat.Type.navigationBars());
+                this.kbHeight = imeInsets.bottom - navBarInsets.bottom;
+                ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) this.view.getLayoutParams();
                 if (layoutParams != null) {
-                    layoutParams.height = kbHeight;
-                    layoutParams.setMargins(layoutParams.leftMargin, layoutParams.topMargin, layoutParams.rightMargin, -kbHeight);
+                    layoutParams.height = this.kbHeight;
+                    layoutParams.setMargins(layoutParams.leftMargin, layoutParams.topMargin, layoutParams.rightMargin, -this.kbHeight);
                 }
             }
-            view.setTranslationX(0f);
-            final boolean visible = rootWindowInsets != null && rootWindowInsets.isVisible(WindowInsetsCompat.Type.ime());
+            this.view.setTranslationX(0f);
+            boolean visible = rootWindowInsets != null && rootWindowInsets.isVisible(WindowInsetsCompat.Type.ime());
             float translationY = 0;
-            if (!shouldTranslate) {
-                translationY = -kbHeight;
+            if (!this.shouldTranslate) {
+                translationY = -this.kbHeight;
                 if (visible) {
                     translationY = 0;
                 }
             }
-            view.setTranslationY(translationY);
+            this.view.setTranslationY(translationY);
 
-            if (listener != null && rootWindowInsets != null) {
-                listener.onChange(visible);
+            if (this.listener != null && rootWindowInsets != null) {
+                this.listener.onChange(visible);
             }
         } finally {
-            shouldTranslate = true;
+            this.shouldTranslate = true;
         }
     }
 
-    public void setShouldTranslate(final boolean shouldTranslate) {
+    public void setShouldTranslate(boolean shouldTranslate) {
         this.shouldTranslate = shouldTranslate;
     }
 
-    public void setKbVisibilityListener(final onKbVisibilityChangeListener listener) {
+    public void setKbVisibilityListener(onKbVisibilityChangeListener listener) {
         this.listener = listener;
     }
 

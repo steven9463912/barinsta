@@ -43,16 +43,16 @@ public class MultiPointerGestureDetector {
     private boolean mGestureInProgress;
     private int mPointerCount;
     private int mNewPointerCount;
-    private final int[] mId = new int[MAX_POINTERS];
-    private final float[] mStartX = new float[MAX_POINTERS];
-    private final float[] mStartY = new float[MAX_POINTERS];
-    private final float[] mCurrentX = new float[MAX_POINTERS];
-    private final float[] mCurrentY = new float[MAX_POINTERS];
+    private final int[] mId = new int[MultiPointerGestureDetector.MAX_POINTERS];
+    private final float[] mStartX = new float[MultiPointerGestureDetector.MAX_POINTERS];
+    private final float[] mStartY = new float[MultiPointerGestureDetector.MAX_POINTERS];
+    private final float[] mCurrentX = new float[MultiPointerGestureDetector.MAX_POINTERS];
+    private final float[] mCurrentY = new float[MultiPointerGestureDetector.MAX_POINTERS];
 
     private Listener mListener;
 
     public MultiPointerGestureDetector() {
-        reset();
+        this.reset();
     }
 
     /**
@@ -67,18 +67,18 @@ public class MultiPointerGestureDetector {
      *
      * @param listener listener to set
      */
-    public void setListener(Listener listener) {
-        mListener = listener;
+    public void setListener(final Listener listener) {
+        this.mListener = listener;
     }
 
     /**
      * Resets the component to the initial state.
      */
     public void reset() {
-        mGestureInProgress = false;
-        mPointerCount = 0;
-        for (int i = 0; i < MAX_POINTERS; i++) {
-            mId[i] = MotionEvent.INVALID_POINTER_ID;
+        this.mGestureInProgress = false;
+        this.mPointerCount = 0;
+        for (int i = 0; i < MultiPointerGestureDetector.MAX_POINTERS; i++) {
+            this.mId[i] = MotionEvent.INVALID_POINTER_ID;
         }
     }
 
@@ -95,11 +95,11 @@ public class MultiPointerGestureDetector {
      * Starts a new gesture and calls the listener just before starting it.
      */
     private void startGesture() {
-        if (!mGestureInProgress) {
-            if (mListener != null) {
-                mListener.onGestureBegin(this);
+        if (!this.mGestureInProgress) {
+            if (this.mListener != null) {
+                this.mListener.onGestureBegin(this);
             }
-            mGestureInProgress = true;
+            this.mGestureInProgress = true;
         }
     }
 
@@ -107,10 +107,10 @@ public class MultiPointerGestureDetector {
      * Stops the current gesture and calls the listener right after stopping it.
      */
     private void stopGesture() {
-        if (mGestureInProgress) {
-            mGestureInProgress = false;
-            if (mListener != null) {
-                mListener.onGestureEnd(this);
+        if (this.mGestureInProgress) {
+            this.mGestureInProgress = false;
+            if (this.mListener != null) {
+                this.mListener.onGestureEnd(this);
             }
         }
     }
@@ -121,10 +121,10 @@ public class MultiPointerGestureDetector {
      *
      * @return index of the specified pointer or -1 if not found (i.e. not enough pointers are down)
      */
-    private int getPressedPointerIndex(MotionEvent event, int i) {
-        final int count = event.getPointerCount();
-        final int action = event.getActionMasked();
-        final int index = event.getActionIndex();
+    private int getPressedPointerIndex(final MotionEvent event, int i) {
+        int count = event.getPointerCount();
+        int action = event.getActionMasked();
+        int index = event.getActionIndex();
         if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_POINTER_UP) {
             if (i >= index) {
                 i++;
@@ -136,36 +136,36 @@ public class MultiPointerGestureDetector {
     /**
      * Gets the number of pressed pointers (fingers down).
      */
-    private static int getPressedPointerCount(MotionEvent event) {
+    private static int getPressedPointerCount(final MotionEvent event) {
         int count = event.getPointerCount();
-        int action = event.getActionMasked();
+        final int action = event.getActionMasked();
         if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_POINTER_UP) {
             count--;
         }
         return count;
     }
 
-    private void updatePointersOnTap(MotionEvent event) {
-        mPointerCount = 0;
-        for (int i = 0; i < MAX_POINTERS; i++) {
-            int index = getPressedPointerIndex(event, i);
+    private void updatePointersOnTap(final MotionEvent event) {
+        this.mPointerCount = 0;
+        for (int i = 0; i < MultiPointerGestureDetector.MAX_POINTERS; i++) {
+            final int index = this.getPressedPointerIndex(event, i);
             if (index == -1) {
-                mId[i] = MotionEvent.INVALID_POINTER_ID;
+                this.mId[i] = MotionEvent.INVALID_POINTER_ID;
             } else {
-                mId[i] = event.getPointerId(index);
-                mCurrentX[i] = mStartX[i] = event.getX(index);
-                mCurrentY[i] = mStartY[i] = event.getY(index);
-                mPointerCount++;
+                this.mId[i] = event.getPointerId(index);
+                this.mCurrentX[i] = this.mStartX[i] = event.getX(index);
+                this.mCurrentY[i] = this.mStartY[i] = event.getY(index);
+                this.mPointerCount++;
             }
         }
     }
 
-    private void updatePointersOnMove(MotionEvent event) {
-        for (int i = 0; i < MAX_POINTERS; i++) {
-            int index = event.findPointerIndex(mId[i]);
+    private void updatePointersOnMove(final MotionEvent event) {
+        for (int i = 0; i < MultiPointerGestureDetector.MAX_POINTERS; i++) {
+            final int index = event.findPointerIndex(this.mId[i]);
             if (index != -1) {
-                mCurrentX[i] = event.getX(index);
-                mCurrentY[i] = event.getY(index);
+                this.mCurrentX[i] = event.getX(index);
+                this.mCurrentY[i] = event.getY(index);
             }
         }
     }
@@ -176,18 +176,18 @@ public class MultiPointerGestureDetector {
      * @param event event to handle
      * @return whether or not the event was handled
      */
-    public boolean onTouchEvent(final MotionEvent event) {
+    public boolean onTouchEvent(MotionEvent event) {
         switch (event.getActionMasked()) {
             case MotionEvent.ACTION_MOVE: {
                 // update pointers
-                updatePointersOnMove(event);
+                this.updatePointersOnMove(event);
                 // start a new gesture if not already started
-                if (!mGestureInProgress && mPointerCount > 0 && shouldStartGesture()) {
-                    startGesture();
+                if (!this.mGestureInProgress && this.mPointerCount > 0 && this.shouldStartGesture()) {
+                    this.startGesture();
                 }
                 // notify listener
-                if (mGestureInProgress && mListener != null) {
-                    mListener.onGestureUpdate(this);
+                if (this.mGestureInProgress && this.mListener != null) {
+                    this.mListener.onGestureUpdate(this);
                 }
                 break;
             }
@@ -197,19 +197,19 @@ public class MultiPointerGestureDetector {
             case MotionEvent.ACTION_POINTER_UP:
             case MotionEvent.ACTION_UP: {
                 // restart gesture whenever the number of pointers changes
-                mNewPointerCount = getPressedPointerCount(event);
-                stopGesture();
-                updatePointersOnTap(event);
-                if (mPointerCount > 0 && shouldStartGesture()) {
-                    startGesture();
+                this.mNewPointerCount = MultiPointerGestureDetector.getPressedPointerCount(event);
+                this.stopGesture();
+                this.updatePointersOnTap(event);
+                if (this.mPointerCount > 0 && this.shouldStartGesture()) {
+                    this.startGesture();
                 }
                 break;
             }
 
             case MotionEvent.ACTION_CANCEL: {
-                mNewPointerCount = 0;
-                stopGesture();
-                reset();
+                this.mNewPointerCount = 0;
+                this.stopGesture();
+                this.reset();
                 break;
             }
         }
@@ -220,36 +220,36 @@ public class MultiPointerGestureDetector {
      * Restarts the current gesture (if any).
      */
     public void restartGesture() {
-        if (!mGestureInProgress) {
+        if (!this.mGestureInProgress) {
             return;
         }
-        stopGesture();
-        for (int i = 0; i < MAX_POINTERS; i++) {
-            mStartX[i] = mCurrentX[i];
-            mStartY[i] = mCurrentY[i];
+        this.stopGesture();
+        for (int i = 0; i < MultiPointerGestureDetector.MAX_POINTERS; i++) {
+            this.mStartX[i] = this.mCurrentX[i];
+            this.mStartY[i] = this.mCurrentY[i];
         }
-        startGesture();
+        this.startGesture();
     }
 
     /**
      * Gets whether there is a gesture in progress
      */
     public boolean isGestureInProgress() {
-        return mGestureInProgress;
+        return this.mGestureInProgress;
     }
 
     /**
      * Gets the number of pointers after the current gesture
      */
     public int getNewPointerCount() {
-        return mNewPointerCount;
+        return this.mNewPointerCount;
     }
 
     /**
      * Gets the number of pointers in the current gesture
      */
     public int getPointerCount() {
-        return mPointerCount;
+        return this.mPointerCount;
     }
 
     /**
@@ -257,7 +257,7 @@ public class MultiPointerGestureDetector {
      * reasons and is not to be modified by the callers.
      */
     public float[] getStartX() {
-        return mStartX;
+        return this.mStartX;
     }
 
     /**
@@ -265,7 +265,7 @@ public class MultiPointerGestureDetector {
      * reasons and is not to be modified by the callers.
      */
     public float[] getStartY() {
-        return mStartY;
+        return this.mStartY;
     }
 
     /**
@@ -273,7 +273,7 @@ public class MultiPointerGestureDetector {
      * reasons and is not to be modified by the callers.
      */
     public float[] getCurrentX() {
-        return mCurrentX;
+        return this.mCurrentX;
     }
 
     /**
@@ -281,6 +281,6 @@ public class MultiPointerGestureDetector {
      * reasons and is not to be modified by the callers.
      */
     public float[] getCurrentY() {
-        return mCurrentY;
+        return this.mCurrentY;
     }
 }
