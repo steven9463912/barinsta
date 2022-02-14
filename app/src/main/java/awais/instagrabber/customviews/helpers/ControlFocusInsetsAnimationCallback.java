@@ -17,6 +17,7 @@
 package awais.instagrabber.customviews.helpers;
 
 import android.view.View;
+import android.view.WindowInsetsAnimation;
 
 import androidx.annotation.NonNull;
 import androidx.core.view.ViewCompat;
@@ -38,7 +39,7 @@ public class ControlFocusInsetsAnimationCallback extends WindowInsetsAnimationCo
     private final View view;
 
     public ControlFocusInsetsAnimationCallback(@NonNull View view) {
-        this(view, Callback.DISPATCH_MODE_STOP);
+        this(view, WindowInsetsAnimation.Callback.DISPATCH_MODE_STOP);
     }
 
     /**

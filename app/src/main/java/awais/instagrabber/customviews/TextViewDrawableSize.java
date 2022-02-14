@@ -19,7 +19,7 @@ public class TextViewDrawableSize extends EmojiAppCompatTextView {
 
     private int mDrawableWidth;
     private int mDrawableHeight;
-    private final boolean calledFromInit;
+    private Boolean calledFromInit = null;
 
     public TextViewDrawableSize(Context context) {
         this(context, null);

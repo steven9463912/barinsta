@@ -15,6 +15,7 @@ package awais.instagrabber.customviews.helpers;/*
  */
 
 import android.view.View;
+import android.view.WindowInsetsAnimation;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -71,7 +72,7 @@ public class RootViewDeferringInsetsCallback extends WindowInsetsAnimationCompat
      *                             any related [WindowInsetsAnimationCompat]s have ended
      */
     public RootViewDeferringInsetsCallback(int persistentInsetTypes, int deferredInsetTypes) {
-        super(Callback.DISPATCH_MODE_CONTINUE_ON_SUBTREE);
+        super(WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_CONTINUE_ON_SUBTREE);
         if ((persistentInsetTypes & deferredInsetTypes) != 0) {
             throw new IllegalArgumentException("persistentInsetTypes and deferredInsetTypes can not contain " +
                                                        "any of same WindowInsetsCompat.Type values");

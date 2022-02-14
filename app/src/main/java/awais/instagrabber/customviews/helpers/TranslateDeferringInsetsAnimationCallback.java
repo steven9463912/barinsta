@@ -17,6 +17,7 @@
 package awais.instagrabber.customviews.helpers;
 
 import android.view.View;
+import android.view.WindowInsetsAnimation;
 
 import androidx.annotation.NonNull;
 import androidx.core.graphics.Insets;
@@ -46,7 +47,7 @@ public class TranslateDeferringInsetsAnimationCallback extends WindowInsetsAnima
     public TranslateDeferringInsetsAnimationCallback(View view,
                                                      int persistentInsetTypes,
                                                      int deferredInsetTypes) {
-        this(view, persistentInsetTypes, deferredInsetTypes, Callback.DISPATCH_MODE_STOP);
+        this(view, persistentInsetTypes, deferredInsetTypes, WindowInsetsAnimation.Callback.DISPATCH_MODE_STOP);
     }
 
     /**

@@ -3,6 +3,7 @@ package awais.instagrabber.customviews.helpers;
 import android.content.Context;
 
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import awais.instagrabber.utils.Utils;

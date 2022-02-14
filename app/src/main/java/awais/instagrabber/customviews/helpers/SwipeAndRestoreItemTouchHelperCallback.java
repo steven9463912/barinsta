@@ -57,9 +57,9 @@ public class SwipeAndRestoreItemTouchHelperCallback extends ItemTouchHelper.Call
     @Override
     public int getMovementFlags(@NonNull final RecyclerView recyclerView, @NonNull final RecyclerView.ViewHolder viewHolder) {
         if (!(viewHolder instanceof SwipeableViewHolder)) {
-            return Callback.makeMovementFlags(ItemTouchHelper.ACTION_STATE_IDLE, ItemTouchHelper.ACTION_STATE_IDLE);
+            return ItemTouchHelper.Callback.makeMovementFlags(ItemTouchHelper.ACTION_STATE_IDLE, ItemTouchHelper.ACTION_STATE_IDLE);
         }
-        return Callback.makeMovementFlags(ItemTouchHelper.ACTION_STATE_IDLE, ((SwipeableViewHolder) viewHolder).getSwipeDirection());
+        return ItemTouchHelper.Callback.makeMovementFlags(ItemTouchHelper.ACTION_STATE_IDLE, ((SwipeableViewHolder) viewHolder).getSwipeDirection());
     }
 
     @Override
