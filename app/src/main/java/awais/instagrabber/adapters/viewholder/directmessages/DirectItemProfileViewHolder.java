@@ -31,15 +31,15 @@ public class DirectItemProfileViewHolder extends DirectItemViewHolder {
     private final LayoutDmProfileBinding binding;
     private final ImmutableList<SimpleDraweeView> previewViews;
 
-    public DirectItemProfileViewHolder(@NonNull final LayoutDmBaseBinding baseBinding,
-                                       @NonNull final LayoutDmProfileBinding binding,
-                                       final User currentUser,
-                                       final DirectThread thread,
-                                       final DirectItemsAdapter.DirectItemCallback callback) {
+    public DirectItemProfileViewHolder(@NonNull LayoutDmBaseBinding baseBinding,
+                                       @NonNull LayoutDmProfileBinding binding,
+                                       User currentUser,
+                                       DirectThread thread,
+                                       DirectItemsAdapter.DirectItemCallback callback) {
         super(baseBinding, currentUser, thread, callback);
         this.binding = binding;
-        setItemView(binding.getRoot());
-        previewViews = ImmutableList.of(
+        this.setItemView(binding.getRoot());
+        this.previewViews = ImmutableList.of(
                 binding.preview1,
                 binding.preview2,
                 binding.preview3,
@@ -50,85 +50,85 @@ public class DirectItemProfileViewHolder extends DirectItemViewHolder {
     }
 
     @Override
-    public void bindItem(@NonNull final DirectItem item,
-                         final MessageDirection messageDirection) {
-        binding.getRoot().setBackgroundResource(messageDirection == MessageDirection.INCOMING
+    public void bindItem(@NonNull DirectItem item,
+                         MessageDirection messageDirection) {
+        this.binding.getRoot().setBackgroundResource(messageDirection == MessageDirection.INCOMING
                                                 ? R.drawable.bg_speech_bubble_incoming
                                                 : R.drawable.bg_speech_bubble_outgoing);
         if (item.getItemType() == DirectItemType.PROFILE) {
-            setProfile(item);
+            this.setProfile(item);
         } else if (item.getItemType() == DirectItemType.LOCATION) {
-            setLocation(item);
+            this.setLocation(item);
         } else {
             return;
         }
-        for (final SimpleDraweeView previewView : previewViews) {
+        for (SimpleDraweeView previewView : this.previewViews) {
             previewView.setImageURI((String) null);
         }
-        final List<Media> previewMedias = item.getPreviewMedias();
+        List<Media> previewMedias = item.getPreviewMedias();
         if (previewMedias == null || previewMedias.size() <= 0) {
-            binding.firstRow.setVisibility(View.GONE);
-            binding.secondRow.setVisibility(View.GONE);
+            this.binding.firstRow.setVisibility(View.GONE);
+            this.binding.secondRow.setVisibility(View.GONE);
             return;
         }
-        final Resources resources = itemView.getResources();
+        Resources resources = this.itemView.getResources();
         if (previewMedias.size() <= 3) {
-            binding.firstRow.setVisibility(View.VISIBLE);
-            binding.secondRow.setVisibility(View.GONE);
-            binding.preview1.setHierarchy(new GenericDraweeHierarchyBuilder(resources)
-                    .setRoundingParams(RoundingParams.fromCornersRadii(0, 0, 0, dmRadius))
+            this.binding.firstRow.setVisibility(View.VISIBLE);
+            this.binding.secondRow.setVisibility(View.GONE);
+            this.binding.preview1.setHierarchy(new GenericDraweeHierarchyBuilder(resources)
+                    .setRoundingParams(RoundingParams.fromCornersRadii(0, 0, 0, this.dmRadius))
                     .build());
-            binding.preview3.setHierarchy(new GenericDraweeHierarchyBuilder(resources)
-                    .setRoundingParams(RoundingParams.fromCornersRadii(0, 0, dmRadius, 0))
+            this.binding.preview3.setHierarchy(new GenericDraweeHierarchyBuilder(resources)
+                    .setRoundingParams(RoundingParams.fromCornersRadii(0, 0, this.dmRadius, 0))
                     .build());
         }
         if (previewMedias.size() > 3) {
-            binding.preview4.setHierarchy(new GenericDraweeHierarchyBuilder(resources)
-                    .setRoundingParams(RoundingParams.fromCornersRadii(0, 0, 0, dmRadius))
+            this.binding.preview4.setHierarchy(new GenericDraweeHierarchyBuilder(resources)
+                    .setRoundingParams(RoundingParams.fromCornersRadii(0, 0, 0, this.dmRadius))
                     .build());
-            binding.preview6.setHierarchy(new GenericDraweeHierarchyBuilder(resources)
-                    .setRoundingParams(RoundingParams.fromCornersRadii(0, 0, dmRadius, 0))
+            this.binding.preview6.setHierarchy(new GenericDraweeHierarchyBuilder(resources)
+                    .setRoundingParams(RoundingParams.fromCornersRadii(0, 0, this.dmRadius, 0))
                     .build());
         }
         for (int i = 0; i < previewMedias.size(); i++) {
-            final Media previewMedia = previewMedias.get(i);
+            Media previewMedia = previewMedias.get(i);
             if (previewMedia == null) continue;
-            final String url = ResponseBodyUtils.getThumbUrl(previewMedia);
+            String url = ResponseBodyUtils.getThumbUrl(previewMedia);
             if (url == null) continue;
-            previewViews.get(i).setImageURI(url);
+            this.previewViews.get(i).setImageURI(url);
         }
     }
 
-    private void setProfile(@NonNull final DirectItem item) {
-        final User profile = item.getProfile();
+    private void setProfile(@NonNull DirectItem item) {
+        User profile = item.getProfile();
         if (profile == null) return;
-        binding.profilePic.setImageURI(profile.getProfilePicUrl());
-        binding.username.setText(profile.getUsername());
-        final String fullName = profile.getFullName();
+        this.binding.profilePic.setImageURI(profile.getProfilePicUrl());
+        this.binding.username.setText(profile.getUsername());
+        String fullName = profile.getFullName();
         if (!TextUtils.isEmpty(fullName)) {
-            binding.fullName.setVisibility(View.VISIBLE);
-            binding.fullName.setText(fullName);
+            this.binding.fullName.setVisibility(View.VISIBLE);
+            this.binding.fullName.setText(fullName);
         } else {
-            binding.fullName.setVisibility(View.GONE);
+            this.binding.fullName.setVisibility(View.GONE);
         }
-        binding.isVerified.setVisibility(profile.isVerified() ? View.VISIBLE : View.GONE);
-        itemView.setOnClickListener(v -> openProfile(profile.getUsername()));
+        this.binding.isVerified.setVisibility(profile.isVerified() ? View.VISIBLE : View.GONE);
+        this.itemView.setOnClickListener(v -> this.openProfile(profile.getUsername()));
     }
 
-    private void setLocation(@NonNull final DirectItem item) {
-        final Location location = item.getLocation();
+    private void setLocation(@NonNull DirectItem item) {
+        Location location = item.getLocation();
         if (location == null) return;
-        binding.profilePic.setVisibility(View.GONE);
-        binding.username.setText(location.getName());
-        final String address = location.getAddress();
+        this.binding.profilePic.setVisibility(View.GONE);
+        this.binding.username.setText(location.getName());
+        String address = location.getAddress();
         if (!TextUtils.isEmpty(address)) {
-            binding.fullName.setText(address);
-            binding.fullName.setVisibility(View.VISIBLE);
+            this.binding.fullName.setText(address);
+            this.binding.fullName.setVisibility(View.VISIBLE);
         } else {
-            binding.fullName.setVisibility(View.GONE);
+            this.binding.fullName.setVisibility(View.GONE);
         }
-        binding.isVerified.setVisibility(View.GONE);
-        itemView.setOnClickListener(v -> openLocation(location.getPk()));
+        this.binding.isVerified.setVisibility(View.GONE);
+        this.itemView.setOnClickListener(v -> this.openLocation(location.getPk()));
     }
 
     @Override

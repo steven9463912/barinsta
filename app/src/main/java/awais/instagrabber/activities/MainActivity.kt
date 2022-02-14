@@ -81,7 +81,6 @@ class MainActivity : BaseLanguageActivity() {
     private lateinit var toolbar: Toolbar
 
     private var currentTabs: List<Tab> = emptyList()
-        private set
     private var showBottomViewDestinations: List<Int> = emptyList()
 
     private val serviceConnection: ServiceConnection = object : ServiceConnection {

@@ -16,32 +16,32 @@ public class FavoriteViewHolder extends RecyclerView.ViewHolder {
 
     private final ItemSearchResultBinding binding;
 
-    public FavoriteViewHolder(@NonNull final ItemSearchResultBinding binding) {
+    public FavoriteViewHolder(@NonNull ItemSearchResultBinding binding) {
         super(binding.getRoot());
         this.binding = binding;
         binding.verified.setVisibility(View.GONE);
     }
 
-    public void bind(final Favorite model,
-                     final FavoritesAdapter.OnFavoriteClickListener clickListener,
-                     final FavoritesAdapter.OnFavoriteLongClickListener longClickListener) {
+    public void bind(Favorite model,
+                     FavoritesAdapter.OnFavoriteClickListener clickListener,
+                     FavoritesAdapter.OnFavoriteLongClickListener longClickListener) {
         // Log.d(TAG, "bind: " + model);
         if (model == null) return;
-        itemView.setOnClickListener(v -> {
+        this.itemView.setOnClickListener(v -> {
             if (clickListener == null) return;
             clickListener.onClick(model);
         });
-        itemView.setOnLongClickListener(v -> {
+        this.itemView.setOnLongClickListener(v -> {
             if (clickListener == null) return false;
             return longClickListener.onLongClick(model);
         });
         if (model.getType() == FavoriteType.HASHTAG) {
-            binding.profilePic.setImageURI(Constants.DEFAULT_HASH_TAG_PIC);
+            this.binding.profilePic.setImageURI(Constants.DEFAULT_HASH_TAG_PIC);
         } else {
-            binding.profilePic.setImageURI(model.getPicUrl());
+            this.binding.profilePic.setImageURI(model.getPicUrl());
         }
-        binding.title.setVisibility(View.VISIBLE);
-        binding.subtitle.setText(model.getDisplayName());
+        this.binding.title.setVisibility(View.VISIBLE);
+        this.binding.subtitle.setText(model.getDisplayName());
         String query = model.getQuery();
         switch (model.getType()) {
             case HASHTAG:
@@ -51,11 +51,11 @@ public class FavoriteViewHolder extends RecyclerView.ViewHolder {
                 query = "@" + query;
                 break;
             case LOCATION:
-                binding.title.setVisibility(View.GONE);
+                this.binding.title.setVisibility(View.GONE);
                 break;
             default:
                 // do nothing
         }
-        binding.title.setText(query);
+        this.binding.title.setText(query);
     }
 }

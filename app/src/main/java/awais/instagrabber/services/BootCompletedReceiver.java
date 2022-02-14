@@ -15,12 +15,12 @@ import static awais.instagrabber.utils.Utils.settingsHelper;
 
 public class BootCompletedReceiver extends BroadcastReceiver {
     @Override
-    public void onReceive(final Context context, final Intent intent) {
+    public void onReceive(Context context, Intent intent) {
         if (!Objects.equals(intent.getAction(), "android.intent.action.BOOT_COMPLETED")) return;
-        final boolean enabled = settingsHelper.getBoolean(PreferenceKeys.PREF_ENABLE_DM_AUTO_REFRESH);
+        boolean enabled = settingsHelper.getBoolean(PreferenceKeys.PREF_ENABLE_DM_AUTO_REFRESH);
         if (!enabled) return;
-        final String cookie = settingsHelper.getString(Constants.COOKIE);
-        final boolean isLoggedIn = !TextUtils.isEmpty(cookie) && CookieUtils.getUserIdFromCookie(cookie) != 0;
+        String cookie = settingsHelper.getString(Constants.COOKIE);
+        boolean isLoggedIn = !TextUtils.isEmpty(cookie) && CookieUtils.getUserIdFromCookie(cookie) != 0;
         if (!isLoggedIn) return;
         DMSyncAlarmReceiver.setAlarm(context);
     }

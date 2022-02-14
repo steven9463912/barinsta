@@ -11,9 +11,9 @@ public class FeedStoriesViewModel extends ViewModel {
     private MutableLiveData<List<Story>> list;
 
     public MutableLiveData<List<Story>> getList() {
-        if (list == null) {
-            list = new MutableLiveData<>();
+        if (this.list == null) {
+            this.list = new MutableLiveData<>();
         }
-        return list;
+        return this.list;
     }
 }

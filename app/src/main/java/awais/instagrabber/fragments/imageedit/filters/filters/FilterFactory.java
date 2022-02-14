@@ -4,7 +4,7 @@ import awais.instagrabber.fragments.imageedit.filters.FiltersHelper;
 
 public final class FilterFactory {
 
-    public static Filter<?> getInstance(final FiltersHelper.FilterType type) {
+    public static Filter<?> getInstance(FiltersHelper.FilterType type) {
         switch (type) {
             case BRIGHTNESS:
                 return new BrightnessFilter();

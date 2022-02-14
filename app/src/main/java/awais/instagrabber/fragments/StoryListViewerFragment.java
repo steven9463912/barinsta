@@ -65,122 +65,122 @@ public final class StoryListViewerFragment extends Fragment implements SwipeRefr
 
     private final FeedStoriesListAdapter.OnFeedStoryClickListener clickListener = new FeedStoriesListAdapter.OnFeedStoryClickListener() {
         @Override
-        public void onFeedStoryClick(final Story model) {
+        public void onFeedStoryClick(Story model) {
             if (model == null) return;
-            final List<Story> feedStoryModels = feedStoriesViewModel.getList().getValue();
+            List<Story> feedStoryModels = StoryListViewerFragment.this.feedStoriesViewModel.getList().getValue();
             if (feedStoryModels == null) return;
-            final int position = Iterables.indexOf(feedStoryModels, feedStoryModel -> feedStoryModel != null
+            int position = Iterables.indexOf(feedStoryModels, feedStoryModel -> feedStoryModel != null
                     && Objects.equals(feedStoryModel.getId(), model.getId()));
             try {
-                final NavDirections action = StoryListViewerFragmentDirections.actionToStory(StoryViewerOptions.forFeedStoryPosition(position));
+                NavDirections action = StoryListViewerFragmentDirections.actionToStory(StoryViewerOptions.forFeedStoryPosition(position));
                 NavHostFragment.findNavController(StoryListViewerFragment.this).navigate(action);
-            } catch (Exception e) {
-                Log.e(TAG, "onFeedStoryClick: ", e);
+            } catch (final Exception e) {
+                Log.e(StoryListViewerFragment.TAG, "onFeedStoryClick: ", e);
             }
         }
 
         @Override
-        public void onProfileClick(final String username) {
-            openProfile(username);
+        public void onProfileClick(String username) {
+            StoryListViewerFragment.this.openProfile(username);
         }
     };
 
     private final HighlightStoriesListAdapter.OnHighlightStoryClickListener archiveClickListener = new HighlightStoriesListAdapter.OnHighlightStoryClickListener() {
         @Override
-        public void onHighlightClick(final Story model, final int position) {
+        public void onHighlightClick(Story model, int position) {
             if (model == null) return;
             try {
-                final NavDirections action = StoryListViewerFragmentDirections.actionToStory(StoryViewerOptions.forStoryArchive(position));
+                NavDirections action = StoryListViewerFragmentDirections.actionToStory(StoryViewerOptions.forStoryArchive(position));
                 NavHostFragment.findNavController(StoryListViewerFragment.this).navigate(action);
-            } catch (Exception e) {
-                Log.e(TAG, "onHighlightClick: ", e);
+            } catch (final Exception e) {
+                Log.e(StoryListViewerFragment.TAG, "onHighlightClick: ", e);
             }
         }
 
         @Override
-        public void onProfileClick(final String username) {
-            openProfile(username);
+        public void onProfileClick(String username) {
+            StoryListViewerFragment.this.openProfile(username);
         }
     };
 
     private final ServiceCallback<ArchiveResponse> cb = new ServiceCallback<ArchiveResponse>() {
         @Override
-        public void onSuccess(final ArchiveResponse result) {
-            binding.swipeRefreshLayout.setRefreshing(false);
+        public void onSuccess(ArchiveResponse result) {
+            StoryListViewerFragment.this.binding.swipeRefreshLayout.setRefreshing(false);
             if (result == null) {
                 try {
-                    final Context context = getContext();
+                    Context context = StoryListViewerFragment.this.getContext();
                     Toast.makeText(context, R.string.empty_list, Toast.LENGTH_SHORT).show();
-                } catch (Exception ignored) {}
+                } catch (final Exception ignored) {}
             } else {
-                endCursor = result.getMaxId();
-                final List<Story> models = archivesViewModel.getList().getValue();
-                final List<Story> modelsCopy = models == null ? new ArrayList<>() : new ArrayList<>(models);
+                StoryListViewerFragment.this.endCursor = result.getMaxId();
+                List<Story> models = StoryListViewerFragment.this.archivesViewModel.getList().getValue();
+                List<Story> modelsCopy = models == null ? new ArrayList<>() : new ArrayList<>(models);
                 if (result.getItems() != null) modelsCopy.addAll(result.getItems());
-                archivesViewModel.getList().postValue(modelsCopy);
+                StoryListViewerFragment.this.archivesViewModel.getList().postValue(modelsCopy);
             }
         }
 
         @Override
-        public void onFailure(final Throwable t) {
-            Log.e(TAG, "Error", t);
+        public void onFailure(Throwable t) {
+            Log.e(StoryListViewerFragment.TAG, "Error", t);
             try {
-                final Context context = getContext();
+                Context context = StoryListViewerFragment.this.getContext();
                 Toast.makeText(context, t.getMessage(), Toast.LENGTH_SHORT).show();
-            } catch (Exception ignored) {}
+            } catch (final Exception ignored) {}
         }
     };
 
     @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        fragmentActivity = (AppCompatActivity) requireActivity();
-        context = getContext();
-        if (context == null) return;
-        final Bundle args = getArguments();
+        this.fragmentActivity = (AppCompatActivity) this.requireActivity();
+        this.context = this.getContext();
+        if (this.context == null) return;
+        Bundle args = this.getArguments();
         if (args == null) return;
-        final StoryListViewerFragmentArgs fragmentArgs = StoryListViewerFragmentArgs.fromBundle(args);
-        type = fragmentArgs.getType();
-        setHasOptionsMenu(type.equals("feed"));
-        storiesRepository = StoriesRepository.Companion.getInstance();
+        StoryListViewerFragmentArgs fragmentArgs = StoryListViewerFragmentArgs.fromBundle(args);
+        this.type = fragmentArgs.getType();
+        this.setHasOptionsMenu(this.type.equals("feed"));
+        this.storiesRepository = StoriesRepository.Companion.getInstance();
     }
 
     @NonNull
     @Override
-    public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable final Bundle savedInstanceState) {
-        if (root != null) {
-            shouldRefresh = false;
-            return root;
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        if (this.root != null) {
+            this.shouldRefresh = false;
+            return this.root;
         }
-        binding = FragmentStoryListViewerBinding.inflate(getLayoutInflater());
-        root = binding.getRoot();
-        return root;
+        this.binding = FragmentStoryListViewerBinding.inflate(this.getLayoutInflater());
+        this.root = this.binding.getRoot();
+        return this.root;
     }
 
     @Override
-    public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
-        if (!shouldRefresh) return;
-        init();
-        shouldRefresh = false;
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        if (!this.shouldRefresh) return;
+        this.init();
+        this.shouldRefresh = false;
     }
 
     @Override
-    public void onCreateOptionsMenu(@NonNull final Menu menu, final MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.search, menu);
-        final MenuItem menuSearch = menu.findItem(R.id.action_search);
-        final SearchView searchView = (SearchView) menuSearch.getActionView();
-        searchView.setQueryHint(getResources().getString(R.string.action_search));
+        MenuItem menuSearch = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) menuSearch.getActionView();
+        searchView.setQueryHint(this.getResources().getString(R.string.action_search));
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
             @Override
-            public boolean onQueryTextSubmit(final String query) {
+            public boolean onQueryTextSubmit(String query) {
                 return false;
             }
 
             @Override
-            public boolean onQueryTextChange(final String query) {
-                if (adapter != null) {
-                    adapter.getFilter().filter(query);
+            public boolean onQueryTextChange(String query) {
+                if (StoryListViewerFragment.this.adapter != null) {
+                    StoryListViewerFragment.this.adapter.getFilter().filter(query);
                 }
                 return true;
             }
@@ -190,95 +190,95 @@ public final class StoryListViewerFragment extends Fragment implements SwipeRefr
     @Override
     public void onResume() {
         super.onResume();
-        final ActionBar actionBar = fragmentActivity.getSupportActionBar();
-        if (actionBar != null) actionBar.setTitle(type.equals("feed") ? R.string.feed_stories : R.string.action_archive);
+        ActionBar actionBar = this.fragmentActivity.getSupportActionBar();
+        if (actionBar != null) actionBar.setTitle(this.type.equals("feed") ? R.string.feed_stories : R.string.action_archive);
     }
 
     @Override
     public void onDestroy() {
-        if (archivesViewModel != null) archivesViewModel.getList().postValue(null);
+        if (this.archivesViewModel != null) this.archivesViewModel.getList().postValue(null);
         super.onDestroy();
     }
 
     private void init() {
-        final Context context = getContext();
-        binding.swipeRefreshLayout.setOnRefreshListener(this);
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(context);
-        final ActionBar actionBar = fragmentActivity.getSupportActionBar();
-        if (type.equals("feed")) {
+        Context context = this.getContext();
+        this.binding.swipeRefreshLayout.setOnRefreshListener(this);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(context);
+        ActionBar actionBar = this.fragmentActivity.getSupportActionBar();
+        if (this.type.equals("feed")) {
             if (actionBar != null) actionBar.setTitle(R.string.feed_stories);
-            feedStoriesViewModel = new ViewModelProvider(fragmentActivity).get(FeedStoriesViewModel.class);
-            adapter = new FeedStoriesListAdapter(clickListener);
-            binding.rvStories.setLayoutManager(layoutManager);
-            binding.rvStories.setAdapter(adapter);
-            feedStoriesViewModel.getList().observe(getViewLifecycleOwner(), list -> {
+            this.feedStoriesViewModel = new ViewModelProvider(this.fragmentActivity).get(FeedStoriesViewModel.class);
+            this.adapter = new FeedStoriesListAdapter(this.clickListener);
+            this.binding.rvStories.setLayoutManager(layoutManager);
+            this.binding.rvStories.setAdapter(this.adapter);
+            this.feedStoriesViewModel.getList().observe(this.getViewLifecycleOwner(), list -> {
                 if (list == null) {
-                    adapter.submitList(Collections.emptyList());
+                    this.adapter.submitList(Collections.emptyList());
                     return;
                 }
-                adapter.submitList(list);
+                this.adapter.submitList(list);
             });
         } else {
             if (actionBar != null) actionBar.setTitle(R.string.action_archive);
-            final RecyclerLazyLoader lazyLoader = new RecyclerLazyLoader(layoutManager, (page, totalItemsCount) -> {
-                if (!TextUtils.isEmpty(endCursor)) onRefresh();
-                endCursor = null;
+            RecyclerLazyLoader lazyLoader = new RecyclerLazyLoader(layoutManager, (page, totalItemsCount) -> {
+                if (!TextUtils.isEmpty(this.endCursor)) this.onRefresh();
+                this.endCursor = null;
             });
-            binding.rvStories.addOnScrollListener(lazyLoader);
-            archivesViewModel = new ViewModelProvider(fragmentActivity).get(ArchivesViewModel.class);
-            final HighlightStoriesListAdapter adapter = new HighlightStoriesListAdapter(archiveClickListener);
-            binding.rvStories.setLayoutManager(layoutManager);
-            binding.rvStories.setAdapter(adapter);
-            archivesViewModel.getList().observe(getViewLifecycleOwner(), adapter::submitList);
+            this.binding.rvStories.addOnScrollListener(lazyLoader);
+            this.archivesViewModel = new ViewModelProvider(this.fragmentActivity).get(ArchivesViewModel.class);
+            HighlightStoriesListAdapter adapter = new HighlightStoriesListAdapter(this.archiveClickListener);
+            this.binding.rvStories.setLayoutManager(layoutManager);
+            this.binding.rvStories.setAdapter(adapter);
+            this.archivesViewModel.getList().observe(this.getViewLifecycleOwner(), adapter::submitList);
         }
-        onRefresh();
+        this.onRefresh();
     }
 
     @Override
     public void onRefresh() {
-        binding.swipeRefreshLayout.setRefreshing(true);
-        if (type.equals("feed") && firstRefresh) {
-            binding.swipeRefreshLayout.setRefreshing(false);
-            final List<Story> value = feedStoriesViewModel.getList().getValue();
+        this.binding.swipeRefreshLayout.setRefreshing(true);
+        if (this.type.equals("feed") && this.firstRefresh) {
+            this.binding.swipeRefreshLayout.setRefreshing(false);
+            List<Story> value = this.feedStoriesViewModel.getList().getValue();
             if (value != null) {
-                adapter.submitList(value);
+                this.adapter.submitList(value);
             }
-            firstRefresh = false;
-        } else if (type.equals("feed")) {
-            storiesRepository.getFeedStories(
+            this.firstRefresh = false;
+        } else if (this.type.equals("feed")) {
+            this.storiesRepository.getFeedStories(
                     CoroutineUtilsKt.getContinuation((feedStoryModels, throwable) -> AppExecutors.INSTANCE.getMainThread().execute(() -> {
                         if (throwable != null) {
-                            Log.e(TAG, "failed", throwable);
-                            Toast.makeText(context, throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                            Log.e(StoryListViewerFragment.TAG, "failed", throwable);
+                            Toast.makeText(this.context, throwable.getMessage(), Toast.LENGTH_SHORT).show();
                             return;
                         }
                         //noinspection unchecked
-                        feedStoriesViewModel.getList().postValue((List<Story>) feedStoryModels);
+                        this.feedStoriesViewModel.getList().postValue((List<Story>) feedStoryModels);
                         //noinspection unchecked
-                        adapter.submitList((List<Story>) feedStoryModels);
-                        binding.swipeRefreshLayout.setRefreshing(false);
+                        this.adapter.submitList((List<Story>) feedStoryModels);
+                        this.binding.swipeRefreshLayout.setRefreshing(false);
                     }), Dispatchers.getIO())
             );
-        } else if (type.equals("archive")) {
-            storiesRepository.fetchArchive(
-                    endCursor,
+        } else if (this.type.equals("archive")) {
+            this.storiesRepository.fetchArchive(
+                    this.endCursor,
                     CoroutineUtilsKt.getContinuation((archiveFetchResponse, throwable) -> AppExecutors.INSTANCE.getMainThread().execute(() -> {
                         if (throwable != null) {
-                            cb.onFailure(throwable);
+                            this.cb.onFailure(throwable);
                             return;
                         }
-                        cb.onSuccess(archiveFetchResponse);
+                        this.cb.onSuccess(archiveFetchResponse);
                     }), Dispatchers.getIO())
             );
         }
     }
 
-    private void openProfile(final String username) {
+    private void openProfile(String username) {
         try {
-            final NavDirections action = StoryListViewerFragmentDirections.actionToProfile().setUsername(username);
+            NavDirections action = StoryListViewerFragmentDirections.actionToProfile().setUsername(username);
             NavHostFragment.findNavController(this).navigate(action);
-        } catch (Exception e) {
-            Log.e(TAG, "openProfile: ", e);
+        } catch (final Exception e) {
+            Log.e(StoryListViewerFragment.TAG, "openProfile: ", e);
         }
     }
 }

@@ -23,23 +23,23 @@ public class ChatMessageLayout extends FrameLayout {
 
     // private boolean withGroupHeader = false;
 
-    public ChatMessageLayout(@NonNull final Context context) {
+    public ChatMessageLayout(@NonNull Context context) {
         super(context);
     }
 
-    public ChatMessageLayout(@NonNull final Context context, @Nullable final AttributeSet attrs) {
+    public ChatMessageLayout(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        a = context.obtainStyledAttributes(attrs, R.styleable.ChatMessageLayout, 0, 0);
+        this.a = context.obtainStyledAttributes(attrs, R.styleable.ChatMessageLayout, 0, 0);
     }
 
-    public ChatMessageLayout(@NonNull final Context context, @Nullable final AttributeSet attrs, final int defStyleAttr) {
+    public ChatMessageLayout(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        a = context.obtainStyledAttributes(attrs, R.styleable.ChatMessageLayout, defStyleAttr, 0);
+        this.a = context.obtainStyledAttributes(attrs, R.styleable.ChatMessageLayout, defStyleAttr, 0);
     }
 
-    public ChatMessageLayout(@NonNull final Context context, @Nullable final AttributeSet attrs, final int defStyleAttr, final int defStyleRes) {
+    public ChatMessageLayout(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        a = context.obtainStyledAttributes(attrs, R.styleable.ChatMessageLayout, defStyleAttr, defStyleRes);
+        this.a = context.obtainStyledAttributes(attrs, R.styleable.ChatMessageLayout, defStyleAttr, defStyleRes);
     }
 
     // public void setWithGroupHeader(boolean withGroupHeader) {
@@ -51,43 +51,43 @@ public class ChatMessageLayout extends FrameLayout {
         super.onAttachedToWindow();
 
         try {
-            viewPartMain = findViewById(a.getResourceId(R.styleable.ChatMessageLayout_viewPartMain, -1));
-            viewPartInfo = findViewById(a.getResourceId(R.styleable.ChatMessageLayout_viewPartInfo, -1));
-        } catch (Exception e) {
+            this.viewPartMain = this.findViewById(this.a.getResourceId(R.styleable.ChatMessageLayout_viewPartMain, -1));
+            this.viewPartInfo = this.findViewById(this.a.getResourceId(R.styleable.ChatMessageLayout_viewPartInfo, -1));
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     }
 
     @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    protected void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
         int widthSize = MeasureSpec.getSize(widthMeasureSpec);
         int heightSize;
         // heightSize = MeasureSpec.getSize(heightMeasureSpec);
 
-        if (viewPartMain == null || viewPartInfo == null || widthSize <= 0) {
+        if (this.viewPartMain == null || this.viewPartInfo == null || widthSize <= 0) {
             return;
         }
 
-        final View firstChild = viewPartMain.getChildAt(0);
+        View firstChild = this.viewPartMain.getChildAt(0);
         if (firstChild == null) return;
 
-        final int firstChildId = firstChild.getId();
+        int firstChildId = firstChild.getId();
 
-        int availableWidth = widthSize - getPaddingLeft() - getPaddingRight();
+        final int availableWidth = widthSize - this.getPaddingLeft() - this.getPaddingRight();
         // int availableHeight = heightSize - getPaddingTop() - getPaddingBottom();
 
-        final LayoutParams viewPartMainLayoutParams = (LayoutParams) viewPartMain.getLayoutParams();
-        final int viewPartMainWidth = viewPartMain.getMeasuredWidth() + viewPartMainLayoutParams.leftMargin + viewPartMainLayoutParams.rightMargin;
-        final int viewPartMainHeight = viewPartMain.getMeasuredHeight() + viewPartMainLayoutParams.topMargin + viewPartMainLayoutParams.bottomMargin;
+        LayoutParams viewPartMainLayoutParams = (LayoutParams) this.viewPartMain.getLayoutParams();
+        int viewPartMainWidth = this.viewPartMain.getMeasuredWidth() + viewPartMainLayoutParams.leftMargin + viewPartMainLayoutParams.rightMargin;
+        int viewPartMainHeight = this.viewPartMain.getMeasuredHeight() + viewPartMainLayoutParams.topMargin + viewPartMainLayoutParams.bottomMargin;
 
-        final LayoutParams viewPartInfoLayoutParams = (LayoutParams) viewPartInfo.getLayoutParams();
-        viewPartInfoWidth = viewPartInfo.getMeasuredWidth() + viewPartInfoLayoutParams.leftMargin + viewPartInfoLayoutParams.rightMargin;
-        viewPartInfoHeight = viewPartInfo.getMeasuredHeight() + viewPartInfoLayoutParams.topMargin + viewPartInfoLayoutParams.bottomMargin;
+        LayoutParams viewPartInfoLayoutParams = (LayoutParams) this.viewPartInfo.getLayoutParams();
+        this.viewPartInfoWidth = this.viewPartInfo.getMeasuredWidth() + viewPartInfoLayoutParams.leftMargin + viewPartInfoLayoutParams.rightMargin;
+        this.viewPartInfoHeight = this.viewPartInfo.getMeasuredHeight() + viewPartInfoLayoutParams.topMargin + viewPartInfoLayoutParams.bottomMargin;
 
-        widthSize = getPaddingLeft() + getPaddingRight();
-        heightSize = getPaddingTop() + getPaddingBottom();
+        widthSize = this.getPaddingLeft() + this.getPaddingRight();
+        heightSize = this.getPaddingTop() + this.getPaddingBottom();
         if (firstChildId == R.id.media_container) {
             widthSize += viewPartMainWidth;
             heightSize += viewPartMainHeight;
@@ -95,11 +95,11 @@ public class ChatMessageLayout extends FrameLayout {
                 || firstChildId == R.id.story_container || firstChildId == R.id.media_share_container || firstChildId == R.id.link_container
                 || firstChildId == R.id.ivAnimatedMessage || firstChildId == R.id.reel_share_container) {
             widthSize += viewPartMainWidth;
-            heightSize += viewPartMainHeight + viewPartInfoHeight;
+            heightSize += viewPartMainHeight + this.viewPartInfoHeight;
         } else {
             int viewPartMainLineCount = 1;
             float viewPartMainLastLineWidth = 0;
-            final TextView textMessage;
+            TextView textMessage;
             if (firstChild instanceof TextView) {
                 textMessage = (TextView) firstChild;
             }
@@ -113,19 +113,19 @@ public class ChatMessageLayout extends FrameLayout {
                 viewPartMainLastLineWidth += textMessage.getPaddingLeft();
             }
 
-            final float lastLineWithInfoWidth = viewPartMainLastLineWidth + viewPartInfoWidth;
-            if (viewPartMainLineCount > 1 && lastLineWithInfoWidth <= viewPartMain.getMeasuredWidth()) {
+            float lastLineWithInfoWidth = viewPartMainLastLineWidth + this.viewPartInfoWidth;
+            if (viewPartMainLineCount > 1 && lastLineWithInfoWidth <= this.viewPartMain.getMeasuredWidth()) {
                 widthSize += viewPartMainWidth;
                 heightSize += viewPartMainHeight;
             } else if (viewPartMainLineCount > 1 && (lastLineWithInfoWidth > availableWidth)) {
                 widthSize += viewPartMainWidth;
-                heightSize += viewPartMainHeight + viewPartInfoHeight;
-            } else if (viewPartMainLineCount == 1 && (viewPartMainWidth + viewPartInfoWidth > availableWidth)) {
-                widthSize += viewPartMain.getMeasuredWidth();
-                heightSize += viewPartMainHeight + viewPartInfoHeight;
+                heightSize += viewPartMainHeight + this.viewPartInfoHeight;
+            } else if (viewPartMainLineCount == 1 && (viewPartMainWidth + this.viewPartInfoWidth > availableWidth)) {
+                widthSize += this.viewPartMain.getMeasuredWidth();
+                heightSize += viewPartMainHeight + this.viewPartInfoHeight;
             } else {
                 heightSize += viewPartMainHeight;
-                widthSize += viewPartMainWidth + viewPartInfoWidth;
+                widthSize += viewPartMainWidth + this.viewPartInfoWidth;
             }
 
             // if (isInEditMode()) {
@@ -138,16 +138,16 @@ public class ChatMessageLayout extends FrameLayout {
             //                                + "\n" + (viewPartMainWidth + viewPartInfoWidth > availableWidth));
             // }
         }
-        setMeasuredDimension(widthSize, heightSize);
+        this.setMeasuredDimension(widthSize, heightSize);
         super.onMeasure(MeasureSpec.makeMeasureSpec(widthSize, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(heightSize, MeasureSpec.EXACTLY));
 
     }
 
     @Override
-    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+    protected void onLayout(final boolean changed, final int left, final int top, final int right, final int bottom) {
         super.onLayout(changed, left, top, right, bottom);
 
-        if (viewPartMain == null || viewPartInfo == null) {
+        if (this.viewPartMain == null || this.viewPartInfo == null) {
             return;
         }
         // if (withGroupHeader) {
@@ -158,17 +158,17 @@ public class ChatMessageLayout extends FrameLayout {
         //             viewPartMain.getHeight() + getPaddingTop());
         //
         // } else {
-        viewPartMain.layout(
-                getPaddingLeft(),
-                getPaddingTop(),
-                viewPartMain.getWidth() + getPaddingLeft(),
-                viewPartMain.getHeight() + getPaddingTop());
+        this.viewPartMain.layout(
+                this.getPaddingLeft(),
+                this.getPaddingTop(),
+                this.viewPartMain.getWidth() + this.getPaddingLeft(),
+                this.viewPartMain.getHeight() + this.getPaddingTop());
 
         // }
-        viewPartInfo.layout(
-                right - left - viewPartInfoWidth - getPaddingRight(),
-                bottom - top - getPaddingBottom() - viewPartInfoHeight,
-                right - left - getPaddingRight(),
-                bottom - top - getPaddingBottom());
+        this.viewPartInfo.layout(
+                right - left - this.viewPartInfoWidth - this.getPaddingRight(),
+                bottom - top - this.getPaddingBottom() - this.viewPartInfoHeight,
+                right - left - this.getPaddingRight(),
+                bottom - top - this.getPaddingBottom());
     }
 }

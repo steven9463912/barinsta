@@ -18,14 +18,14 @@ public class UpdateChecker {
     private static UpdateChecker instance;
 
     public static UpdateChecker getInstance() {
-        if (instance == null) {
-            synchronized (LOCK) {
-                if (instance == null) {
-                    instance = new UpdateChecker();
+        if (UpdateChecker.instance == null) {
+            synchronized (UpdateChecker.LOCK) {
+                if (UpdateChecker.instance == null) {
+                    UpdateChecker.instance = new UpdateChecker();
                 }
             }
         }
-        return instance;
+        return UpdateChecker.instance;
     }
 
     /**
@@ -41,15 +41,15 @@ public class UpdateChecker {
             conn.setUseCaches(false);
             conn.setRequestProperty("User-Agent", "https://barinsta.avalos.me / mailto:avalos@disroot.org");
             conn.connect();
-            final int responseCode = conn.getResponseCode();
+            int responseCode = conn.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
-                final JSONObject data = new JSONObject(NetworkUtils.readFromConnection(conn));
+                JSONObject data = new JSONObject(NetworkUtils.readFromConnection(conn));
                 return "v" + data.getJSONArray("packages").getJSONObject(0).getString("versionName");
                 // if (BuildConfig.VERSION_CODE < data.getInt("suggestedVersionCode")) {
                 // }
             }
-        } catch (final Exception e) {
-            Log.e(TAG, "", e);
+        } catch (Exception e) {
+            Log.e(UpdateChecker.TAG, "", e);
         } finally {
             if (conn != null) {
                 conn.disconnect();
@@ -58,7 +58,7 @@ public class UpdateChecker {
         return null;
     }
 
-    public void onDownload(@NonNull final AppCompatActivity context) {
+    public void onDownload(@NonNull AppCompatActivity context) {
         Utils.openURL(context, "https://f-droid.org/packages/me.avalos.barinsta/");
     }
 }

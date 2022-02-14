@@ -11,9 +11,9 @@ public class NotificationViewModel extends ViewModel {
     private MutableLiveData<List<Notification>> list;
 
     public MutableLiveData<List<Notification>> getList() {
-        if (list == null) {
-            list = new MutableLiveData<>();
+        if (this.list == null) {
+            this.list = new MutableLiveData<>();
         }
-        return list;
+        return this.list;
     }
 }

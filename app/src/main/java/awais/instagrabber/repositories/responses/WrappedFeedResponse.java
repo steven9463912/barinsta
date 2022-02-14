@@ -9,11 +9,11 @@ public class WrappedFeedResponse {
     private final String status;
     private final List<WrappedMedia> items;
 
-    public WrappedFeedResponse(final int numResults,
-                               final String nextMaxId,
-                               final boolean moreAvailable,
-                               final String status,
-                               final List<WrappedMedia> items) {
+    public WrappedFeedResponse(int numResults,
+                               String nextMaxId,
+                               boolean moreAvailable,
+                               String status,
+                               List<WrappedMedia> items) {
         this.numResults = numResults;
         this.nextMaxId = nextMaxId;
         this.moreAvailable = moreAvailable;
@@ -22,22 +22,22 @@ public class WrappedFeedResponse {
     }
 
     public int getNumResults() {
-        return numResults;
+        return this.numResults;
     }
 
     public String getNextMaxId() {
-        return nextMaxId;
+        return this.nextMaxId;
     }
 
     public boolean isMoreAvailable() {
-        return moreAvailable;
+        return this.moreAvailable;
     }
 
     public String getStatus() {
-        return status;
+        return this.status;
     }
 
     public List<WrappedMedia> getItems() {
-        return items;
+        return this.items;
     }
 }

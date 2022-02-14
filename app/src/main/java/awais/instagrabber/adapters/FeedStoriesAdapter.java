@@ -18,33 +18,33 @@ public final class FeedStoriesAdapter extends ListAdapter<Story, FeedStoryViewHo
 
     private static final DiffUtil.ItemCallback<Story> diffCallback = new DiffUtil.ItemCallback<Story>() {
         @Override
-        public boolean areItemsTheSame(@NonNull final Story oldItem, @NonNull final Story newItem) {
+        public boolean areItemsTheSame(@NonNull Story oldItem, @NonNull Story newItem) {
             return oldItem.getId().equals(newItem.getId());
         }
 
         @Override
-        public boolean areContentsTheSame(@NonNull final Story oldItem, @NonNull final Story newItem) {
+        public boolean areContentsTheSame(@NonNull Story oldItem, @NonNull Story newItem) {
             return oldItem.getId().equals(newItem.getId()) && Objects.equals(oldItem.getSeen(), newItem.getSeen());
         }
     };
 
-    public FeedStoriesAdapter(final OnFeedStoryClickListener listener) {
-        super(diffCallback);
+    public FeedStoriesAdapter(OnFeedStoryClickListener listener) {
+        super(FeedStoriesAdapter.diffCallback);
         this.listener = listener;
     }
 
     @NonNull
     @Override
-    public FeedStoryViewHolder onCreateViewHolder(@NonNull final ViewGroup parent, final int viewType) {
-        final LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        final ItemHighlightBinding binding = ItemHighlightBinding.inflate(layoutInflater, parent, false);
+    public FeedStoryViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+        ItemHighlightBinding binding = ItemHighlightBinding.inflate(layoutInflater, parent, false);
         return new FeedStoryViewHolder(binding);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final FeedStoryViewHolder holder, final int position) {
-        final Story model = getItem(position);
-        holder.bind(model, position, listener);
+    public void onBindViewHolder(@NonNull FeedStoryViewHolder holder, int position) {
+        Story model = this.getItem(position);
+        holder.bind(model, position, this.listener);
     }
 
     public interface OnFeedStoryClickListener {

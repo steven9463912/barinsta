@@ -40,110 +40,110 @@ public abstract class SharedElementTransitionDialogFragment extends DialogFragme
     private int boundsCalculatedCount;
 
     protected int getAnimationDuration() {
-        return DURATION;
+        return SharedElementTransitionDialogFragment.DURATION;
     }
 
-    public void addSharedElement(@NonNull final View startView, @NonNull final View destView) {
-        final int key = destView.hashCode();
-        startViews.put(key, startView);
-        destViews.put(key, destView);
-        setupInitialBounds(startView, destView);
+    public void addSharedElement(@NonNull View startView, @NonNull View destView) {
+        int key = destView.hashCode();
+        this.startViews.put(key, startView);
+        this.destViews.put(key, destView);
+        this.setupInitialBounds(startView, destView);
         // final View view = getView();
         // if (view == null) return;
         // view.post(() -> {});
     }
 
     public void startPostponedEnterTransition() {
-        startCalled = true;
-        if (startInitiated) return;
-        if (boundsCalculatedCount < startViews.size()) return;
-        startInitiated = true;
-        final Set<Integer> keySet = startViews.keySet();
-        final View view = getView();
+        this.startCalled = true;
+        if (this.startInitiated) return;
+        if (this.boundsCalculatedCount < this.startViews.size()) return;
+        this.startInitiated = true;
+        Set<Integer> keySet = this.startViews.keySet();
+        View view = this.getView();
         if (!(view instanceof ViewGroup)) return;
-        final TransitionSet transitionSet = new TransitionSet()
-                .setDuration(DURATION)
+        TransitionSet transitionSet = new TransitionSet()
+                .setDuration(SharedElementTransitionDialogFragment.DURATION)
                 .setInterpolator(new AccelerateDecelerateInterpolator())
                 .addTransition(new ChangeBounds())
                 .addTransition(new ChangeTransform())
                 .addListener(new TransitionListenerAdapter() {
                     @Override
-                    public void onTransitionStart(@NonNull final Transition transition) {
-                        for (Animator animator : additionalAnimators) {
+                    public void onTransitionStart(@NonNull Transition transition) {
+                        for (final Animator animator : SharedElementTransitionDialogFragment.this.additionalAnimators) {
                             animator.start();
                         }
                     }
 
                     @Override
-                    public void onTransitionEnd(@NonNull final Transition transition) {
-                        for (final Integer key : keySet) {
-                            final View startView = startViews.get(key);
-                            final View destView = destViews.get(key);
-                            final ViewBounds viewBounds = viewBoundsMap.get(key);
+                    public void onTransitionEnd(@NonNull Transition transition) {
+                        for (Integer key : keySet) {
+                            View startView = SharedElementTransitionDialogFragment.this.startViews.get(key);
+                            View destView = SharedElementTransitionDialogFragment.this.destViews.get(key);
+                            ViewBounds viewBounds = SharedElementTransitionDialogFragment.this.viewBoundsMap.get(key);
                             if (startView == null || destView == null || viewBounds == null) return;
-                            onEndSharedElementAnimation(startView, destView, viewBounds);
+                            SharedElementTransitionDialogFragment.this.onEndSharedElementAnimation(startView, destView, viewBounds);
                         }
                     }
                 });
         view.post(() -> {
             TransitionManager.beginDelayedTransition((ViewGroup) view, transitionSet);
-            for (final Integer key : keySet) {
-                final View startView = startViews.get(key);
-                final View destView = destViews.get(key);
-                final ViewBounds viewBounds = viewBoundsMap.get(key);
+            for (Integer key : keySet) {
+                View startView = this.startViews.get(key);
+                View destView = this.destViews.get(key);
+                ViewBounds viewBounds = this.viewBoundsMap.get(key);
                 if (startView == null || destView == null || viewBounds == null) return;
-                onBeforeSharedElementAnimation(startView, destView, viewBounds);
-                setDestBounds(key);
+                this.onBeforeSharedElementAnimation(startView, destView, viewBounds);
+                this.setDestBounds(key);
             }
         });
     }
 
-    private void setDestBounds(final int key) {
-        final View startView = startViews.get(key);
+    private void setDestBounds(int key) {
+        View startView = this.startViews.get(key);
         if (startView == null) return;
-        final View destView = destViews.get(key);
+        View destView = this.destViews.get(key);
         if (destView == null) return;
-        final ViewBounds viewBounds = viewBoundsMap.get(key);
+        ViewBounds viewBounds = this.viewBoundsMap.get(key);
         if (viewBounds == null) return;
         destView.setX((int) viewBounds.getDestX());
         destView.setY((int) viewBounds.getDestY());
         destView.setTranslationX(0);
         destView.setTranslationY(0);
-        final ViewGroup.LayoutParams layoutParams = destView.getLayoutParams();
+        ViewGroup.LayoutParams layoutParams = destView.getLayoutParams();
         layoutParams.height = viewBounds.getDestHeight();
         layoutParams.width = viewBounds.getDestWidth();
         destView.requestLayout();
     }
 
-    protected void onBeforeSharedElementAnimation(@NonNull final View startView,
-                                                  @NonNull final View destView,
-                                                  @NonNull final ViewBounds viewBounds) {}
+    protected void onBeforeSharedElementAnimation(@NonNull View startView,
+                                                  @NonNull View destView,
+                                                  @NonNull ViewBounds viewBounds) {}
 
-    protected void onEndSharedElementAnimation(@NonNull final View startView,
-                                               @NonNull final View destView,
-                                               @NonNull final ViewBounds viewBounds) {}
+    protected void onEndSharedElementAnimation(@NonNull View startView,
+                                               @NonNull View destView,
+                                               @NonNull ViewBounds viewBounds) {}
 
-    private void setupInitialBounds(@NonNull final View startView, @NonNull final View destView) {
-        final ViewTreeObserver.OnPreDrawListener preDrawListener = new ViewTreeObserver.OnPreDrawListener() {
+    private void setupInitialBounds(@NonNull View startView, @NonNull View destView) {
+        ViewTreeObserver.OnPreDrawListener preDrawListener = new ViewTreeObserver.OnPreDrawListener() {
             private boolean firstPassDone;
 
             @Override
             public boolean onPreDraw() {
                 destView.getViewTreeObserver().removeOnPreDrawListener(this);
-                if (!firstPassDone) {
-                    getViewBounds(startView, destView, this);
-                    firstPassDone = true;
+                if (!this.firstPassDone) {
+                    SharedElementTransitionDialogFragment.this.getViewBounds(startView, destView, this);
+                    this.firstPassDone = true;
                     return false;
                 }
-                final int[] location = new int[2];
+                int[] location = new int[2];
                 startView.getLocationOnScreen(location);
-                final int initX = location[0];
-                final int initY = location[1];
+                int initX = location[0];
+                int initY = location[1];
                 destView.setX(initX);
-                destView.setY(initY - Utils.getStatusBarHeight(getContext()));
-                boundsCalculatedCount++;
-                if (startCalled) {
-                    startPostponedEnterTransition();
+                destView.setY(initY - Utils.getStatusBarHeight(SharedElementTransitionDialogFragment.this.getContext()));
+                SharedElementTransitionDialogFragment.this.boundsCalculatedCount++;
+                if (SharedElementTransitionDialogFragment.this.startCalled) {
+                    SharedElementTransitionDialogFragment.this.startPostponedEnterTransition();
                 }
                 return true;
             }
@@ -151,27 +151,27 @@ public abstract class SharedElementTransitionDialogFragment extends DialogFragme
         destView.getViewTreeObserver().addOnPreDrawListener(preDrawListener);
     }
 
-    private void getViewBounds(@NonNull final View startView,
-                               @NonNull final View destView,
-                               @NonNull final ViewTreeObserver.OnPreDrawListener preDrawListener) {
-        final ViewBounds viewBounds = new ViewBounds();
+    private void getViewBounds(@NonNull View startView,
+                               @NonNull View destView,
+                               @NonNull ViewTreeObserver.OnPreDrawListener preDrawListener) {
+        ViewBounds viewBounds = new ViewBounds();
         viewBounds.setDestWidth(destView.getWidth());
         viewBounds.setDestHeight(destView.getHeight());
         viewBounds.setDestX(destView.getX());
         viewBounds.setDestY(destView.getY());
 
-        final Rect destBounds = new Rect();
+        Rect destBounds = new Rect();
         destView.getDrawingRect(destBounds);
         viewBounds.setDestBounds(destBounds);
 
-        final ViewGroup.LayoutParams layoutParams = destView.getLayoutParams();
+        ViewGroup.LayoutParams layoutParams = destView.getLayoutParams();
 
-        final Rect startBounds = new Rect();
+        Rect startBounds = new Rect();
         startView.getDrawingRect(startBounds);
         viewBounds.setStartBounds(startBounds);
 
-        final int key = destView.hashCode();
-        viewBoundsMap.put(key, viewBounds);
+        int key = destView.hashCode();
+        this.viewBoundsMap.put(key, viewBounds);
 
         layoutParams.height = startView.getHeight();
         layoutParams.width = startView.getWidth();
@@ -232,8 +232,8 @@ public abstract class SharedElementTransitionDialogFragment extends DialogFragme
     //     onEndSharedElementAnimation(startView, destView, viewBounds);
     // }
 
-    protected void addAnimator(@NonNull final Animator animator) {
-        additionalAnimators.add(animator);
+    protected void addAnimator(@NonNull Animator animator) {
+        this.additionalAnimators.add(animator);
     }
 
     protected static class ViewBounds {
@@ -247,50 +247,50 @@ public abstract class SharedElementTransitionDialogFragment extends DialogFragme
         public ViewBounds() {}
 
         public float getDestY() {
-            return destY;
+            return this.destY;
         }
 
-        public void setDestY(final float destY) {
+        public void setDestY(float destY) {
             this.destY = destY;
         }
 
         public float getDestX() {
-            return destX;
+            return this.destX;
         }
 
-        public void setDestX(final float destX) {
+        public void setDestX(float destX) {
             this.destX = destX;
         }
 
         public int getDestHeight() {
-            return destHeight;
+            return this.destHeight;
         }
 
-        public void setDestHeight(final int destHeight) {
+        public void setDestHeight(int destHeight) {
             this.destHeight = destHeight;
         }
 
         public int getDestWidth() {
-            return destWidth;
+            return this.destWidth;
         }
 
-        public void setDestWidth(final int destWidth) {
+        public void setDestWidth(int destWidth) {
             this.destWidth = destWidth;
         }
 
         public Rect getStartBounds() {
-            return startBounds;
+            return this.startBounds;
         }
 
-        public void setStartBounds(final Rect startBounds) {
+        public void setStartBounds(Rect startBounds) {
             this.startBounds = startBounds;
         }
 
         public Rect getDestBounds() {
-            return destBounds;
+            return this.destBounds;
         }
 
-        public void setDestBounds(final Rect destBounds) {
+        public void setDestBounds(Rect destBounds) {
             this.destBounds = destBounds;
         }
     }
@@ -298,9 +298,9 @@ public abstract class SharedElementTransitionDialogFragment extends DialogFragme
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        startViews.clear();
-        destViews.clear();
-        viewBoundsMap.clear();
-        additionalAnimators.clear();
+        this.startViews.clear();
+        this.destViews.clear();
+        this.viewBoundsMap.clear();
+        this.additionalAnimators.clear();
     }
 }

@@ -17,26 +17,26 @@ public class SepiaToneFilter extends Filter<GPUImageSepiaToneFilter> {
 
     public SepiaToneFilter() {
         super(FiltersHelper.FilterType.SEPIA, R.string.sepia);
-        properties = Collections.singletonMap(
-                PROP_INTENSITY, new FloatProperty(-1, 1f, 1f, 10.0f)
+        this.properties = Collections.singletonMap(
+                SepiaToneFilter.PROP_INTENSITY, new FloatProperty(-1, 1f, 1f, 10.0f)
         );
-        filter = new GPUImageSepiaToneFilter((Float) getProperty(PROP_INTENSITY).getDefaultValue());
+        this.filter = new GPUImageSepiaToneFilter((Float) this.getProperty(SepiaToneFilter.PROP_INTENSITY).getDefaultValue());
     }
 
     @Override
     public Map<Integer, Property<?>> getProperties() {
-        return properties;
+        return this.properties;
     }
 
     @Override
-    public void adjust(final int property, final Object value) {
+    public void adjust(int property, Object value) {
         super.adjust(property, value);
         if (!(value instanceof Float)) return;
-        filter.setIntensity((Float) value);
+        this.filter.setIntensity((Float) value);
     }
 
     @Override
     public GPUImageSepiaToneFilter getInstance() {
-        return filter;
+        return this.filter;
     }
 }

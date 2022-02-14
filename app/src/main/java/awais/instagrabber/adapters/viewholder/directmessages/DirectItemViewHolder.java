@@ -80,58 +80,58 @@ public abstract class DirectItemViewHolder extends RecyclerView.ViewHolder imple
     private MessageDirection messageDirection;
     // private View.OnLayoutChangeListener layoutChangeListener;
 
-    public DirectItemViewHolder(@NonNull LayoutDmBaseBinding binding,
-                                @NonNull User currentUser,
-                                @NonNull DirectThread thread,
-                                @NonNull DirectItemsAdapter.DirectItemCallback callback) {
+    public DirectItemViewHolder(@NonNull final LayoutDmBaseBinding binding,
+                                @NonNull final User currentUser,
+                                @NonNull final DirectThread thread,
+                                @NonNull final DirectItemsAdapter.DirectItemCallback callback) {
         super(binding.getRoot());
         this.binding = binding;
         this.currentUser = currentUser;
         this.thread = thread;
         this.callback = callback;
-        userIds = thread.getUsers()
+        this.userIds = thread.getUsers()
                         .stream()
                         .map(User::getPk)
                         .collect(Collectors.toList());
         binding.ivProfilePic.setVisibility(thread.isGroup() ? View.VISIBLE : View.GONE);
         binding.ivProfilePic.setOnClickListener(null);
-        final Resources resources = itemView.getResources();
-        margin = resources.getDimensionPixelSize(R.dimen.dm_message_item_margin);
-        final int avatarSize = resources.getDimensionPixelSize(R.dimen.dm_message_item_avatar_size);
-        dmRadius = resources.getDimensionPixelSize(R.dimen.dm_message_card_radius);
-        dmRadiusSmall = resources.getDimensionPixelSize(R.dimen.dm_message_card_radius_small);
-        messageInfoPaddingSmall = resources.getDimensionPixelSize(R.dimen.dm_message_info_padding_small);
-        windowWidth = resources.getDisplayMetrics().widthPixels;
-        mediaImageMaxHeight = resources.getDimensionPixelSize(R.dimen.dm_media_img_max_height);
-        reactionAdjustMargin = resources.getDimensionPixelSize(R.dimen.dm_reaction_adjust_margin);
-        final int groupWidthCorrection = avatarSize + messageInfoPaddingSmall * 3;
-        mediaImageMaxWidth = windowWidth - margin - (thread.isGroup() ? groupWidthCorrection : messageInfoPaddingSmall * 2);
+        Resources resources = this.itemView.getResources();
+        this.margin = resources.getDimensionPixelSize(R.dimen.dm_message_item_margin);
+        int avatarSize = resources.getDimensionPixelSize(R.dimen.dm_message_item_avatar_size);
+        this.dmRadius = resources.getDimensionPixelSize(R.dimen.dm_message_card_radius);
+        this.dmRadiusSmall = resources.getDimensionPixelSize(R.dimen.dm_message_card_radius_small);
+        this.messageInfoPaddingSmall = resources.getDimensionPixelSize(R.dimen.dm_message_info_padding_small);
+        this.windowWidth = resources.getDisplayMetrics().widthPixels;
+        this.mediaImageMaxHeight = resources.getDimensionPixelSize(R.dimen.dm_media_img_max_height);
+        this.reactionAdjustMargin = resources.getDimensionPixelSize(R.dimen.dm_reaction_adjust_margin);
+        int groupWidthCorrection = avatarSize + this.messageInfoPaddingSmall * 3;
+        this.mediaImageMaxWidth = this.windowWidth - this.margin - (thread.isGroup() ? groupWidthCorrection : this.messageInfoPaddingSmall * 2);
         // messageInfoPaddingSmall is used cuz it's also 4dp, 1 avatar margin + 2 paddings = 3
-        groupMessageWidth = windowWidth - margin - groupWidthCorrection;
-        reactionTranslationYType1 = resources.getDimensionPixelSize(R.dimen.dm_reaction_translation_y_type_1);
-        reactionTranslationYType2 = resources.getDimensionPixelSize(R.dimen.dm_reaction_translation_y_type_2);
+        this.groupMessageWidth = this.windowWidth - this.margin - groupWidthCorrection;
+        this.reactionTranslationYType1 = resources.getDimensionPixelSize(R.dimen.dm_reaction_translation_y_type_1);
+        this.reactionTranslationYType2 = resources.getDimensionPixelSize(R.dimen.dm_reaction_translation_y_type_2);
     }
 
-    public void bind(final int position, final DirectItem item) {
+    public void bind(int position, DirectItem item) {
         if (item == null) return;
         this.item = item;
-        messageDirection = isSelf(item) ? MessageDirection.OUTGOING : MessageDirection.INCOMING;
+        this.messageDirection = this.isSelf(item) ? MessageDirection.OUTGOING : MessageDirection.INCOMING;
         // Asynchronous binding causes some weird behaviour
         // itemView.post(() -> bindBase(item, messageDirection, position));
         // itemView.post(() -> bindItem(item, messageDirection));
         // itemView.post(() -> setupLongClickListener(position, messageDirection));
-        bindBase(item, messageDirection, position);
-        bindItem(item, messageDirection);
-        setupLongClickListener(position, messageDirection);
+        this.bindBase(item, this.messageDirection, position);
+        this.bindItem(item, this.messageDirection);
+        this.setupLongClickListener(position, this.messageDirection);
     }
 
-    private void bindBase(@NonNull final DirectItem item, final MessageDirection messageDirection, final int position) {
-        final FrameLayout.LayoutParams containerLayoutParams = (FrameLayout.LayoutParams) binding.container.getLayoutParams();
-        final DirectItemType itemType = item.getItemType() == null ? DirectItemType.UNKNOWN : item.getItemType();
-        setMessageDirectionGravity(messageDirection, containerLayoutParams);
-        setGroupUserDetails(item, messageDirection);
-        setBackground(messageDirection);
-        setMessageInfo(item, messageDirection);
+    private void bindBase(@NonNull DirectItem item, MessageDirection messageDirection, int position) {
+        FrameLayout.LayoutParams containerLayoutParams = (FrameLayout.LayoutParams) this.binding.container.getLayoutParams();
+        DirectItemType itemType = item.getItemType() == null ? DirectItemType.UNKNOWN : item.getItemType();
+        this.setMessageDirectionGravity(messageDirection, containerLayoutParams);
+        this.setGroupUserDetails(item, messageDirection);
+        this.setBackground(messageDirection);
+        this.setMessageInfo(item, messageDirection);
         switch (itemType) {
             case REEL_SHARE:
             case STORY_SHARE: // i think they could have texts?
@@ -140,108 +140,108 @@ public abstract class DirectItemViewHolder extends RecyclerView.ViewHolder imple
             case TEXT:
             case LINK:
             case UNKNOWN:
-                binding.messageInfo.setPadding(0, 0, dmRadius, dmRadiusSmall);
+                this.binding.messageInfo.setPadding(0, 0, this.dmRadius, this.dmRadiusSmall);
                 break;
             default:
-                if (showMessageInfo()) {
-                    binding.messageInfo.setPadding(0, 0, messageInfoPaddingSmall, dmRadiusSmall);
+                if (this.showMessageInfo()) {
+                    this.binding.messageInfo.setPadding(0, 0, this.messageInfoPaddingSmall, this.dmRadiusSmall);
                 }
         }
-        setupReply(item, messageDirection);
-        setReactions(item, position);
+        this.setupReply(item, messageDirection);
+        this.setReactions(item, position);
         if (item.getRepliedToMessage() == null && item.getShowForwardAttribution()) {
-            setForwardInfo(messageDirection);
+            this.setForwardInfo(messageDirection);
         }
     }
 
-    private void setBackground(final MessageDirection messageDirection) {
-        if (showBackground()) {
-            binding.background.setBackgroundResource(messageDirection == MessageDirection.INCOMING ? R.drawable.bg_speech_bubble_incoming
+    private void setBackground(MessageDirection messageDirection) {
+        if (this.showBackground()) {
+            this.binding.background.setBackgroundResource(messageDirection == MessageDirection.INCOMING ? R.drawable.bg_speech_bubble_incoming
                                                                                                    : R.drawable.bg_speech_bubble_outgoing);
             return;
         }
-        binding.background.setBackgroundResource(0);
+        this.binding.background.setBackgroundResource(0);
     }
 
-    private void setGroupUserDetails(final DirectItem item, final MessageDirection messageDirection) {
-        if (showUserDetailsInGroup()) {
-            binding.ivProfilePic.setVisibility(messageDirection == MessageDirection.INCOMING && thread.isGroup() ? View.VISIBLE : View.GONE);
-            binding.tvUsername.setVisibility(messageDirection == MessageDirection.INCOMING && thread.isGroup() ? View.VISIBLE : View.GONE);
-            if (messageDirection == MessageDirection.INCOMING && thread.isGroup()) {
-                final List<User> allUsers = new LinkedList(thread.getUsers());
-                allUsers.addAll(thread.getLeftUsers());
-                final User user = getUser(item.getUserId(), allUsers);
+    private void setGroupUserDetails(DirectItem item, MessageDirection messageDirection) {
+        if (this.showUserDetailsInGroup()) {
+            this.binding.ivProfilePic.setVisibility(messageDirection == MessageDirection.INCOMING && this.thread.isGroup() ? View.VISIBLE : View.GONE);
+            this.binding.tvUsername.setVisibility(messageDirection == MessageDirection.INCOMING && this.thread.isGroup() ? View.VISIBLE : View.GONE);
+            if (messageDirection == MessageDirection.INCOMING && this.thread.isGroup()) {
+                List<User> allUsers = new LinkedList(this.thread.getUsers());
+                allUsers.addAll(this.thread.getLeftUsers());
+                User user = this.getUser(item.getUserId(), allUsers);
                 if (user != null) {
-                    binding.tvUsername.setText(user.getUsername());
-                    binding.ivProfilePic.setImageURI(user.getProfilePicUrl());
+                    this.binding.tvUsername.setText(user.getUsername());
+                    this.binding.ivProfilePic.setImageURI(user.getProfilePicUrl());
                 }
-                ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) binding.chatMessageLayout.getLayoutParams();
-                layoutParams.matchConstraintMaxWidth = groupMessageWidth;
-                binding.chatMessageLayout.setLayoutParams(layoutParams);
+                final ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) this.binding.chatMessageLayout.getLayoutParams();
+                layoutParams.matchConstraintMaxWidth = this.groupMessageWidth;
+                this.binding.chatMessageLayout.setLayoutParams(layoutParams);
             }
             return;
         }
-        binding.ivProfilePic.setVisibility(View.GONE);
-        binding.tvUsername.setVisibility(View.GONE);
+        this.binding.ivProfilePic.setVisibility(View.GONE);
+        this.binding.tvUsername.setVisibility(View.GONE);
     }
 
-    private void setMessageDirectionGravity(final MessageDirection messageDirection,
-                                            final FrameLayout.LayoutParams containerLayoutParams) {
-        if (allowMessageDirectionGravity()) {
-            containerLayoutParams.setMarginStart(messageDirection == MessageDirection.OUTGOING ? margin : 0);
-            containerLayoutParams.setMarginEnd(messageDirection == MessageDirection.INCOMING ? margin : 0);
+    private void setMessageDirectionGravity(MessageDirection messageDirection,
+                                            FrameLayout.LayoutParams containerLayoutParams) {
+        if (this.allowMessageDirectionGravity()) {
+            containerLayoutParams.setMarginStart(messageDirection == MessageDirection.OUTGOING ? this.margin : 0);
+            containerLayoutParams.setMarginEnd(messageDirection == MessageDirection.INCOMING ? this.margin : 0);
             containerLayoutParams.gravity = messageDirection == MessageDirection.INCOMING ? Gravity.START : Gravity.END;
             return;
         }
         containerLayoutParams.gravity = Gravity.CENTER;
     }
 
-    private void setMessageInfo(@NonNull final DirectItem item, final MessageDirection messageDirection) {
-        if (showMessageInfo()) {
-            binding.messageInfo.setVisibility(View.VISIBLE);
-            binding.deliveryStatus.setVisibility(messageDirection == MessageDirection.OUTGOING ? View.VISIBLE : View.GONE);
+    private void setMessageInfo(@NonNull DirectItem item, MessageDirection messageDirection) {
+        if (this.showMessageInfo()) {
+            this.binding.messageInfo.setVisibility(View.VISIBLE);
+            this.binding.deliveryStatus.setVisibility(messageDirection == MessageDirection.OUTGOING ? View.VISIBLE : View.GONE);
             if (item.getDate() != null) {
-                final DateTimeFormatter dateFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT);
-                binding.messageTime.setText(dateFormatter.format(item.getDate()));
+                DateTimeFormatter dateFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT);
+                this.binding.messageTime.setText(dateFormatter.format(item.getDate()));
             }
             if (messageDirection == MessageDirection.OUTGOING) {
                 if (item.isPending()) {
-                    binding.deliveryStatus.setImageResource(R.drawable.ic_check_24);
+                    this.binding.deliveryStatus.setImageResource(R.drawable.ic_check_24);
                 } else {
-                    final boolean read = DMUtils.isRead(item,
-                            thread.getLastSeenAt(),
-                            userIds
+                    boolean read = DMUtils.isRead(item,
+                            this.thread.getLastSeenAt(),
+                            this.userIds
                     );
-                    binding.deliveryStatus.setImageResource(R.drawable.ic_check_all_24);
+                    this.binding.deliveryStatus.setImageResource(R.drawable.ic_check_all_24);
                     ImageViewCompat.setImageTintList(
-                            binding.deliveryStatus,
-                            ColorStateList.valueOf(itemView.getResources().getColor(read ? R.color.blue_500 : R.color.grey_500))
+                            this.binding.deliveryStatus,
+                            ColorStateList.valueOf(this.itemView.getResources().getColor(read ? R.color.blue_500 : R.color.grey_500))
                     );
                 }
             }
             return;
         }
-        binding.messageInfo.setVisibility(View.GONE);
+        this.binding.messageInfo.setVisibility(View.GONE);
     }
 
-    private void setupReply(final DirectItem item, final MessageDirection messageDirection) {
+    private void setupReply(DirectItem item, MessageDirection messageDirection) {
         if (item.getRepliedToMessage() != null) {
-            final List<User> allUsers = new LinkedList(thread.getUsers());
-            allUsers.addAll(thread.getLeftUsers());
-            setReply(item, messageDirection, allUsers);
+            List<User> allUsers = new LinkedList(this.thread.getUsers());
+            allUsers.addAll(this.thread.getLeftUsers());
+            this.setReply(item, messageDirection, allUsers);
         } else {
-            binding.quoteLine.setVisibility(View.GONE);
-            binding.replyContainer.setVisibility(View.GONE);
-            binding.replyInfo.setVisibility(View.GONE);
+            this.binding.quoteLine.setVisibility(View.GONE);
+            this.binding.replyContainer.setVisibility(View.GONE);
+            this.binding.replyInfo.setVisibility(View.GONE);
         }
     }
 
-    private void setReply(final DirectItem item,
-                          final MessageDirection messageDirection,
-                          final List<User> users) {
-        final DirectItem replied = item.getRepliedToMessage();
-        final DirectItemType itemType = replied.getItemType();
-        final Resources resources = itemView.getResources();
+    private void setReply(DirectItem item,
+                          MessageDirection messageDirection,
+                          List<User> users) {
+        DirectItem replied = item.getRepliedToMessage();
+        DirectItemType itemType = replied.getItemType();
+        Resources resources = this.itemView.getResources();
         String text = null;
         String url = null;
         switch (itemType) {
@@ -294,39 +294,39 @@ public abstract class DirectItemViewHolder extends RecyclerView.ViewHolder imple
             // case LOCATION
         }
         if (text == null && url == null) {
-            binding.quoteLine.setVisibility(View.GONE);
-            binding.replyContainer.setVisibility(View.GONE);
-            binding.replyInfo.setVisibility(View.GONE);
+            this.binding.quoteLine.setVisibility(View.GONE);
+            this.binding.replyContainer.setVisibility(View.GONE);
+            this.binding.replyInfo.setVisibility(View.GONE);
             return;
         }
-        setReplyGravity(messageDirection);
-        final String info = setReplyInfo(item, replied, users, resources);
-        binding.replyInfo.setVisibility(View.VISIBLE);
-        binding.replyInfo.setText(info);
-        binding.quoteLine.setVisibility(View.VISIBLE);
-        binding.replyContainer.setVisibility(View.VISIBLE);
+        this.setReplyGravity(messageDirection);
+        String info = this.setReplyInfo(item, replied, users, resources);
+        this.binding.replyInfo.setVisibility(View.VISIBLE);
+        this.binding.replyInfo.setText(info);
+        this.binding.quoteLine.setVisibility(View.VISIBLE);
+        this.binding.replyContainer.setVisibility(View.VISIBLE);
         if (url != null) {
-            binding.replyText.setVisibility(View.GONE);
-            binding.replyImage.setVisibility(View.VISIBLE);
-            binding.replyImage.setImageURI(url);
+            this.binding.replyText.setVisibility(View.GONE);
+            this.binding.replyImage.setVisibility(View.VISIBLE);
+            this.binding.replyImage.setImageURI(url);
             return;
         }
-        binding.replyImage.setVisibility(View.GONE);
-        final Drawable background = binding.replyText.getBackground().mutate();
-        background.setTint(replied.getUserId() != currentUser.getPk()
+        this.binding.replyImage.setVisibility(View.GONE);
+        Drawable background = this.binding.replyText.getBackground().mutate();
+        background.setTint(replied.getUserId() != this.currentUser.getPk()
                            ? resources.getColor(R.color.grey_600)
                            : resources.getColor(R.color.deep_purple_400));
-        binding.replyText.setBackgroundDrawable(background);
-        binding.replyText.setVisibility(View.VISIBLE);
-        binding.replyText.setText(text);
+        this.binding.replyText.setBackgroundDrawable(background);
+        this.binding.replyText.setVisibility(View.VISIBLE);
+        this.binding.replyText.setText(text);
     }
 
-    private String setReplyInfo(final DirectItem item,
-                                final DirectItem replied,
-                                final List<User> users,
-                                final Resources resources) {
-        final long repliedToUserId = replied.getUserId();
-        if (repliedToUserId == item.getUserId() && item.getUserId() == currentUser.getPk()) {
+    private String setReplyInfo(DirectItem item,
+                                DirectItem replied,
+                                List<User> users,
+                                Resources resources) {
+        long repliedToUserId = replied.getUserId();
+        if (repliedToUserId == item.getUserId() && item.getUserId() == this.currentUser.getPk()) {
             // User replied to own message
             return resources.getString(R.string.replied_to_yourself);
         }
@@ -334,32 +334,32 @@ public abstract class DirectItemViewHolder extends RecyclerView.ViewHolder imple
             // opposite user replied to their own message
             return resources.getString(R.string.replied_to_themself);
         }
-        final User user = getUser(repliedToUserId, users);
-        final String repliedToUsername = user != null ? user.getUsername() : "";
-        if (item.getUserId() == currentUser.getPk()) {
-            return thread.isGroup()
+        User user = this.getUser(repliedToUserId, users);
+        String repliedToUsername = user != null ? user.getUsername() : "";
+        if (item.getUserId() == this.currentUser.getPk()) {
+            return this.thread.isGroup()
                    ? resources.getString(R.string.replied_you_group, repliedToUsername)
                    : resources.getString(R.string.replied_you);
         }
-        if (repliedToUserId == currentUser.getPk()) {
+        if (repliedToUserId == this.currentUser.getPk()) {
             return resources.getString(R.string.replied_to_you);
         }
         return resources.getString(R.string.replied_group, repliedToUsername);
     }
 
-    private void setForwardInfo(final MessageDirection direction) {
-        binding.replyInfo.setVisibility(View.VISIBLE);
-        binding.replyInfo.setText(direction == MessageDirection.OUTGOING ? R.string.forward_outgoing : R.string.forward_incoming);
+    private void setForwardInfo(MessageDirection direction) {
+        this.binding.replyInfo.setVisibility(View.VISIBLE);
+        this.binding.replyInfo.setText(direction == MessageDirection.OUTGOING ? R.string.forward_outgoing : R.string.forward_incoming);
     }
 
-    private void setReplyGravity(final MessageDirection messageDirection) {
-        final boolean isIncoming = messageDirection == MessageDirection.INCOMING;
-        final ConstraintLayout.LayoutParams quoteLineLayoutParams = (ConstraintLayout.LayoutParams) binding.quoteLine.getLayoutParams();
-        final ConstraintLayout.LayoutParams replyContainerLayoutParams = (ConstraintLayout.LayoutParams) binding.replyContainer.getLayoutParams();
-        final ConstraintLayout.LayoutParams replyInfoLayoutParams = (ConstraintLayout.LayoutParams) binding.replyInfo.getLayoutParams();
-        final int profilePicId = binding.ivProfilePic.getId();
-        final int replyContainerId = binding.replyContainer.getId();
-        final int quoteLineId = binding.quoteLine.getId();
+    private void setReplyGravity(MessageDirection messageDirection) {
+        boolean isIncoming = messageDirection == MessageDirection.INCOMING;
+        ConstraintLayout.LayoutParams quoteLineLayoutParams = (ConstraintLayout.LayoutParams) this.binding.quoteLine.getLayoutParams();
+        ConstraintLayout.LayoutParams replyContainerLayoutParams = (ConstraintLayout.LayoutParams) this.binding.replyContainer.getLayoutParams();
+        ConstraintLayout.LayoutParams replyInfoLayoutParams = (ConstraintLayout.LayoutParams) this.binding.replyInfo.getLayoutParams();
+        int profilePicId = this.binding.ivProfilePic.getId();
+        int replyContainerId = this.binding.replyContainer.getId();
+        int quoteLineId = this.binding.quoteLine.getId();
         quoteLineLayoutParams.startToEnd = isIncoming ? profilePicId : replyContainerId;
         quoteLineLayoutParams.endToStart = isIncoming ? replyContainerId : ConstraintLayout.LayoutParams.UNSET;
         quoteLineLayoutParams.endToEnd = isIncoming ? ConstraintLayout.LayoutParams.UNSET : ConstraintLayout.LayoutParams.PARENT_ID;
@@ -370,22 +370,22 @@ public abstract class DirectItemViewHolder extends RecyclerView.ViewHolder imple
         replyInfoLayoutParams.endToStart = isIncoming ? ConstraintLayout.LayoutParams.UNSET : quoteLineId;
     }
 
-    private void setReactions(final DirectItem item, final int position) {
-        binding.getRoot().post(() -> {
-            MaterialFade materialFade = new MaterialFade();
-            materialFade.addTarget(binding.emojis);
-            TransitionManager.beginDelayedTransition(binding.getRoot(), materialFade);
-            final DirectItemReactions reactions = item.getReactions();
-            final List<DirectItemEmojiReaction> emojis = reactions != null ? reactions.getEmojis() : null;
+    private void setReactions(DirectItem item, int position) {
+        this.binding.getRoot().post(() -> {
+            final MaterialFade materialFade = new MaterialFade();
+            materialFade.addTarget(this.binding.emojis);
+            TransitionManager.beginDelayedTransition(this.binding.getRoot(), materialFade);
+            DirectItemReactions reactions = item.getReactions();
+            List<DirectItemEmojiReaction> emojis = reactions != null ? reactions.getEmojis() : null;
             if (emojis == null || emojis.isEmpty()) {
-                binding.container.setPadding(messageInfoPaddingSmall, messageInfoPaddingSmall, messageInfoPaddingSmall, 0);
-                binding.reactionsWrapper.setVisibility(View.GONE);
+                this.binding.container.setPadding(this.messageInfoPaddingSmall, this.messageInfoPaddingSmall, this.messageInfoPaddingSmall, 0);
+                this.binding.reactionsWrapper.setVisibility(View.GONE);
                 return;
             }
-            binding.reactionsWrapper.setVisibility(View.VISIBLE);
-            binding.reactionsWrapper.setTranslationY(getReactionsTranslationY());
-            binding.container.setPadding(messageInfoPaddingSmall, messageInfoPaddingSmall, messageInfoPaddingSmall, reactionAdjustMargin);
-            binding.emojis.setEmojis(emojis.stream()
+            this.binding.reactionsWrapper.setVisibility(View.VISIBLE);
+            this.binding.reactionsWrapper.setTranslationY(this.getReactionsTranslationY());
+            this.binding.container.setPadding(this.messageInfoPaddingSmall, this.messageInfoPaddingSmall, this.messageInfoPaddingSmall, this.reactionAdjustMargin);
+            this.binding.emojis.setEmojis(emojis.stream()
                                            .map(DirectItemEmojiReaction::getEmoji)
                                            .collect(Collectors.toList()));
             // binding.emojis.setEmojis(ImmutableList.of("😣",
@@ -399,7 +399,7 @@ public abstract class DirectItemViewHolder extends RecyclerView.ViewHolder imple
             //                                           "😠",
             //                                           "😡",
             //                                           "🤬"));
-            binding.emojis.setOnClickListener(v -> callback.onReactionClick(item, position));
+            this.binding.emojis.setOnClickListener(v -> this.callback.onReactionClick(item, position));
             // final List<DirectUser> reactedUsers = emojis.stream()
             //                                             .map(DirectItemEmojiReaction::getSenderId)
             //                                             .distinct()
@@ -415,23 +415,23 @@ public abstract class DirectItemViewHolder extends RecyclerView.ViewHolder imple
         });
     }
 
-    protected boolean isSelf(final DirectItem directItem) {
-        return directItem.getUserId() == currentUser.getPk();
+    protected boolean isSelf(DirectItem directItem) {
+        return directItem.getUserId() == this.currentUser.getPk();
     }
 
-    public void setItemView(final View view) {
-        this.binding.message.addView(view);
+    public void setItemView(View view) {
+        binding.message.addView(view);
     }
 
     public abstract void bindItem(DirectItem directItemModel, MessageDirection messageDirection);
 
     @Nullable
-    protected User getUser(final long userId, final List<User> users) {
-        if (userId == currentUser.getPk()) {
-            return currentUser;
+    protected User getUser(long userId, List<User> users) {
+        if (userId == this.currentUser.getPk()) {
+            return this.currentUser;
         }
         if (users == null) return null;
-        for (final User user : users) {
+        for (User user : users) {
             if (userId != user.getPk()) continue;
             return user;
         }
@@ -471,7 +471,7 @@ public abstract class DirectItemViewHolder extends RecyclerView.ViewHolder imple
     }
 
     protected int getReactionsTranslationY() {
-        return reactionTranslationYType1;
+        return this.reactionTranslationYType1;
     }
 
     @CallSuper
@@ -481,132 +481,132 @@ public abstract class DirectItemViewHolder extends RecyclerView.ViewHolder imple
         // }
     }
 
-    protected void setupRamboTextListeners(@NonNull final RamboTextViewV2 textView) {
-        textView.addOnHashtagListener(autoLinkItem -> callback.onHashtagClick(autoLinkItem.getOriginalText().trim()));
-        textView.addOnMentionClickListener(autoLinkItem -> openProfile(autoLinkItem.getOriginalText().trim()));
-        textView.addOnEmailClickListener(autoLinkItem -> callback.onEmailClick(autoLinkItem.getOriginalText().trim()));
-        textView.addOnURLClickListener(autoLinkItem -> openURL(autoLinkItem.getOriginalText().trim()));
+    protected void setupRamboTextListeners(@NonNull RamboTextViewV2 textView) {
+        textView.addOnHashtagListener(autoLinkItem -> this.callback.onHashtagClick(autoLinkItem.getOriginalText().trim()));
+        textView.addOnMentionClickListener(autoLinkItem -> this.openProfile(autoLinkItem.getOriginalText().trim()));
+        textView.addOnEmailClickListener(autoLinkItem -> this.callback.onEmailClick(autoLinkItem.getOriginalText().trim()));
+        textView.addOnURLClickListener(autoLinkItem -> this.openURL(autoLinkItem.getOriginalText().trim()));
     }
 
-    protected void openProfile(final String username) {
-        callback.onMentionClick(username);
+    protected void openProfile(String username) {
+        this.callback.onMentionClick(username);
     }
 
-    protected void openLocation(final long locationId) {
-        callback.onLocationClick(locationId);
+    protected void openLocation(long locationId) {
+        this.callback.onLocationClick(locationId);
     }
 
-    protected void openURL(final String url) {
-        callback.onURLClick(url);
+    protected void openURL(String url) {
+        this.callback.onURLClick(url);
     }
 
-    protected void openMedia(final Media media, final int index) {
-        callback.onMediaClick(media, index);
+    protected void openMedia(Media media, int index) {
+        this.callback.onMediaClick(media, index);
     }
 
-    protected void openStory(final DirectItemStoryShare storyShare) {
-        callback.onStoryClick(storyShare);
+    protected void openStory(DirectItemStoryShare storyShare) {
+        this.callback.onStoryClick(storyShare);
     }
 
-    protected void handleDeepLink(final String deepLinkText) {
+    protected void handleDeepLink(String deepLinkText) {
         if (deepLinkText == null) return;
-        final DeepLinkParser.DeepLink deepLink = DeepLinkParser.parse(deepLinkText);
+        DeepLinkParser.DeepLink deepLink = DeepLinkParser.parse(deepLinkText);
         if (deepLink == null) return;
         switch (deepLink.getType()) {
             case USER:
-                callback.onMentionClick(deepLink.getValue());
+                this.callback.onMentionClick(deepLink.getValue());
                 break;
         }
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    private void setupLongClickListener(final int position, final MessageDirection messageDirection) {
-        if (!allowLongClick()) return;
-        binding.getRoot().setOnItemLongClickListener(new DirectItemFrameLayout.OnItemLongClickListener() {
+    private void setupLongClickListener(int position, MessageDirection messageDirection) {
+        if (!this.allowLongClick()) return;
+        this.binding.getRoot().setOnItemLongClickListener(new DirectItemFrameLayout.OnItemLongClickListener() {
             @Override
-            public void onLongClickStart(final View view) {
-                itemView.post(() -> shrink());
+            public void onLongClickStart(View view) {
+                DirectItemViewHolder.this.itemView.post(() -> DirectItemViewHolder.this.shrink());
             }
 
             @Override
-            public void onLongClickCancel(final View view) {
-                itemView.post(() -> grow());
+            public void onLongClickCancel(View view) {
+                DirectItemViewHolder.this.itemView.post(() -> DirectItemViewHolder.this.grow());
             }
 
             @Override
-            public void onLongClick(final View view, final float x, final float y) {
+            public void onLongClick(View view, float x, float y) {
                 // if (longClickListener == null) return false;
                 // longClickListener.onLongClick(position, this);
-                itemView.post(() -> grow());
-                setSelected(true);
-                showLongClickOptions(new Point((int) x, (int) y), messageDirection);
+                DirectItemViewHolder.this.itemView.post(() -> DirectItemViewHolder.this.grow());
+                DirectItemViewHolder.this.setSelected(true);
+                DirectItemViewHolder.this.showLongClickOptions(new Point((int) x, (int) y), messageDirection);
             }
         });
     }
 
-    private void showLongClickOptions(final Point location, final MessageDirection messageDirection) {
-        final List<DirectItemContextMenu.MenuItem> longClickOptions = getLongClickOptions();
-        final ImmutableList.Builder<DirectItemContextMenu.MenuItem> builder = ImmutableList.builder();
+    private void showLongClickOptions(Point location, MessageDirection messageDirection) {
+        List<DirectItemContextMenu.MenuItem> longClickOptions = this.getLongClickOptions();
+        ImmutableList.Builder<DirectItemContextMenu.MenuItem> builder = ImmutableList.builder();
         if (longClickOptions != null) {
             builder.addAll(longClickOptions);
         }
-        if (canForward()) {
+        if (this.canForward()) {
             builder.add(new DirectItemContextMenu.MenuItem(R.id.forward, R.string.forward));
         }
-        if (thread.getInputMode() != 1 && messageDirection == MessageDirection.OUTGOING) {
+        if (this.thread.getInputMode() != 1 && messageDirection == MessageDirection.OUTGOING) {
             builder.add(new DirectItemContextMenu.MenuItem(R.id.unsend, R.string.dms_inbox_unsend));
         }
-        final boolean showReactions = thread.getInputMode() != 1 && allowReaction();
-        final ImmutableList<DirectItemContextMenu.MenuItem> menuItems = builder.build();
+        boolean showReactions = this.thread.getInputMode() != 1 && this.allowReaction();
+        ImmutableList<DirectItemContextMenu.MenuItem> menuItems = builder.build();
         if (!showReactions && menuItems.isEmpty()) return;
-        final DirectItemContextMenu menu = new DirectItemContextMenu(itemView.getContext(), showReactions, menuItems);
-        menu.setOnDismissListener(() -> setSelected(false));
-        menu.setOnReactionClickListener(emoji -> callback.onReaction(item, emoji));
-        menu.setOnOptionSelectListener((itemId, cb) -> callback.onOptionSelect(item, itemId, cb));
+        DirectItemContextMenu menu = new DirectItemContextMenu(this.itemView.getContext(), showReactions, menuItems);
+        menu.setOnDismissListener(() -> this.setSelected(false));
+        menu.setOnReactionClickListener(emoji -> this.callback.onReaction(this.item, emoji));
+        menu.setOnOptionSelectListener((itemId, cb) -> this.callback.onOptionSelect(this.item, itemId, cb));
         menu.setOnAddReactionListener(() -> {
             menu.dismiss();
-            itemView.postDelayed(() -> callback.onAddReactionListener(item), 300);
+            this.itemView.postDelayed(() -> this.callback.onAddReactionListener(this.item), 300);
         });
-        menu.show(itemView, location);
+        menu.show(this.itemView, location);
     }
 
-    public void setLongClickListener(DirectItemsAdapter.DirectItemInternalLongClickListener longClickListener) {
+    public void setLongClickListener(final DirectItemsAdapter.DirectItemInternalLongClickListener longClickListener) {
         this.longClickListener = longClickListener;
     }
 
-    public void setSelected(final boolean selected) {
+    public void setSelected(boolean selected) {
         this.selected = selected;
     }
 
     private void shrink() {
-        if (shrinkGrowAnimator != null) {
-            shrinkGrowAnimator.cancel();
+        if (this.shrinkGrowAnimator != null) {
+            this.shrinkGrowAnimator.cancel();
         }
-        shrinkGrowAnimator = itemView.animate()
+        this.shrinkGrowAnimator = this.itemView.animate()
                                      .scaleX(0.8f)
                                      .scaleY(0.8f)
-                                     .setInterpolator(accelerateDecelerateInterpolator)
+                                     .setInterpolator(this.accelerateDecelerateInterpolator)
                                      .setDuration(ViewConfiguration.getLongPressTimeout() - ViewConfiguration.getTapTimeout());
-        shrinkGrowAnimator.start();
+        this.shrinkGrowAnimator.start();
     }
 
     private void grow() {
-        if (shrinkGrowAnimator != null) {
-            shrinkGrowAnimator.cancel();
+        if (this.shrinkGrowAnimator != null) {
+            this.shrinkGrowAnimator.cancel();
         }
-        shrinkGrowAnimator = itemView.animate()
+        this.shrinkGrowAnimator = this.itemView.animate()
                                      .scaleX(1f)
                                      .scaleY(1f)
-                                     .setInterpolator(accelerateDecelerateInterpolator)
+                                     .setInterpolator(this.accelerateDecelerateInterpolator)
                                      .setDuration(200)
-                                     .withEndAction(() -> shrinkGrowAnimator = null);
-        shrinkGrowAnimator.start();
+                                     .withEndAction(() -> this.shrinkGrowAnimator = null);
+        this.shrinkGrowAnimator.start();
     }
 
     @Override
     public int getSwipeDirection() {
-        if (item == null || messageDirection == null) return ItemTouchHelper.ACTION_STATE_IDLE;
-        return messageDirection == MessageDirection.OUTGOING ? ItemTouchHelper.START : ItemTouchHelper.END;
+        if (this.item == null || this.messageDirection == null) return ItemTouchHelper.ACTION_STATE_IDLE;
+        return this.messageDirection == MessageDirection.OUTGOING ? ItemTouchHelper.START : ItemTouchHelper.END;
     }
 
     public enum MessageDirection {

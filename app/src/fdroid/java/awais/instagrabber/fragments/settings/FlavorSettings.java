@@ -17,17 +17,17 @@ public final class FlavorSettings implements IFlavorSettings {
     }
 
     public static FlavorSettings getInstance() {
-        if (instance == null) {
-            instance = new FlavorSettings();
+        if (FlavorSettings.instance == null) {
+            FlavorSettings.instance = new FlavorSettings();
         }
-        return instance;
+        return FlavorSettings.instance;
     }
 
     @NonNull
     @Override
-    public List<Preference> getPreferences(@NonNull final Context context,
-                                           @NonNull final FragmentManager fragmentManager,
-                                           @NonNull final SettingCategory settingCategory) {
+    public List<Preference> getPreferences(@NonNull Context context,
+                                           @NonNull FragmentManager fragmentManager,
+                                           @NonNull SettingCategory settingCategory) {
         // switch (settingCategory) {
         //     default:
         //         break;

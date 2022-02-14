@@ -26,63 +26,63 @@ public class DirectItemLinkViewHolder extends DirectItemViewHolder {
 
     private final LayoutDmLinkBinding binding;
 
-    public DirectItemLinkViewHolder(@NonNull final LayoutDmBaseBinding baseBinding,
-                                    final LayoutDmLinkBinding binding,
-                                    final User currentUser,
-                                    final DirectThread thread,
-                                    final DirectItemsAdapter.DirectItemCallback callback) {
+    public DirectItemLinkViewHolder(@NonNull LayoutDmBaseBinding baseBinding,
+                                    LayoutDmLinkBinding binding,
+                                    User currentUser,
+                                    DirectThread thread,
+                                    DirectItemsAdapter.DirectItemCallback callback) {
         super(baseBinding, currentUser, thread, callback);
         this.binding = binding;
-        final int width = windowWidth - margin - dmRadiusSmall;
-        final ViewGroup.LayoutParams layoutParams = binding.preview.getLayoutParams();
+        int width = this.windowWidth - this.margin - this.dmRadiusSmall;
+        ViewGroup.LayoutParams layoutParams = binding.preview.getLayoutParams();
         layoutParams.width = width;
         binding.preview.requestLayout();
-        setItemView(binding.getRoot());
+        this.setItemView(binding.getRoot());
     }
 
     @Override
-    public void bindItem(final DirectItem item, final MessageDirection messageDirection) {
-        final DirectItemLink link = item.getLink();
+    public void bindItem(DirectItem item, MessageDirection messageDirection) {
+        DirectItemLink link = item.getLink();
         if (link == null) return;
-        final DirectItemLinkContext linkContext = link.getLinkContext();
+        DirectItemLinkContext linkContext = link.getLinkContext();
         if (linkContext == null) return;
-        final String linkImageUrl = linkContext.getLinkImageUrl();
+        String linkImageUrl = linkContext.getLinkImageUrl();
         if (TextUtils.isEmpty(linkImageUrl)) {
-            binding.preview.setVisibility(View.GONE);
+            this.binding.preview.setVisibility(View.GONE);
         } else {
-            binding.preview.setVisibility(View.VISIBLE);
-            binding.preview.setImageURI(linkImageUrl);
+            this.binding.preview.setVisibility(View.VISIBLE);
+            this.binding.preview.setImageURI(linkImageUrl);
         }
         if (TextUtils.isEmpty(linkContext.getLinkTitle())) {
-            binding.title.setVisibility(View.GONE);
+            this.binding.title.setVisibility(View.GONE);
         } else {
-            binding.title.setVisibility(View.VISIBLE);
-            binding.title.setText(linkContext.getLinkTitle());
+            this.binding.title.setVisibility(View.VISIBLE);
+            this.binding.title.setText(linkContext.getLinkTitle());
         }
         if (TextUtils.isEmpty(linkContext.getLinkSummary())) {
-            binding.summary.setVisibility(View.GONE);
+            this.binding.summary.setVisibility(View.GONE);
         } else {
-            binding.summary.setVisibility(View.VISIBLE);
-            binding.summary.setText(linkContext.getLinkSummary());
+            this.binding.summary.setVisibility(View.VISIBLE);
+            this.binding.summary.setText(linkContext.getLinkSummary());
         }
         if (TextUtils.isEmpty(linkContext.getLinkUrl())) {
-            binding.url.setVisibility(View.GONE);
+            this.binding.url.setVisibility(View.GONE);
         } else {
-            binding.url.setVisibility(View.VISIBLE);
-            binding.url.setText(linkContext.getLinkUrl());
+            this.binding.url.setVisibility(View.VISIBLE);
+            this.binding.url.setText(linkContext.getLinkUrl());
         }
-        binding.text.setText(link.getText());
-        setupListeners(linkContext);
+        this.binding.text.setText(link.getText());
+        this.setupListeners(linkContext);
     }
 
-    private void setupListeners(final DirectItemLinkContext linkContext) {
-        setupRamboTextListeners(binding.text);
-        final View.OnClickListener onClickListener = v -> openURL(linkContext.getLinkUrl());
-        binding.preview.setOnClickListener(onClickListener);
+    private void setupListeners(DirectItemLinkContext linkContext) {
+        this.setupRamboTextListeners(this.binding.text);
+        View.OnClickListener onClickListener = v -> this.openURL(linkContext.getLinkUrl());
+        this.binding.preview.setOnClickListener(onClickListener);
         // binding.preview.setOnLongClickListener(v -> itemView.performLongClick());
-        binding.title.setOnClickListener(onClickListener);
-        binding.summary.setOnClickListener(onClickListener);
-        binding.url.setOnClickListener(onClickListener);
+        this.binding.title.setOnClickListener(onClickListener);
+        this.binding.summary.setOnClickListener(onClickListener);
+        this.binding.url.setOnClickListener(onClickListener);
     }
 
     @Override
@@ -94,9 +94,9 @@ public class DirectItemLinkViewHolder extends DirectItemViewHolder {
     protected List<DirectItemContextMenu.MenuItem> getLongClickOptions() {
         return ImmutableList.of(
                 new DirectItemContextMenu.MenuItem(R.id.copy, R.string.copy, item -> {
-                    final DirectItemLink link = item.getLink();
+                    DirectItemLink link = item.getLink();
                     if (link == null || TextUtils.isEmpty(link.getText())) return null;
-                    Utils.copyText(itemView.getContext(), link.getText());
+                    Utils.copyText(this.itemView.getContext(), link.getText());
                     return null;
                 })
         );

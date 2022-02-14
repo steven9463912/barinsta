@@ -17,26 +17,26 @@ public class SharpenFilter extends Filter<GPUImageSharpenFilter> {
 
     public SharpenFilter() {
         super(FiltersHelper.FilterType.SHARPEN, R.string.sharpen);
-        properties = Collections.singletonMap(
-                PROP_SHARPNESS, new FloatProperty(R.string.sharpen, 0f, -0.5f, 0.5f)
+        this.properties = Collections.singletonMap(
+                SharpenFilter.PROP_SHARPNESS, new FloatProperty(R.string.sharpen, 0f, -0.5f, 0.5f)
         );
-        filter = new GPUImageSharpenFilter((Float) getProperty(PROP_SHARPNESS).getDefaultValue());
+        this.filter = new GPUImageSharpenFilter((Float) this.getProperty(SharpenFilter.PROP_SHARPNESS).getDefaultValue());
     }
 
     @Override
     public Map<Integer, Property<?>> getProperties() {
-        return properties;
+        return this.properties;
     }
 
     @Override
-    public void adjust(final int property, final Object value) {
+    public void adjust(int property, Object value) {
         super.adjust(property, value);
         if (!(value instanceof Float)) return;
-        filter.setSharpness((Float) value);
+        this.filter.setSharpness((Float) value);
     }
 
     @Override
     public GPUImageSharpenFilter getInstance() {
-        return filter;
+        return this.filter;
     }
 }

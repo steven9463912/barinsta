@@ -60,92 +60,92 @@ public class DMSyncService extends LifecycleService {
     @Override
     public void onCreate() {
         super.onCreate();
-        startForeground(Constants.DM_CHECK_NOTIFICATION_ID, buildForegroundNotification());
-        Log.d(TAG, "onCreate: Service created");
-        final DirectMessagesManager directMessagesManager = DirectMessagesManager.INSTANCE;
-        inboxManager = directMessagesManager.getInboxManager();
-        final Context context = getApplicationContext();
+        this.startForeground(Constants.DM_CHECK_NOTIFICATION_ID, this.buildForegroundNotification());
+        Log.d(DMSyncService.TAG, "onCreate: Service created");
+        DirectMessagesManager directMessagesManager = DirectMessagesManager.INSTANCE;
+        this.inboxManager = directMessagesManager.getInboxManager();
+        Context context = this.getApplicationContext();
         if (context == null) return;
-        dmLastNotifiedRepository = DMLastNotifiedRepository.getInstance(DMLastNotifiedDataSource.getInstance(context));
+        this.dmLastNotifiedRepository = DMLastNotifiedRepository.getInstance(DMLastNotifiedDataSource.getInstance(context));
     }
 
-    private void parseUnread(@NonNull final DirectInbox directInbox) {
-        dmLastNotifiedRepository.getAllDMDmLastNotified(
+    private void parseUnread(@NonNull DirectInbox directInbox) {
+        this.dmLastNotifiedRepository.getAllDMDmLastNotified(
                 CoroutineUtilsKt.getContinuation((result, throwable) -> AppExecutors.INSTANCE.getMainThread().execute(() -> {
                     if (throwable != null) {
-                        Log.e(TAG, "parseUnread: ", throwable);
-                        dmLastNotifiedMap = Collections.emptyMap();
-                        parseUnreadActual(directInbox);
+                        Log.e(DMSyncService.TAG, "parseUnread: ", throwable);
+                        this.dmLastNotifiedMap = Collections.emptyMap();
+                        this.parseUnreadActual(directInbox);
                         return;
                     }
-                    dmLastNotifiedMap = result != null
+                    this.dmLastNotifiedMap = result != null
                                         ? result.stream().collect(Collectors.toMap(DMLastNotified::getThreadId, Function.identity()))
                                         : Collections.emptyMap();
-                    parseUnreadActual(directInbox);
+                    this.parseUnreadActual(directInbox);
                 }), Dispatchers.getIO())
         );
         // Log.d(TAG, "inbox observer: " + directInbox);
     }
 
-    private void parseUnreadActual(@NonNull final DirectInbox directInbox) {
-        final List<DirectThread> threads = directInbox.getThreads();
-        final ImmutableMap.Builder<String, List<DirectItem>> unreadMessagesMapBuilder = ImmutableMap.builder();
+    private void parseUnreadActual(@NonNull DirectInbox directInbox) {
+        List<DirectThread> threads = directInbox.getThreads();
+        ImmutableMap.Builder<String, List<DirectItem>> unreadMessagesMapBuilder = ImmutableMap.builder();
         if (threads == null) {
-            stopSelf();
+            this.stopSelf();
             return;
         }
-        for (final DirectThread thread : threads) {
+        for (DirectThread thread : threads) {
             if (thread.getMuted()) continue;
-            final boolean read = DMUtils.isRead(thread);
+            boolean read = DMUtils.isRead(thread);
             if (read) continue;
-            final List<DirectItem> unreadMessages = getUnreadMessages(thread);
+            List<DirectItem> unreadMessages = this.getUnreadMessages(thread);
             if (unreadMessages.isEmpty()) continue;
             unreadMessagesMapBuilder.put(thread.getThreadId(), unreadMessages);
         }
-        final Map<String, List<DirectItem>> unreadMessagesMap = unreadMessagesMapBuilder.build();
+        Map<String, List<DirectItem>> unreadMessagesMap = unreadMessagesMapBuilder.build();
         if (unreadMessagesMap.isEmpty()) {
-            stopSelf();
+            this.stopSelf();
             return;
         }
-        showNotification(directInbox, unreadMessagesMap);
-        final LocalDateTime now = LocalDateTime.now();
+        this.showNotification(directInbox, unreadMessagesMap);
+        LocalDateTime now = LocalDateTime.now();
         // Update db
-        final ImmutableList.Builder<DMLastNotified> lastNotifiedListBuilder = ImmutableList.builder();
-        for (final Map.Entry<String, List<DirectItem>> unreadMessagesEntry : unreadMessagesMap.entrySet()) {
-            final List<DirectItem> unreadItems = unreadMessagesEntry.getValue();
-            final DirectItem latestItem = unreadItems.get(unreadItems.size() - 1);
+        ImmutableList.Builder<DMLastNotified> lastNotifiedListBuilder = ImmutableList.builder();
+        for (Map.Entry<String, List<DirectItem>> unreadMessagesEntry : unreadMessagesMap.entrySet()) {
+            List<DirectItem> unreadItems = unreadMessagesEntry.getValue();
+            DirectItem latestItem = unreadItems.get(unreadItems.size() - 1);
             lastNotifiedListBuilder.add(new DMLastNotified(0,
                                                            unreadMessagesEntry.getKey(),
                                                            latestItem.getDate(),
                                                            now));
         }
-        dmLastNotifiedRepository.insertOrUpdateDMLastNotified(
+        this.dmLastNotifiedRepository.insertOrUpdateDMLastNotified(
                 lastNotifiedListBuilder.build(),
                 CoroutineUtilsKt.getContinuation((unit, throwable) -> AppExecutors.INSTANCE.getMainThread().execute(() -> {
                     try {
                         if (throwable != null) {
-                            Log.e(TAG, "parseUnreadActual: ", throwable);
+                            Log.e(DMSyncService.TAG, "parseUnreadActual: ", throwable);
                         }
                     } finally {
-                        stopSelf();
+                        this.stopSelf();
                     }
                 }), Dispatchers.getIO())
         );
     }
 
     @NonNull
-    private List<DirectItem> getUnreadMessages(@NonNull final DirectThread thread) {
-        final List<DirectItem> items = thread.getItems();
+    private List<DirectItem> getUnreadMessages(@NonNull DirectThread thread) {
+        List<DirectItem> items = thread.getItems();
         if (items == null) return Collections.emptyList();
-        final DMLastNotified dmLastNotified = dmLastNotifiedMap.get(thread.getThreadId());
-        final long viewerId = thread.getViewerId();
-        final Map<Long, DirectThreadLastSeenAt> lastSeenAt = thread.getLastSeenAt();
-        final ImmutableList.Builder<DirectItem> unreadListBuilder = ImmutableList.builder();
+        DMLastNotified dmLastNotified = this.dmLastNotifiedMap.get(thread.getThreadId());
+        long viewerId = thread.getViewerId();
+        Map<Long, DirectThreadLastSeenAt> lastSeenAt = thread.getLastSeenAt();
+        ImmutableList.Builder<DirectItem> unreadListBuilder = ImmutableList.builder();
         int count = 0;
-        for (final DirectItem item : items) {
+        for (DirectItem item : items) {
             if (item == null) continue;
             if (item.getUserId() == viewerId) break; // Reached a message from the viewer, it is assumed the viewer has read the next messages
-            final boolean read = DMUtils.isRead(item, lastSeenAt, Collections.singletonList(viewerId));
+            boolean read = DMUtils.isRead(item, lastSeenAt, Collections.singletonList(viewerId));
             if (read) break;
             if (dmLastNotified != null && dmLastNotified.getLastNotifiedMsgTs() != null && item.getDate() != null) {
                 if (count == 0 && DateUtils.isBeforeOrEqual(item.getDate(), dmLastNotified.getLastNotifiedMsgTs())) {
@@ -163,38 +163,38 @@ public class DMSyncService extends LifecycleService {
         return unreadListBuilder.build().reverse();
     }
 
-    private void showNotification(final DirectInbox directInbox,
-                                  final Map<String, List<DirectItem>> unreadMessagesMap) {
-        final NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+    private void showNotification(DirectInbox directInbox,
+                                  Map<String, List<DirectItem>> unreadMessagesMap) {
+        NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
         if (notificationManager == null) return;
-        for (final Map.Entry<String, List<DirectItem>> unreadMessagesEntry : unreadMessagesMap.entrySet()) {
-            final Optional<DirectThread> directThreadOptional = getThread(directInbox, unreadMessagesEntry.getKey());
+        for (Map.Entry<String, List<DirectItem>> unreadMessagesEntry : unreadMessagesMap.entrySet()) {
+            Optional<DirectThread> directThreadOptional = this.getThread(directInbox, unreadMessagesEntry.getKey());
             if (!directThreadOptional.isPresent()) continue;
-            final DirectThread thread = directThreadOptional.get();
-            final DirectItem firstDirectItem = thread.getFirstDirectItem();
+            DirectThread thread = directThreadOptional.get();
+            DirectItem firstDirectItem = thread.getFirstDirectItem();
             if (firstDirectItem == null) continue;
-            final List<DirectItem> unreadMessages = unreadMessagesEntry.getValue();
-            final NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
+            List<DirectItem> unreadMessages = unreadMessagesEntry.getValue();
+            NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
             inboxStyle.setBigContentTitle(thread.getThreadTitle());
-            for (final DirectItem item : unreadMessages) {
-                inboxStyle.addLine(DMUtils.getMessageString(thread, getResources(), thread.getViewerId(), item));
+            for (DirectItem item : unreadMessages) {
+                inboxStyle.addLine(DMUtils.getMessageString(thread, this.getResources(), thread.getViewerId(), item));
             }
-            final Notification notification = new NotificationCompat.Builder(this, Constants.DM_UNREAD_CHANNEL_ID)
+            Notification notification = new NotificationCompat.Builder(this, Constants.DM_UNREAD_CHANNEL_ID)
                     .setStyle(inboxStyle)
                     .setSmallIcon(R.drawable.ic_round_mode_comment_24)
                     .setContentTitle(thread.getThreadTitle())
-                    .setContentText(DMUtils.getMessageString(thread, getResources(), thread.getViewerId(), firstDirectItem))
+                    .setContentText(DMUtils.getMessageString(thread, this.getResources(), thread.getViewerId(), firstDirectItem))
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                     .setDefaults(NotificationCompat.DEFAULT_ALL)
                     .setGroup(Constants.GROUP_KEY_DM)
                     .setAutoCancel(true)
-                    .setContentIntent(getThreadPendingIntent(thread.getThreadId(), thread.getThreadTitle()))
+                    .setContentIntent(this.getThreadPendingIntent(thread.getThreadId(), thread.getThreadTitle()))
                     .build();
             notificationManager.notify(Constants.DM_UNREAD_PARENT_NOTIFICATION_ID, notification);
         }
     }
 
-    private Optional<DirectThread> getThread(@NonNull final DirectInbox directInbox, final String threadId) {
+    private Optional<DirectThread> getThread(@NonNull DirectInbox directInbox, String threadId) {
         return directInbox.getThreads()
                           .stream()
                           .filter(thread -> Objects.equals(thread.getThreadId(), threadId))
@@ -202,52 +202,52 @@ public class DMSyncService extends LifecycleService {
     }
 
     @NonNull
-    private PendingIntent getThreadPendingIntent(final String threadId, final String threadTitle) {
-        final Intent intent = new Intent(getApplicationContext(), MainActivity.class)
+    private PendingIntent getThreadPendingIntent(String threadId, String threadTitle) {
+        Intent intent = new Intent(this.getApplicationContext(), MainActivity.class)
                 .setAction(Constants.ACTION_SHOW_DM_THREAD)
                 .putExtra(Constants.DM_THREAD_ACTION_EXTRA_THREAD_ID, threadId)
                 .putExtra(Constants.DM_THREAD_ACTION_EXTRA_THREAD_TITLE, threadTitle)
                 .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        return PendingIntent.getActivity(getApplicationContext(), Constants.SHOW_DM_THREAD, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getActivity(this.getApplicationContext(), Constants.SHOW_DM_THREAD, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     @Override
-    public int onStartCommand(final Intent intent, final int flags, final int startId) {
+    public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
-        final String cookie = settingsHelper.getString(Constants.COOKIE);
-        final boolean isLoggedIn = !TextUtils.isEmpty(cookie) && CookieUtils.getUserIdFromCookie(cookie) != 0;
+        String cookie = settingsHelper.getString(Constants.COOKIE);
+        boolean isLoggedIn = !TextUtils.isEmpty(cookie) && CookieUtils.getUserIdFromCookie(cookie) != 0;
         if (!isLoggedIn) {
-            stopSelf();
+            this.stopSelf();
             return Service.START_NOT_STICKY;
         }
         // Need to setup here if service was started by the boot completed receiver
         CookieUtils.setupCookies(cookie);
-        final boolean notificationsEnabled = settingsHelper.getBoolean(PreferenceKeys.PREF_ENABLE_DM_NOTIFICATIONS);
-        inboxManager.getInbox().observe(this, inboxResource -> {
+        boolean notificationsEnabled = settingsHelper.getBoolean(PreferenceKeys.PREF_ENABLE_DM_NOTIFICATIONS);
+        this.inboxManager.getInbox().observe(this, inboxResource -> {
             if (!notificationsEnabled || inboxResource == null || inboxResource.status != Resource.Status.SUCCESS) {
-                stopSelf();
+                this.stopSelf();
                 return;
             }
-            final DirectInbox directInbox = inboxResource.data;
+            DirectInbox directInbox = inboxResource.data;
             if (directInbox == null) {
-                stopSelf();
+                this.stopSelf();
                 return;
             }
-            parseUnread(directInbox);
+            this.parseUnread(directInbox);
         });
-        Log.d(TAG, "onStartCommand: refreshing inbox");
+        Log.d(DMSyncService.TAG, "onStartCommand: refreshing inbox");
         // inboxManager.refresh();
         return Service.START_NOT_STICKY;
     }
 
     @Override
-    public IBinder onBind(@NonNull final Intent intent) {
+    public IBinder onBind(@NonNull Intent intent) {
         super.onBind(intent);
         return null;
     }
 
     private Notification buildForegroundNotification() {
-        final Resources resources = getResources();
+        Resources resources = this.getResources();
         return new NotificationCompat.Builder(this, Constants.SILENT_NOTIFICATIONS_CHANNEL_ID)
                 .setOngoing(true)
                 .setSound(null)

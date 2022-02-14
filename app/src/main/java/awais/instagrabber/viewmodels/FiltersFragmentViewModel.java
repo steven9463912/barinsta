@@ -12,15 +12,15 @@ public class FiltersFragmentViewModel extends ViewModel {
     }
 
     public LiveData<Boolean> isLoading() {
-        return loading;
+        return this.loading;
     }
 
     public LiveData<ImageEditViewModel.Tab> getCurrentTab() {
-        return currentTab;
+        return this.currentTab;
     }
 
-    public void setCurrentTab(final ImageEditViewModel.Tab tab) {
+    public void setCurrentTab(ImageEditViewModel.Tab tab) {
         if (tab == null) return;
-        currentTab.postValue(tab);
+        this.currentTab.postValue(tab);
     }
 }

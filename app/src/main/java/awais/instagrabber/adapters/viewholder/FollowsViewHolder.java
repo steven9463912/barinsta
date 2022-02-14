@@ -12,18 +12,18 @@ public final class FollowsViewHolder extends RecyclerView.ViewHolder {
 
     private final ItemFollowBinding binding;
 
-    public FollowsViewHolder(@NonNull final ItemFollowBinding binding) {
+    public FollowsViewHolder(@NonNull ItemFollowBinding binding) {
         super(binding.getRoot());
         this.binding = binding;
     }
 
-    public void bind(final User model,
-                     final View.OnClickListener onClickListener) {
+    public void bind(User model,
+                     View.OnClickListener onClickListener) {
         if (model == null) return;
-        itemView.setTag(model);
-        itemView.setOnClickListener(onClickListener);
-        binding.username.setUsername("@" + model.getUsername(), model.isVerified());
-        binding.fullName.setText(model.getFullName());
-        binding.profilePic.setImageURI(model.getProfilePicUrl());
+        this.itemView.setTag(model);
+        this.itemView.setOnClickListener(onClickListener);
+        this.binding.username.setUsername("@" + model.getUsername(), model.isVerified());
+        this.binding.fullName.setText(model.getFullName());
+        this.binding.profilePic.setImageURI(model.getProfilePicUrl());
     }
 }

@@ -142,33 +142,33 @@ public class PostViewV2Fragment extends Fragment implements EditTextDialogFragme
         if (result == null) return;
         if (result instanceof String) {
             String collection = (String) result;
-            handleSaveUnsaveResourceLiveData(viewModel.toggleSave(collection, viewModel.getMedia().getHasViewerSaved()));
+            this.handleSaveUnsaveResourceLiveData(this.viewModel.toggleSave(collection, this.viewModel.getMedia().getHasViewerSaved()));
         } else if ((result instanceof RankedRecipient)) {
             // Log.d(TAG, "result: " + result);
-            Context context = getContext();
+            Context context = this.getContext();
             if (context != null) {
                 Toast.makeText(context, R.string.sending, Toast.LENGTH_SHORT).show();
             }
-            viewModel.shareDm((RankedRecipient) result, sliderPosition);
+            this.viewModel.shareDm((RankedRecipient) result, this.sliderPosition);
         } else if ((result instanceof Set)) {
             try {
                 // Log.d(TAG, "result: " + result);
-                Context context = getContext();
+                Context context = this.getContext();
                 if (context != null) {
                     Toast.makeText(context, R.string.sending, Toast.LENGTH_SHORT).show();
                 }
                 //noinspection unchecked
-                viewModel.shareDm((Set<RankedRecipient>) result, sliderPosition);
+                this.viewModel.shareDm((Set<RankedRecipient>) result, this.sliderPosition);
             } catch (Exception e) {
-                Log.e(TAG, "share: ", e);
+                Log.e(PostViewV2Fragment.TAG, "share: ", e);
             }
         }
         // clear result
-        backStackSavedStateCollectionLiveData.postValue(null);
-        backStackSavedStateResultLiveData.postValue(null);
+        this.backStackSavedStateCollectionLiveData.postValue(null);
+        this.backStackSavedStateResultLiveData.postValue(null);
     };
 
-    public void setOnDeleteListener(final OnDeleteListener onDeleteListener) {
+    public void setOnDeleteListener(OnDeleteListener onDeleteListener) {
         if (onDeleteListener == null) return;
         this.onDeleteListener = onDeleteListener;
     }
@@ -181,32 +181,32 @@ public class PostViewV2Fragment extends Fragment implements EditTextDialogFragme
     public PostViewV2Fragment() {}
 
     @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewModel = new ViewModelProvider(this).get(PostViewV2ViewModel.class);
+        this.viewModel = new ViewModelProvider(this).get(PostViewV2ViewModel.class);
     }
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull final LayoutInflater inflater,
-                             @Nullable final ViewGroup container,
-                             @Nullable final Bundle savedInstanceState) {
-        binding = DialogPostViewBinding.inflate(inflater, container, false);
-        bottom = LayoutPostViewBottomBinding.bind(binding.getRoot());
-        final MainActivity activity = (MainActivity) getActivity();
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        this.binding = DialogPostViewBinding.inflate(inflater, container, false);
+        this.bottom = LayoutPostViewBottomBinding.bind(this.binding.getRoot());
+        MainActivity activity = (MainActivity) this.getActivity();
         if (activity == null) return null;
-        controller = new WindowInsetsControllerCompat(activity.getWindow(), activity.getRootView());
-        return binding.getRoot();
+        this.controller = new WindowInsetsControllerCompat(activity.getWindow(), activity.getRootView());
+        return this.binding.getRoot();
     }
 
     @Override
-    public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         // postponeEnterTransition();
-        init();
+        this.init();
     }
 
     @Override
-    public void onAttach(@NonNull final Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         this.context = context;
     }
@@ -216,17 +216,17 @@ public class PostViewV2Fragment extends Fragment implements EditTextDialogFragme
         super.onPause();
         // wasPaused = true;
         if (Utils.settingsHelper.getBoolean(PreferenceKeys.PLAY_IN_BACKGROUND)) return;
-        final Media media = viewModel.getMedia();
+        Media media = this.viewModel.getMedia();
         if (media.getType() == null) return;
         switch (media.getType()) {
             case MEDIA_TYPE_VIDEO:
-                if (videoPlayerViewHelper != null) {
-                    videoPlayerViewHelper.pause();
+                if (this.videoPlayerViewHelper != null) {
+                    this.videoPlayerViewHelper.pause();
                 }
                 return;
             case MEDIA_TYPE_SLIDER:
-                if (sliderItemsAdapter != null) {
-                    pauseSliderPlayer();
+                if (this.sliderItemsAdapter != null) {
+                    this.pauseSliderPlayer();
                 }
             default:
         }
@@ -235,61 +235,61 @@ public class PostViewV2Fragment extends Fragment implements EditTextDialogFragme
     @Override
     public void onResume() {
         super.onResume();
-        final NavController navController = NavHostFragment.findNavController(this);
-        final NavBackStackEntry backStackEntry = navController.getCurrentBackStackEntry();
+        NavController navController = NavHostFragment.findNavController(this);
+        NavBackStackEntry backStackEntry = navController.getCurrentBackStackEntry();
         if (backStackEntry != null) {
-            backStackSavedStateCollectionLiveData = backStackEntry.getSavedStateHandle().getLiveData("collection");
-            backStackSavedStateCollectionLiveData.observe(getViewLifecycleOwner(), backStackSavedStateObserver);
-            backStackSavedStateResultLiveData = backStackEntry.getSavedStateHandle().getLiveData("result");
-            backStackSavedStateResultLiveData.observe(getViewLifecycleOwner(), backStackSavedStateObserver);
+            this.backStackSavedStateCollectionLiveData = backStackEntry.getSavedStateHandle().getLiveData("collection");
+            this.backStackSavedStateCollectionLiveData.observe(this.getViewLifecycleOwner(), this.backStackSavedStateObserver);
+            this.backStackSavedStateResultLiveData = backStackEntry.getSavedStateHandle().getLiveData("result");
+            this.backStackSavedStateResultLiveData.observe(this.getViewLifecycleOwner(), this.backStackSavedStateObserver);
         }
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        showSystemUI();
-        final Media media = viewModel.getMedia();
+        this.showSystemUI();
+        Media media = this.viewModel.getMedia();
         if (media.getType() == null) return;
         switch (media.getType()) {
             case MEDIA_TYPE_VIDEO:
-                if (videoPlayerViewHelper != null) {
-                    videoPlayerViewHelper.releasePlayer();
+                if (this.videoPlayerViewHelper != null) {
+                    this.videoPlayerViewHelper.releasePlayer();
                 }
                 return;
             case MEDIA_TYPE_SLIDER:
-                if (sliderItemsAdapter != null) {
-                    releaseAllSliderPlayers();
+                if (this.sliderItemsAdapter != null) {
+                    this.releaseAllSliderPlayers();
                 }
             default:
         }
     }
 
     @Override
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         try {
-            final Media media = viewModel.getMedia();
+            Media media = this.viewModel.getMedia();
             if (media.getType() == MediaItemType.MEDIA_TYPE_SLIDER) {
-                outState.putInt(ARG_SLIDER_POSITION, sliderPosition);
+                outState.putInt(PostViewV2Fragment.ARG_SLIDER_POSITION, this.sliderPosition);
             }
         }
-        catch (Exception _) {}
+        catch (final Exception _) {}
     }
 
     @Override
-    public void onPrimaryNavigationFragmentChanged(final boolean isPrimaryNavigationFragment) {
+    public void onPrimaryNavigationFragmentChanged(boolean isPrimaryNavigationFragment) {
         if (!isPrimaryNavigationFragment) {
-            final Media media = viewModel.getMedia();
+            Media media = this.viewModel.getMedia();
             switch (media.getType()) {
                 case MEDIA_TYPE_VIDEO:
-                    if (videoPlayerViewHelper != null) {
-                        videoPlayerViewHelper.pause();
+                    if (this.videoPlayerViewHelper != null) {
+                        this.videoPlayerViewHelper.pause();
                     }
                     return;
                 case MEDIA_TYPE_SLIDER:
-                    if (sliderItemsAdapter != null) {
-                        pauseSliderPlayer();
+                    if (this.sliderItemsAdapter != null) {
+                        this.pauseSliderPlayer();
                     }
                 default:
             }
@@ -297,14 +297,14 @@ public class PostViewV2Fragment extends Fragment implements EditTextDialogFragme
     }
 
     private void init() {
-        final Bundle arguments = getArguments();
+        Bundle arguments = this.getArguments();
         if (arguments == null) {
             // dismiss();
             return;
         }
-        final Serializable feedModelSerializable = arguments.getSerializable(ARG_MEDIA);
+        Serializable feedModelSerializable = arguments.getSerializable(PostViewV2Fragment.ARG_MEDIA);
         if (feedModelSerializable == null) {
-            Log.e(TAG, "onCreate: feedModelSerializable is null");
+            Log.e(PostViewV2Fragment.TAG, "onCreate: feedModelSerializable is null");
             // dismiss();
             return;
         }
@@ -312,82 +312,82 @@ public class PostViewV2Fragment extends Fragment implements EditTextDialogFragme
             // dismiss();
             return;
         }
-        final Media media = (Media) feedModelSerializable;
-        if (media.getType() == MediaItemType.MEDIA_TYPE_SLIDER && sliderPosition == -1) {
-            sliderPosition = arguments.getInt(ARG_SLIDER_POSITION, 0);
+        Media media = (Media) feedModelSerializable;
+        if (media.getType() == MediaItemType.MEDIA_TYPE_SLIDER && this.sliderPosition == -1) {
+            this.sliderPosition = arguments.getInt(PostViewV2Fragment.ARG_SLIDER_POSITION, 0);
         }
-        viewModel.setMedia(media);
+        this.viewModel.setMedia(media);
         // if (!wasPaused && (sharedProfilePicElement != null || sharedMainPostElement != null)) {
         //     binding.getRoot().getBackground().mutate().setAlpha(0);
         // }
         // setProfilePicSharedElement();
         // setupCaptionBottomSheet();
-        setupCommonActions();
-        setObservers();
+        this.setupCommonActions();
+        this.setObservers();
     }
 
     private void setObservers() {
-        viewModel.getUser().observe(getViewLifecycleOwner(), user -> {
+        this.viewModel.getUser().observe(this.getViewLifecycleOwner(), user -> {
             if (user == null) {
-                binding.profilePic.setVisibility(View.GONE);
-                binding.title.setVisibility(View.GONE);
-                binding.subtitle.setVisibility(View.GONE);
+                this.binding.profilePic.setVisibility(View.GONE);
+                this.binding.title.setVisibility(View.GONE);
+                this.binding.subtitle.setVisibility(View.GONE);
                 return;
             }
-            binding.profilePic.setVisibility(View.VISIBLE);
-            binding.title.setVisibility(View.VISIBLE);
-            binding.subtitle.setVisibility(View.VISIBLE);
-            binding.getRoot().post(() -> setupProfilePic(user));
-            binding.getRoot().post(() -> setupTitles(user));
+            this.binding.profilePic.setVisibility(View.VISIBLE);
+            this.binding.title.setVisibility(View.VISIBLE);
+            this.binding.subtitle.setVisibility(View.VISIBLE);
+            this.binding.getRoot().post(() -> this.setupProfilePic(user));
+            this.binding.getRoot().post(() -> this.setupTitles(user));
         });
-        viewModel.getCaption().observe(getViewLifecycleOwner(), caption -> binding.getRoot().post(() -> setupCaption(caption)));
-        viewModel.getLocation().observe(getViewLifecycleOwner(), location -> binding.getRoot().post(() -> setupLocation(location)));
-        viewModel.getDate().observe(getViewLifecycleOwner(), date -> binding.getRoot().post(() -> {
+        this.viewModel.getCaption().observe(this.getViewLifecycleOwner(), caption -> this.binding.getRoot().post(() -> this.setupCaption(caption)));
+        this.viewModel.getLocation().observe(this.getViewLifecycleOwner(), location -> this.binding.getRoot().post(() -> this.setupLocation(location)));
+        this.viewModel.getDate().observe(this.getViewLifecycleOwner(), date -> this.binding.getRoot().post(() -> {
             if (date == null) {
-                bottom.date.setVisibility(View.GONE);
+                this.bottom.date.setVisibility(View.GONE);
                 return;
             }
-            bottom.date.setVisibility(View.VISIBLE);
-            bottom.date.setText(date);
+            this.bottom.date.setVisibility(View.VISIBLE);
+            this.bottom.date.setText(date);
         }));
-        viewModel.getLikeCount().observe(getViewLifecycleOwner(), count -> {
-            bottom.likesCount.setNumber(getSafeCount(count));
-            binding.getRoot().postDelayed(() -> bottom.likesCount.setAnimateChanges(true), 1000);
+        this.viewModel.getLikeCount().observe(this.getViewLifecycleOwner(), count -> {
+            this.bottom.likesCount.setNumber(this.getSafeCount(count));
+            this.binding.getRoot().postDelayed(() -> this.bottom.likesCount.setAnimateChanges(true), 1000);
             if (count > 1000 && !Utils.settingsHelper.getBoolean(PREF_SHOWN_COUNT_TOOLTIP)) {
-                binding.getRoot().postDelayed(this::showCountTooltip, 1000);
+                this.binding.getRoot().postDelayed(this::showCountTooltip, 1000);
             }
         });
-        if (!viewModel.getMedia().getCommentsDisabled()) {
-            viewModel.getCommentCount().observe(getViewLifecycleOwner(), count -> {
-                bottom.commentsCount.setNumber(getSafeCount(count));
-                binding.getRoot().postDelayed(() -> bottom.commentsCount.setAnimateChanges(true), 1000);
+        if (!this.viewModel.getMedia().getCommentsDisabled()) {
+            this.viewModel.getCommentCount().observe(this.getViewLifecycleOwner(), count -> {
+                this.bottom.commentsCount.setNumber(this.getSafeCount(count));
+                this.binding.getRoot().postDelayed(() -> this.bottom.commentsCount.setAnimateChanges(true), 1000);
             });
         }
-        viewModel.getViewCount().observe(getViewLifecycleOwner(), count -> {
+        this.viewModel.getViewCount().observe(this.getViewLifecycleOwner(), count -> {
             if (count == null) {
-                bottom.viewsCount.setVisibility(View.GONE);
+                this.bottom.viewsCount.setVisibility(View.GONE);
                 return;
             }
-            bottom.viewsCount.setVisibility(View.VISIBLE);
-            final long safeCount = getSafeCount(count);
-            final String viewString = getResources().getQuantityString(R.plurals.views_count, (int) safeCount, safeCount);
-            bottom.viewsCount.setText(viewString);
+            this.bottom.viewsCount.setVisibility(View.VISIBLE);
+            long safeCount = this.getSafeCount(count);
+            String viewString = this.getResources().getQuantityString(R.plurals.views_count, (int) safeCount, safeCount);
+            this.bottom.viewsCount.setText(viewString);
         });
-        viewModel.getType().observe(getViewLifecycleOwner(), this::setupPostTypeLayout);
-        viewModel.getLiked().observe(getViewLifecycleOwner(), this::setLikedResources);
-        viewModel.getSaved().observe(getViewLifecycleOwner(), this::setSavedResources);
-        viewModel.getOptions().observe(getViewLifecycleOwner(), options -> binding.getRoot().post(() -> {
-            setupOptions(options != null && !options.isEmpty());
-            createOptionsPopupMenu();
+        this.viewModel.getType().observe(this.getViewLifecycleOwner(), this::setupPostTypeLayout);
+        this.viewModel.getLiked().observe(this.getViewLifecycleOwner(), this::setLikedResources);
+        this.viewModel.getSaved().observe(this.getViewLifecycleOwner(), this::setSavedResources);
+        this.viewModel.getOptions().observe(this.getViewLifecycleOwner(), options -> this.binding.getRoot().post(() -> {
+            this.setupOptions(options != null && !options.isEmpty());
+            this.createOptionsPopupMenu();
         }));
     }
 
     private void showCountTooltip() {
-        final Context context = getContext();
+        Context context = this.getContext();
         if (context == null) return;
-        final Rect rect = new Rect();
-        bottom.likesCount.getGlobalVisibleRect(rect);
-        final Balloon balloon = new Balloon.Builder(context)
+        Rect rect = new Rect();
+        this.bottom.likesCount.getGlobalVisibleRect(rect);
+        Balloon balloon = new Balloon.Builder(context)
                 .setArrowSize(8)
                 .setArrowOrientation(ArrowOrientation.TOP)
                 .setArrowPositionRules(ArrowPositionRules.ALIGN_ANCHOR)
@@ -402,27 +402,27 @@ public class PostViewV2Fragment extends Fragment implements EditTextDialogFragme
                 .setIsVisibleOverlay(true)
                 .setOverlayColorResource(R.color.black_a50)
                 .setOverlayShape(new BalloonOverlayCircle((float) Math.max(
-                        bottom.likesCount.getMeasuredWidth(),
-                        bottom.likesCount.getMeasuredHeight()
+                        this.bottom.likesCount.getMeasuredWidth(),
+                        this.bottom.likesCount.getMeasuredHeight()
                 ) / 2f))
                 .setBalloonOverlayAnimation(BalloonOverlayAnimation.FADE)
-                .setLifecycleOwner(getViewLifecycleOwner())
+                .setLifecycleOwner(this.getViewLifecycleOwner())
                 .setTextResource(R.string.click_to_show_full)
                 .setDismissWhenTouchOutside(false)
                 .setDismissWhenOverlayClicked(false)
                 .build();
-        balloon.showAlignBottom(bottom.likesCount);
+        balloon.showAlignBottom(this.bottom.likesCount);
         Utils.settingsHelper.putBoolean(PREF_SHOWN_COUNT_TOOLTIP, true);
         balloon.setOnBalloonOutsideTouchListener((view, motionEvent) -> {
             if (rect.contains((int) motionEvent.getRawX(), (int) motionEvent.getRawY())) {
-                bottom.likesCount.setShowAbbreviation(false);
+                this.bottom.likesCount.setShowAbbreviation(false);
             }
             balloon.dismiss();
         });
     }
 
     @NonNull
-    private Long getSafeCount(final Long count) {
+    private Long getSafeCount(Long count) {
         Long safeCount = count;
         if (count == null) {
             safeCount = 0L;
@@ -431,65 +431,65 @@ public class PostViewV2Fragment extends Fragment implements EditTextDialogFragme
     }
 
     private void setupCommonActions() {
-        setupLike();
-        setupSave();
-        setupDownload();
-        setupComment();
-        setupShare();
+        this.setupLike();
+        this.setupSave();
+        this.setupDownload();
+        this.setupComment();
+        this.setupShare();
     }
 
     private void setupComment() {
-        if (!viewModel.hasPk() || viewModel.getMedia().getCommentsDisabled()) {
-            bottom.comment.setVisibility(View.GONE);
+        if (!this.viewModel.hasPk() || this.viewModel.getMedia().getCommentsDisabled()) {
+            this.bottom.comment.setVisibility(View.GONE);
             // bottom.commentsCount.setVisibility(View.GONE);
             return;
         }
-        bottom.comment.setVisibility(View.VISIBLE);
-        bottom.comment.setOnClickListener(v -> {
-            final Media media = viewModel.getMedia();
-            final User user = media.getUser();
+        this.bottom.comment.setVisibility(View.VISIBLE);
+        this.bottom.comment.setOnClickListener(v -> {
+            Media media = this.viewModel.getMedia();
+            User user = media.getUser();
             if (user == null) return;
-            final NavController navController = getNavController();
+            NavController navController = this.getNavController();
             if (navController == null) return;
             try {
-                final NavDirections action = PostViewV2FragmentDirections.actionToComments(media.getCode(), media.getPk(), user.getPk());
+                NavDirections action = PostViewV2FragmentDirections.actionToComments(media.getCode(), media.getPk(), user.getPk());
                 navController.navigate(action);
-            } catch (Exception e) {
-                Log.e(TAG, "setupComment: ", e);
+            } catch (final Exception e) {
+                Log.e(PostViewV2Fragment.TAG, "setupComment: ", e);
             }
         });
-        TooltipCompat.setTooltipText(bottom.comment, getString(R.string.comment));
+        TooltipCompat.setTooltipText(this.bottom.comment, this.getString(R.string.comment));
     }
 
     private void setupDownload() {
-        bottom.download.setOnClickListener(v -> DownloadUtils.showDownloadDialog(context, viewModel.getMedia(), sliderPosition, bottom.download));
-        TooltipCompat.setTooltipText(bottom.download, getString(R.string.action_download));
+        this.bottom.download.setOnClickListener(v -> DownloadUtils.showDownloadDialog(this.context, this.viewModel.getMedia(), this.sliderPosition, this.bottom.download));
+        TooltipCompat.setTooltipText(this.bottom.download, this.getString(R.string.action_download));
     }
 
     private void setupLike() {
-        originalLikeColorStateList = bottom.like.getIconTint();
-        final boolean likableMedia = viewModel.hasPk() /*&& viewModel.getMedia().isCommentLikesEnabled()*/;
+        this.originalLikeColorStateList = this.bottom.like.getIconTint();
+        boolean likableMedia = this.viewModel.hasPk() /*&& viewModel.getMedia().isCommentLikesEnabled()*/;
         if (!likableMedia) {
-            bottom.like.setVisibility(View.GONE);
+            this.bottom.like.setVisibility(View.GONE);
             // bottom.likesCount.setVisibility(View.GONE);
             return;
         }
-        if (!viewModel.isLoggedIn()) {
-            bottom.like.setVisibility(View.GONE);
+        if (!this.viewModel.isLoggedIn()) {
+            this.bottom.like.setVisibility(View.GONE);
             return;
         }
-        bottom.like.setOnClickListener(v -> {
+        this.bottom.like.setOnClickListener(v -> {
             v.setEnabled(false);
-            handleLikeUnlikeResourceLiveData(viewModel.toggleLike());
+            this.handleLikeUnlikeResourceLiveData(this.viewModel.toggleLike());
         });
-        bottom.like.setOnLongClickListener(v -> {
-            final NavController navController = getNavController();
-            if (navController != null && viewModel.isLoggedIn()) {
+        this.bottom.like.setOnLongClickListener(v -> {
+            NavController navController = this.getNavController();
+            if (navController != null && this.viewModel.isLoggedIn()) {
                 try {
-                    final NavDirections action = PostViewV2FragmentDirections.actionToLikes(viewModel.getMedia().getPk(), false);
+                    NavDirections action = PostViewV2FragmentDirections.actionToLikes(this.viewModel.getMedia().getPk(), false);
                     navController.navigate(action);
-                } catch (Exception e) {
-                    Log.e(TAG, "setupLike: ", e);
+                } catch (final Exception e) {
+                    Log.e(PostViewV2Fragment.TAG, "setupLike: ", e);
                 }
                 return true;
             }
@@ -497,18 +497,18 @@ public class PostViewV2Fragment extends Fragment implements EditTextDialogFragme
         });
     }
 
-    private void handleLikeUnlikeResourceLiveData(@NonNull final LiveData<Resource<Object>> resource) {
-        resource.observe(getViewLifecycleOwner(), value -> {
+    private void handleLikeUnlikeResourceLiveData(@NonNull LiveData<Resource<Object>> resource) {
+        resource.observe(this.getViewLifecycleOwner(), value -> {
             switch (value.status) {
                 case SUCCESS:
-                    bottom.like.setEnabled(true);
+                    this.bottom.like.setEnabled(true);
                     break;
                 case ERROR:
-                    bottom.like.setEnabled(true);
-                    unsuccessfulLike();
+                    this.bottom.like.setEnabled(true);
+                    this.unsuccessfulLike();
                     break;
                 case LOADING:
-                    bottom.like.setEnabled(false);
+                    this.bottom.like.setEnabled(false);
                     break;
             }
         });
@@ -516,155 +516,155 @@ public class PostViewV2Fragment extends Fragment implements EditTextDialogFragme
     }
 
     private void unsuccessfulLike() {
-        final int errorTextResId;
-        final Media media = viewModel.getMedia();
+        int errorTextResId;
+        Media media = this.viewModel.getMedia();
         if (!media.getHasLiked()) {
-            Log.e(TAG, "like unsuccessful!");
+            Log.e(PostViewV2Fragment.TAG, "like unsuccessful!");
             errorTextResId = R.string.like_unsuccessful;
         } else {
-            Log.e(TAG, "unlike unsuccessful!");
+            Log.e(PostViewV2Fragment.TAG, "unlike unsuccessful!");
             errorTextResId = R.string.unlike_unsuccessful;
         }
-        final Snackbar snackbar = Snackbar.make(binding.getRoot(), errorTextResId, BaseTransientBottomBar.LENGTH_INDEFINITE);
+        Snackbar snackbar = Snackbar.make(this.binding.getRoot(), errorTextResId, BaseTransientBottomBar.LENGTH_INDEFINITE);
         snackbar.setAction(R.string.ok, null);
         snackbar.show();
     }
 
-    private void setLikedResources(final boolean liked) {
-        final int iconResource;
-        final ColorStateList tintColorStateList;
-        final Context context = getContext();
+    private void setLikedResources(boolean liked) {
+        int iconResource;
+        ColorStateList tintColorStateList;
+        Context context = this.getContext();
         if (context == null) return;
-        final Resources resources = context.getResources();
+        Resources resources = context.getResources();
         if (resources == null) return;
         if (liked) {
             iconResource = R.drawable.ic_like;
             tintColorStateList = ColorStateList.valueOf(resources.getColor(R.color.red_600));
         } else {
             iconResource = R.drawable.ic_not_liked;
-            tintColorStateList = originalLikeColorStateList != null ? originalLikeColorStateList
+            tintColorStateList = this.originalLikeColorStateList != null ? this.originalLikeColorStateList
                                                                     : ColorStateList.valueOf(resources.getColor(R.color.white));
         }
-        bottom.like.setIconResource(iconResource);
-        bottom.like.setIconTint(tintColorStateList);
+        this.bottom.like.setIconResource(iconResource);
+        this.bottom.like.setIconTint(tintColorStateList);
     }
 
     private void setupSave() {
-        originalSaveColorStateList = bottom.save.getIconTint();
-        if (!viewModel.isLoggedIn() || !viewModel.hasPk() || !viewModel.getMedia().getCanViewerSave()) {
-            bottom.save.setVisibility(View.GONE);
+        this.originalSaveColorStateList = this.bottom.save.getIconTint();
+        if (!this.viewModel.isLoggedIn() || !this.viewModel.hasPk() || !this.viewModel.getMedia().getCanViewerSave()) {
+            this.bottom.save.setVisibility(View.GONE);
             return;
         }
-        bottom.save.setOnClickListener(v -> {
-            bottom.save.setEnabled(false);
-            handleSaveUnsaveResourceLiveData(viewModel.toggleSave());
+        this.bottom.save.setOnClickListener(v -> {
+            this.bottom.save.setEnabled(false);
+            this.handleSaveUnsaveResourceLiveData(this.viewModel.toggleSave());
         });
-        bottom.save.setOnLongClickListener(v -> {
+        this.bottom.save.setOnLongClickListener(v -> {
             try {
-                final NavDirections action = PostViewV2FragmentDirections.actionToSavedCollections().setIsSaving(true);
+                NavDirections action = PostViewV2FragmentDirections.actionToSavedCollections().setIsSaving(true);
                 NavHostFragment.findNavController(this).navigate(action);
                 return true;
-            } catch (Exception e) {
-                Log.e(TAG, "setupSave: ", e);
+            } catch (final Exception e) {
+                Log.e(PostViewV2Fragment.TAG, "setupSave: ", e);
             }
             return false;
         });
     }
 
-    private void handleSaveUnsaveResourceLiveData(@NonNull final LiveData<Resource<Object>> resource) {
-        resource.observe(getViewLifecycleOwner(), value -> {
+    private void handleSaveUnsaveResourceLiveData(@NonNull LiveData<Resource<Object>> resource) {
+        resource.observe(this.getViewLifecycleOwner(), value -> {
             if (value == null) return;
             switch (value.status) {
                 case SUCCESS:
-                    bottom.save.setEnabled(true);
+                    this.bottom.save.setEnabled(true);
                     break;
                 case ERROR:
-                    bottom.save.setEnabled(true);
-                    unsuccessfulSave();
+                    this.bottom.save.setEnabled(true);
+                    this.unsuccessfulSave();
                     break;
                 case LOADING:
-                    bottom.save.setEnabled(false);
+                    this.bottom.save.setEnabled(false);
                     break;
             }
         });
     }
 
     private void unsuccessfulSave() {
-        final int errorTextResId;
-        final Media media = viewModel.getMedia();
+        int errorTextResId;
+        Media media = this.viewModel.getMedia();
         if (!media.getHasViewerSaved()) {
-            Log.e(TAG, "save unsuccessful!");
+            Log.e(PostViewV2Fragment.TAG, "save unsuccessful!");
             errorTextResId = R.string.save_unsuccessful;
         } else {
-            Log.e(TAG, "save remove unsuccessful!");
+            Log.e(PostViewV2Fragment.TAG, "save remove unsuccessful!");
             errorTextResId = R.string.save_remove_unsuccessful;
         }
-        final Snackbar snackbar = Snackbar.make(binding.getRoot(), errorTextResId, BaseTransientBottomBar.LENGTH_INDEFINITE);
+        Snackbar snackbar = Snackbar.make(this.binding.getRoot(), errorTextResId, BaseTransientBottomBar.LENGTH_INDEFINITE);
         snackbar.setAction(R.string.ok, null);
         snackbar.show();
     }
 
-    private void setSavedResources(final boolean saved) {
-        final int iconResource;
-        final ColorStateList tintColorStateList;
-        final Context context = getContext();
+    private void setSavedResources(boolean saved) {
+        int iconResource;
+        ColorStateList tintColorStateList;
+        Context context = this.getContext();
         if (context == null) return;
-        final Resources resources = context.getResources();
+        Resources resources = context.getResources();
         if (resources == null) return;
         if (saved) {
             iconResource = R.drawable.ic_bookmark;
             tintColorStateList = ColorStateList.valueOf(resources.getColor(R.color.blue_700));
         } else {
             iconResource = R.drawable.ic_round_bookmark_border_24;
-            tintColorStateList = originalSaveColorStateList != null ? originalSaveColorStateList
+            tintColorStateList = this.originalSaveColorStateList != null ? this.originalSaveColorStateList
                                                                     : ColorStateList.valueOf(resources.getColor(R.color.white));
         }
-        bottom.save.setIconResource(iconResource);
-        bottom.save.setIconTint(tintColorStateList);
+        this.bottom.save.setIconResource(iconResource);
+        this.bottom.save.setIconTint(tintColorStateList);
     }
 
-    private void setupProfilePic(final User user) {
+    private void setupProfilePic(User user) {
         if (user == null) {
-            binding.profilePic.setImageURI((String) null);
+            this.binding.profilePic.setImageURI((String) null);
             return;
         }
-        final String uri = user.getProfilePicUrl();
-        final DraweeController controller = Fresco
+        String uri = user.getProfilePicUrl();
+        DraweeController controller = Fresco
                 .newDraweeControllerBuilder()
                 .setUri(uri)
                 .build();
-        binding.profilePic.setController(controller);
-        binding.profilePic.setOnClickListener(v -> navigateToProfile("@" + user.getUsername()));
+        this.binding.profilePic.setController(controller);
+        this.binding.profilePic.setOnClickListener(v -> this.navigateToProfile("@" + user.getUsername()));
     }
 
-    private void setupTitles(final User user) {
+    private void setupTitles(User user) {
         if (user == null) {
-            binding.title.setVisibility(View.GONE);
-            binding.subtitle.setVisibility(View.GONE);
+            this.binding.title.setVisibility(View.GONE);
+            this.binding.subtitle.setVisibility(View.GONE);
             return;
         }
-        final String fullName = user.getFullName();
+        String fullName = user.getFullName();
         if (TextUtils.isEmpty(fullName)) {
-            binding.subtitle.setVisibility(View.GONE);
+            this.binding.subtitle.setVisibility(View.GONE);
         } else {
-            binding.subtitle.setVisibility(View.VISIBLE);
-            binding.subtitle.setText(fullName);
+            this.binding.subtitle.setVisibility(View.VISIBLE);
+            this.binding.subtitle.setText(fullName);
         }
-        setUsername(user);
-        binding.title.setOnClickListener(v -> navigateToProfile("@" + user.getUsername()));
-        binding.subtitle.setOnClickListener(v -> navigateToProfile("@" + user.getUsername()));
+        this.setUsername(user);
+        this.binding.title.setOnClickListener(v -> this.navigateToProfile("@" + user.getUsername()));
+        this.binding.subtitle.setOnClickListener(v -> this.navigateToProfile("@" + user.getUsername()));
     }
 
-    private void setUsername(final User user) {
-        final SpannableStringBuilder sb = new SpannableStringBuilder(user.getUsername());
-        final int drawableSize = Utils.convertDpToPx(24);
+    private void setUsername(User user) {
+        SpannableStringBuilder sb = new SpannableStringBuilder(user.getUsername());
+        int drawableSize = Utils.convertDpToPx(24);
         if (user.isVerified()) {
-            final Context context = getContext();
+            Context context = this.getContext();
             if (context == null) return;
-            final Drawable verifiedDrawable = AppCompatResources.getDrawable(context, R.drawable.verified);
+            Drawable verifiedDrawable = AppCompatResources.getDrawable(context, R.drawable.verified);
             VerticalImageSpan verifiedSpan = null;
             if (verifiedDrawable != null) {
-                final Drawable drawable = verifiedDrawable.mutate();
+                Drawable drawable = verifiedDrawable.mutate();
                 drawable.setBounds(0, 0, drawableSize, drawableSize);
                 verifiedSpan = new VerticalImageSpan(drawable);
             }
@@ -673,130 +673,130 @@ public class PostViewV2Fragment extends Fragment implements EditTextDialogFragme
                     sb.append("  ");
                     sb.setSpan(verifiedSpan, sb.length() - 1, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 }
-            } catch (Exception e) {
-                Log.e(TAG, "setUsername: ", e);
+            } catch (final Exception e) {
+                Log.e(PostViewV2Fragment.TAG, "setUsername: ", e);
             }
         }
-        binding.title.setText(sb);
+        this.binding.title.setText(sb);
     }
 
-    private void setupCaption(final Caption caption) {
+    private void setupCaption(Caption caption) {
         if (caption == null || TextUtils.isEmpty(caption.getText())) {
-            bottom.caption.setVisibility(View.GONE);
-            bottom.translate.setVisibility(View.GONE);
+            this.bottom.caption.setVisibility(View.GONE);
+            this.bottom.translate.setVisibility(View.GONE);
             return;
         }
-        final String postCaption = caption.getText();
-        bottom.caption.addOnHashtagListener(autoLinkItem -> {
+        String postCaption = caption.getText();
+        this.bottom.caption.addOnHashtagListener(autoLinkItem -> {
             try {
-                final String originalText = autoLinkItem.getOriginalText().trim();
-                final NavDirections action = PostViewV2FragmentDirections.actionToHashtag(originalText);
+                String originalText = autoLinkItem.getOriginalText().trim();
+                NavDirections action = PostViewV2FragmentDirections.actionToHashtag(originalText);
                 NavHostFragment.findNavController(this).navigate(action);
-            } catch (Exception e) {
-                Log.e(TAG, "setupCaption: ", e);
+            } catch (final Exception e) {
+                Log.e(PostViewV2Fragment.TAG, "setupCaption: ", e);
             }
         });
-        bottom.caption.addOnMentionClickListener(autoLinkItem -> {
-            final String originalText = autoLinkItem.getOriginalText().trim();
-            navigateToProfile(originalText);
+        this.bottom.caption.addOnMentionClickListener(autoLinkItem -> {
+            String originalText = autoLinkItem.getOriginalText().trim();
+            this.navigateToProfile(originalText);
         });
-        bottom.caption.addOnEmailClickListener(autoLinkItem -> Utils.openEmailAddress(getContext(), autoLinkItem.getOriginalText().trim()));
-        bottom.caption.addOnURLClickListener(autoLinkItem -> Utils.openURL(getContext(), autoLinkItem.getOriginalText().trim()));
-        bottom.caption.setOnLongClickListener(v -> {
-            final Context context = getContext();
+        this.bottom.caption.addOnEmailClickListener(autoLinkItem -> Utils.openEmailAddress(this.getContext(), autoLinkItem.getOriginalText().trim()));
+        this.bottom.caption.addOnURLClickListener(autoLinkItem -> Utils.openURL(this.getContext(), autoLinkItem.getOriginalText().trim()));
+        this.bottom.caption.setOnLongClickListener(v -> {
+            Context context = this.getContext();
             if (context == null) return false;
             Utils.copyText(context, postCaption);
             return true;
         });
-        bottom.caption.setText(postCaption);
-        bottom.translate.setOnClickListener(v -> handleTranslateCaptionResource(viewModel.translateCaption()));
+        this.bottom.caption.setText(postCaption);
+        this.bottom.translate.setOnClickListener(v -> this.handleTranslateCaptionResource(this.viewModel.translateCaption()));
     }
 
-    private void handleTranslateCaptionResource(@NonNull final LiveData<Resource<String>> data) {
-        data.observe(getViewLifecycleOwner(), resource -> {
+    private void handleTranslateCaptionResource(@NonNull LiveData<Resource<String>> data) {
+        data.observe(this.getViewLifecycleOwner(), resource -> {
             if (resource == null) return;
             switch (resource.status) {
                 case SUCCESS:
-                    bottom.translate.setVisibility(View.GONE);
-                    bottom.caption.setText(resource.data);
+                    this.bottom.translate.setVisibility(View.GONE);
+                    this.bottom.caption.setText(resource.data);
                     break;
                 case ERROR:
-                    bottom.translate.setEnabled(true);
+                    this.bottom.translate.setEnabled(true);
                     String message = resource.message;
                     if (TextUtils.isEmpty(message)) {
-                        message = getString(R.string.downloader_unknown_error);
+                        message = this.getString(R.string.downloader_unknown_error);
                     }
-                    final Snackbar snackbar = Snackbar.make(binding.getRoot(), message, BaseTransientBottomBar.LENGTH_INDEFINITE);
+                    Snackbar snackbar = Snackbar.make(this.binding.getRoot(), message, BaseTransientBottomBar.LENGTH_INDEFINITE);
                     snackbar.setAction(R.string.ok, null);
                     snackbar.show();
                     break;
                 case LOADING:
-                    bottom.translate.setEnabled(false);
+                    this.bottom.translate.setEnabled(false);
                     break;
             }
         });
     }
 
-    private void setupLocation(final Location location) {
-        if (location == null || !detailsVisible) {
-            binding.location.setVisibility(View.GONE);
+    private void setupLocation(Location location) {
+        if (location == null || !this.detailsVisible) {
+            this.binding.location.setVisibility(View.GONE);
             return;
         }
-        final String locationName = location.getName();
+        String locationName = location.getName();
         if (TextUtils.isEmpty(locationName)) return;
-        binding.location.setText(locationName);
-        binding.location.setVisibility(View.VISIBLE);
-        binding.location.setOnClickListener(v -> {
+        this.binding.location.setText(locationName);
+        this.binding.location.setVisibility(View.VISIBLE);
+        this.binding.location.setOnClickListener(v -> {
             try {
-                final NavController navController = getNavController();
+                NavController navController = this.getNavController();
                 if (navController == null) return;
-                final NavDirections action = PostViewV2FragmentDirections.actionToLocation(location.getPk());
+                NavDirections action = PostViewV2FragmentDirections.actionToLocation(location.getPk());
                 navController.navigate(action);
-            } catch (Exception e) {
-                Log.e(TAG, "setupLocation: ", e);
+            } catch (final Exception e) {
+                Log.e(PostViewV2Fragment.TAG, "setupLocation: ", e);
             }
         });
     }
 
     private void setupShare() {
-        if (!viewModel.hasPk()) {
-            bottom.share.setVisibility(View.GONE);
+        if (!this.viewModel.hasPk()) {
+            this.bottom.share.setVisibility(View.GONE);
             return;
         }
-        bottom.share.setVisibility(View.VISIBLE);
-        TooltipCompat.setTooltipText(bottom.share, getString(R.string.share));
-        bottom.share.setOnClickListener(v -> {
-            final Media media = viewModel.getMedia();
-            final User profileModel = media.getUser();
+        this.bottom.share.setVisibility(View.VISIBLE);
+        TooltipCompat.setTooltipText(this.bottom.share, this.getString(R.string.share));
+        this.bottom.share.setOnClickListener(v -> {
+            Media media = this.viewModel.getMedia();
+            User profileModel = media.getUser();
             if (profileModel == null) return;
-            if (viewModel.isLoggedIn()) {
-                final Context context = getContext();
+            if (this.viewModel.isLoggedIn()) {
+                Context context = this.getContext();
                 if (context == null) return;
-                final ContextThemeWrapper themeWrapper = new ContextThemeWrapper(context, R.style.popupMenuStyle);
-                final PopupMenu popupMenu = new PopupMenu(themeWrapper, bottom.share);
-                final Menu menu = popupMenu.getMenu();
+                ContextThemeWrapper themeWrapper = new ContextThemeWrapper(context, R.style.popupMenuStyle);
+                PopupMenu popupMenu = new PopupMenu(themeWrapper, this.bottom.share);
+                Menu menu = popupMenu.getMenu();
                 menu.add(0, R.id.share_dm, 0, R.string.share_via_dm);
                 menu.add(0, R.id.share, 1, R.string.share_link);
                 popupMenu.setOnMenuItemClickListener(item -> {
-                    final int itemId = item.getItemId();
+                    int itemId = item.getItemId();
                     if (itemId == R.id.share_dm) {
                         if (profileModel.isPrivate()) Toast.makeText(context, R.string.share_private_post, Toast.LENGTH_SHORT).show();
-                        final PostViewV2FragmentDirections.ActionToUserSearch actionGlobalUserSearch = PostViewV2FragmentDirections
+                        PostViewV2FragmentDirections.ActionToUserSearch actionGlobalUserSearch = PostViewV2FragmentDirections
                                 .actionToUserSearch()
-                                .setTitle(getString(R.string.share))
-                                .setActionLabel(getString(R.string.send))
+                                .setTitle(this.getString(R.string.share))
+                                .setActionLabel(this.getString(R.string.send))
                                 .setShowGroups(true)
                                 .setMultiple(true)
                                 .setSearchMode(UserSearchMode.RAVEN);
-                        final NavController navController = NavHostFragment.findNavController(this);
+                        NavController navController = NavHostFragment.findNavController(this);
                         try {
                             navController.navigate(actionGlobalUserSearch);
-                        } catch (Exception e) {
-                            Log.e(TAG, "setupShare: ", e);
+                        } catch (final Exception e) {
+                            Log.e(PostViewV2Fragment.TAG, "setupShare: ", e);
                         }
                         return true;
                     } else if (itemId == R.id.share) {
-                        shareLink(media, profileModel.isPrivate());
+                        this.shareLink(media, profileModel.isPrivate());
                         return true;
                     }
                     return false;
@@ -804,56 +804,56 @@ public class PostViewV2Fragment extends Fragment implements EditTextDialogFragme
                 popupMenu.show();
                 return;
             }
-            shareLink(media, false);
+            this.shareLink(media, false);
         });
     }
 
-    private void shareLink(@NonNull final Media media, final boolean isPrivate) {
-        final Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+    private void shareLink(@NonNull Media media, boolean isPrivate) {
+        Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
         sharingIntent.setType("text/plain");
         sharingIntent.putExtra(android.content.Intent.EXTRA_TITLE,
-                getString(isPrivate ? R.string.share_private_post : R.string.share_public_post));
+                this.getString(isPrivate ? R.string.share_private_post : R.string.share_public_post));
         sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, "https://instagram.com/p/" + media.getCode());
-        startActivity(Intent.createChooser(
+        this.startActivity(Intent.createChooser(
                 sharingIntent,
-                isPrivate ? getString(R.string.share_private_post)
-                          : getString(R.string.share_public_post)
+                isPrivate ? this.getString(R.string.share_private_post)
+                          : this.getString(R.string.share_public_post)
         ));
     }
 
-    private void setupPostTypeLayout(final MediaItemType type) {
+    private void setupPostTypeLayout(MediaItemType type) {
         if (type == null) return;
         switch (type) {
             case MEDIA_TYPE_IMAGE:
-                setupPostImage();
+                this.setupPostImage();
                 break;
             case MEDIA_TYPE_SLIDER:
-                setupSlider();
+                this.setupSlider();
                 break;
             case MEDIA_TYPE_VIDEO:
-                setupVideo();
+                this.setupVideo();
                 break;
         }
     }
 
     private void setupPostImage() {
         // binding.mediaCounter.setVisibility(View.GONE);
-        final Context context = getContext();
+        Context context = this.getContext();
         if (context == null) return;
-        final Resources resources = context.getResources();
+        Resources resources = context.getResources();
         if (resources == null) return;
-        final Media media = viewModel.getMedia();
-        final String imageUrl = ResponseBodyUtils.getImageUrl(media);
+        Media media = this.viewModel.getMedia();
+        String imageUrl = ResponseBodyUtils.getImageUrl(media);
         if (TextUtils.isEmpty(imageUrl)) return;
-        final ZoomableDraweeView postImage = new ZoomableDraweeView(context);
-        postView = postImage;
-        final NullSafePair<Integer, Integer> widthHeight = NumberUtils.calculateWidthHeight(media.getOriginalHeight(),
+        ZoomableDraweeView postImage = new ZoomableDraweeView(context);
+        this.postView = postImage;
+        NullSafePair<Integer, Integer> widthHeight = NumberUtils.calculateWidthHeight(media.getOriginalHeight(),
                                                                                             media.getOriginalWidth(),
                                                                                             (int) (Utils.displayMetrics.heightPixels * 0.8),
                                                                                             Utils.displayMetrics.widthPixels);
-        originalHeight = widthHeight.second;
-        final ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                originalHeight);
+        this.originalHeight = widthHeight.second;
+        ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                this.originalHeight);
         postImage.setLayoutParams(layoutParams);
         postImage.setHierarchy(new GenericDraweeHierarchyBuilder(resources)
                                        .setActualImageScaleType(ScalingUtils.ScaleType.FIT_CENTER)
@@ -865,66 +865,66 @@ public class PostViewV2Fragment extends Fragment implements EditTextDialogFragme
                                                                           .setLocalThumbnailPreviewsEnabled(true)
                                                                           .build())
                                       .build());
-        final AnimatedZoomableController zoomableController = (AnimatedZoomableController) postImage.getZoomableController();
+        AnimatedZoomableController zoomableController = (AnimatedZoomableController) postImage.getZoomableController();
         zoomableController.setMaxScaleFactor(3f);
         zoomableController.setGestureZoomEnabled(true);
         zoomableController.setEnabled(true);
         postImage.setZoomingEnabled(true);
-        final DoubleTapGestureListener tapListener = new DoubleTapGestureListener(postImage) {
+        DoubleTapGestureListener tapListener = new DoubleTapGestureListener(postImage) {
             @Override
-            public boolean onSingleTapConfirmed(final MotionEvent e) {
-                if (!isInFullScreenMode) {
+            public boolean onSingleTapConfirmed(MotionEvent e) {
+                if (!PostViewV2Fragment.this.isInFullScreenMode) {
                     zoomableController.reset();
-                    hideSystemUI();
+                    PostViewV2Fragment.this.hideSystemUI();
                 } else {
-                    showSystemUI();
-                    binding.getRoot().postDelayed(zoomableController::reset, 500);
+                    PostViewV2Fragment.this.showSystemUI();
+                    PostViewV2Fragment.this.binding.getRoot().postDelayed(zoomableController::reset, 500);
                 }
                 return super.onSingleTapConfirmed(e);
             }
         };
         postImage.setTapListener(tapListener);
-        binding.postContainer.addView(postView);
+        this.binding.postContainer.addView(this.postView);
     }
 
     private void setupSlider() {
-        final Media media = viewModel.getMedia();
-        binding.mediaCounter.setVisibility(View.VISIBLE);
-        final Context context = getContext();
+        Media media = this.viewModel.getMedia();
+        this.binding.mediaCounter.setVisibility(View.VISIBLE);
+        Context context = this.getContext();
         if (context == null) return;
-        sliderParent = new ViewPager2(context);
-        final List<Media> carouselMedia = media.getCarouselMedia();
+        this.sliderParent = new ViewPager2(context);
+        List<Media> carouselMedia = media.getCarouselMedia();
         if (carouselMedia == null) return;
-        final NullSafePair<Integer, Integer> maxHW = carouselMedia
+        NullSafePair<Integer, Integer> maxHW = carouselMedia
                 .stream()
                 .reduce(new NullSafePair<>(0, 0),
                         (prev, m) -> {
-                            final int height = m.getOriginalHeight() > prev.first ? m.getOriginalHeight() : prev.first;
-                            final int width = m.getOriginalWidth() > prev.second ? m.getOriginalWidth() : prev.second;
+                            int height = m.getOriginalHeight() > prev.first ? m.getOriginalHeight() : prev.first;
+                            int width = m.getOriginalWidth() > prev.second ? m.getOriginalWidth() : prev.second;
                             return new NullSafePair<>(height, width);
                         },
                         (p1, p2) -> {
-                            final int height = p1.first > p2.first ? p1.first : p2.first;
-                            final int width = p1.second > p2.second ? p1.second : p2.second;
+                            int height = p1.first > p2.first ? p1.first : p2.first;
+                            int width = p1.second > p2.second ? p1.second : p2.second;
                             return new NullSafePair<>(height, width);
                         });
-        final NullSafePair<Integer, Integer> widthHeight = NumberUtils.calculateWidthHeight(maxHW.first,
+        NullSafePair<Integer, Integer> widthHeight = NumberUtils.calculateWidthHeight(maxHW.first,
                                                                                             maxHW.second,
                                                                                             (int) (Utils.displayMetrics.heightPixels * 0.8),
                                                                                             Utils.displayMetrics.widthPixels);
-        originalHeight = widthHeight.second;
-        final ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                originalHeight);
-        sliderParent.setLayoutParams(layoutParams);
-        postView = sliderParent;
+        this.originalHeight = widthHeight.second;
+        ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                this.originalHeight);
+        this.sliderParent.setLayoutParams(layoutParams);
+        this.postView = this.sliderParent;
         // binding.contentRoot.addView(sliderParent, 0);
-        binding.postContainer.addView(postView);
+        this.binding.postContainer.addView(this.postView);
 
-        final boolean hasVideo = media.getCarouselMedia()
+        boolean hasVideo = media.getCarouselMedia()
                                       .stream()
                                       .anyMatch(postChild -> postChild.getType() == MediaItemType.MEDIA_TYPE_VIDEO);
         if (hasVideo) {
-            final View child = sliderParent.getChildAt(0);
+            View child = this.sliderParent.getChildAt(0);
             if (child instanceof RecyclerView) {
                 ((RecyclerView) child).setItemViewCacheSize(media.getCarouselMedia().size());
                 ((RecyclerView) child).addRecyclerListener(holder -> {
@@ -934,28 +934,28 @@ public class PostViewV2Fragment extends Fragment implements EditTextDialogFragme
                 });
             }
         }
-        sliderItemsAdapter = new SliderItemsAdapter(true, new SliderCallbackAdapter() {
+        this.sliderItemsAdapter = new SliderItemsAdapter(true, new SliderCallbackAdapter() {
             @Override
-            public void onItemClicked(final int position, final Media media, final View view) {
+            public void onItemClicked(int position, Media media, View view) {
                 if (media == null
                         || media.getType() != MediaItemType.MEDIA_TYPE_IMAGE
                         || !(view instanceof ZoomableDraweeView)) {
                     return;
                 }
-                final ZoomableController zoomableController = ((ZoomableDraweeView) view).getZoomableController();
+                ZoomableController zoomableController = ((ZoomableDraweeView) view).getZoomableController();
                 if (!(zoomableController instanceof AnimatedZoomableController)) return;
-                if (!isInFullScreenMode) {
+                if (!PostViewV2Fragment.this.isInFullScreenMode) {
                     ((AnimatedZoomableController) zoomableController).reset();
-                    hideSystemUI();
+                    PostViewV2Fragment.this.hideSystemUI();
                     return;
                 }
-                showSystemUI();
-                binding.getRoot().postDelayed(((AnimatedZoomableController) zoomableController)::reset, 500);
+                PostViewV2Fragment.this.showSystemUI();
+                PostViewV2Fragment.this.binding.getRoot().postDelayed(((AnimatedZoomableController) zoomableController)::reset, 500);
             }
 
             @Override
-            public void onPlayerPlay(final int position) {
-                final FragmentActivity activity = getActivity();
+            public void onPlayerPlay(int position) {
+                FragmentActivity activity = PostViewV2Fragment.this.getActivity();
                 if (activity == null) return;
                 Utils.enabledKeepScreenOn(activity);
                 // if (!detailsVisible || hasBeenToggled) return;
@@ -963,8 +963,8 @@ public class PostViewV2Fragment extends Fragment implements EditTextDialogFragme
             }
 
             @Override
-            public void onPlayerPause(final int position) {
-                final FragmentActivity activity = getActivity();
+            public void onPlayerPause(int position) {
+                FragmentActivity activity = PostViewV2Fragment.this.getActivity();
                 if (activity == null) return;
                 Utils.disableKeepScreenOn(activity);
                 // if (detailsVisible || hasBeenToggled) return;
@@ -972,56 +972,56 @@ public class PostViewV2Fragment extends Fragment implements EditTextDialogFragme
             }
 
             @Override
-            public void onPlayerRelease(final int position) {
-                final FragmentActivity activity = getActivity();
+            public void onPlayerRelease(int position) {
+                FragmentActivity activity = PostViewV2Fragment.this.getActivity();
                 if (activity == null) return;
                 Utils.disableKeepScreenOn(activity);
             }
 
             @Override
-            public void onFullScreenModeChanged(final boolean isFullScreen, final StyledPlayerView playerView) {
+            public void onFullScreenModeChanged(boolean isFullScreen, StyledPlayerView playerView) {
                 PostViewV2Fragment.this.playerView = playerView;
                 if (isFullScreen) {
-                    hideSystemUI();
+                    PostViewV2Fragment.this.hideSystemUI();
                     return;
                 }
-                showSystemUI();
+                PostViewV2Fragment.this.showSystemUI();
             }
 
             @Override
             public boolean isInFullScreen() {
-                return isInFullScreenMode;
+                return PostViewV2Fragment.this.isInFullScreenMode;
             }
         });
-        sliderParent.setAdapter(sliderItemsAdapter);
-        if (sliderPosition >= 0 && sliderPosition < media.getCarouselMedia().size()) {
-            sliderParent.setCurrentItem(sliderPosition);
+        this.sliderParent.setAdapter(this.sliderItemsAdapter);
+        if (this.sliderPosition >= 0 && this.sliderPosition < media.getCarouselMedia().size()) {
+            this.sliderParent.setCurrentItem(this.sliderPosition);
         }
-        sliderParent.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+        this.sliderParent.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             int prevPosition = -1;
 
             @Override
-            public void onPageScrolled(final int position, final float positionOffset, final int positionOffsetPixels) {
-                if (prevPosition != -1) {
-                    final View view = sliderParent.getChildAt(0);
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                if (this.prevPosition != -1) {
+                    View view = PostViewV2Fragment.this.sliderParent.getChildAt(0);
                     if (view instanceof RecyclerView) {
-                        pausePlayerAtPosition(prevPosition, (RecyclerView) view);
-                        pausePlayerAtPosition(position, (RecyclerView) view);
+                        this.pausePlayerAtPosition(this.prevPosition, (RecyclerView) view);
+                        this.pausePlayerAtPosition(position, (RecyclerView) view);
                     }
                 }
                 if (positionOffset == 0) {
-                    prevPosition = position;
+                    this.prevPosition = position;
                 }
             }
 
             @Override
-            public void onPageSelected(final int position) {
-                final int size = media.getCarouselMedia().size();
+            public void onPageSelected(int position) {
+                int size = media.getCarouselMedia().size();
                 if (position < 0 || position >= size) return;
-                sliderPosition = position;
-                final String text = (position + 1) + "/" + size;
-                binding.mediaCounter.setText(text);
-                final Media childMedia = media.getCarouselMedia().get(position);
+                PostViewV2Fragment.this.sliderPosition = position;
+                String text = (position + 1) + "/" + size;
+                PostViewV2Fragment.this.binding.mediaCounter.setText(text);
+                Media childMedia = media.getCarouselMedia().get(position);
 //                video = false;
 //                if (childMedia.getType() == MediaItemType.MEDIA_TYPE_VIDEO) {
 //                    video = true;
@@ -1031,36 +1031,36 @@ public class PostViewV2Fragment extends Fragment implements EditTextDialogFragme
 //                viewModel.setViewCount(null);
             }
 
-            private void pausePlayerAtPosition(final int position, final RecyclerView view) {
-                final RecyclerView.ViewHolder viewHolder = view.findViewHolderForAdapterPosition(position);
+            private void pausePlayerAtPosition(int position, RecyclerView view) {
+                RecyclerView.ViewHolder viewHolder = view.findViewHolderForAdapterPosition(position);
                 if (viewHolder instanceof SliderVideoViewHolder) {
                     ((SliderVideoViewHolder) viewHolder).pause();
                 }
             }
         });
-        final String text = "1/" + carouselMedia.size();
-        binding.mediaCounter.setText(text);
-        sliderItemsAdapter.submitList(media.getCarouselMedia());
-        sliderParent.setCurrentItem(sliderPosition);
+        String text = "1/" + carouselMedia.size();
+        this.binding.mediaCounter.setText(text);
+        this.sliderItemsAdapter.submitList(media.getCarouselMedia());
+        this.sliderParent.setCurrentItem(this.sliderPosition);
     }
 
     private void pauseSliderPlayer() {
-        if (sliderParent == null) return;
-        final int currentItem = sliderParent.getCurrentItem();
-        final View view = sliderParent.getChildAt(0);
+        if (this.sliderParent == null) return;
+        int currentItem = this.sliderParent.getCurrentItem();
+        View view = this.sliderParent.getChildAt(0);
         if (!(view instanceof RecyclerView)) return;
-        final RecyclerView.ViewHolder viewHolder = ((RecyclerView) view).findViewHolderForAdapterPosition(currentItem);
+        RecyclerView.ViewHolder viewHolder = ((RecyclerView) view).findViewHolderForAdapterPosition(currentItem);
         if (!(viewHolder instanceof SliderVideoViewHolder)) return;
         ((SliderVideoViewHolder) viewHolder).pause();
     }
 
     private void releaseAllSliderPlayers() {
-        if (sliderParent == null) return;
-        final View view = sliderParent.getChildAt(0);
+        if (this.sliderParent == null) return;
+        View view = this.sliderParent.getChildAt(0);
         if (!(view instanceof RecyclerView)) return;
-        final int itemCount = sliderItemsAdapter.getItemCount();
+        int itemCount = this.sliderItemsAdapter.getItemCount();
         for (int position = itemCount - 1; position >= 0; position--) {
-            final RecyclerView.ViewHolder viewHolder = ((RecyclerView) view).findViewHolderForAdapterPosition(position);
+            RecyclerView.ViewHolder viewHolder = ((RecyclerView) view).findViewHolderForAdapterPosition(position);
             if (!(viewHolder instanceof SliderVideoViewHolder)) continue;
             ((SliderVideoViewHolder) viewHolder).releasePlayer();
         }
@@ -1068,22 +1068,22 @@ public class PostViewV2Fragment extends Fragment implements EditTextDialogFragme
 
     private void setupVideo() {
 //        video = true;
-        final Media media = viewModel.getMedia();
-        binding.mediaCounter.setVisibility(View.GONE);
-        final Context context = getContext();
+        Media media = this.viewModel.getMedia();
+        this.binding.mediaCounter.setVisibility(View.GONE);
+        Context context = this.getContext();
         if (context == null) return;
-        final LayoutVideoPlayerWithThumbnailBinding videoPost = LayoutVideoPlayerWithThumbnailBinding
-                .inflate(LayoutInflater.from(context), binding.contentRoot, false);
-        final ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) videoPost.getRoot().getLayoutParams();
-        final NullSafePair<Integer, Integer> widthHeight = NumberUtils.calculateWidthHeight(media.getOriginalHeight(),
+        LayoutVideoPlayerWithThumbnailBinding videoPost = LayoutVideoPlayerWithThumbnailBinding
+                .inflate(LayoutInflater.from(context), this.binding.contentRoot, false);
+        ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) videoPost.getRoot().getLayoutParams();
+        NullSafePair<Integer, Integer> widthHeight = NumberUtils.calculateWidthHeight(media.getOriginalHeight(),
                                                                                             media.getOriginalWidth(),
                                                                                             (int) (Utils.displayMetrics.heightPixels * 0.8),
                                                                                             Utils.displayMetrics.widthPixels);
         layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
-        originalHeight = widthHeight.second;
-        layoutParams.height = originalHeight;
-        postView = videoPost.getRoot();
-        binding.postContainer.addView(postView);
+        this.originalHeight = widthHeight.second;
+        layoutParams.height = this.originalHeight;
+        this.postView = videoPost.getRoot();
+        this.binding.postContainer.addView(this.postView);
 
         // final GestureDetector gestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
         //     @Override
@@ -1096,19 +1096,19 @@ public class PostViewV2Fragment extends Fragment implements EditTextDialogFragme
         //     gestureDetector.onTouchEvent(event);
         //     return true;
         // });
-        final float vol = Utils.settingsHelper.getBoolean(PreferenceKeys.MUTED_VIDEOS) ? 0f : 1f;
-        final VideoPlayerViewHelper.VideoPlayerCallback videoPlayerCallback = new VideoPlayerCallbackAdapter() {
+        float vol = Utils.settingsHelper.getBoolean(PreferenceKeys.MUTED_VIDEOS) ? 0f : 1f;
+        VideoPlayerViewHelper.VideoPlayerCallback videoPlayerCallback = new VideoPlayerCallbackAdapter() {
             @Override
             public void onThumbnailLoaded() {
-                startPostponedEnterTransition();
+                PostViewV2Fragment.this.startPostponedEnterTransition();
             }
 
             @Override
             public void onPlayerViewLoaded() {
                 // binding.playerControls.getRoot().setVisibility(View.VISIBLE);
-                final ViewGroup.LayoutParams layoutParams = videoPost.playerView.getLayoutParams();
-                final int requiredWidth = Utils.displayMetrics.widthPixels;
-                final int resultingHeight = NumberUtils
+                ViewGroup.LayoutParams layoutParams = videoPost.playerView.getLayoutParams();
+                int requiredWidth = Utils.displayMetrics.widthPixels;
+                int resultingHeight = NumberUtils
                         .getResultingHeight(requiredWidth, media.getOriginalHeight(), media.getOriginalWidth());
                 layoutParams.width = requiredWidth;
                 layoutParams.height = resultingHeight;
@@ -1117,7 +1117,7 @@ public class PostViewV2Fragment extends Fragment implements EditTextDialogFragme
 
             @Override
             public void onPlay() {
-                final FragmentActivity activity = getActivity();
+                FragmentActivity activity = PostViewV2Fragment.this.getActivity();
                 if (activity == null) return;
                 Utils.enabledKeepScreenOn(activity);
                 // if (detailsVisible) {
@@ -1127,40 +1127,40 @@ public class PostViewV2Fragment extends Fragment implements EditTextDialogFragme
 
             @Override
             public void onPause() {
-                final FragmentActivity activity = getActivity();
+                FragmentActivity activity = PostViewV2Fragment.this.getActivity();
                 if (activity == null) return;
                 Utils.disableKeepScreenOn(activity);
             }
 
             @Override
             public void onRelease() {
-                final FragmentActivity activity = getActivity();
+                FragmentActivity activity = PostViewV2Fragment.this.getActivity();
                 if (activity == null) return;
                 Utils.disableKeepScreenOn(activity);
             }
 
             @Override
-            public void onFullScreenModeChanged(final boolean isFullScreen, final StyledPlayerView playerView) {
+            public void onFullScreenModeChanged(boolean isFullScreen, StyledPlayerView playerView) {
                 PostViewV2Fragment.this.playerView = playerView;
                 if (isFullScreen) {
-                    hideSystemUI();
+                    PostViewV2Fragment.this.hideSystemUI();
                     return;
                 }
-                showSystemUI();
+                PostViewV2Fragment.this.showSystemUI();
             }
         };
-        final float aspectRatio = (float) media.getOriginalWidth() / media.getOriginalHeight();
+        float aspectRatio = (float) media.getOriginalWidth() / media.getOriginalHeight();
         String videoUrl = null;
-        final List<MediaCandidate> videoVersions = media.getVideoVersions();
+        List<MediaCandidate> videoVersions = media.getVideoVersions();
         if (videoVersions != null && !videoVersions.isEmpty()) {
-            final MediaCandidate videoVersion = videoVersions.get(0);
+            MediaCandidate videoVersion = videoVersions.get(0);
             if (videoVersion != null) {
                 videoUrl = videoVersion.getUrl();
             }
         }
         if (videoUrl != null) {
-            videoPlayerViewHelper = new VideoPlayerViewHelper(
-                    binding.getRoot().getContext(),
+            this.videoPlayerViewHelper = new VideoPlayerViewHelper(
+                    this.binding.getRoot().getContext(),
                     videoPost,
                     videoUrl,
                     vol,
@@ -1171,28 +1171,28 @@ public class PostViewV2Fragment extends Fragment implements EditTextDialogFragme
         }
     }
 
-    private void setupOptions(final Boolean show) {
+    private void setupOptions(Boolean show) {
         if (!show) {
-            binding.options.setVisibility(View.GONE);
+            this.binding.options.setVisibility(View.GONE);
             return;
         }
-        binding.options.setVisibility(View.VISIBLE);
-        binding.options.setOnClickListener(v -> {
-            if (optionsPopup == null) return;
-            optionsPopup.show();
+        this.binding.options.setVisibility(View.VISIBLE);
+        this.binding.options.setOnClickListener(v -> {
+            if (this.optionsPopup == null) return;
+            this.optionsPopup.show();
         });
     }
 
     private void createOptionsPopupMenu() {
-        if (optionsPopup == null) {
-            final Context context = getContext();
+        if (this.optionsPopup == null) {
+            Context context = this.getContext();
             if (context == null) return;
-            final ContextThemeWrapper themeWrapper = new ContextThemeWrapper(context, R.style.popupMenuStyle);
-            optionsPopup = new PopupMenu(themeWrapper, binding.options);
+            ContextThemeWrapper themeWrapper = new ContextThemeWrapper(context, R.style.popupMenuStyle);
+            this.optionsPopup = new PopupMenu(themeWrapper, this.binding.options);
         } else {
-            optionsPopup.getMenu().clear();
+            this.optionsPopup.getMenu().clear();
         }
-        optionsPopup.getMenuInflater().inflate(R.menu.post_view_menu, optionsPopup.getMenu());
+        this.optionsPopup.getMenuInflater().inflate(R.menu.post_view_menu, this.optionsPopup.getMenu());
         // final Menu menu = optionsPopup.getMenu();
         // final int size = menu.size();
         // for (int i = 0; i < size; i++) {
@@ -1201,39 +1201,39 @@ public class PostViewV2Fragment extends Fragment implements EditTextDialogFragme
         //     if (options.contains(item.getItemId())) continue;
         //     menu.removeItem(item.getItemId());
         // }
-        optionsPopup.setOnMenuItemClickListener(item -> {
-            int itemId = item.getItemId();
+        this.optionsPopup.setOnMenuItemClickListener(item -> {
+            final int itemId = item.getItemId();
             if (itemId == R.id.edit_caption) {
-                showCaptionEditDialog();
+                this.showCaptionEditDialog();
                 return true;
             }
             if (itemId == R.id.delete) {
                 item.setEnabled(false);
-                final LiveData<Resource<Object>> resourceLiveData = viewModel.delete();
-                handleDeleteResource(resourceLiveData, item);
+                LiveData<Resource<Object>> resourceLiveData = this.viewModel.delete();
+                this.handleDeleteResource(resourceLiveData, item);
             }
             return true;
         });
     }
 
-    private void handleDeleteResource(final LiveData<Resource<Object>> resourceLiveData, final MenuItem item) {
+    private void handleDeleteResource(LiveData<Resource<Object>> resourceLiveData, MenuItem item) {
         if (resourceLiveData == null) return;
-        resourceLiveData.observe(getViewLifecycleOwner(), new Observer<Resource<Object>>() {
+        resourceLiveData.observe(this.getViewLifecycleOwner(), new Observer<Resource<Object>>() {
             @Override
-            public void onChanged(final Resource<Object> resource) {
+            public void onChanged(Resource<Object> resource) {
                 try {
                     switch (resource.status) {
                         case SUCCESS:
-                            wasDeleted = true;
-                            if (onDeleteListener != null) {
-                                onDeleteListener.onDelete();
+                            PostViewV2Fragment.this.wasDeleted = true;
+                            if (PostViewV2Fragment.this.onDeleteListener != null) {
+                                PostViewV2Fragment.this.onDeleteListener.onDelete();
                             }
                             break;
                         case ERROR:
                             if (item != null) {
                                 item.setEnabled(true);
                             }
-                            final Snackbar snackbar = Snackbar.make(binding.getRoot(),
+                            Snackbar snackbar = Snackbar.make(PostViewV2Fragment.this.binding.getRoot(),
                                                                     R.string.delete_unsuccessful,
                                     BaseTransientBottomBar.LENGTH_INDEFINITE);
                             snackbar.setAction(R.string.ok, null);
@@ -1253,25 +1253,25 @@ public class PostViewV2Fragment extends Fragment implements EditTextDialogFragme
     }
 
     private void showCaptionEditDialog() {
-        final Caption caption = viewModel.getCaption().getValue();
-        final String captionText = caption != null ? caption.getText() : null;
-        editTextDialogFragment = EditTextDialogFragment
+        Caption caption = this.viewModel.getCaption().getValue();
+        String captionText = caption != null ? caption.getText() : null;
+        this.editTextDialogFragment = EditTextDialogFragment
                 .newInstance(R.string.edit_caption, R.string.confirm, R.string.cancel, captionText);
-        editTextDialogFragment.show(getChildFragmentManager(), "edit_caption");
+        this.editTextDialogFragment.show(this.getChildFragmentManager(), "edit_caption");
     }
 
     @Override
-    public void onPositiveButtonClicked(final String caption) {
-        handleEditCaptionResource(viewModel.updateCaption(caption));
-        if (editTextDialogFragment == null) return;
-        editTextDialogFragment.dismiss();
-        editTextDialogFragment = null;
+    public void onPositiveButtonClicked(String caption) {
+        this.handleEditCaptionResource(this.viewModel.updateCaption(caption));
+        if (this.editTextDialogFragment == null) return;
+        this.editTextDialogFragment.dismiss();
+        this.editTextDialogFragment = null;
     }
 
-    private void handleEditCaptionResource(final LiveData<Resource<Object>> updateCaption) {
+    private void handleEditCaptionResource(LiveData<Resource<Object>> updateCaption) {
         if (updateCaption == null) return;
-        updateCaption.observe(getViewLifecycleOwner(), resource -> {
-            final MenuItem item = optionsPopup.getMenu().findItem(R.id.edit_caption);
+        updateCaption.observe(this.getViewLifecycleOwner(), resource -> {
+            MenuItem item = this.optionsPopup.getMenu().findItem(R.id.edit_caption);
             switch (resource.status) {
                 case SUCCESS:
                     if (item != null) {
@@ -1282,7 +1282,7 @@ public class PostViewV2Fragment extends Fragment implements EditTextDialogFragme
                     if (item != null) {
                         item.setEnabled(true);
                     }
-                    final Snackbar snackbar = Snackbar.make(binding.getRoot(), R.string.edit_unsuccessful, BaseTransientBottomBar.LENGTH_INDEFINITE);
+                    Snackbar snackbar = Snackbar.make(this.binding.getRoot(), R.string.edit_unsuccessful, BaseTransientBottomBar.LENGTH_INDEFINITE);
                     snackbar.setAction(R.string.ok, null);
                     snackbar.show();
                     break;
@@ -1297,181 +1297,181 @@ public class PostViewV2Fragment extends Fragment implements EditTextDialogFragme
 
     @Override
     public void onNegativeButtonClicked() {
-        if (editTextDialogFragment == null) return;
-        editTextDialogFragment.dismiss();
-        editTextDialogFragment = null;
+        if (this.editTextDialogFragment == null) return;
+        this.editTextDialogFragment.dismiss();
+        this.editTextDialogFragment = null;
     }
 
     private void toggleDetails() {
         // final boolean hasBeenToggled = true;
-        final MainActivity activity = (MainActivity) getActivity();
+        MainActivity activity = (MainActivity) this.getActivity();
         if (activity == null) return;
-        final Media media = viewModel.getMedia();
-        binding.getRoot().post(() -> {
-            TransitionManager.beginDelayedTransition(binding.getRoot());
-            if (detailsVisible) {
-                final Context context = getContext();
+        Media media = this.viewModel.getMedia();
+        this.binding.getRoot().post(() -> {
+            TransitionManager.beginDelayedTransition(this.binding.getRoot());
+            if (this.detailsVisible) {
+                Context context = this.getContext();
                 if (context == null) return;
-                originalRootBackground = binding.getRoot().getBackground();
-                final Resources resources = context.getResources();
+                this.originalRootBackground = this.binding.getRoot().getBackground();
+                Resources resources = context.getResources();
                 if (resources == null) return;
-                final ColorDrawable colorDrawable = new ColorDrawable(resources.getColor(R.color.black));
-                binding.getRoot().setBackground(colorDrawable);
-                if (postView != null) {
+                ColorDrawable colorDrawable = new ColorDrawable(resources.getColor(R.color.black));
+                this.binding.getRoot().setBackground(colorDrawable);
+                if (this.postView != null) {
                     // Make post match parent
-                    final int fullHeight = Utils.displayMetrics.heightPixels - Utils.getStatusBarHeight(context);
-                    postView.getLayoutParams().height = fullHeight;
-                    binding.postContainer.getLayoutParams().height = fullHeight;
-                    if (playerView != null) {
-                        playerViewOriginalHeight = playerView.getLayoutParams().height;
-                        playerView.getLayoutParams().height = fullHeight;
+                    int fullHeight = Utils.displayMetrics.heightPixels - Utils.getStatusBarHeight(context);
+                    this.postView.getLayoutParams().height = fullHeight;
+                    this.binding.postContainer.getLayoutParams().height = fullHeight;
+                    if (this.playerView != null) {
+                        this.playerViewOriginalHeight = this.playerView.getLayoutParams().height;
+                        this.playerView.getLayoutParams().height = fullHeight;
                     }
                 }
-                final BottomNavigationView bottomNavView = activity.getBottomNavView();
+                BottomNavigationView bottomNavView = activity.getBottomNavView();
                 bottomNavView.setVisibility(View.GONE);
-                detailsVisible = false;
+                this.detailsVisible = false;
                 if (media.getUser() != null) {
-                    binding.profilePic.setVisibility(View.GONE);
-                    binding.title.setVisibility(View.GONE);
-                    binding.subtitle.setVisibility(View.GONE);
+                    this.binding.profilePic.setVisibility(View.GONE);
+                    this.binding.title.setVisibility(View.GONE);
+                    this.binding.subtitle.setVisibility(View.GONE);
                 }
                 if (media.getLocation() != null) {
-                    binding.location.setVisibility(View.GONE);
+                    this.binding.location.setVisibility(View.GONE);
                 }
                 if (media.getCaption() != null && !TextUtils.isEmpty(media.getCaption().getText())) {
-                    bottom.caption.setVisibility(View.GONE);
-                    bottom.translate.setVisibility(View.GONE);
+                    this.bottom.caption.setVisibility(View.GONE);
+                    this.bottom.translate.setVisibility(View.GONE);
                 }
-                bottom.likesCount.setVisibility(View.GONE);
-                bottom.commentsCount.setVisibility(View.GONE);
-                bottom.date.setVisibility(View.GONE);
-                bottom.comment.setVisibility(View.GONE);
-                bottom.like.setVisibility(View.GONE);
-                bottom.save.setVisibility(View.GONE);
-                bottom.share.setVisibility(View.GONE);
-                bottom.download.setVisibility(View.GONE);
-                binding.mediaCounter.setVisibility(View.GONE);
-                bottom.viewsCount.setVisibility(View.GONE);
-                final List<Integer> options = viewModel.getOptions().getValue();
+                this.bottom.likesCount.setVisibility(View.GONE);
+                this.bottom.commentsCount.setVisibility(View.GONE);
+                this.bottom.date.setVisibility(View.GONE);
+                this.bottom.comment.setVisibility(View.GONE);
+                this.bottom.like.setVisibility(View.GONE);
+                this.bottom.save.setVisibility(View.GONE);
+                this.bottom.share.setVisibility(View.GONE);
+                this.bottom.download.setVisibility(View.GONE);
+                this.binding.mediaCounter.setVisibility(View.GONE);
+                this.bottom.viewsCount.setVisibility(View.GONE);
+                List<Integer> options = this.viewModel.getOptions().getValue();
                 if (options != null && !options.isEmpty()) {
-                    binding.options.setVisibility(View.GONE);
+                    this.binding.options.setVisibility(View.GONE);
                 }
                 return;
             }
-            if (originalRootBackground != null) {
-                binding.getRoot().setBackground(originalRootBackground);
+            if (this.originalRootBackground != null) {
+                this.binding.getRoot().setBackground(this.originalRootBackground);
             }
-            if (postView != null) {
+            if (this.postView != null) {
                 // Make post height back to original
-                postView.getLayoutParams().height = originalHeight;
-                binding.postContainer.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
-                if (playerView != null) {
-                    playerView.getLayoutParams().height = playerViewOriginalHeight;
-                    playerView = null;
+                this.postView.getLayoutParams().height = this.originalHeight;
+                this.binding.postContainer.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                if (this.playerView != null) {
+                    this.playerView.getLayoutParams().height = this.playerViewOriginalHeight;
+                    this.playerView = null;
                 }
             }
-            final BottomNavigationView bottomNavView = activity.getBottomNavView();
+            BottomNavigationView bottomNavView = activity.getBottomNavView();
             bottomNavView.setVisibility(View.VISIBLE);
             if (media.getUser() != null) {
-                binding.profilePic.setVisibility(View.VISIBLE);
-                binding.title.setVisibility(View.VISIBLE);
-                binding.subtitle.setVisibility(View.VISIBLE);
+                this.binding.profilePic.setVisibility(View.VISIBLE);
+                this.binding.title.setVisibility(View.VISIBLE);
+                this.binding.subtitle.setVisibility(View.VISIBLE);
                 // binding.topBg.setVisibility(View.VISIBLE);
             }
             if (media.getLocation() != null) {
-                binding.location.setVisibility(View.VISIBLE);
+                this.binding.location.setVisibility(View.VISIBLE);
             }
             if (media.getCaption() != null && !TextUtils.isEmpty(media.getCaption().getText())) {
-                bottom.caption.setVisibility(View.VISIBLE);
-                bottom.translate.setVisibility(View.VISIBLE);
+                this.bottom.caption.setVisibility(View.VISIBLE);
+                this.bottom.translate.setVisibility(View.VISIBLE);
             }
-            if (viewModel.hasPk()) {
-                bottom.likesCount.setVisibility(View.VISIBLE);
-                bottom.date.setVisibility(View.VISIBLE);
+            if (this.viewModel.hasPk()) {
+                this.bottom.likesCount.setVisibility(View.VISIBLE);
+                this.bottom.date.setVisibility(View.VISIBLE);
                 // binding.captionParent.setVisibility(View.VISIBLE);
                 // binding.captionToggle.setVisibility(View.VISIBLE);
-                bottom.share.setVisibility(View.VISIBLE);
+                this.bottom.share.setVisibility(View.VISIBLE);
             }
-            if (viewModel.hasPk() && !viewModel.getMedia().getCommentsDisabled()) {
-                bottom.comment.setVisibility(View.VISIBLE);
-                bottom.commentsCount.setVisibility(View.VISIBLE);
+            if (this.viewModel.hasPk() && !this.viewModel.getMedia().getCommentsDisabled()) {
+                this.bottom.comment.setVisibility(View.VISIBLE);
+                this.bottom.commentsCount.setVisibility(View.VISIBLE);
             }
-            bottom.download.setVisibility(View.VISIBLE);
-            final List<Integer> options = viewModel.getOptions().getValue();
+            this.bottom.download.setVisibility(View.VISIBLE);
+            List<Integer> options = this.viewModel.getOptions().getValue();
             if (options != null && !options.isEmpty()) {
-                binding.options.setVisibility(View.VISIBLE);
+                this.binding.options.setVisibility(View.VISIBLE);
             }
-            if (viewModel.isLoggedIn() && viewModel.hasPk()) {
-                bottom.like.setVisibility(View.VISIBLE);
-                bottom.save.setVisibility(View.VISIBLE);
+            if (this.viewModel.isLoggedIn() && this.viewModel.hasPk()) {
+                this.bottom.like.setVisibility(View.VISIBLE);
+                this.bottom.save.setVisibility(View.VISIBLE);
             }
             // if (video) {
             if (media.getType() == MediaItemType.MEDIA_TYPE_VIDEO) {
                 // binding.playerControlsToggle.setVisibility(View.VISIBLE);
-                bottom.viewsCount.setVisibility(View.VISIBLE);
+                this.bottom.viewsCount.setVisibility(View.VISIBLE);
             }
             // if (wasControlsVisible) {
             //     showPlayerControls();
             // }
             if (media.getType() == MediaItemType.MEDIA_TYPE_SLIDER) {
-                binding.mediaCounter.setVisibility(View.VISIBLE);
+                this.binding.mediaCounter.setVisibility(View.VISIBLE);
             }
-            detailsVisible = true;
+            this.detailsVisible = true;
         });
     }
 
     private void hideSystemUI() {
-        if (detailsVisible) {
-            toggleDetails();
+        if (this.detailsVisible) {
+            this.toggleDetails();
         }
-        final MainActivity activity = (MainActivity) getActivity();
+        MainActivity activity = (MainActivity) this.getActivity();
         if (activity == null) return;
-        final ActionBar actionBar = activity.getSupportActionBar();
+        ActionBar actionBar = activity.getSupportActionBar();
         if (actionBar != null) {
             actionBar.hide();
         }
-        final CollapsingToolbarLayout appbarLayout = activity.getCollapsingToolbarView();
+        CollapsingToolbarLayout appbarLayout = activity.getCollapsingToolbarView();
         appbarLayout.setVisibility(View.GONE);
-        final Toolbar toolbar = activity.getToolbar();
+        Toolbar toolbar = activity.getToolbar();
         toolbar.setVisibility(View.GONE);
-        binding.getRoot().setPadding(binding.getRoot().getPaddingLeft(),
-                binding.getRoot().getPaddingTop(),
-                binding.getRoot().getPaddingRight(),
+        this.binding.getRoot().setPadding(this.binding.getRoot().getPaddingLeft(),
+                this.binding.getRoot().getPaddingTop(),
+                this.binding.getRoot().getPaddingRight(),
                                      0);
-        controller.hide(WindowInsetsCompat.Type.systemBars());
-        controller.setSystemBarsBehavior(WindowInsetsControllerCompat.BEHAVIOR_SHOW_BARS_BY_SWIPE);
-        isInFullScreenMode = true;
+        this.controller.hide(WindowInsetsCompat.Type.systemBars());
+        this.controller.setSystemBarsBehavior(WindowInsetsControllerCompat.BEHAVIOR_SHOW_BARS_BY_SWIPE);
+        this.isInFullScreenMode = true;
     }
 
     private void showSystemUI() {
-        if (!detailsVisible) {
-            toggleDetails();
+        if (!this.detailsVisible) {
+            this.toggleDetails();
         }
-        final MainActivity activity = (MainActivity) getActivity();
+        MainActivity activity = (MainActivity) this.getActivity();
         if (activity == null) return;
-        final ActionBar actionBar = activity.getSupportActionBar();
+        ActionBar actionBar = activity.getSupportActionBar();
         if (actionBar != null) {
             actionBar.show();
         }
-        final CollapsingToolbarLayout appbarLayout = activity.getCollapsingToolbarView();
+        CollapsingToolbarLayout appbarLayout = activity.getCollapsingToolbarView();
         appbarLayout.setVisibility(View.VISIBLE);
-        final Toolbar toolbar = activity.getToolbar();
+        Toolbar toolbar = activity.getToolbar();
         toolbar.setVisibility(View.VISIBLE);
-        final Context context = getContext();
+        Context context = this.getContext();
         if (context == null) return;
-        binding.getRoot().setPadding(binding.getRoot().getPaddingLeft(),
-                binding.getRoot().getPaddingTop(),
-                binding.getRoot().getPaddingRight(),
+        this.binding.getRoot().setPadding(this.binding.getRoot().getPaddingLeft(),
+                this.binding.getRoot().getPaddingTop(),
+                this.binding.getRoot().getPaddingRight(),
                                      Utils.getActionBarHeight(context));
-        controller.show(WindowInsetsCompat.Type.systemBars());
+        this.controller.show(WindowInsetsCompat.Type.systemBars());
         WindowCompat.setDecorFitsSystemWindows(activity.getWindow(), false);
-        isInFullScreenMode = false;
+        this.isInFullScreenMode = false;
     }
 
-    private void navigateToProfile(final String username) {
-        final NavController navController = getNavController();
+    private void navigateToProfile(String username) {
+        NavController navController = this.getNavController();
         if (navController == null) return;
-        final NavDirections actionToProfile = PostViewV2FragmentDirections.actionToProfile().setUsername(username);
+        NavDirections actionToProfile = PostViewV2FragmentDirections.actionToProfile().setUsername(username);
         navController.navigate(actionToProfile);
     }
 
@@ -1480,13 +1480,13 @@ public class PostViewV2Fragment extends Fragment implements EditTextDialogFragme
         NavController navController = null;
         try {
             navController = NavHostFragment.findNavController(this);
-        } catch (IllegalStateException e) {
-            Log.e(TAG, "navigateToProfile", e);
+        } catch (final IllegalStateException e) {
+            Log.e(PostViewV2Fragment.TAG, "navigateToProfile", e);
         }
         return navController;
     }
 
     public boolean wasDeleted() {
-        return wasDeleted;
+        return this.wasDeleted;
     }
 }

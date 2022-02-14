@@ -43,51 +43,51 @@ final class GoogleCompatEmojiDrawable extends Drawable {
     private CharSequence emojiCharSequence;
     private final TextPaint textPaint = new TextPaint();
 
-    GoogleCompatEmojiDrawable(@NonNull final String unicode) {
-        emojiCharSequence = unicode;
-        textPaint.setStyle(Paint.Style.FILL);
-        textPaint.setColor(0x0ffffffff);
-        textPaint.setAntiAlias(true);
+    GoogleCompatEmojiDrawable(@NonNull String unicode) {
+        this.emojiCharSequence = unicode;
+        this.textPaint.setStyle(Paint.Style.FILL);
+        this.textPaint.setColor(0x0ffffffff);
+        this.textPaint.setAntiAlias(true);
     }
 
     private void process() {
-        emojiCharSequence = EmojiCompat.get().process(emojiCharSequence);
-        if (emojiCharSequence instanceof Spanned) {
-            final Object[] spans = ((Spanned) emojiCharSequence).getSpans(0, emojiCharSequence.length(), EmojiSpan.class);
+        this.emojiCharSequence = EmojiCompat.get().process(this.emojiCharSequence);
+        if (this.emojiCharSequence instanceof Spanned) {
+            Object[] spans = ((Spanned) this.emojiCharSequence).getSpans(0, this.emojiCharSequence.length(), EmojiSpan.class);
             if (spans.length > 0) {
-                emojiSpan = (EmojiSpan) spans[0];
+                this.emojiSpan = (EmojiSpan) spans[0];
             }
         }
     }
 
     @Override
-    public void draw(@NonNull final Canvas canvas) {
-        final Rect bounds = getBounds();
-        textPaint.setTextSize(bounds.height() * TEXT_SIZE_FACTOR);
-        final int y = Math.round(bounds.bottom - bounds.height() * BASELINE_OFFSET_FACTOR);
+    public void draw(@NonNull Canvas canvas) {
+        Rect bounds = this.getBounds();
+        this.textPaint.setTextSize(bounds.height() * GoogleCompatEmojiDrawable.TEXT_SIZE_FACTOR);
+        int y = Math.round(bounds.bottom - bounds.height() * GoogleCompatEmojiDrawable.BASELINE_OFFSET_FACTOR);
 
-        if (!processed && EmojiCompat.get().getLoadState() != EmojiCompat.LOAD_STATE_LOADING) {
-            processed = true;
+        if (!this.processed && EmojiCompat.get().getLoadState() != EmojiCompat.LOAD_STATE_LOADING) {
+            this.processed = true;
             if (EmojiCompat.get().getLoadState() != EmojiCompat.LOAD_STATE_FAILED) {
-                process();
+                this.process();
             }
         }
 
-        if (emojiSpan == null) {
-            canvas.drawText(emojiCharSequence, 0, emojiCharSequence.length(), bounds.left, y, textPaint);
+        if (this.emojiSpan == null) {
+            canvas.drawText(this.emojiCharSequence, 0, this.emojiCharSequence.length(), bounds.left, y, this.textPaint);
         } else {
-            emojiSpan.draw(canvas, emojiCharSequence, 0, emojiCharSequence.length(), bounds.left, bounds.top, y, bounds.bottom, textPaint);
+            this.emojiSpan.draw(canvas, this.emojiCharSequence, 0, this.emojiCharSequence.length(), bounds.left, bounds.top, y, bounds.bottom, this.textPaint);
         }
     }
 
     @Override
-    public void setAlpha(final int alpha) {
-        textPaint.setAlpha(alpha);
+    public void setAlpha(int alpha) {
+        this.textPaint.setAlpha(alpha);
     }
 
     @Override
-    public void setColorFilter(final ColorFilter colorFilter) {
-        textPaint.setColorFilter(colorFilter);
+    public void setColorFilter(ColorFilter colorFilter) {
+        this.textPaint.setColorFilter(colorFilter);
     }
 
     @Override

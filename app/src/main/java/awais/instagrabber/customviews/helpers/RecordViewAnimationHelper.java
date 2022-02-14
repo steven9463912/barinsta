@@ -39,131 +39,131 @@ public class RecordViewAnimationHelper {
     private TranslateAnimation translateAnimation1, translateAnimation2;
     private Handler handler1, handler2;
 
-    public RecordViewAnimationHelper(final Context context, final AppCompatImageView basketImg, final AppCompatImageView smallBlinkingMic) {
+    public RecordViewAnimationHelper(Context context, AppCompatImageView basketImg, AppCompatImageView smallBlinkingMic) {
         this.context = context;
         this.smallBlinkingMic = smallBlinkingMic;
         this.basketImg = basketImg;
-        this.animatedVectorDrawable = AnimatedVectorDrawableCompat.create(context, R.drawable.recv_basket_animated);
+        animatedVectorDrawable = AnimatedVectorDrawableCompat.create(context, R.drawable.recv_basket_animated);
     }
 
     @SuppressLint("RestrictedApi")
-    public void animateBasket(final float basketInitialY) {
-        this.isBasketAnimating = true;
+    public void animateBasket(float basketInitialY) {
+        isBasketAnimating = true;
 
-        this.clearAlphaAnimation(false);
+        clearAlphaAnimation(false);
 
         //save initial x,y values for mic icon
-        if (this.micX == 0) {
-            this.micX = this.smallBlinkingMic.getX();
-            this.micY = this.smallBlinkingMic.getY();
+        if (micX == 0) {
+            micX = smallBlinkingMic.getX();
+            micY = smallBlinkingMic.getY();
         }
 
-        this.micAnimation = (AnimatorSet) AnimatorInflaterCompat.loadAnimator(this.context, R.animator.delete_mic_animation);
-        this.micAnimation.setTarget(this.smallBlinkingMic); // set the view you want to animate
+        micAnimation = (AnimatorSet) AnimatorInflaterCompat.loadAnimator(context, R.animator.delete_mic_animation);
+        micAnimation.setTarget(smallBlinkingMic); // set the view you want to animate
 
-        this.translateAnimation1 = new TranslateAnimation(0, 0, basketInitialY, basketInitialY - 90);
-        this.translateAnimation1.setDuration(250);
+        translateAnimation1 = new TranslateAnimation(0, 0, basketInitialY, basketInitialY - 90);
+        translateAnimation1.setDuration(250);
 
-        this.translateAnimation2 = new TranslateAnimation(0, 0, basketInitialY - 90, basketInitialY);
-        this.translateAnimation2.setDuration(350);
+        translateAnimation2 = new TranslateAnimation(0, 0, basketInitialY - 90, basketInitialY);
+        translateAnimation2.setDuration(350);
 
-        this.micAnimation.start();
-        this.basketImg.setImageDrawable(this.animatedVectorDrawable);
+        micAnimation.start();
+        basketImg.setImageDrawable(animatedVectorDrawable);
 
-        this.handler1 = new Handler();
-        this.handler1.postDelayed(() -> {
-            this.basketImg.setVisibility(VISIBLE);
-            this.basketImg.startAnimation(this.translateAnimation1);
+        handler1 = new Handler();
+        handler1.postDelayed(() -> {
+            basketImg.setVisibility(VISIBLE);
+            basketImg.startAnimation(translateAnimation1);
         }, 350);
 
-        this.translateAnimation1.setAnimationListener(new Animation.AnimationListener() {
+        translateAnimation1.setAnimationListener(new Animation.AnimationListener() {
             @Override
-            public void onAnimationStart(final Animation animation) {}
+            public void onAnimationStart(Animation animation) {}
 
             @Override
-            public void onAnimationEnd(final Animation animation) {
-                RecordViewAnimationHelper.this.animatedVectorDrawable.start();
-                RecordViewAnimationHelper.this.handler2 = new Handler();
-                RecordViewAnimationHelper.this.handler2.postDelayed(() -> {
-                    RecordViewAnimationHelper.this.basketImg.startAnimation(RecordViewAnimationHelper.this.translateAnimation2);
-                    RecordViewAnimationHelper.this.smallBlinkingMic.setVisibility(INVISIBLE);
-                    RecordViewAnimationHelper.this.basketImg.setVisibility(INVISIBLE);
+            public void onAnimationEnd(Animation animation) {
+                animatedVectorDrawable.start();
+                handler2 = new Handler();
+                handler2.postDelayed(() -> {
+                    basketImg.startAnimation(translateAnimation2);
+                    smallBlinkingMic.setVisibility(INVISIBLE);
+                    basketImg.setVisibility(INVISIBLE);
                 }, 450);
             }
 
             @Override
-            public void onAnimationRepeat(final Animation animation) {}
+            public void onAnimationRepeat(Animation animation) {}
         });
 
-        this.translateAnimation2.setAnimationListener(new Animation.AnimationListener() {
+        translateAnimation2.setAnimationListener(new Animation.AnimationListener() {
             @Override
-            public void onAnimationStart(final Animation animation) {}
+            public void onAnimationStart(Animation animation) {}
 
             @Override
-            public void onAnimationEnd(final Animation animation) {
-                RecordViewAnimationHelper.this.basketImg.setVisibility(INVISIBLE);
-                RecordViewAnimationHelper.this.isBasketAnimating = false;
+            public void onAnimationEnd(Animation animation) {
+                basketImg.setVisibility(INVISIBLE);
+                isBasketAnimating = false;
                 //if the user pressed the record button while the animation is running
                 // then do NOT call on Animation end
-                if (RecordViewAnimationHelper.this.onBasketAnimationEndListener != null && !RecordViewAnimationHelper.this.isStartRecorded) {
-                    RecordViewAnimationHelper.this.onBasketAnimationEndListener.onAnimationEnd();
+                if (onBasketAnimationEndListener != null && !isStartRecorded) {
+                    onBasketAnimationEndListener.onAnimationEnd();
                 }
             }
 
             @Override
-            public void onAnimationRepeat(final Animation animation) {}
+            public void onAnimationRepeat(Animation animation) {}
         });
     }
 
     //if the user started a new Record while the Animation is running
     // then we want to stop the current animation and revert views back to default state
     public void resetBasketAnimation() {
-        if (this.isBasketAnimating) {
-            this.translateAnimation1.reset();
-            this.translateAnimation1.cancel();
-            this.translateAnimation2.reset();
-            this.translateAnimation2.cancel();
-            this.micAnimation.cancel();
-            this.smallBlinkingMic.clearAnimation();
-            this.basketImg.clearAnimation();
-            if (this.handler1 != null) {
-                this.handler1.removeCallbacksAndMessages(null);
+        if (isBasketAnimating) {
+            translateAnimation1.reset();
+            translateAnimation1.cancel();
+            translateAnimation2.reset();
+            translateAnimation2.cancel();
+            micAnimation.cancel();
+            smallBlinkingMic.clearAnimation();
+            basketImg.clearAnimation();
+            if (handler1 != null) {
+                handler1.removeCallbacksAndMessages(null);
             }
-            if (this.handler2 != null) {
-                this.handler2.removeCallbacksAndMessages(null);
+            if (handler2 != null) {
+                handler2.removeCallbacksAndMessages(null);
             }
-            this.basketImg.setVisibility(INVISIBLE);
-            this.smallBlinkingMic.setX(this.micX);
-            this.smallBlinkingMic.setY(this.micY);
-            this.smallBlinkingMic.setVisibility(View.GONE);
-            this.isBasketAnimating = false;
+            basketImg.setVisibility(INVISIBLE);
+            smallBlinkingMic.setX(micX);
+            smallBlinkingMic.setY(micY);
+            smallBlinkingMic.setVisibility(View.GONE);
+            isBasketAnimating = false;
         }
     }
 
-    public void clearAlphaAnimation(final boolean hideView) {
-        if (this.alphaAnimation != null) {
-            this.alphaAnimation.cancel();
-            this.alphaAnimation.reset();
+    public void clearAlphaAnimation(boolean hideView) {
+        if (alphaAnimation != null) {
+            alphaAnimation.cancel();
+            alphaAnimation.reset();
         }
-        this.smallBlinkingMic.clearAnimation();
+        smallBlinkingMic.clearAnimation();
         if (hideView) {
-            this.smallBlinkingMic.setVisibility(View.GONE);
+            smallBlinkingMic.setVisibility(View.GONE);
         }
     }
 
     public void animateSmallMicAlpha() {
-        this.alphaAnimation = new AlphaAnimation(0.0f, 1.0f);
-        this.alphaAnimation.setDuration(500);
-        this.alphaAnimation.setRepeatMode(Animation.REVERSE);
-        this.alphaAnimation.setRepeatCount(Animation.INFINITE);
-        this.smallBlinkingMic.startAnimation(this.alphaAnimation);
+        alphaAnimation = new AlphaAnimation(0.0f, 1.0f);
+        alphaAnimation.setDuration(500);
+        alphaAnimation.setRepeatMode(Animation.REVERSE);
+        alphaAnimation.setRepeatCount(Animation.INFINITE);
+        smallBlinkingMic.startAnimation(alphaAnimation);
     }
 
-    public void moveRecordButtonAndSlideToCancelBack(RecordButton recordBtn, final View slideToCancelLayout, final float initialX, final float difX) {
-        ValueAnimator positionAnimator = ValueAnimator.ofFloat(recordBtn.getX(), initialX);
+    public void moveRecordButtonAndSlideToCancelBack(final RecordButton recordBtn, View slideToCancelLayout, float initialX, float difX) {
+        final ValueAnimator positionAnimator = ValueAnimator.ofFloat(recordBtn.getX(), initialX);
         positionAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
         positionAnimator.addUpdateListener(animation -> {
-            final float x = (Float) animation.getAnimatedValue();
+            float x = (Float) animation.getAnimatedValue();
             recordBtn.setX(x);
         });
         recordBtn.stopScale();
@@ -172,7 +172,7 @@ public class RecordViewAnimationHelper {
 
         // if the move event was not called ,then the difX will still 0 and there is no need to move it back
         if (difX != 0) {
-            final float x = initialX - difX;
+            float x = initialX - difX;
             slideToCancelLayout.animate()
                                .x(x)
                                .setDuration(0)
@@ -181,25 +181,25 @@ public class RecordViewAnimationHelper {
     }
 
     public void resetSmallMic() {
-        this.smallBlinkingMic.setAlpha(1.0f);
-        this.smallBlinkingMic.setScaleX(1.0f);
-        this.smallBlinkingMic.setScaleY(1.0f);
+        smallBlinkingMic.setAlpha(1.0f);
+        smallBlinkingMic.setScaleX(1.0f);
+        smallBlinkingMic.setScaleY(1.0f);
     }
 
-    public void setOnBasketAnimationEndListener(RecordView.OnBasketAnimationEnd onBasketAnimationEndListener) {
+    public void setOnBasketAnimationEndListener(final RecordView.OnBasketAnimationEnd onBasketAnimationEndListener) {
         this.onBasketAnimationEndListener = onBasketAnimationEndListener;
 
     }
 
     public void onAnimationEnd() {
-        if (onBasketAnimationEndListener != null) {
-            onBasketAnimationEndListener.onAnimationEnd();
+        if (this.onBasketAnimationEndListener != null) {
+            this.onBasketAnimationEndListener.onAnimationEnd();
         }
     }
 
     //check if the user started a new Record by pressing the RecordButton
-    public void setStartRecorded(boolean startRecorded) {
-        isStartRecorded = startRecorded;
+    public void setStartRecorded(final boolean startRecorded) {
+        this.isStartRecorded = startRecorded;
     }
 
 }

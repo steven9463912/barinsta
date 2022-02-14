@@ -16,10 +16,10 @@ public class DirectSettingsViewModelFactory implements ViewModelProvider.Factory
     private final boolean pending;
     private final User currentUser;
 
-    public DirectSettingsViewModelFactory(@NonNull final Application application,
-                                          @NonNull final String threadId,
-                                          final boolean pending,
-                                          @NonNull final User currentUser) {
+    public DirectSettingsViewModelFactory(@NonNull Application application,
+                                          @NonNull String threadId,
+                                          boolean pending,
+                                          @NonNull User currentUser) {
         this.application = application;
         this.threadId = threadId;
         this.pending = pending;
@@ -28,8 +28,8 @@ public class DirectSettingsViewModelFactory implements ViewModelProvider.Factory
 
     @NonNull
     @Override
-    public <T extends ViewModel> T create(@NonNull final Class<T> modelClass) {
+    public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
         //noinspection unchecked
-        return (T) new DirectSettingsViewModel(application, threadId, pending, currentUser);
+        return (T) new DirectSettingsViewModel(this.application, this.threadId, this.pending, this.currentUser);
     }
 }

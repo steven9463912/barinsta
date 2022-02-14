@@ -27,75 +27,75 @@ public class DirectUserViewHolder extends RecyclerView.ViewHolder {
 
     private VerticalImageSpan verifiedSpan;
 
-    public DirectUserViewHolder(@NonNull LayoutDmUserItemBinding binding,
-                                DirectUsersAdapter.OnDirectUserClickListener onClickListener,
-                                DirectUsersAdapter.OnDirectUserLongClickListener onLongClickListener) {
+    public DirectUserViewHolder(@NonNull final LayoutDmUserItemBinding binding,
+                                final DirectUsersAdapter.OnDirectUserClickListener onClickListener,
+                                final DirectUsersAdapter.OnDirectUserLongClickListener onLongClickListener) {
         super(binding.getRoot());
         this.binding = binding;
         this.onClickListener = onClickListener;
         this.onLongClickListener = onLongClickListener;
-        drawableSize = Utils.convertDpToPx(24);
+        this.drawableSize = Utils.convertDpToPx(24);
     }
 
-    public void bind(final int position,
-                     final User user,
-                     final boolean isAdmin,
-                     final boolean isInviter,
-                     final boolean showSelection,
-                     final boolean isSelected) {
+    public void bind(int position,
+                     User user,
+                     boolean isAdmin,
+                     boolean isInviter,
+                     boolean showSelection,
+                     boolean isSelected) {
         if (user == null) return;
-        binding.getRoot().setOnClickListener(v -> {
-            if (onClickListener == null) return;
-            onClickListener.onClick(position, user, isSelected);
+        this.binding.getRoot().setOnClickListener(v -> {
+            if (this.onClickListener == null) return;
+            this.onClickListener.onClick(position, user, isSelected);
         });
-        binding.getRoot().setOnLongClickListener(v -> {
-            if (onLongClickListener == null) return false;
-            return onLongClickListener.onLongClick(position, user);
+        this.binding.getRoot().setOnLongClickListener(v -> {
+            if (this.onLongClickListener == null) return false;
+            return this.onLongClickListener.onLongClick(position, user);
         });
-        setFullName(user);
-        binding.username.setText(user.getUsername());
-        binding.profilePic.setImageURI(user.getProfilePicUrl());
-        setInfo(isAdmin, isInviter);
-        setSelection(showSelection, isSelected);
+        this.setFullName(user);
+        this.binding.username.setText(user.getUsername());
+        this.binding.profilePic.setImageURI(user.getProfilePicUrl());
+        this.setInfo(isAdmin, isInviter);
+        this.setSelection(showSelection, isSelected);
     }
 
-    private void setFullName(final User user) {
-        final SpannableStringBuilder sb = new SpannableStringBuilder(user.getFullName());
+    private void setFullName(User user) {
+        SpannableStringBuilder sb = new SpannableStringBuilder(user.getFullName());
         if (user.isVerified()) {
-            if (verifiedSpan == null) {
-                final Drawable verifiedDrawable = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.verified);
+            if (this.verifiedSpan == null) {
+                Drawable verifiedDrawable = AppCompatResources.getDrawable(this.itemView.getContext(), R.drawable.verified);
                 if (verifiedDrawable != null) {
-                    final Drawable drawable = verifiedDrawable.mutate();
-                    drawable.setBounds(0, 0, drawableSize, drawableSize);
-                    verifiedSpan = new VerticalImageSpan(drawable);
+                    Drawable drawable = verifiedDrawable.mutate();
+                    drawable.setBounds(0, 0, this.drawableSize, this.drawableSize);
+                    this.verifiedSpan = new VerticalImageSpan(drawable);
                 }
             }
             try {
-                if (verifiedSpan != null) {
+                if (this.verifiedSpan != null) {
                     sb.append("  ");
-                    sb.setSpan(verifiedSpan, sb.length() - 1, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    sb.setSpan(this.verifiedSpan, sb.length() - 1, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 }
-            } catch (Exception e) {
-                Log.e(TAG, "bind: ", e);
+            } catch (final Exception e) {
+                Log.e(DirectUserViewHolder.TAG, "bind: ", e);
             }
         }
-        binding.fullName.setText(sb);
+        this.binding.fullName.setText(sb);
     }
 
-    private void setInfo(final boolean isAdmin, final boolean isInviter) {
+    private void setInfo(boolean isAdmin, boolean isInviter) {
         if (!isAdmin && !isInviter) {
-            binding.info.setVisibility(View.GONE);
+            this.binding.info.setVisibility(View.GONE);
             return;
         }
         if (isAdmin) {
-            binding.info.setText(R.string.admin);
+            this.binding.info.setText(R.string.admin);
             return;
         }
-        binding.info.setText(R.string.inviter);
+        this.binding.info.setText(R.string.inviter);
     }
 
-    private void setSelection(final boolean showSelection, final boolean isSelected) {
-        binding.select.setVisibility(showSelection ? View.VISIBLE : View.GONE);
-        binding.getRoot().setSelected(isSelected);
+    private void setSelection(boolean showSelection, boolean isSelected) {
+        this.binding.select.setVisibility(showSelection ? View.VISIBLE : View.GONE);
+        this.binding.getRoot().setSelected(isSelected);
     }
 }

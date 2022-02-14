@@ -12,28 +12,28 @@ public class EmojiCategoryPageViewHolder extends RecyclerView.ViewHolder {
 
     private final View rootView;
     private final EmojiPicker.OnEmojiClickListener onEmojiClickListener;
-    private final EmojiParser emojiParser = EmojiParser.Companion.getInstance(this.itemView.getContext());
+    private final EmojiParser emojiParser = EmojiParser.Companion.getInstance(itemView.getContext());
 
-    public EmojiCategoryPageViewHolder(@NonNull View rootView,
-                                       @NonNull RecyclerView itemView,
-                                       EmojiPicker.OnEmojiClickListener onEmojiClickListener) {
+    public EmojiCategoryPageViewHolder(@NonNull final View rootView,
+                                       @NonNull final RecyclerView itemView,
+                                       final EmojiPicker.OnEmojiClickListener onEmojiClickListener) {
         super(itemView);
         this.rootView = rootView;
         this.onEmojiClickListener = onEmojiClickListener;
     }
 
-    public void bind(final EmojiCategory emojiCategory) {
-        final RecyclerView emojiGrid = (RecyclerView) itemView;
-        final EmojiGridAdapter adapter = new EmojiGridAdapter(
-                emojiParser,
+    public void bind(EmojiCategory emojiCategory) {
+        RecyclerView emojiGrid = (RecyclerView) this.itemView;
+        EmojiGridAdapter adapter = new EmojiGridAdapter(
+                this.emojiParser,
                 emojiCategory.getType(),
-                onEmojiClickListener,
+                this.onEmojiClickListener,
                 (position, view, parent) -> {
-                    final EmojiVariantPopup emojiVariantPopup = new EmojiVariantPopup(rootView, ((view1, emoji) -> {
-                        if (onEmojiClickListener != null) {
-                            onEmojiClickListener.onClick(view1, emoji);
+                    EmojiVariantPopup emojiVariantPopup = new EmojiVariantPopup(this.rootView, ((view1, emoji) -> {
+                        if (this.onEmojiClickListener != null) {
+                            this.onEmojiClickListener.onClick(view1, emoji);
                         }
-                        final EmojiGridAdapter emojiGridAdapter = (EmojiGridAdapter) emojiGrid.getAdapter();
+                        EmojiGridAdapter emojiGridAdapter = (EmojiGridAdapter) emojiGrid.getAdapter();
                         if (emojiGridAdapter == null) return;
                         emojiGridAdapter.notifyItemChanged(position);
                     }));

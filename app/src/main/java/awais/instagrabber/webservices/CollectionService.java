@@ -26,82 +26,82 @@ public class CollectionService {
 
     private static CollectionService instance;
 
-    private CollectionService(final String deviceUuid,
-                              final String csrfToken,
-                              final long userId) {
+    private CollectionService(String deviceUuid,
+                              String csrfToken,
+                              long userId) {
         this.deviceUuid = deviceUuid;
         this.csrfToken = csrfToken;
         this.userId = userId;
-        repository = RetrofitFactory.INSTANCE
+        this.repository = RetrofitFactory.INSTANCE
                                     .getRetrofit()
                                     .create(CollectionRepository.class);
     }
 
     public String getCsrfToken() {
-        return csrfToken;
+        return this.csrfToken;
     }
 
     public String getDeviceUuid() {
-        return deviceUuid;
+        return this.deviceUuid;
     }
 
     public long getUserId() {
-        return userId;
+        return this.userId;
     }
 
-    public static CollectionService getInstance(final String deviceUuid, final String csrfToken, final long userId) {
-        if (instance == null
-                || !Objects.equals(instance.getCsrfToken(), csrfToken)
-                || !Objects.equals(instance.getDeviceUuid(), deviceUuid)
-                || !Objects.equals(instance.getUserId(), userId)) {
-            instance = new CollectionService(deviceUuid, csrfToken, userId);
+    public static CollectionService getInstance(String deviceUuid, String csrfToken, long userId) {
+        if (CollectionService.instance == null
+                || !Objects.equals(CollectionService.instance.getCsrfToken(), csrfToken)
+                || !Objects.equals(CollectionService.instance.getDeviceUuid(), deviceUuid)
+                || !Objects.equals(CollectionService.instance.getUserId(), userId)) {
+            CollectionService.instance = new CollectionService(deviceUuid, csrfToken, userId);
         }
-        return instance;
+        return CollectionService.instance;
     }
 
-    public void addPostsToCollection(final String collectionId,
-                                     final List<Media> posts,
-                                     final ServiceCallback<String> callback) {
-        final Map<String, Object> form = new HashMap<>(2);
+    public void addPostsToCollection(String collectionId,
+                                     List<Media> posts,
+                                     ServiceCallback<String> callback) {
+        Map<String, Object> form = new HashMap<>(2);
         form.put("module_name", "feed_saved_add_to_collection");
-        final List<String> ids;
+        List<String> ids;
         ids = posts.stream()
                    .map(Media::getPk)
                    .filter(Objects::nonNull)
                    .collect(Collectors.toList());
         form.put("added_media_ids", "[" + TextUtils.join(",", ids) + "]");
-        changeCollection(collectionId, "edit", form, callback);
+        this.changeCollection(collectionId, "edit", form, callback);
     }
 
-    public void editCollectionName(final String collectionId,
-                                   final String name,
-                                   final ServiceCallback<String> callback) {
-        final Map<String, Object> form = new HashMap<>(1);
+    public void editCollectionName(String collectionId,
+                                   String name,
+                                   ServiceCallback<String> callback) {
+        Map<String, Object> form = new HashMap<>(1);
         form.put("name", name);
-        changeCollection(collectionId, "edit", form, callback);
+        this.changeCollection(collectionId, "edit", form, callback);
     }
 
-    public void deleteCollection(final String collectionId,
-                                 final ServiceCallback<String> callback) {
-        changeCollection(collectionId, "delete", null, callback);
+    public void deleteCollection(String collectionId,
+                                 ServiceCallback<String> callback) {
+        this.changeCollection(collectionId, "delete", null, callback);
     }
 
-    public void changeCollection(final String collectionId,
-                                 final String action,
-                                 final Map<String, Object> options,
-                                 final ServiceCallback<String> callback) {
-        final Map<String, Object> form = new HashMap<>();
-        form.put("_csrftoken", csrfToken);
-        form.put("_uuid", deviceUuid);
-        form.put("_uid", userId);
+    public void changeCollection(String collectionId,
+                                 String action,
+                                 Map<String, Object> options,
+                                 ServiceCallback<String> callback) {
+        Map<String, Object> form = new HashMap<>();
+        form.put("_csrftoken", this.csrfToken);
+        form.put("_uuid", this.deviceUuid);
+        form.put("_uid", this.userId);
         if (options != null) form.putAll(options);
-        final Map<String, String> signedForm = Utils.sign(form);
-        final Call<String> request = repository.changeCollection(collectionId, action, signedForm);
+        Map<String, String> signedForm = Utils.sign(form);
+        Call<String> request = this.repository.changeCollection(collectionId, action, signedForm);
         request.enqueue(new Callback<String>() {
             @Override
-            public void onResponse(@NonNull final Call<String> call, @NonNull final Response<String> response) {
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                 if (callback == null) return;
-                final String collectionsListResponse = response.body();
+                String collectionsListResponse = response.body();
                 if (collectionsListResponse == null) {
                     callback.onSuccess(null);
                     return;
@@ -110,7 +110,7 @@ public class CollectionService {
             }
 
             @Override
-            public void onFailure(@NonNull final Call<String> call, @NonNull final Throwable t) {
+            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
                 if (callback != null) {
                     callback.onFailure(t);
                 }

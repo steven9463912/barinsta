@@ -17,26 +17,26 @@ public class BrightnessFilter extends Filter<GPUImageBrightnessFilter> {
 
     public BrightnessFilter() {
         super(FiltersHelper.FilterType.BRIGHTNESS, R.string.brightness);
-        properties = Collections.singletonMap(
-                PROP_BRIGHTNESS, new FloatProperty(R.string.brightness, 0.0f, -1.0f, 1.0f)
+        this.properties = Collections.singletonMap(
+                BrightnessFilter.PROP_BRIGHTNESS, new FloatProperty(R.string.brightness, 0.0f, -1.0f, 1.0f)
         );
-        filter = new GPUImageBrightnessFilter((Float) getProperty(PROP_BRIGHTNESS).getDefaultValue());
+        this.filter = new GPUImageBrightnessFilter((Float) this.getProperty(BrightnessFilter.PROP_BRIGHTNESS).getDefaultValue());
     }
 
     @Override
     public Map<Integer, Property<?>> getProperties() {
-        return properties;
+        return this.properties;
     }
 
     @Override
-    public void adjust(final int property, final Object value) {
+    public void adjust(int property, Object value) {
         super.adjust(property, value);
         if (!(value instanceof Float)) return;
-        filter.setBrightness((Float) value);
+        this.filter.setBrightness((Float) value);
     }
 
     @Override
     public GPUImageBrightnessFilter getInstance() {
-        return filter;
+        return this.filter;
     }
 }

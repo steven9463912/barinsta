@@ -25,10 +25,10 @@ public final class DirectUsersAdapter extends ListAdapter<DirectUsersAdapter.Dir
     private static final int VIEW_TYPE_USER = 1;
     private static final DiffUtil.ItemCallback<DirectUserOrHeader> DIFF_CALLBACK = new DiffUtil.ItemCallback<DirectUserOrHeader>() {
         @Override
-        public boolean areItemsTheSame(@NonNull final DirectUserOrHeader oldItem, @NonNull final DirectUserOrHeader newItem) {
-            final boolean bothHeaders = oldItem.isHeader() && newItem.isHeader();
-            final boolean bothItems = !oldItem.isHeader() && !newItem.isHeader();
-            boolean areSameType = bothHeaders || bothItems;
+        public boolean areItemsTheSame(@NonNull DirectUserOrHeader oldItem, @NonNull DirectUserOrHeader newItem) {
+            boolean bothHeaders = oldItem.isHeader() && newItem.isHeader();
+            boolean bothItems = !oldItem.isHeader() && !newItem.isHeader();
+            final boolean areSameType = bothHeaders || bothItems;
             if (!areSameType) return false;
             if (bothHeaders) {
                 return oldItem.headerTitle == newItem.headerTitle;
@@ -40,10 +40,10 @@ public final class DirectUsersAdapter extends ListAdapter<DirectUsersAdapter.Dir
         }
 
         @Override
-        public boolean areContentsTheSame(@NonNull final DirectUserOrHeader oldItem, @NonNull final DirectUserOrHeader newItem) {
-            final boolean bothHeaders = oldItem.isHeader() && newItem.isHeader();
-            final boolean bothItems = !oldItem.isHeader() && !newItem.isHeader();
-            boolean areSameType = bothHeaders || bothItems;
+        public boolean areContentsTheSame(@NonNull DirectUserOrHeader oldItem, @NonNull DirectUserOrHeader newItem) {
+            boolean bothHeaders = oldItem.isHeader() && newItem.isHeader();
+            boolean bothItems = !oldItem.isHeader() && !newItem.isHeader();
+            final boolean areSameType = bothHeaders || bothItems;
             if (!areSameType) return false;
             if (bothHeaders) {
                 return oldItem.headerTitle == newItem.headerTitle;
@@ -61,24 +61,24 @@ public final class DirectUsersAdapter extends ListAdapter<DirectUsersAdapter.Dir
     private final OnDirectUserLongClickListener onLongClickListener;
     private List<Long> adminUserIds;
 
-    public DirectUsersAdapter(final long inviterId,
-                              final OnDirectUserClickListener onClickListener,
-                              final OnDirectUserLongClickListener onLongClickListener) {
-        super(DIFF_CALLBACK);
+    public DirectUsersAdapter(long inviterId,
+                              OnDirectUserClickListener onClickListener,
+                              OnDirectUserLongClickListener onLongClickListener) {
+        super(DirectUsersAdapter.DIFF_CALLBACK);
         this.inviterId = inviterId;
         this.onClickListener = onClickListener;
         this.onLongClickListener = onLongClickListener;
-        setHasStableIds(true);
+        this.setHasStableIds(true);
     }
 
-    public void submitUsers(final List<User> users, final List<User> leftUsers) {
+    public void submitUsers(List<User> users, List<User> leftUsers) {
         if (users == null && leftUsers == null) return;
-        final List<DirectUserOrHeader> userOrHeaders = combineLists(users, leftUsers);
-        submitList(userOrHeaders);
+        List<DirectUserOrHeader> userOrHeaders = this.combineLists(users, leftUsers);
+        this.submitList(userOrHeaders);
     }
 
-    private List<DirectUserOrHeader> combineLists(final List<User> users, final List<User> leftUsers) {
-        final ImmutableList.Builder<DirectUserOrHeader> listBuilder = ImmutableList.builder();
+    private List<DirectUserOrHeader> combineLists(List<User> users, List<User> leftUsers) {
+        ImmutableList.Builder<DirectUserOrHeader> listBuilder = ImmutableList.builder();
         if (users != null && !users.isEmpty()) {
             listBuilder.add(new DirectUserOrHeader(R.string.members));
             users.stream()
@@ -96,80 +96,80 @@ public final class DirectUsersAdapter extends ListAdapter<DirectUsersAdapter.Dir
 
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull final ViewGroup parent, final int viewType) {
-        final LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
         switch (viewType) {
-            case VIEW_TYPE_USER:
-                final LayoutDmUserItemBinding binding = LayoutDmUserItemBinding.inflate(layoutInflater, parent, false);
-                return new DirectUserViewHolder(binding, onClickListener, onLongClickListener);
-            case VIEW_TYPE_HEADER:
+            case DirectUsersAdapter.VIEW_TYPE_USER:
+                LayoutDmUserItemBinding binding = LayoutDmUserItemBinding.inflate(layoutInflater, parent, false);
+                return new DirectUserViewHolder(binding, this.onClickListener, this.onLongClickListener);
+            case DirectUsersAdapter.VIEW_TYPE_HEADER:
             default:
-                final ItemFavSectionHeaderBinding headerBinding = ItemFavSectionHeaderBinding.inflate(layoutInflater, parent, false);
+                ItemFavSectionHeaderBinding headerBinding = ItemFavSectionHeaderBinding.inflate(layoutInflater, parent, false);
                 return new HeaderViewHolder(headerBinding);
         }
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof HeaderViewHolder) {
-            ((HeaderViewHolder) holder).bind(getItem(position).headerTitle);
+            ((HeaderViewHolder) holder).bind(this.getItem(position).headerTitle);
             return;
         }
         if (holder instanceof DirectUserViewHolder) {
-            final User user = getItem(position).user;
+            User user = this.getItem(position).user;
             ((DirectUserViewHolder) holder).bind(position,
                                                  user,
-                                                 user != null && adminUserIds != null && adminUserIds.contains(user.getPk()),
-                                                 user != null && user.getPk() == inviterId,
+                                                 user != null && this.adminUserIds != null && this.adminUserIds.contains(user.getPk()),
+                                                 user != null && user.getPk() == this.inviterId,
                                                  false,
                                                  false);
         }
     }
 
     @Override
-    public int getItemViewType(final int position) {
-        final DirectUserOrHeader item = getItem(position);
-        return item.isHeader() ? VIEW_TYPE_HEADER : VIEW_TYPE_USER;
+    public int getItemViewType(int position) {
+        DirectUserOrHeader item = this.getItem(position);
+        return item.isHeader() ? DirectUsersAdapter.VIEW_TYPE_HEADER : DirectUsersAdapter.VIEW_TYPE_USER;
     }
 
     @Override
-    public long getItemId(final int position) {
-        final DirectUserOrHeader item = getItem(position);
+    public long getItemId(int position) {
+        DirectUserOrHeader item = this.getItem(position);
         return item.isHeader() ? item.headerTitle : item.user.getPk();
     }
 
-    public void setAdminUserIds(final List<Long> adminUserIds) {
+    public void setAdminUserIds(List<Long> adminUserIds) {
         this.adminUserIds = adminUserIds;
-        notifyDataSetChanged();
+        this.notifyDataSetChanged();
     }
 
     public static class DirectUserOrHeader {
         int headerTitle;
         User user;
 
-        public DirectUserOrHeader(final int headerTitle) {
+        public DirectUserOrHeader(int headerTitle) {
             this.headerTitle = headerTitle;
         }
 
-        public DirectUserOrHeader(final User user) {
+        public DirectUserOrHeader(User user) {
             this.user = user;
         }
 
         boolean isHeader() {
-            return headerTitle > 0;
+            return this.headerTitle > 0;
         }
     }
 
     public static class HeaderViewHolder extends RecyclerView.ViewHolder {
         private final ItemFavSectionHeaderBinding binding;
 
-        public HeaderViewHolder(@NonNull final ItemFavSectionHeaderBinding binding) {
+        public HeaderViewHolder(@NonNull ItemFavSectionHeaderBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
         }
 
-        public void bind(@StringRes final int headerTitle) {
-            binding.getRoot().setText(headerTitle);
+        public void bind(@StringRes int headerTitle) {
+            this.binding.getRoot().setText(headerTitle);
         }
     }
 

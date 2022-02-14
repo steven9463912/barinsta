@@ -12,12 +12,12 @@ public class EndOfFeedGroupSet implements Serializable {
     private final String paginationSource;
     private final List<EndOfFeedGroup> groups;
 
-    public EndOfFeedGroupSet(final long id,
-                             final String activeGroupId,
-                             final String connectedGroupId,
-                             final String nextMaxId,
-                             final String paginationSource,
-                             final List<EndOfFeedGroup> groups) {
+    public EndOfFeedGroupSet(long id,
+                             String activeGroupId,
+                             String connectedGroupId,
+                             String nextMaxId,
+                             String paginationSource,
+                             List<EndOfFeedGroup> groups) {
         this.id = id;
         this.activeGroupId = activeGroupId;
         this.connectedGroupId = connectedGroupId;
@@ -27,44 +27,44 @@ public class EndOfFeedGroupSet implements Serializable {
     }
 
     public long getId() {
-        return id;
+        return this.id;
     }
 
     public String getActiveGroupId() {
-        return activeGroupId;
+        return this.activeGroupId;
     }
 
     public String getConnectedGroupId() {
-        return connectedGroupId;
+        return this.connectedGroupId;
     }
 
     public String getNextMaxId() {
-        return nextMaxId;
+        return this.nextMaxId;
     }
 
     public String getPaginationSource() {
-        return paginationSource;
+        return this.paginationSource;
     }
 
     public List<EndOfFeedGroup> getGroups() {
-        return groups;
+        return this.groups;
     }
 
     @Override
-    public boolean equals(final Object o) {
+    public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        final EndOfFeedGroupSet that = (EndOfFeedGroupSet) o;
-        return id == that.id &&
-                Objects.equals(activeGroupId, that.activeGroupId) &&
-                Objects.equals(connectedGroupId, that.connectedGroupId) &&
-                Objects.equals(nextMaxId, that.nextMaxId) &&
-                Objects.equals(paginationSource, that.paginationSource) &&
-                Objects.equals(groups, that.groups);
+        if (o == null || this.getClass() != o.getClass()) return false;
+        EndOfFeedGroupSet that = (EndOfFeedGroupSet) o;
+        return this.id == that.id &&
+                Objects.equals(this.activeGroupId, that.activeGroupId) &&
+                Objects.equals(this.connectedGroupId, that.connectedGroupId) &&
+                Objects.equals(this.nextMaxId, that.nextMaxId) &&
+                Objects.equals(this.paginationSource, that.paginationSource) &&
+                Objects.equals(this.groups, that.groups);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, activeGroupId, connectedGroupId, nextMaxId, paginationSource, groups);
+        return Objects.hash(this.id, this.activeGroupId, this.connectedGroupId, this.nextMaxId, this.paginationSource, this.groups);
     }
 }

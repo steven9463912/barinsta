@@ -170,132 +170,132 @@ public class DirectMessageThreadFragment extends Fragment implements DirectReact
     private final AppExecutors appExecutors = AppExecutors.INSTANCE;
     private final Animatable2Compat.AnimationCallback micToSendAnimationCallback = new Animatable2Compat.AnimationCallback() {
         @Override
-        public void onAnimationEnd(Drawable drawable) {
+        public void onAnimationEnd(final Drawable drawable) {
             AnimatedVectorDrawableCompat.unregisterAnimationCallback(drawable, this);
-            DirectMessageThreadFragment.this.setSendToMicIcon();
+            setSendToMicIcon();
         }
     };
     private final Animatable2Compat.AnimationCallback sendToMicAnimationCallback = new Animatable2Compat.AnimationCallback() {
         @Override
-        public void onAnimationEnd(Drawable drawable) {
+        public void onAnimationEnd(final Drawable drawable) {
             AnimatedVectorDrawableCompat.unregisterAnimationCallback(drawable, this);
-            DirectMessageThreadFragment.this.setMicToSendIcon();
+            setMicToSendIcon();
         }
     };
     private final DirectItemsAdapter.DirectItemCallback directItemCallback = new DirectItemsAdapter.DirectItemCallback() {
         @Override
-        public void onHashtagClick(String hashtag) {
+        public void onHashtagClick(final String hashtag) {
             try {
-                NavDirections action = DirectMessageThreadFragmentDirections.actionToHashtag(hashtag);
+                final NavDirections action = DirectMessageThreadFragmentDirections.actionToHashtag(hashtag);
                 NavHostFragment.findNavController(DirectMessageThreadFragment.this).navigate(action);
-            } catch (final Exception e) {
-                Log.e(DirectMessageThreadFragment.TAG, "onHashtagClick: ", e);
+            } catch (Exception e) {
+                Log.e(TAG, "onHashtagClick: ", e);
             }
         }
 
         @Override
-        public void onMentionClick(String mention) {
-            DirectMessageThreadFragment.this.navigateToUser(mention);
+        public void onMentionClick(final String mention) {
+            navigateToUser(mention);
         }
 
         @Override
-        public void onLocationClick(long locationId) {
+        public void onLocationClick(final long locationId) {
             try {
-                NavDirections action = DirectMessageThreadFragmentDirections.actionToLocation(locationId);
+                final NavDirections action = DirectMessageThreadFragmentDirections.actionToLocation(locationId);
                 NavHostFragment.findNavController(DirectMessageThreadFragment.this).navigate(action);
-            } catch (final Exception e) {
-                Log.e(DirectMessageThreadFragment.TAG, "onLocationClick: ", e);
+            } catch (Exception e) {
+                Log.e(TAG, "onLocationClick: ", e);
             }
         }
 
         @Override
-        public void onURLClick(String url) {
-            Context context = DirectMessageThreadFragment.this.getContext();
+        public void onURLClick(final String url) {
+            final Context context = getContext();
             if (context == null) return;
             Utils.openURL(context, url);
         }
 
         @Override
-        public void onEmailClick(String email) {
-            Context context = DirectMessageThreadFragment.this.getContext();
+        public void onEmailClick(final String email) {
+            final Context context = getContext();
             if (context == null) return;
             Utils.openEmailAddress(context, email);
         }
 
         @Override
-        public void onMediaClick(Media media, int index) {
+        public void onMediaClick(final Media media, final int index) {
             if (media.isReelMedia()) {
                 try {
-                    String pk = media.getPk();
+                    final String pk = media.getPk();
                     if (pk == null) return;
-                    long mediaId = Long.parseLong(pk);
-                    User user = media.getUser();
+                    final long mediaId = Long.parseLong(pk);
+                    final User user = media.getUser();
                     if (user == null) return;
-                    String username = user.getUsername();
-                    NavDirections action = DirectMessageThreadFragmentDirections.actionToStory(StoryViewerOptions.forStory(mediaId, username));
+                    final String username = user.getUsername();
+                    final NavDirections action = DirectMessageThreadFragmentDirections.actionToStory(StoryViewerOptions.forStory(mediaId, username));
                     NavHostFragment.findNavController(DirectMessageThreadFragment.this).navigate(action);
-                } catch (final Exception e) {
-                    Log.e(DirectMessageThreadFragment.TAG, "onMediaClick (story): ", e);
+                } catch (Exception e) {
+                    Log.e(TAG, "onMediaClick (story): ", e);
                 }
                 return;
             }
             try {
-                NavDirections actionToPost = DirectMessageThreadFragmentDirections.actionToPost(media, index);
+                final NavDirections actionToPost = DirectMessageThreadFragmentDirections.actionToPost(media, index);
                 NavHostFragment.findNavController(DirectMessageThreadFragment.this).navigate(actionToPost);
-            } catch (final Exception e) {
-                Log.e(DirectMessageThreadFragment.TAG, "openPostDialog: ", e);
+            } catch (Exception e) {
+                Log.e(TAG, "openPostDialog: ", e);
             }
         }
 
         @Override
-        public void onStoryClick(DirectItemStoryShare storyShare) {
+        public void onStoryClick(final DirectItemStoryShare storyShare) {
             try {
-                String pk = storyShare.getReelId();
+                final String pk = storyShare.getReelId();
                 if (pk == null) return;
-                long mediaId = Long.parseLong(pk);
-                Media media = storyShare.getMedia();
+                final long mediaId = Long.parseLong(pk);
+                final Media media = storyShare.getMedia();
                 if (media == null) return;
-                User user = media.getUser();
+                final User user = media.getUser();
                 if (user == null) return;
-                String username = user.getUsername();
-                NavDirections action = DirectMessageThreadFragmentDirections.actionToStory(StoryViewerOptions.forUser(mediaId, username));
+                final String username = user.getUsername();
+                final NavDirections action = DirectMessageThreadFragmentDirections.actionToStory(StoryViewerOptions.forUser(mediaId, username));
                 NavHostFragment.findNavController(DirectMessageThreadFragment.this).navigate(action);
-            } catch (final Exception e) {
-                Log.e(DirectMessageThreadFragment.TAG, "onStoryClick: ", e);
+            } catch (Exception e) {
+                Log.e(TAG, "onStoryClick: ", e);
             }
         }
 
         @Override
-        public void onReaction(DirectItem item, Emoji emoji) {
+        public void onReaction(final DirectItem item, final Emoji emoji) {
             if (item == null || emoji == null) return;
-            LiveData<Resource<Object>> resourceLiveData = DirectMessageThreadFragment.this.viewModel.sendReaction(item, emoji);
-            resourceLiveData.observe(DirectMessageThreadFragment.this.getViewLifecycleOwner(), directItemResource -> DirectMessageThreadFragment.this.handleSentMessage(resourceLiveData));
+            final LiveData<Resource<Object>> resourceLiveData = viewModel.sendReaction(item, emoji);
+            resourceLiveData.observe(getViewLifecycleOwner(), directItemResource -> handleSentMessage(resourceLiveData));
         }
 
         @Override
-        public void onReactionClick(DirectItem item, int position) {
-            DirectMessageThreadFragment.this.showReactionsDialog(item);
+        public void onReactionClick(final DirectItem item, final int position) {
+            showReactionsDialog(item);
         }
 
         @Override
-        public void onOptionSelect(DirectItem item, int itemId, Function<DirectItem, Void> cb) {
+        public void onOptionSelect(final DirectItem item, final int itemId, final Function<DirectItem, Void> cb) {
             if (itemId == R.id.unsend) {
-                DirectMessageThreadFragment.this.handleSentMessage(DirectMessageThreadFragment.this.viewModel.unsend(item));
+                handleSentMessage(viewModel.unsend(item));
                 return;
             }
             if (itemId == R.id.forward) {
-                DirectMessageThreadFragment.this.itemToForward = item;
-                NavDirections actionGlobalUserSearch = DirectMessageThreadFragmentDirections
+                itemToForward = item;
+                final NavDirections actionGlobalUserSearch = DirectMessageThreadFragmentDirections
                         .actionToUserSearch()
-                        .setTitle(DirectMessageThreadFragment.this.getString(R.string.forward))
-                        .setActionLabel(DirectMessageThreadFragment.this.getString(R.string.send))
+                        .setTitle(getString(R.string.forward))
+                        .setActionLabel(getString(R.string.send))
                         .setShowGroups(true)
                         .setMultiple(true)
                         .setSearchMode(UserSearchMode.RAVEN);
                 NavHostFragment.findNavController(DirectMessageThreadFragment.this).navigate(actionGlobalUserSearch);
             }
             if (itemId == R.id.download) {
-                DirectMessageThreadFragment.this.downloadItem(item);
+                downloadItem(item);
                 return;
             }
             // otherwise call callback if present
@@ -305,11 +305,11 @@ public class DirectMessageThreadFragment extends Fragment implements DirectReact
         }
 
         @Override
-        public void onAddReactionListener(DirectItem item) {
+        public void onAddReactionListener(final DirectItem item) {
             if (item == null) return;
-            DirectMessageThreadFragment.this.addReactionItem = item;
-            EmojiBottomSheetDialog emojiBottomSheetDialog = EmojiBottomSheetDialog.newInstance();
-            emojiBottomSheetDialog.show(DirectMessageThreadFragment.this.getChildFragmentManager(), EmojiBottomSheetDialog.TAG);
+            addReactionItem = item;
+            final EmojiBottomSheetDialog emojiBottomSheetDialog = EmojiBottomSheetDialog.newInstance();
+            emojiBottomSheetDialog.show(getChildFragmentManager(), EmojiBottomSheetDialog.TAG);
         }
     };
     private final DirectItemsAdapter.DirectItemLongClickListener directItemLongClickListener = position -> {
@@ -319,25 +319,25 @@ public class DirectMessageThreadFragment extends Fragment implements DirectReact
         if (result == null) return;
         if (result instanceof Uri) {
             Uri uri = (Uri) result;
-            this.handleSentMessage(this.viewModel.sendUri(uri));
+            handleSentMessage(viewModel.sendUri(uri));
         } else if ((result instanceof RankedRecipient)) {
             // Log.d(TAG, "result: " + result);
-            if (this.itemToForward != null) {
-                this.viewModel.forward((RankedRecipient) result, this.itemToForward);
+            if (itemToForward != null) {
+                viewModel.forward((RankedRecipient) result, itemToForward);
             }
         } else if ((result instanceof Set)) {
             try {
                 // Log.d(TAG, "result: " + result);
-                if (this.itemToForward != null) {
+                if (itemToForward != null) {
                     //noinspection unchecked
-                    this.viewModel.forward((Set<RankedRecipient>) result, this.itemToForward);
+                    viewModel.forward((Set<RankedRecipient>) result, itemToForward);
                 }
             } catch (Exception e) {
-                Log.e(DirectMessageThreadFragment.TAG, "forward result: ", e);
+                Log.e(TAG, "forward result: ", e);
             }
         }
         // clear result
-        this.backStackSavedStateResultLiveData.postValue(null);
+        backStackSavedStateResultLiveData.postValue(null);
     };
     private final MutableLiveData<Integer> inputLength = new MutableLiveData<>(0);
     private final MutableLiveData<Boolean> emojiPickerVisible = new MutableLiveData<>(false);
@@ -345,105 +345,105 @@ public class DirectMessageThreadFragment extends Fragment implements DirectReact
     private final OnBackPressedCallback onEmojiPickerBackPressedCallback = new OnBackPressedCallback(false) {
         @Override
         public void handleOnBackPressed() {
-            DirectMessageThreadFragment.this.emojiPickerVisible.postValue(false);
+            emojiPickerVisible.postValue(false);
         }
     };
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.fragmentActivity = (MainActivity) this.requireActivity();
-        this.appStateViewModel = new ViewModelProvider(this.fragmentActivity).get(AppStateViewModel.class);
-        this.autoMarkAsSeen = Utils.settingsHelper.getBoolean(PreferenceKeys.DM_MARK_AS_SEEN);
-        Bundle arguments = this.getArguments();
+        fragmentActivity = (MainActivity) requireActivity();
+        appStateViewModel = new ViewModelProvider(fragmentActivity).get(AppStateViewModel.class);
+        autoMarkAsSeen = Utils.settingsHelper.getBoolean(PreferenceKeys.DM_MARK_AS_SEEN);
+        final Bundle arguments = getArguments();
         if (arguments == null) return;
-        DirectMessageThreadFragmentArgs fragmentArgs = DirectMessageThreadFragmentArgs.fromBundle(arguments);
-        Resource<User> currentUserResource = this.appStateViewModel.getCurrentUser();
+        final DirectMessageThreadFragmentArgs fragmentArgs = DirectMessageThreadFragmentArgs.fromBundle(arguments);
+        final Resource<User> currentUserResource = appStateViewModel.getCurrentUser();
         if (currentUserResource == null) return;
-        User currentUser = currentUserResource.data;
+        final User currentUser = currentUserResource.data;
         if (currentUser == null) return;
-        DirectThreadViewModelFactory viewModelFactory = new DirectThreadViewModelFactory(
-                this.fragmentActivity.getApplication(),
+        final DirectThreadViewModelFactory viewModelFactory = new DirectThreadViewModelFactory(
+                fragmentActivity.getApplication(),
                 fragmentArgs.getThreadId(),
                 fragmentArgs.getPending(),
                 currentUser
         );
-        this.viewModel = new ViewModelProvider(this, viewModelFactory).get(DirectThreadViewModel.class);
-        this.setHasOptionsMenu(true);
+        viewModel = new ViewModelProvider(this, viewModelFactory).get(DirectThreadViewModel.class);
+        setHasOptionsMenu(true);
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container,
-                             Bundle savedInstanceState) {
-        if (this.root != null) {
-            this.shouldRefresh = false;
-            return this.root;
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             final ViewGroup container,
+                             final Bundle savedInstanceState) {
+        if (root != null) {
+            shouldRefresh = false;
+            return root;
         }
-        this.binding = FragmentDirectMessagesThreadBinding.inflate(inflater, container, false);
-        this.binding.send.setRecordView(this.binding.recordView);
-        this.root = this.binding.getRoot();
-        Context context = this.getContext();
+        binding = FragmentDirectMessagesThreadBinding.inflate(inflater, container, false);
+        binding.send.setRecordView(binding.recordView);
+        root = binding.getRoot();
+        final Context context = getContext();
         if (context == null) {
-            return this.root;
+            return root;
         }
-        this.tooltip = new Tooltip(context, this.root, this.getResources().getColor(R.color.grey_400), this.getResources().getColor(R.color.black));
+        tooltip = new Tooltip(context, root, getResources().getColor(R.color.grey_400), getResources().getColor(R.color.black));
         // todo check has camera and remove view
-        return this.root;
+        return root;
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
         // WindowCompat.setDecorFitsSystemWindows(fragmentActivity.getWindow(), false);
-        if (!this.shouldRefresh) return;
-        this.init();
-        this.binding.send.post(() -> this.initialSendX = this.binding.send.getX());
-        this.shouldRefresh = false;
+        if (!shouldRefresh) return;
+        init();
+        binding.send.post(() -> initialSendX = binding.send.getX());
+        shouldRefresh = false;
     }
 
     @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NonNull final Menu menu, @NonNull final MenuInflater inflater) {
         inflater.inflate(R.menu.dm_thread_menu, menu);
-        this.markAsSeenMenuItem = menu.findItem(R.id.mark_as_seen);
-        if (this.markAsSeenMenuItem != null) {
-            if (this.autoMarkAsSeen) {
-                this.markAsSeenMenuItem.setVisible(false);
+        markAsSeenMenuItem = menu.findItem(R.id.mark_as_seen);
+        if (markAsSeenMenuItem != null) {
+            if (autoMarkAsSeen) {
+                markAsSeenMenuItem.setVisible(false);
             } else {
-                this.markAsSeenMenuItem.setEnabled(false);
+                markAsSeenMenuItem.setEnabled(false);
             }
         }
     }
 
     @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        int itemId = item.getItemId();
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+        final int itemId = item.getItemId();
         if (itemId == R.id.info) {
-            Boolean pending = this.viewModel.isPending().getValue();
-            NavDirections directions = DirectMessageThreadFragmentDirections
-                    .actionToSettings(this.viewModel.getThreadId(), null)
+            final Boolean pending = viewModel.isPending().getValue();
+            final NavDirections directions = DirectMessageThreadFragmentDirections
+                    .actionToSettings(viewModel.getThreadId(), null)
                     .setPending(pending != null && pending);
             NavHostFragment.findNavController(this).navigate(directions);
             return true;
         }
         if (itemId == R.id.mark_as_seen) {
-            this.handleMarkAsSeen(item);
+            handleMarkAsSeen(item);
             return true;
         }
-        if (itemId == R.id.refresh && this.viewModel != null) {
-            this.viewModel.refreshChats();
+        if (itemId == R.id.refresh && viewModel != null) {
+            viewModel.refreshChats();
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void handleMarkAsSeen(@NonNull MenuItem item) {
-        LiveData<Resource<Object>> resourceLiveData = this.viewModel.markAsSeen();
-        resourceLiveData.observe(this.getViewLifecycleOwner(), new Observer<Resource<Object>>() {
+    private void handleMarkAsSeen(@NonNull final MenuItem item) {
+        final LiveData<Resource<Object>> resourceLiveData = viewModel.markAsSeen();
+        resourceLiveData.observe(getViewLifecycleOwner(), new Observer<Resource<Object>>() {
             @Override
-            public void onChanged(Resource<Object> resource) {
+            public void onChanged(final Resource<Object> resource) {
                 try {
                     if (resource == null) return;
-                    Context context = DirectMessageThreadFragment.this.getContext();
+                    final Context context = getContext();
                     if (context == null) return;
                     switch (resource.status) {
                         case SUCCESS:
@@ -454,11 +454,11 @@ public class DirectMessageThreadFragment extends Fragment implements DirectReact
                         case ERROR:
                             item.setEnabled(true);
                             if (resource.message != null) {
-                                Snackbar.make(context, DirectMessageThreadFragment.this.binding.getRoot(), resource.message, BaseTransientBottomBar.LENGTH_LONG).show();
+                                Snackbar.make(context, binding.getRoot(), resource.message, BaseTransientBottomBar.LENGTH_LONG).show();
                                 return;
                             }
                             if (resource.resId != 0) {
-                                Snackbar.make(DirectMessageThreadFragment.this.binding.getRoot(), resource.resId, BaseTransientBottomBar.LENGTH_LONG).show();
+                                Snackbar.make(binding.getRoot(), resource.resId, BaseTransientBottomBar.LENGTH_LONG).show();
                                 return;
                             }
                             break;
@@ -471,42 +471,42 @@ public class DirectMessageThreadFragment extends Fragment implements DirectReact
     }
 
     @Override
-    public void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == DirectMessageThreadFragment.FILE_PICKER_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+        if (requestCode == FILE_PICKER_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             if (data == null || data.getData() == null) {
-                Log.w(DirectMessageThreadFragment.TAG, "data is null!");
+                Log.w(TAG, "data is null!");
                 return;
             }
-            Context context = this.getContext();
+            final Context context = getContext();
             if (context == null) {
-                Log.w(DirectMessageThreadFragment.TAG, "conetxt is null!");
+                Log.w(TAG, "conetxt is null!");
                 return;
             }
-            Uri uri = data.getData();
-            String mimeType = Utils.getMimeType(uri, context.getContentResolver());
+            final Uri uri = data.getData();
+            final String mimeType = Utils.getMimeType(uri, context.getContentResolver());
             if (mimeType != null && mimeType.startsWith("image")) {
-                this.navigateToImageEditFragment(uri);
+                navigateToImageEditFragment(uri);
                 return;
             }
-            this.handleSentMessage(this.viewModel.sendUri(uri));
+            handleSentMessage(viewModel.sendUri(uri));
         }
-        if (requestCode == DirectMessageThreadFragment.CAMERA_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+        if (requestCode == CAMERA_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             if (data == null || data.getData() == null) {
-                Log.w(DirectMessageThreadFragment.TAG, "data is null!");
+                Log.w(TAG, "data is null!");
                 return;
             }
-            Uri uri = data.getData();
-            this.navigateToImageEditFragment(uri);
+            final Uri uri = data.getData();
+            navigateToImageEditFragment(uri);
         }
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions, @NonNull final int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        Context context = this.getContext();
+        final Context context = getContext();
         if (context == null) return;
-        if (requestCode == DirectMessageThreadFragment.AUDIO_RECORD_PERM_REQUEST_CODE) {
+        if (requestCode == AUDIO_RECORD_PERM_REQUEST_CODE) {
             if (PermissionUtils.hasAudioRecordPerms(context)) {
                 Toast.makeText(context, "You can send voice messages now!", Toast.LENGTH_LONG).show();
                 return;
@@ -517,156 +517,156 @@ public class DirectMessageThreadFragment extends Fragment implements DirectReact
 
     @Override
     public void onPause() {
-        if (this.isRecording) {
-            this.binding.recordView.cancelRecording(this.binding.send);
+        if (isRecording) {
+            binding.recordView.cancelRecording(binding.send);
         }
-        this.emojiPickerVisible.postValue(false);
-        this.kbVisible.postValue(false);
-        this.binding.inputHolder.setTranslationY(0);
-        this.binding.chats.setTranslationY(0);
-        this.binding.emojiPicker.setTranslationY(0);
-        this.removeObservers();
+        emojiPickerVisible.postValue(false);
+        kbVisible.postValue(false);
+        binding.inputHolder.setTranslationY(0);
+        binding.chats.setTranslationY(0);
+        binding.emojiPicker.setTranslationY(0);
+        removeObservers();
         super.onPause();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (this.initialSendX != 0) {
-            this.binding.send.setX(this.initialSendX);
+        if (initialSendX != 0) {
+            binding.send.setX(initialSendX);
         }
-        this.binding.send.stopScale();
-        OnBackPressedDispatcher onBackPressedDispatcher = this.fragmentActivity.getOnBackPressedDispatcher();
-        onBackPressedDispatcher.addCallback(this.onEmojiPickerBackPressedCallback);
-        this.setupBackStackResultObserver();
-        this.setObservers();
+        binding.send.stopScale();
+        final OnBackPressedDispatcher onBackPressedDispatcher = fragmentActivity.getOnBackPressedDispatcher();
+        onBackPressedDispatcher.addCallback(onEmojiPickerBackPressedCallback);
+        setupBackStackResultObserver();
+        setObservers();
         // attachPendingRequestsBadge(viewModel.getPendingRequestsCount().getValue());
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        this.cleanup();
+        cleanup();
     }
 
     @Override
     public void onDestroy() {
-        this.viewModel.deleteThreadIfRequired();
+        viewModel.deleteThreadIfRequired();
         super.onDestroy();
     }
 
     @SuppressLint("UnsafeOptInUsageError")
     private void cleanup() {
-        if (this.prevTitleRunnable != null) {
-            this.appExecutors.getMainThread().cancel(this.prevTitleRunnable);
+        if (prevTitleRunnable != null) {
+            appExecutors.getMainThread().cancel(prevTitleRunnable);
         }
-        for (int childCount = this.binding.chats.getChildCount(), i = 0; i < childCount; ++i) {
-            RecyclerView.ViewHolder holder = this.binding.chats.getChildViewHolder(this.binding.chats.getChildAt(i));
+        for (int childCount = binding.chats.getChildCount(), i = 0; i < childCount; ++i) {
+            final RecyclerView.ViewHolder holder = binding.chats.getChildViewHolder(binding.chats.getChildAt(i));
             if (holder == null) continue;
             if (holder instanceof DirectItemViewHolder) {
                 ((DirectItemViewHolder) holder).cleanup();
             }
         }
-        this.isPendingRequestCountBadgeAttached = false;
-        if (this.pendingRequestCountBadgeDrawable != null) {
-            @SuppressLint("RestrictedApi") ActionMenuItemView menuItemView = ToolbarUtils
-                    .getActionMenuItemView(this.fragmentActivity.getToolbar(), R.id.info);
+        isPendingRequestCountBadgeAttached = false;
+        if (pendingRequestCountBadgeDrawable != null) {
+            @SuppressLint("RestrictedApi") final ActionMenuItemView menuItemView = ToolbarUtils
+                    .getActionMenuItemView(fragmentActivity.getToolbar(), R.id.info);
             if (menuItemView != null) {
-                BadgeUtils.detachBadgeDrawable(this.pendingRequestCountBadgeDrawable, this.fragmentActivity.getToolbar(), R.id.info);
+                BadgeUtils.detachBadgeDrawable(pendingRequestCountBadgeDrawable, fragmentActivity.getToolbar(), R.id.info);
             }
-            this.pendingRequestCountBadgeDrawable = null;
+            pendingRequestCountBadgeDrawable = null;
         }
     }
 
     private void init() {
-        Context context = this.getContext();
+        final Context context = getContext();
         if (context == null) return;
-        if (this.getArguments() == null) return;
-        this.actionBar = this.fragmentActivity.getSupportActionBar();
-        this.setupList();
+        if (getArguments() == null) return;
+        actionBar = fragmentActivity.getSupportActionBar();
+        setupList();
     }
 
     private void setupList() {
-        Context context = this.getContext();
+        final Context context = getContext();
         if (context == null) return;
-        this.binding.chats.setItemViewCacheSize(20);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(context);
+        binding.chats.setItemViewCacheSize(20);
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         layoutManager.setReverseLayout(true);
         // layoutManager.setStackFromEnd(false);
         // binding.messageList.addItemDecoration(new VerticalSpaceItemDecoration(3));
-        RecyclerView.ItemAnimator animator = this.binding.chats.getItemAnimator();
+        final RecyclerView.ItemAnimator animator = binding.chats.getItemAnimator();
         if (animator instanceof SimpleItemAnimator) {
-            SimpleItemAnimator itemAnimator = (SimpleItemAnimator) animator;
+            final SimpleItemAnimator itemAnimator = (SimpleItemAnimator) animator;
             itemAnimator.setSupportsChangeAnimations(false);
         }
-        this.binding.chats.setLayoutManager(layoutManager);
-        this.binding.chats.addOnScrollListener(new RecyclerLazyLoaderAtEdge(layoutManager, true, page -> this.viewModel.fetchChats()));
-        HeaderItemDecoration headerItemDecoration = new HeaderItemDecoration(this.binding.chats, itemPosition -> {
-            if (this.itemOrHeaders == null || this.itemOrHeaders.isEmpty()) return false;
+        binding.chats.setLayoutManager(layoutManager);
+        binding.chats.addOnScrollListener(new RecyclerLazyLoaderAtEdge(layoutManager, true, page -> viewModel.fetchChats()));
+        final HeaderItemDecoration headerItemDecoration = new HeaderItemDecoration(binding.chats, itemPosition -> {
+            if (itemOrHeaders == null || itemOrHeaders.isEmpty()) return false;
             try {
-                DirectItemsAdapter.DirectItemOrHeader itemOrHeader = this.itemOrHeaders.get(itemPosition);
+                final DirectItemsAdapter.DirectItemOrHeader itemOrHeader = itemOrHeaders.get(itemPosition);
                 return itemOrHeader.isHeader();
-            } catch (final IndexOutOfBoundsException e) {
+            } catch (IndexOutOfBoundsException e) {
                 return false;
             }
         });
-        this.binding.chats.addItemDecoration(headerItemDecoration);
+        binding.chats.addItemDecoration(headerItemDecoration);
     }
 
     private void setObservers() {
-        if (this.viewModel == null) return;
-        this.threadLiveData = this.viewModel.getThread();
+        if (viewModel == null) return;
+        threadLiveData = viewModel.getThread();
         // if (threadLiveData == null) {
         //     final NavController navController = NavHostFragment.findNavController(this);
         //     navController.navigateUp();
         //     return;
         // }
-        this.pendingLiveData = this.viewModel.isPending();
-        this.pendingLiveData.observe(this.getViewLifecycleOwner(), isPending -> {
+        pendingLiveData = viewModel.isPending();
+        pendingLiveData.observe(getViewLifecycleOwner(), isPending -> {
             if (isPending == null) {
-                this.hideInput();
+                hideInput();
                 return;
             }
             if (isPending) {
-                this.showPendingOptions();
+                showPendingOptions();
                 return;
             }
-            this.hidePendingOptions();
-            Integer inputMode = this.viewModel.getInputMode().getValue();
+            hidePendingOptions();
+            final Integer inputMode = viewModel.getInputMode().getValue();
             if (inputMode != null && inputMode == 1) return;
-            this.showInput();
+            showInput();
         });
-        this.inputModeLiveData = this.viewModel.getInputMode();
-        this.inputModeLiveData.observe(this.getViewLifecycleOwner(), inputMode -> {
-            Boolean isPending = this.viewModel.isPending().getValue();
+        inputModeLiveData = viewModel.getInputMode();
+        inputModeLiveData.observe(getViewLifecycleOwner(), inputMode -> {
+            final Boolean isPending = viewModel.isPending().getValue();
             if (isPending != null && isPending || inputMode == null) return;
-            this.setupInput(inputMode);
+            setupInput(inputMode);
             if (inputMode == 0) {
-                this.setupTouchHelper();
+                setupTouchHelper();
                 return;
             }
             if (inputMode == 1) {
-                this.hideInput();
+                hideInput();
             }
         });
-        this.threadTitleLiveData = this.viewModel.getThreadTitle();
-        this.threadTitleLiveData.observe(this.getViewLifecycleOwner(), this::setTitle);
-        this.fetchingLiveData = this.viewModel.isFetching();
-        this.fetchingLiveData.observe(this.getViewLifecycleOwner(), fetchingResource -> {
+        threadTitleLiveData = viewModel.getThreadTitle();
+        threadTitleLiveData.observe(getViewLifecycleOwner(), this::setTitle);
+        fetchingLiveData = viewModel.isFetching();
+        fetchingLiveData.observe(getViewLifecycleOwner(), fetchingResource -> {
             if (fetchingResource == null) return;
             switch (fetchingResource.status) {
                 case SUCCESS:
                 case ERROR:
-                    this.setTitle(this.viewModel.getThreadTitle().getValue());
+                    setTitle(viewModel.getThreadTitle().getValue());
                     if (fetchingResource.message != null) {
-                        Snackbar.make(this.binding.getRoot(), fetchingResource.message, BaseTransientBottomBar.LENGTH_LONG).show();
+                        Snackbar.make(binding.getRoot(), fetchingResource.message, BaseTransientBottomBar.LENGTH_LONG).show();
                     }
                     if (fetchingResource.resId != 0) {
-                        Snackbar.make(this.binding.getRoot(), fetchingResource.resId, BaseTransientBottomBar.LENGTH_LONG).show();
+                        Snackbar.make(binding.getRoot(), fetchingResource.resId, BaseTransientBottomBar.LENGTH_LONG).show();
                     }
                     break;
                 case LOADING:
-                    this.setTitle(this.getString(R.string.dms_thread_updating));
+                    setTitle(getString(R.string.dms_thread_updating));
                     break;
             }
         });
@@ -675,259 +675,259 @@ public class DirectMessageThreadFragment extends Fragment implements DirectReact
         //     viewModel.setCurrentUser(userThreadPair.first);
         //     setupItemsAdapter(userThreadPair.first, userThreadPair.second);
         // });
-        this.threadLiveData.observe(this.getViewLifecycleOwner(), this::setupItemsAdapter);
-        this.itemsLiveData = this.viewModel.getItems();
-        this.itemsLiveData.observe(this.getViewLifecycleOwner(), this::submitItemsToAdapter);
-        this.replyToItemLiveData = this.viewModel.getReplyToItem();
-        this.replyToItemLiveData.observe(this.getViewLifecycleOwner(), item -> {
+        threadLiveData.observe(getViewLifecycleOwner(), this::setupItemsAdapter);
+        itemsLiveData = viewModel.getItems();
+        itemsLiveData.observe(getViewLifecycleOwner(), this::submitItemsToAdapter);
+        replyToItemLiveData = viewModel.getReplyToItem();
+        replyToItemLiveData.observe(getViewLifecycleOwner(), item -> {
             if (item == null) {
-                if (this.binding.input.length() == 0) {
-                    this.showExtraInputOption(true);
+                if (binding.input.length() == 0) {
+                    showExtraInputOption(true);
                 }
-                this.binding.getRoot().post(() -> {
-                    TransitionManager.beginDelayedTransition(this.binding.getRoot());
-                    this.binding.replyBg.setVisibility(View.GONE);
-                    this.binding.replyInfo.setVisibility(View.GONE);
-                    this.binding.replyPreviewImage.setVisibility(View.GONE);
-                    this.binding.replyCancel.setVisibility(View.GONE);
-                    this.binding.replyPreviewText.setVisibility(View.GONE);
+                binding.getRoot().post(() -> {
+                    TransitionManager.beginDelayedTransition(binding.getRoot());
+                    binding.replyBg.setVisibility(View.GONE);
+                    binding.replyInfo.setVisibility(View.GONE);
+                    binding.replyPreviewImage.setVisibility(View.GONE);
+                    binding.replyCancel.setVisibility(View.GONE);
+                    binding.replyPreviewText.setVisibility(View.GONE);
                 });
                 return;
             }
-            this.showExtraInputOption(false);
-            this.binding.getRoot().postDelayed(() -> {
-                this.binding.replyBg.setVisibility(View.VISIBLE);
-                this.binding.replyInfo.setVisibility(View.VISIBLE);
-                this.binding.replyPreviewImage.setVisibility(View.VISIBLE);
-                this.binding.replyCancel.setVisibility(View.VISIBLE);
-                this.binding.replyPreviewText.setVisibility(View.VISIBLE);
-                if (item.getUserId() == this.viewModel.getViewerId()) {
-                    this.binding.replyInfo.setText(R.string.replying_to_yourself);
+            showExtraInputOption(false);
+            binding.getRoot().postDelayed(() -> {
+                binding.replyBg.setVisibility(View.VISIBLE);
+                binding.replyInfo.setVisibility(View.VISIBLE);
+                binding.replyPreviewImage.setVisibility(View.VISIBLE);
+                binding.replyCancel.setVisibility(View.VISIBLE);
+                binding.replyPreviewText.setVisibility(View.VISIBLE);
+                if (item.getUserId() == viewModel.getViewerId()) {
+                    binding.replyInfo.setText(R.string.replying_to_yourself);
                 } else {
-                    User user = this.viewModel.getUser(item.getUserId());
+                    final User user = viewModel.getUser(item.getUserId());
                     if (user != null) {
-                        this.binding.replyInfo.setText(this.getString(R.string.replying_to_user, user.getFullName()));
+                        binding.replyInfo.setText(getString(R.string.replying_to_user, user.getFullName()));
                     } else {
-                        this.binding.replyInfo.setVisibility(View.GONE);
+                        binding.replyInfo.setVisibility(View.GONE);
                     }
                 }
-                String previewText = this.getDirectItemPreviewText(item);
-                this.binding.replyPreviewText.setText(TextUtils.isEmpty(previewText) ? this.getString(R.string.message) : previewText);
-                String previewImageUrl = this.getDirectItemPreviewImageUrl(item);
+                final String previewText = getDirectItemPreviewText(item);
+                binding.replyPreviewText.setText(TextUtils.isEmpty(previewText) ? getString(R.string.message) : previewText);
+                final String previewImageUrl = getDirectItemPreviewImageUrl(item);
                 if (TextUtils.isEmpty(previewImageUrl)) {
-                    this.binding.replyPreviewImage.setVisibility(View.GONE);
+                    binding.replyPreviewImage.setVisibility(View.GONE);
                 } else {
-                    this.binding.replyPreviewImage.setImageURI(previewImageUrl);
+                    binding.replyPreviewImage.setImageURI(previewImageUrl);
                 }
-                this.binding.replyCancel.setOnClickListener(v -> this.viewModel.setReplyToItem(null));
+                binding.replyCancel.setOnClickListener(v -> viewModel.setReplyToItem(null));
             }, 200);
         });
-        this.inputLength.observe(this.getViewLifecycleOwner(), length -> {
+        inputLength.observe(getViewLifecycleOwner(), length -> {
             if (length == null) return;
-            boolean hasReplyToItem = this.viewModel.getReplyToItem().getValue() != null;
+            final boolean hasReplyToItem = viewModel.getReplyToItem().getValue() != null;
             if (hasReplyToItem) {
-                this.prevLength = length;
+                prevLength = length;
                 return;
             }
-            if (this.prevLength == 0 ? length != 0 : length == 0) {
-                this.showExtraInputOption(length == 0);
+            if ((this.prevLength == 0) == (length != 0)) {
+                showExtraInputOption(length == 0);
             }
-            this.prevLength = length;
+            prevLength = length;
         });
-        this.pendingRequestsCountLiveData = this.viewModel.getPendingRequestsCount();
-        this.pendingRequestsCountLiveData.observe(this.getViewLifecycleOwner(), this::attachPendingRequestsBadge);
-        this.usersLiveData = this.viewModel.getUsers();
-        this.usersLiveData.observe(this.getViewLifecycleOwner(), users -> {
+        pendingRequestsCountLiveData = viewModel.getPendingRequestsCount();
+        pendingRequestsCountLiveData.observe(getViewLifecycleOwner(), this::attachPendingRequestsBadge);
+        usersLiveData = viewModel.getUsers();
+        usersLiveData.observe(getViewLifecycleOwner(), users -> {
             if (users == null || users.isEmpty()) return;
-            User user = users.get(0);
-            this.binding.acceptPendingRequestQuestion.setText(this.getString(R.string.accept_request_from_user, user.getUsername(), user.getFullName()));
+            final User user = users.get(0);
+            binding.acceptPendingRequestQuestion.setText(getString(R.string.accept_request_from_user, user.getUsername(), user.getFullName()));
         });
     }
 
     private void setupTouchHelper() {
-        Context context = this.getContext();
+        final Context context = getContext();
         if (context == null) return;
-        this.touchHelperCallback = new SwipeAndRestoreItemTouchHelperCallback(
+        touchHelperCallback = new SwipeAndRestoreItemTouchHelperCallback(
                 context,
                 (adapterPosition, viewHolder) -> {
-                    if (this.itemsAdapter == null) return;
-                    DirectItemsAdapter.DirectItemOrHeader directItemOrHeader = itemsAdapter.getList().get(adapterPosition);
+                    if (itemsAdapter == null) return;
+                    final DirectItemsAdapter.DirectItemOrHeader directItemOrHeader = this.itemsAdapter.getList().get(adapterPosition);
                     if (directItemOrHeader.isHeader()) return;
-                    viewModel.setReplyToItem(directItemOrHeader.item);
+                    this.viewModel.setReplyToItem(directItemOrHeader.item);
                 }
         );
-        itemTouchHelper = new ItemTouchHelper(touchHelperCallback);
-        itemTouchHelper.attachToRecyclerView(binding.chats);
+        this.itemTouchHelper = new ItemTouchHelper(this.touchHelperCallback);
+        this.itemTouchHelper.attachToRecyclerView(this.binding.chats);
     }
 
     private void removeObservers() {
-        pendingLiveData.removeObservers(getViewLifecycleOwner());
-        inputModeLiveData.removeObservers(getViewLifecycleOwner());
-        threadTitleLiveData.removeObservers(getViewLifecycleOwner());
-        fetchingLiveData.removeObservers(getViewLifecycleOwner());
-        threadLiveData.removeObservers(getViewLifecycleOwner());
-        itemsLiveData.removeObservers(getViewLifecycleOwner());
-        replyToItemLiveData.removeObservers(getViewLifecycleOwner());
-        inputLength.removeObservers(getViewLifecycleOwner());
-        pendingRequestsCountLiveData.removeObservers(getViewLifecycleOwner());
-        usersLiveData.removeObservers(getViewLifecycleOwner());
+        this.pendingLiveData.removeObservers(this.getViewLifecycleOwner());
+        this.inputModeLiveData.removeObservers(this.getViewLifecycleOwner());
+        this.threadTitleLiveData.removeObservers(this.getViewLifecycleOwner());
+        this.fetchingLiveData.removeObservers(this.getViewLifecycleOwner());
+        this.threadLiveData.removeObservers(this.getViewLifecycleOwner());
+        this.itemsLiveData.removeObservers(this.getViewLifecycleOwner());
+        this.replyToItemLiveData.removeObservers(this.getViewLifecycleOwner());
+        this.inputLength.removeObservers(this.getViewLifecycleOwner());
+        this.pendingRequestsCountLiveData.removeObservers(this.getViewLifecycleOwner());
+        this.usersLiveData.removeObservers(this.getViewLifecycleOwner());
 
     }
 
     private void hidePendingOptions() {
-        binding.acceptPendingRequestQuestion.setVisibility(View.GONE);
-        binding.decline.setVisibility(View.GONE);
-        binding.accept.setVisibility(View.GONE);
+        this.binding.acceptPendingRequestQuestion.setVisibility(View.GONE);
+        this.binding.decline.setVisibility(View.GONE);
+        this.binding.accept.setVisibility(View.GONE);
     }
 
     private void showPendingOptions() {
-        binding.acceptPendingRequestQuestion.setVisibility(View.VISIBLE);
-        binding.decline.setVisibility(View.VISIBLE);
-        binding.accept.setVisibility(View.VISIBLE);
-        binding.accept.setOnClickListener(v -> {
-            final LiveData<Resource<Object>> resourceLiveData = viewModel.acceptRequest();
-            handlePendingChangeResource(resourceLiveData, false);
+        this.binding.acceptPendingRequestQuestion.setVisibility(View.VISIBLE);
+        this.binding.decline.setVisibility(View.VISIBLE);
+        this.binding.accept.setVisibility(View.VISIBLE);
+        this.binding.accept.setOnClickListener(v -> {
+            LiveData<Resource<Object>> resourceLiveData = this.viewModel.acceptRequest();
+            this.handlePendingChangeResource(resourceLiveData, false);
         });
-        binding.decline.setOnClickListener(v -> {
-            final LiveData<Resource<Object>> resourceLiveData = viewModel.declineRequest();
-            handlePendingChangeResource(resourceLiveData, true);
+        this.binding.decline.setOnClickListener(v -> {
+            LiveData<Resource<Object>> resourceLiveData = this.viewModel.declineRequest();
+            this.handlePendingChangeResource(resourceLiveData, true);
         });
     }
 
-    private void handlePendingChangeResource(final LiveData<Resource<Object>> resourceLiveData, final boolean isDecline) {
-        resourceLiveData.observe(getViewLifecycleOwner(), resource -> {
+    private void handlePendingChangeResource(LiveData<Resource<Object>> resourceLiveData, boolean isDecline) {
+        resourceLiveData.observe(this.getViewLifecycleOwner(), resource -> {
             if (resource == null) return;
-            final Resource.Status status = resource.status;
+            Resource.Status status = resource.status;
             switch (status) {
                 case SUCCESS:
-                    resourceLiveData.removeObservers(getViewLifecycleOwner());
+                    resourceLiveData.removeObservers(this.getViewLifecycleOwner());
                     if (isDecline) {
-                        removeObservers();
-                        viewModel.removeThread();
-                        final NavController navController = NavHostFragment.findNavController(this);
+                        this.removeObservers();
+                        this.viewModel.removeThread();
+                        NavController navController = NavHostFragment.findNavController(this);
                         navController.navigateUp();
                         return;
                     }
-                    removeObservers();
-                    viewModel.moveFromPending();
-                    setObservers();
+                    this.removeObservers();
+                    this.viewModel.moveFromPending();
+                    this.setObservers();
                     break;
                 case LOADING:
                     break;
                 case ERROR:
                     if (resource.message != null) {
-                        Snackbar.make(binding.getRoot(), resource.message, BaseTransientBottomBar.LENGTH_LONG).show();
+                        Snackbar.make(this.binding.getRoot(), resource.message, BaseTransientBottomBar.LENGTH_LONG).show();
                     }
                     if (resource.resId != 0) {
-                        Snackbar.make(binding.getRoot(), resource.resId, BaseTransientBottomBar.LENGTH_LONG).show();
+                        Snackbar.make(this.binding.getRoot(), resource.resId, BaseTransientBottomBar.LENGTH_LONG).show();
                     }
-                    resourceLiveData.removeObservers(getViewLifecycleOwner());
+                    resourceLiveData.removeObservers(this.getViewLifecycleOwner());
                     break;
             }
         });
     }
 
     private void hideInput() {
-        binding.emojiToggle.setVisibility(View.GONE);
-        binding.gif.setVisibility(View.GONE);
-        binding.camera.setVisibility(View.GONE);
-        binding.gallery.setVisibility(View.GONE);
-        binding.input.setVisibility(View.GONE);
-        binding.inputBg.setVisibility(View.GONE);
-        binding.recordView.setVisibility(View.GONE);
-        binding.send.setVisibility(View.GONE);
-        if (itemTouchHelper != null) {
-            itemTouchHelper.attachToRecyclerView(null);
+        this.binding.emojiToggle.setVisibility(View.GONE);
+        this.binding.gif.setVisibility(View.GONE);
+        this.binding.camera.setVisibility(View.GONE);
+        this.binding.gallery.setVisibility(View.GONE);
+        this.binding.input.setVisibility(View.GONE);
+        this.binding.inputBg.setVisibility(View.GONE);
+        this.binding.recordView.setVisibility(View.GONE);
+        this.binding.send.setVisibility(View.GONE);
+        if (this.itemTouchHelper != null) {
+            this.itemTouchHelper.attachToRecyclerView(null);
         }
     }
 
     private void showInput() {
-        binding.emojiToggle.setVisibility(View.VISIBLE);
-        binding.gif.setVisibility(View.VISIBLE);
-        binding.camera.setVisibility(View.VISIBLE);
-        binding.gallery.setVisibility(View.VISIBLE);
-        binding.input.setVisibility(View.VISIBLE);
-        binding.inputBg.setVisibility(View.VISIBLE);
-        binding.recordView.setVisibility(View.VISIBLE);
-        binding.send.setVisibility(View.VISIBLE);
-        if (itemTouchHelper != null) {
-            itemTouchHelper.attachToRecyclerView(binding.chats);
+        this.binding.emojiToggle.setVisibility(View.VISIBLE);
+        this.binding.gif.setVisibility(View.VISIBLE);
+        this.binding.camera.setVisibility(View.VISIBLE);
+        this.binding.gallery.setVisibility(View.VISIBLE);
+        this.binding.input.setVisibility(View.VISIBLE);
+        this.binding.inputBg.setVisibility(View.VISIBLE);
+        this.binding.recordView.setVisibility(View.VISIBLE);
+        this.binding.send.setVisibility(View.VISIBLE);
+        if (this.itemTouchHelper != null) {
+            this.itemTouchHelper.attachToRecyclerView(this.binding.chats);
         }
     }
 
     @SuppressLint("UnsafeOptInUsageError")
-    private void attachPendingRequestsBadge(@Nullable final Integer count) {
-        if (pendingRequestCountBadgeDrawable == null) {
-            final Context context = getContext();
+    private void attachPendingRequestsBadge(@Nullable Integer count) {
+        if (this.pendingRequestCountBadgeDrawable == null) {
+            Context context = this.getContext();
             if (context == null) return;
-            pendingRequestCountBadgeDrawable = BadgeDrawable.create(context);
+            this.pendingRequestCountBadgeDrawable = BadgeDrawable.create(context);
         }
         if (count == null || count == 0) {
-            @SuppressLint("RestrictedApi") final ActionMenuItemView menuItemView = ToolbarUtils
-                    .getActionMenuItemView(fragmentActivity.getToolbar(), R.id.info);
+            @SuppressLint("RestrictedApi") ActionMenuItemView menuItemView = ToolbarUtils
+                    .getActionMenuItemView(this.fragmentActivity.getToolbar(), R.id.info);
             if (menuItemView != null) {
-                BadgeUtils.detachBadgeDrawable(pendingRequestCountBadgeDrawable, fragmentActivity.getToolbar(), R.id.info);
+                BadgeUtils.detachBadgeDrawable(this.pendingRequestCountBadgeDrawable, this.fragmentActivity.getToolbar(), R.id.info);
             }
-            isPendingRequestCountBadgeAttached = false;
-            pendingRequestCountBadgeDrawable.setNumber(0);
+            this.isPendingRequestCountBadgeAttached = false;
+            this.pendingRequestCountBadgeDrawable.setNumber(0);
             return;
         }
-        if (pendingRequestCountBadgeDrawable.getNumber() == count) return;
-        pendingRequestCountBadgeDrawable.setNumber(count);
-        if (!isPendingRequestCountBadgeAttached) {
-            BadgeUtils.attachBadgeDrawable(pendingRequestCountBadgeDrawable, fragmentActivity.getToolbar(), R.id.info);
-            isPendingRequestCountBadgeAttached = true;
+        if (this.pendingRequestCountBadgeDrawable.getNumber() == count) return;
+        this.pendingRequestCountBadgeDrawable.setNumber(count);
+        if (!this.isPendingRequestCountBadgeAttached) {
+            BadgeUtils.attachBadgeDrawable(this.pendingRequestCountBadgeDrawable, this.fragmentActivity.getToolbar(), R.id.info);
+            this.isPendingRequestCountBadgeAttached = true;
         }
     }
 
-    private void showExtraInputOption(final boolean show) {
+    private void showExtraInputOption(boolean show) {
         if (show) {
-            if (!binding.send.isListenForRecord()) {
-                binding.send.setListenForRecord(true);
-                startIconAnimation();
+            if (!this.binding.send.isListenForRecord()) {
+                this.binding.send.setListenForRecord(true);
+                this.startIconAnimation();
             }
-            binding.gif.setVisibility(View.VISIBLE);
-            binding.camera.setVisibility(View.VISIBLE);
-            binding.gallery.setVisibility(View.VISIBLE);
+            this.binding.gif.setVisibility(View.VISIBLE);
+            this.binding.camera.setVisibility(View.VISIBLE);
+            this.binding.gallery.setVisibility(View.VISIBLE);
             return;
         }
-        if (binding.send.isListenForRecord()) {
-            binding.send.setListenForRecord(false);
-            startIconAnimation();
+        if (this.binding.send.isListenForRecord()) {
+            this.binding.send.setListenForRecord(false);
+            this.startIconAnimation();
         }
-        binding.gif.setVisibility(View.GONE);
-        binding.camera.setVisibility(View.GONE);
-        binding.gallery.setVisibility(View.GONE);
+        this.binding.gif.setVisibility(View.GONE);
+        this.binding.camera.setVisibility(View.GONE);
+        this.binding.gallery.setVisibility(View.GONE);
     }
 
-    private String getDirectItemPreviewText(@NonNull final DirectItem item) {
-        final DirectItemType itemType = item.getItemType();
+    private String getDirectItemPreviewText(@NonNull DirectItem item) {
+        DirectItemType itemType = item.getItemType();
         if (itemType == null) return "";
         switch (itemType) {
             case TEXT:
                 return item.getText();
             case LINK:
-                final DirectItemLink link = item.getLink();
+                DirectItemLink link = item.getLink();
                 if (link == null) return "";
                 return link.getText();
             case MEDIA: {
-                final Media media = item.getMedia();
+                Media media = item.getMedia();
                 if (media == null) return "";
-                return getMediaPreviewTextString(media);
+                return this.getMediaPreviewTextString(media);
             }
             case RAVEN_MEDIA: {
-                final DirectItemVisualMedia visualMedia = item.getVisualMedia();
+                DirectItemVisualMedia visualMedia = item.getVisualMedia();
                 if (visualMedia == null) return "";
-                final Media media = visualMedia.getMedia();
+                Media media = visualMedia.getMedia();
                 if (media == null) return "";
-                return getMediaPreviewTextString(media);
+                return this.getMediaPreviewTextString(media);
             }
             case VOICE_MEDIA:
-                return getString(R.string.voice_message);
+                return this.getString(R.string.voice_message);
             case MEDIA_SHARE:
-                return getString(R.string.post);
+                return this.getString(R.string.post);
             case REEL_SHARE:
-                final DirectItemReelShare reelShare = item.getReelShare();
+                DirectItemReelShare reelShare = item.getReelShare();
                 if (reelShare == null) return "";
                 return reelShare.getText();
         }
@@ -935,22 +935,22 @@ public class DirectMessageThreadFragment extends Fragment implements DirectReact
     }
 
     @NonNull
-    private String getMediaPreviewTextString(@NonNull final Media media) {
-        final MediaItemType mediaType = media.getType();
+    private String getMediaPreviewTextString(@NonNull Media media) {
+        MediaItemType mediaType = media.getType();
         if (mediaType == null) return "";
         switch (mediaType) {
             case MEDIA_TYPE_IMAGE:
-                return getString(R.string.photo);
+                return this.getString(R.string.photo);
             case MEDIA_TYPE_VIDEO:
-                return getString(R.string.video);
+                return this.getString(R.string.video);
             default:
                 return "";
         }
     }
 
     @Nullable
-    private String getDirectItemPreviewImageUrl(@NonNull final DirectItem item) {
-        final DirectItemType itemType = item.getItemType();
+    private String getDirectItemPreviewImageUrl(@NonNull DirectItem item) {
+        DirectItemType itemType = item.getItemType();
         if (itemType == null) return null;
         switch (itemType) {
             case TEXT:
@@ -959,17 +959,17 @@ public class DirectMessageThreadFragment extends Fragment implements DirectReact
             case REEL_SHARE:
                 return null;
             case MEDIA: {
-                final Media media = item.getMedia();
+                Media media = item.getMedia();
                 return ResponseBodyUtils.getThumbUrl(media);
             }
             case RAVEN_MEDIA: {
-                final DirectItemVisualMedia visualMedia = item.getVisualMedia();
+                DirectItemVisualMedia visualMedia = item.getVisualMedia();
                 if (visualMedia == null) return null;
-                final Media media = visualMedia.getMedia();
+                Media media = visualMedia.getMedia();
                 return ResponseBodyUtils.getThumbUrl(media);
             }
             case MEDIA_SHARE: {
-                final Media media = item.getMediaShare();
+                Media media = item.getMediaShare();
                 return ResponseBodyUtils.getThumbUrl(media);
             }
         }
@@ -977,174 +977,174 @@ public class DirectMessageThreadFragment extends Fragment implements DirectReact
     }
 
     private void setupBackStackResultObserver() {
-        final NavController navController = NavHostFragment.findNavController(this);
-        final NavBackStackEntry backStackEntry = navController.getCurrentBackStackEntry();
+        NavController navController = NavHostFragment.findNavController(this);
+        NavBackStackEntry backStackEntry = navController.getCurrentBackStackEntry();
         if (backStackEntry != null) {
-            backStackSavedStateResultLiveData = backStackEntry.getSavedStateHandle().getLiveData("result");
-            backStackSavedStateResultLiveData.observe(getViewLifecycleOwner(), backStackSavedStateObserver);
+            this.backStackSavedStateResultLiveData = backStackEntry.getSavedStateHandle().getLiveData("result");
+            this.backStackSavedStateResultLiveData.observe(this.getViewLifecycleOwner(), this.backStackSavedStateObserver);
         }
     }
 
-    private void submitItemsToAdapter(final List<DirectItem> items) {
-        binding.chats.post(() -> {
-            if (autoMarkAsSeen) {
-                viewModel.markAsSeen();
+    private void submitItemsToAdapter(List<DirectItem> items) {
+        this.binding.chats.post(() -> {
+            if (this.autoMarkAsSeen) {
+                this.viewModel.markAsSeen();
                 return;
             }
-            final DirectThread thread = threadLiveData.getValue();
+            DirectThread thread = this.threadLiveData.getValue();
             if (thread == null) return;
-            if (markAsSeenMenuItem != null) {
-                markAsSeenMenuItem.setEnabled(!DMUtils.isRead(thread));
+            if (this.markAsSeenMenuItem != null) {
+                this.markAsSeenMenuItem.setEnabled(!DMUtils.isRead(thread));
             }
         });
-        if (itemsAdapter == null) return;
-        itemsAdapter.submitList(items, () -> {
-            itemOrHeaders = itemsAdapter.getList();
-            binding.chats.post(() -> {
-                final RecyclerView.LayoutManager layoutManager = binding.chats.getLayoutManager();
+        if (this.itemsAdapter == null) return;
+        this.itemsAdapter.submitList(items, () -> {
+            this.itemOrHeaders = this.itemsAdapter.getList();
+            this.binding.chats.post(() -> {
+                RecyclerView.LayoutManager layoutManager = this.binding.chats.getLayoutManager();
                 if (layoutManager instanceof LinearLayoutManager) {
-                    final int position = ((LinearLayoutManager) layoutManager).findLastCompletelyVisibleItemPosition();
+                    int position = ((LinearLayoutManager) layoutManager).findLastCompletelyVisibleItemPosition();
                     if (position < 0) return;
-                    if (position == itemsAdapter.getItemCount() - 1) {
-                        viewModel.fetchChats();
+                    if (position == this.itemsAdapter.getItemCount() - 1) {
+                        this.viewModel.fetchChats();
                     }
                 }
             });
         });
     }
 
-    private void setupItemsAdapter(final DirectThread thread) {
+    private void setupItemsAdapter(DirectThread thread) {
         if (thread == null) return;
-        if (itemsAdapter != null) {
-            if (itemsAdapter.getThread() == thread) return;
-            itemsAdapter.setThread(thread);
+        if (this.itemsAdapter != null) {
+            if (this.itemsAdapter.getThread() == thread) return;
+            this.itemsAdapter.setThread(thread);
             return;
         }
-        final Resource<User> currentUserResource = appStateViewModel.getCurrentUser();
+        Resource<User> currentUserResource = this.appStateViewModel.getCurrentUser();
         if (currentUserResource == null) return;
-        final User currentUser = currentUserResource.data;
+        User currentUser = currentUserResource.data;
         if (currentUser == null) return;
-        itemsAdapter = new DirectItemsAdapter(currentUser, thread, directItemCallback, directItemLongClickListener);
-        itemsAdapter.setHasStableIds(true);
-        itemsAdapter.setStateRestorationPolicy(RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY);
-        binding.chats.setAdapter(itemsAdapter);
-        registerDataObserver();
-        final List<DirectItem> items = viewModel.getItems().getValue();
-        if (items != null && itemsAdapter.getItems() != items) {
-            submitItemsToAdapter(items);
+        this.itemsAdapter = new DirectItemsAdapter(currentUser, thread, this.directItemCallback, this.directItemLongClickListener);
+        this.itemsAdapter.setHasStableIds(true);
+        this.itemsAdapter.setStateRestorationPolicy(RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY);
+        this.binding.chats.setAdapter(this.itemsAdapter);
+        this.registerDataObserver();
+        List<DirectItem> items = this.viewModel.getItems().getValue();
+        if (items != null && this.itemsAdapter.getItems() != items) {
+            this.submitItemsToAdapter(items);
         }
     }
 
     private void registerDataObserver() {
-        itemsAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+        this.itemsAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
 
             @Override
-            public void onItemRangeInserted(final int positionStart, final int itemCount) {
+            public void onItemRangeInserted(int positionStart, int itemCount) {
                 super.onItemRangeInserted(positionStart, itemCount);
-                final LinearLayoutManager layoutManager = (LinearLayoutManager) binding.chats.getLayoutManager();
+                LinearLayoutManager layoutManager = (LinearLayoutManager) DirectMessageThreadFragment.this.binding.chats.getLayoutManager();
                 if (layoutManager == null) return;
-                int firstVisiblePosition = layoutManager.findFirstCompletelyVisibleItemPosition();
+                final int firstVisiblePosition = layoutManager.findFirstCompletelyVisibleItemPosition();
                 if ((firstVisiblePosition == -1 || firstVisiblePosition == 0) && (positionStart == 0)) {
-                    binding.chats.scrollToPosition(0);
+                    DirectMessageThreadFragment.this.binding.chats.scrollToPosition(0);
                 }
             }
         });
     }
 
-    private void setupInput(@Nullable final Integer inputMode) {
+    private void setupInput(@Nullable Integer inputMode) {
         if (inputMode != null && inputMode == 1) return;
-        final Context context = getContext();
+        Context context = this.getContext();
         if (context == null) return;
-        tooltip.setText(R.string.dms_thread_audio_hint);
-        setMicToSendIcon();
-        binding.recordView.setMinMillis(1000);
-        binding.recordView.setOnRecordListener(new RecordView.OnRecordListener() {
+        this.tooltip.setText(R.string.dms_thread_audio_hint);
+        this.setMicToSendIcon();
+        this.binding.recordView.setMinMillis(1000);
+        this.binding.recordView.setOnRecordListener(new RecordView.OnRecordListener() {
             @Override
             public void onStart() {
-                isRecording = true;
-                binding.input.setHint(null);
-                binding.gif.setVisibility(View.GONE);
-                binding.camera.setVisibility(View.GONE);
-                binding.gallery.setVisibility(View.GONE);
+                DirectMessageThreadFragment.this.isRecording = true;
+                DirectMessageThreadFragment.this.binding.input.setHint(null);
+                DirectMessageThreadFragment.this.binding.gif.setVisibility(View.GONE);
+                DirectMessageThreadFragment.this.binding.camera.setVisibility(View.GONE);
+                DirectMessageThreadFragment.this.binding.gallery.setVisibility(View.GONE);
                 if (PermissionUtils.hasAudioRecordPerms(context)) {
-                    viewModel.startRecording();
+                    DirectMessageThreadFragment.this.viewModel.startRecording();
                     return;
                 }
-                PermissionUtils.requestAudioRecordPerms(DirectMessageThreadFragment.this, AUDIO_RECORD_PERM_REQUEST_CODE);
+                PermissionUtils.requestAudioRecordPerms(DirectMessageThreadFragment.this, DirectMessageThreadFragment.AUDIO_RECORD_PERM_REQUEST_CODE);
             }
 
             @Override
             public void onCancel() {
-                Log.d(TAG, "onCancel");
+                Log.d(DirectMessageThreadFragment.TAG, "onCancel");
                 // binding.input.setHint("Message");
-                viewModel.stopRecording(true);
-                isRecording = false;
+                DirectMessageThreadFragment.this.viewModel.stopRecording(true);
+                DirectMessageThreadFragment.this.isRecording = false;
             }
 
             @Override
-            public void onFinish(final long recordTime) {
-                Log.d(TAG, "onFinish");
-                binding.input.setHint("Message");
-                binding.gif.setVisibility(View.VISIBLE);
-                binding.camera.setVisibility(View.VISIBLE);
-                binding.gallery.setVisibility(View.VISIBLE);
-                viewModel.stopRecording(false);
-                isRecording = false;
+            public void onFinish(long recordTime) {
+                Log.d(DirectMessageThreadFragment.TAG, "onFinish");
+                DirectMessageThreadFragment.this.binding.input.setHint("Message");
+                DirectMessageThreadFragment.this.binding.gif.setVisibility(View.VISIBLE);
+                DirectMessageThreadFragment.this.binding.camera.setVisibility(View.VISIBLE);
+                DirectMessageThreadFragment.this.binding.gallery.setVisibility(View.VISIBLE);
+                DirectMessageThreadFragment.this.viewModel.stopRecording(false);
+                DirectMessageThreadFragment.this.isRecording = false;
             }
 
             @Override
             public void onLessThanMin() {
-                Log.d(TAG, "onLessThanMin");
-                binding.input.setHint("Message");
+                Log.d(DirectMessageThreadFragment.TAG, "onLessThanMin");
+                DirectMessageThreadFragment.this.binding.input.setHint("Message");
                 if (PermissionUtils.hasAudioRecordPerms(context)) {
-                    tooltip.show(binding.send);
+                    DirectMessageThreadFragment.this.tooltip.show(DirectMessageThreadFragment.this.binding.send);
                 }
-                binding.gif.setVisibility(View.VISIBLE);
-                binding.camera.setVisibility(View.VISIBLE);
-                binding.gallery.setVisibility(View.VISIBLE);
-                viewModel.stopRecording(true);
-                isRecording = false;
+                DirectMessageThreadFragment.this.binding.gif.setVisibility(View.VISIBLE);
+                DirectMessageThreadFragment.this.binding.camera.setVisibility(View.VISIBLE);
+                DirectMessageThreadFragment.this.binding.gallery.setVisibility(View.VISIBLE);
+                DirectMessageThreadFragment.this.viewModel.stopRecording(true);
+                DirectMessageThreadFragment.this.isRecording = false;
             }
         });
-        binding.recordView.setOnBasketAnimationEndListener(() -> {
-            binding.input.setHint(R.string.dms_thread_message_hint);
-            binding.gif.setVisibility(View.VISIBLE);
-            binding.camera.setVisibility(View.VISIBLE);
-            binding.gallery.setVisibility(View.VISIBLE);
+        this.binding.recordView.setOnBasketAnimationEndListener(() -> {
+            this.binding.input.setHint(R.string.dms_thread_message_hint);
+            this.binding.gif.setVisibility(View.VISIBLE);
+            this.binding.camera.setVisibility(View.VISIBLE);
+            this.binding.gallery.setVisibility(View.VISIBLE);
         });
-        binding.input.addTextChangedListener(new TextWatcherAdapter() {
+        this.binding.input.addTextChangedListener(new TextWatcherAdapter() {
             // int prevLength = 0;
 
             @Override
-            public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
-                final int length = s.length();
-                inputLength.postValue(length);
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                int length = s.length();
+                DirectMessageThreadFragment.this.inputLength.postValue(length);
             }
         });
-        binding.send.setOnRecordClickListener(v -> {
-            final Editable text = binding.input.getText();
+        this.binding.send.setOnRecordClickListener(v -> {
+            Editable text = this.binding.input.getText();
             if (TextUtils.isEmpty(text)) return;
-            final LiveData<Resource<Object>> resourceLiveData = viewModel.sendText(text.toString());
-            resourceLiveData.observe(getViewLifecycleOwner(), resource -> handleSentMessage(resourceLiveData));
-            binding.input.setText("");
-            viewModel.setReplyToItem(null);
+            LiveData<Resource<Object>> resourceLiveData = this.viewModel.sendText(text.toString());
+            resourceLiveData.observe(this.getViewLifecycleOwner(), resource -> this.handleSentMessage(resourceLiveData));
+            this.binding.input.setText("");
+            this.viewModel.setReplyToItem(null);
         });
-        binding.send.setOnRecordLongClickListener(v -> {
-            Log.d(TAG, "setOnRecordLongClickListener");
+        this.binding.send.setOnRecordLongClickListener(v -> {
+            Log.d(DirectMessageThreadFragment.TAG, "setOnRecordLongClickListener");
             return true;
         });
-        binding.input.setOnFocusChangeListener((v, hasFocus) -> {
+        this.binding.input.setOnFocusChangeListener((v, hasFocus) -> {
             if (!hasFocus) return;
-            final Boolean emojiPickerVisibleValue = emojiPickerVisible.getValue();
+            Boolean emojiPickerVisibleValue = this.emojiPickerVisible.getValue();
             if (emojiPickerVisibleValue == null || !emojiPickerVisibleValue) return;
-            inputHolderAnimationCallback.setShouldTranslate(false);
-            chatsAnimationCallback.setShouldTranslate(false);
-            emojiPickerAnimationCallback.setShouldTranslate(false);
+            this.inputHolderAnimationCallback.setShouldTranslate(false);
+            this.chatsAnimationCallback.setShouldTranslate(false);
+            this.emojiPickerAnimationCallback.setShouldTranslate(false);
         });
-        setupInsetsCallback();
-        setupEmojiPicker();
-        binding.gallery.setOnClickListener(v -> {
-            final Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        this.setupInsetsCallback();
+        this.setupEmojiPicker();
+        this.binding.gallery.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
             intent.setType("*/*");
             intent.addCategory(Intent.CATEGORY_OPENABLE);
             intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -1152,94 +1152,94 @@ public class DirectMessageThreadFragment extends Fragment implements DirectReact
                     "image/*",
                     "video/mp4"
             });
-            startActivityForResult(intent, FILE_PICKER_REQUEST_CODE);
+            this.startActivityForResult(intent, DirectMessageThreadFragment.FILE_PICKER_REQUEST_CODE);
         });
-        binding.gif.setOnClickListener(v -> {
-            final GifPickerBottomDialogFragment gifPicker = GifPickerBottomDialogFragment.newInstance();
+        this.binding.gif.setOnClickListener(v -> {
+            GifPickerBottomDialogFragment gifPicker = GifPickerBottomDialogFragment.newInstance();
             gifPicker.setOnSelectListener(giphyGif -> {
                 gifPicker.dismiss();
                 if (giphyGif == null) return;
-                handleSentMessage(viewModel.sendAnimatedMedia(giphyGif));
+                this.handleSentMessage(this.viewModel.sendAnimatedMedia(giphyGif));
             });
-            gifPicker.show(getChildFragmentManager(), "GifPicker");
+            gifPicker.show(this.getChildFragmentManager(), "GifPicker");
         });
-        binding.camera.setOnClickListener(v -> {
-            final Intent intent = new Intent(context, CameraActivity.class);
-            startActivityForResult(intent, CAMERA_REQUEST_CODE);
+        this.binding.camera.setOnClickListener(v -> {
+            Intent intent = new Intent(context, CameraActivity.class);
+            this.startActivityForResult(intent, DirectMessageThreadFragment.CAMERA_REQUEST_CODE);
         });
     }
 
     private void setupInsetsCallback() {
-        inputHolderAnimationCallback = new TranslateDeferringInsetsAnimationCallback(
-                binding.inputHolder,
+        this.inputHolderAnimationCallback = new TranslateDeferringInsetsAnimationCallback(
+                this.binding.inputHolder,
                 WindowInsetsCompat.Type.systemBars(),
                 WindowInsetsCompat.Type.ime(),
                 WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_CONTINUE_ON_SUBTREE
         );
-        ViewCompat.setWindowInsetsAnimationCallback(binding.inputHolder, inputHolderAnimationCallback);
-        chatsAnimationCallback = new TranslateDeferringInsetsAnimationCallback(
-                binding.chats,
+        ViewCompat.setWindowInsetsAnimationCallback(this.binding.inputHolder, this.inputHolderAnimationCallback);
+        this.chatsAnimationCallback = new TranslateDeferringInsetsAnimationCallback(
+                this.binding.chats,
                 WindowInsetsCompat.Type.systemBars(),
                 WindowInsetsCompat.Type.ime()
         );
-        ViewCompat.setWindowInsetsAnimationCallback(binding.chats, chatsAnimationCallback);
-        emojiPickerAnimationCallback = new EmojiPickerInsetsAnimationCallback(
-                binding.emojiPicker,
+        ViewCompat.setWindowInsetsAnimationCallback(this.binding.chats, this.chatsAnimationCallback);
+        this.emojiPickerAnimationCallback = new EmojiPickerInsetsAnimationCallback(
+                this.binding.emojiPicker,
                 WindowInsetsCompat.Type.systemBars(),
                 WindowInsetsCompat.Type.ime()
         );
-        emojiPickerAnimationCallback.setKbVisibilityListener(this::onKbVisibilityChange);
-        ViewCompat.setWindowInsetsAnimationCallback(binding.emojiPicker, emojiPickerAnimationCallback);
+        this.emojiPickerAnimationCallback.setKbVisibilityListener(this::onKbVisibilityChange);
+        ViewCompat.setWindowInsetsAnimationCallback(this.binding.emojiPicker, this.emojiPickerAnimationCallback);
         ViewCompat.setWindowInsetsAnimationCallback(
-                binding.input,
-                new ControlFocusInsetsAnimationCallback(binding.input)
+                this.binding.input,
+                new ControlFocusInsetsAnimationCallback(this.binding.input)
         );
-        final SimpleImeAnimationController imeAnimController = root.getImeAnimController();
+        SimpleImeAnimationController imeAnimController = this.root.getImeAnimController();
         if (imeAnimController != null) {
             imeAnimController.setAnimationControlListener(new WindowInsetsAnimationControlListenerCompat() {
                 @Override
-                public void onReady(@NonNull final WindowInsetsAnimationControllerCompat controller, final int types) {}
+                public void onReady(@NonNull WindowInsetsAnimationControllerCompat controller, int types) {}
 
                 @Override
-                public void onFinished(@NonNull final WindowInsetsAnimationControllerCompat controller) {
-                    checkKbVisibility();
+                public void onFinished(@NonNull WindowInsetsAnimationControllerCompat controller) {
+                    this.checkKbVisibility();
                 }
 
                 @Override
-                public void onCancelled(@Nullable final WindowInsetsAnimationControllerCompat controller) {
-                    checkKbVisibility();
+                public void onCancelled(@Nullable WindowInsetsAnimationControllerCompat controller) {
+                    this.checkKbVisibility();
                 }
 
                 private void checkKbVisibility() {
-                    final WindowInsetsCompat rootWindowInsets = ViewCompat.getRootWindowInsets(binding.getRoot());
-                    final boolean visible = rootWindowInsets != null && rootWindowInsets.isVisible(WindowInsetsCompat.Type.ime());
-                    onKbVisibilityChange(visible);
+                    WindowInsetsCompat rootWindowInsets = ViewCompat.getRootWindowInsets(DirectMessageThreadFragment.this.binding.getRoot());
+                    boolean visible = rootWindowInsets != null && rootWindowInsets.isVisible(WindowInsetsCompat.Type.ime());
+                    DirectMessageThreadFragment.this.onKbVisibilityChange(visible);
                 }
             });
         }
     }
 
-    private void onKbVisibilityChange(final boolean kbVisible) {
+    private void onKbVisibilityChange(boolean kbVisible) {
         this.kbVisible.postValue(kbVisible);
-        if (wasToggled) {
-            emojiPickerVisible.postValue(!kbVisible);
-            wasToggled = false;
+        if (this.wasToggled) {
+            this.emojiPickerVisible.postValue(!kbVisible);
+            this.wasToggled = false;
             return;
         }
-        final Boolean emojiPickerVisibleValue = emojiPickerVisible.getValue();
+        Boolean emojiPickerVisibleValue = this.emojiPickerVisible.getValue();
         if (kbVisible && emojiPickerVisibleValue != null && emojiPickerVisibleValue) {
-            emojiPickerVisible.postValue(false);
+            this.emojiPickerVisible.postValue(false);
             return;
         }
         if (!kbVisible) {
-            emojiPickerVisible.postValue(false);
+            this.emojiPickerVisible.postValue(false);
         }
     }
 
     private void startIconAnimation() {
-        final Drawable icon = binding.send.getIcon();
+        Drawable icon = this.binding.send.getIcon();
         if (icon instanceof Animatable) {
-            final Animatable animatable = (Animatable) icon;
+            Animatable animatable = (Animatable) icon;
             if (animatable.isRunning()) {
                 animatable.stop();
             }
@@ -1247,48 +1247,48 @@ public class DirectMessageThreadFragment extends Fragment implements DirectReact
         }
     }
 
-    private void navigateToImageEditFragment(final String path) {
-        navigateToImageEditFragment(Uri.fromFile(new File(path)));
+    private void navigateToImageEditFragment(String path) {
+        this.navigateToImageEditFragment(Uri.fromFile(new File(path)));
     }
 
-    private void navigateToImageEditFragment(final Uri uri) {
+    private void navigateToImageEditFragment(Uri uri) {
         try {
-            final NavDirections navDirections = DirectMessageThreadFragmentDirections.actionToImageEdit(uri);
+            NavDirections navDirections = DirectMessageThreadFragmentDirections.actionToImageEdit(uri);
             NavHostFragment.findNavController(this).navigate(navDirections);
-        } catch (Exception e) {
-            Log.e(TAG, "navigateToImageEditFragment: ", e);
+        } catch (final Exception e) {
+            Log.e(DirectMessageThreadFragment.TAG, "navigateToImageEditFragment: ", e);
         }
     }
 
-    private void handleSentMessage(final LiveData<Resource<Object>> resourceLiveData) {
-        final Resource<Object> resource = resourceLiveData.getValue();
+    private void handleSentMessage(LiveData<Resource<Object>> resourceLiveData) {
+        Resource<Object> resource = resourceLiveData.getValue();
         if (resource == null) return;
-        final Resource.Status status = resource.status;
+        Resource.Status status = resource.status;
         switch (status) {
             case SUCCESS:
-                resourceLiveData.removeObservers(getViewLifecycleOwner());
+                resourceLiveData.removeObservers(this.getViewLifecycleOwner());
                 break;
             case LOADING:
                 break;
             case ERROR:
                 if (resource.message != null) {
-                    Snackbar.make(binding.getRoot(), resource.message, BaseTransientBottomBar.LENGTH_LONG).show();
+                    Snackbar.make(this.binding.getRoot(), resource.message, BaseTransientBottomBar.LENGTH_LONG).show();
                 }
                 if (resource.resId != 0) {
-                    Snackbar.make(binding.getRoot(), resource.resId, BaseTransientBottomBar.LENGTH_LONG).show();
+                    Snackbar.make(this.binding.getRoot(), resource.resId, BaseTransientBottomBar.LENGTH_LONG).show();
                 }
-                resourceLiveData.removeObservers(getViewLifecycleOwner());
+                resourceLiveData.removeObservers(this.getViewLifecycleOwner());
                 break;
         }
     }
 
     private void setupEmojiPicker() {
-        root.post(() -> binding.emojiPicker.init(
-                root,
+        this.root.post(() -> this.binding.emojiPicker.init(
+                this.root,
                 (view, emoji) -> {
-                    final KeyNotifyingEmojiEditText input = binding.input;
-                    final int start = input.getSelectionStart();
-                    final int end = input.getSelectionEnd();
+                    KeyNotifyingEmojiEditText input = this.binding.input;
+                    int start = input.getSelectionStart();
+                    int end = input.getSelectionEnd();
                     if (start < 0) {
                         input.append(emoji.getUnicode());
                         return;
@@ -1301,134 +1301,134 @@ public class DirectMessageThreadFragment extends Fragment implements DirectReact
                             emoji.getUnicode().length()
                     );
                 },
-                () -> binding.input.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL))
+                () -> this.binding.input.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL))
         ));
-        binding.emojiToggle.setOnClickListener(v -> {
-            Boolean isEmojiPickerVisible = emojiPickerVisible.getValue();
+        this.binding.emojiToggle.setOnClickListener(v -> {
+            Boolean isEmojiPickerVisible = this.emojiPickerVisible.getValue();
             if (isEmojiPickerVisible == null) isEmojiPickerVisible = false;
-            Boolean isKbVisible = kbVisible.getValue();
+            Boolean isKbVisible = this.kbVisible.getValue();
             if (isKbVisible == null) isKbVisible = false;
-            wasToggled = isEmojiPickerVisible || isKbVisible;
+            this.wasToggled = isEmojiPickerVisible || isKbVisible;
 
             if (isEmojiPickerVisible) {
-                if (hasKbOpenedOnce && binding.emojiPicker.getTranslationY() != 0) {
-                    inputHolderAnimationCallback.setShouldTranslate(false);
-                    chatsAnimationCallback.setShouldTranslate(false);
-                    emojiPickerAnimationCallback.setShouldTranslate(false);
+                if (this.hasKbOpenedOnce && this.binding.emojiPicker.getTranslationY() != 0) {
+                    this.inputHolderAnimationCallback.setShouldTranslate(false);
+                    this.chatsAnimationCallback.setShouldTranslate(false);
+                    this.emojiPickerAnimationCallback.setShouldTranslate(false);
                 }
                 // trigger ime.
                 // Since the kb visibility listener will toggle the emojiPickerVisible live data, we do not explicitly toggle it here
-                showKeyboard();
+                this.showKeyboard();
                 return;
             }
 
             if (isKbVisible) {
                 // hide the keyboard, but don't translate the views
                 // Since the kb visibility listener will toggle the emojiPickerVisible live data, we do not explicitly toggle it here
-                inputHolderAnimationCallback.setShouldTranslate(false);
-                chatsAnimationCallback.setShouldTranslate(false);
-                emojiPickerAnimationCallback.setShouldTranslate(false);
-                hideKeyboard();
+                this.inputHolderAnimationCallback.setShouldTranslate(false);
+                this.chatsAnimationCallback.setShouldTranslate(false);
+                this.emojiPickerAnimationCallback.setShouldTranslate(false);
+                this.hideKeyboard();
             }
-            emojiPickerVisible.postValue(true);
+            this.emojiPickerVisible.postValue(true);
         });
-        final LiveData<Pair<Boolean, Boolean>> emojiKbVisibilityLD = Utils.zipLiveData(emojiPickerVisible, kbVisible);
-        emojiKbVisibilityLD.observe(getViewLifecycleOwner(), pair -> {
+        LiveData<Pair<Boolean, Boolean>> emojiKbVisibilityLD = Utils.zipLiveData(this.emojiPickerVisible, this.kbVisible);
+        emojiKbVisibilityLD.observe(this.getViewLifecycleOwner(), pair -> {
             Boolean isEmojiPickerVisible = pair.first;
             Boolean isKbVisible = pair.second;
             if (isEmojiPickerVisible == null) isEmojiPickerVisible = false;
             if (isKbVisible == null) isKbVisible = false;
-            root.setScrollImeOffScreenWhenVisible(!isEmojiPickerVisible);
-            root.setScrollImeOnScreenWhenNotVisible(!isEmojiPickerVisible);
-            onEmojiPickerBackPressedCallback.setEnabled(isEmojiPickerVisible && !isKbVisible);
+            this.root.setScrollImeOffScreenWhenVisible(!isEmojiPickerVisible);
+            this.root.setScrollImeOnScreenWhenNotVisible(!isEmojiPickerVisible);
+            this.onEmojiPickerBackPressedCallback.setEnabled(isEmojiPickerVisible && !isKbVisible);
             if (isEmojiPickerVisible && !isKbVisible) {
-                animatePan(binding.emojiPicker.getMeasuredHeight(), unused -> {
-                    binding.emojiPicker.setAlpha(1);
-                    binding.emojiToggle.setIconResource(R.drawable.ic_keyboard_24);
+                this.animatePan(this.binding.emojiPicker.getMeasuredHeight(), unused -> {
+                    this.binding.emojiPicker.setAlpha(1);
+                    this.binding.emojiToggle.setIconResource(R.drawable.ic_keyboard_24);
                     return null;
                 }, null);
                 return;
             }
             if (!isEmojiPickerVisible && !isKbVisible) {
-                animatePan(0, null, unused -> {
-                    binding.emojiPicker.setAlpha(0);
-                    binding.emojiToggle.setIconResource(R.drawable.ic_face_24);
+                this.animatePan(0, null, unused -> {
+                    this.binding.emojiPicker.setAlpha(0);
+                    this.binding.emojiToggle.setIconResource(R.drawable.ic_face_24);
                     return null;
                 });
                 return;
             }
             // isKbVisible will always be true going forward
-            hasKbOpenedOnce = true;
+            this.hasKbOpenedOnce = true;
             if (!isEmojiPickerVisible) {
-                binding.emojiToggle.setIconResource(R.drawable.ic_face_24);
-                binding.emojiPicker.setAlpha(0);
+                this.binding.emojiToggle.setIconResource(R.drawable.ic_face_24);
+                this.binding.emojiPicker.setAlpha(0);
                 return;
             }
-            binding.emojiPicker.setAlpha(1);
+            this.binding.emojiPicker.setAlpha(1);
         });
     }
 
     public void showKeyboard() {
-        final Context context = getContext();
+        Context context = this.getContext();
         if (context == null) return;
-        final InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
         if (imm == null) return;
-        if (!binding.input.isFocused()) {
-            binding.input.requestFocus();
+        if (!this.binding.input.isFocused()) {
+            this.binding.input.requestFocus();
         }
-        final boolean shown = imm.showSoftInput(binding.input, InputMethodManager.SHOW_IMPLICIT);
+        boolean shown = imm.showSoftInput(this.binding.input, InputMethodManager.SHOW_IMPLICIT);
         if (!shown) {
-            Log.e(TAG, "showKeyboard: System did not display the keyboard");
+            Log.e(DirectMessageThreadFragment.TAG, "showKeyboard: System did not display the keyboard");
         }
     }
 
     public void hideKeyboard() {
-        final Context context = getContext();
+        Context context = this.getContext();
         if (context == null) return;
-        final InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
         if (imm == null) return;
-        imm.hideSoftInputFromWindow(binding.input.getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
+        imm.hideSoftInputFromWindow(this.binding.input.getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
     }
 
     private void setSendToMicIcon() {
-        final Context context = getContext();
+        Context context = this.getContext();
         if (context == null) return;
-        final Drawable sendToMicDrawable = Utils.getAnimatableDrawable(context, R.drawable.avd_send_to_mic_anim);
+        Drawable sendToMicDrawable = Utils.getAnimatableDrawable(context, R.drawable.avd_send_to_mic_anim);
         if (sendToMicDrawable instanceof Animatable) {
-            AnimatedVectorDrawableCompat.registerAnimationCallback(sendToMicDrawable, sendToMicAnimationCallback);
+            AnimatedVectorDrawableCompat.registerAnimationCallback(sendToMicDrawable, this.sendToMicAnimationCallback);
         }
-        binding.send.setIcon(sendToMicDrawable);
+        this.binding.send.setIcon(sendToMicDrawable);
     }
 
     private void setMicToSendIcon() {
-        final Context context = getContext();
+        Context context = this.getContext();
         if (context == null) return;
-        final Drawable micToSendDrawable = Utils.getAnimatableDrawable(context, R.drawable.avd_mic_to_send_anim);
+        Drawable micToSendDrawable = Utils.getAnimatableDrawable(context, R.drawable.avd_mic_to_send_anim);
         if (micToSendDrawable instanceof Animatable) {
-            AnimatedVectorDrawableCompat.registerAnimationCallback(micToSendDrawable, micToSendAnimationCallback);
+            AnimatedVectorDrawableCompat.registerAnimationCallback(micToSendDrawable, this.micToSendAnimationCallback);
         }
-        binding.send.setIcon(micToSendDrawable);
+        this.binding.send.setIcon(micToSendDrawable);
     }
 
-    private void setTitle(final String title) {
-        if (actionBar == null) return;
-        if (prevTitleRunnable != null) {
-            appExecutors.getMainThread().cancel(prevTitleRunnable);
+    private void setTitle(String title) {
+        if (this.actionBar == null) return;
+        if (this.prevTitleRunnable != null) {
+            this.appExecutors.getMainThread().cancel(this.prevTitleRunnable);
         }
-        prevTitleRunnable = () -> actionBar.setTitle(title);
+        this.prevTitleRunnable = () -> this.actionBar.setTitle(title);
         // set title delayed to avoid title blink if fetch is fast
-        appExecutors.getMainThread().execute(prevTitleRunnable, 1000);
+        this.appExecutors.getMainThread().execute(this.prevTitleRunnable, 1000);
     }
 
-    private void downloadItem(final DirectItem item) {
-        final Context context = getContext();
+    private void downloadItem(DirectItem item) {
+        Context context = this.getContext();
         if (context == null) return;
-        final DirectItemType itemType = item.getItemType();
+        DirectItemType itemType = item.getItemType();
         if (itemType == null) return;
         //noinspection SwitchStatementWithTooFewBranches
         switch (itemType) {
             case VOICE_MEDIA:
-                downloadItem(context, item.getVoiceMedia() == null ? null : item.getVoiceMedia().getMedia());
+                this.downloadItem(context, item.getVoiceMedia() == null ? null : item.getVoiceMedia().getMedia());
                 break;
             default:
                 break;
@@ -1436,7 +1436,7 @@ public class DirectMessageThreadFragment extends Fragment implements DirectReact
     }
 
     // currently ONLY for voice
-    private void downloadItem(@NonNull final Context context, final Media media) {
+    private void downloadItem(@NonNull Context context, Media media) {
         if (media == null) {
             Toast.makeText(context, R.string.downloader_unknown_error, Toast.LENGTH_SHORT).show();
             return;
@@ -1446,28 +1446,28 @@ public class DirectMessageThreadFragment extends Fragment implements DirectReact
     }
 
     // Sets the translationY of views to height with animation
-    private void animatePan(final int height,
-                            @Nullable final Function<Void, Void> onAnimationStart,
-                            @Nullable final Function<Void, Void> onAnimationEnd) {
-        if (animatorSet != null && animatorSet.isStarted()) {
-            animatorSet.cancel();
+    private void animatePan(int height,
+                            @Nullable Function<Void, Void> onAnimationStart,
+                            @Nullable Function<Void, Void> onAnimationEnd) {
+        if (this.animatorSet != null && this.animatorSet.isStarted()) {
+            this.animatorSet.cancel();
         }
-        final ImmutableList.Builder<Animator> builder = ImmutableList.builder();
+        ImmutableList.Builder<Animator> builder = ImmutableList.builder();
         builder.add(
-                ObjectAnimator.ofFloat(binding.chats, TRANSLATION_Y, -height),
-                ObjectAnimator.ofFloat(binding.inputHolder, TRANSLATION_Y, -height),
-                ObjectAnimator.ofFloat(binding.emojiPicker, TRANSLATION_Y, -height)
+                ObjectAnimator.ofFloat(this.binding.chats, DirectMessageThreadFragment.TRANSLATION_Y, -height),
+                ObjectAnimator.ofFloat(this.binding.inputHolder, DirectMessageThreadFragment.TRANSLATION_Y, -height),
+                ObjectAnimator.ofFloat(this.binding.emojiPicker, DirectMessageThreadFragment.TRANSLATION_Y, -height)
         );
         // if (headerItemDecoration != null && headerItemDecoration.getCurrentHeader() != null) {
         //     builder.add(ObjectAnimator.ofFloat(headerItemDecoration.getCurrentHeader(), TRANSLATION_Y, height));
         // }
-        animatorSet = new AnimatorSet();
-        animatorSet.playTogether(builder.build());
-        animatorSet.setDuration(200);
-        animatorSet.setInterpolator(CubicBezierInterpolator.EASE_IN);
-        animatorSet.addListener(new AnimatorListenerAdapter() {
+        this.animatorSet = new AnimatorSet();
+        this.animatorSet.playTogether(builder.build());
+        this.animatorSet.setDuration(200);
+        this.animatorSet.setInterpolator(CubicBezierInterpolator.EASE_IN);
+        this.animatorSet.addListener(new AnimatorListenerAdapter() {
             @Override
-            public void onAnimationStart(final Animator animation) {
+            public void onAnimationStart(Animator animation) {
                 super.onAnimationStart(animation);
                 if (onAnimationStart != null) {
                     onAnimationStart.apply(null);
@@ -1475,71 +1475,71 @@ public class DirectMessageThreadFragment extends Fragment implements DirectReact
             }
 
             @Override
-            public void onAnimationEnd(final Animator animation) {
+            public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
-                animatorSet = null;
+                DirectMessageThreadFragment.this.animatorSet = null;
                 if (onAnimationEnd != null) {
                     onAnimationEnd.apply(null);
                 }
             }
         });
-        animatorSet.start();
+        this.animatorSet.start();
     }
 
-    private void showReactionsDialog(final DirectItem item) {
-        final LiveData<List<User>> users = viewModel.getUsers();
-        final LiveData<List<User>> leftUsers = viewModel.getLeftUsers();
-        final ArrayList<User> allUsers = new ArrayList<>();
-        allUsers.add(viewModel.getCurrentUser());
+    private void showReactionsDialog(DirectItem item) {
+        LiveData<List<User>> users = this.viewModel.getUsers();
+        LiveData<List<User>> leftUsers = this.viewModel.getLeftUsers();
+        ArrayList<User> allUsers = new ArrayList<>();
+        allUsers.add(this.viewModel.getCurrentUser());
         if (users.getValue() != null) {
             allUsers.addAll(users.getValue());
         }
         if (leftUsers.getValue() != null) {
             allUsers.addAll(leftUsers.getValue());
         }
-        final String itemId = item.getItemId();
+        String itemId = item.getItemId();
         if (itemId == null) return;
-        final DirectItemReactions reactions = item.getReactions();
+        DirectItemReactions reactions = item.getReactions();
         if (reactions == null) return;
-        reactionDialogFragment = DirectItemReactionDialogFragment.newInstance(
-                viewModel.getViewerId(),
+        this.reactionDialogFragment = DirectItemReactionDialogFragment.newInstance(
+                this.viewModel.getViewerId(),
                 allUsers,
                 itemId,
                 reactions
         );
-        reactionDialogFragment.show(getChildFragmentManager(), "reactions_dialog");
+        this.reactionDialogFragment.show(this.getChildFragmentManager(), "reactions_dialog");
     }
 
     @Override
-    public void onReactionClick(final String itemId, final DirectItemEmojiReaction reaction) {
-        if (reactionDialogFragment != null) {
-            reactionDialogFragment.dismiss();
+    public void onReactionClick(String itemId, DirectItemEmojiReaction reaction) {
+        if (this.reactionDialogFragment != null) {
+            this.reactionDialogFragment.dismiss();
         }
         if (itemId == null || reaction == null) return;
-        if (reaction.getSenderId() == viewModel.getViewerId()) {
-            final LiveData<Resource<Object>> resourceLiveData = viewModel.sendDeleteReaction(itemId);
-            resourceLiveData.observe(getViewLifecycleOwner(), directItemResource -> handleSentMessage(resourceLiveData));
+        if (reaction.getSenderId() == this.viewModel.getViewerId()) {
+            LiveData<Resource<Object>> resourceLiveData = this.viewModel.sendDeleteReaction(itemId);
+            resourceLiveData.observe(this.getViewLifecycleOwner(), directItemResource -> this.handleSentMessage(resourceLiveData));
             return;
         }
         // navigate to user
-        final User user = viewModel.getUser(reaction.getSenderId());
+        User user = this.viewModel.getUser(reaction.getSenderId());
         if (user == null) return;
-        navigateToUser(user.getUsername());
+        this.navigateToUser(user.getUsername());
     }
 
-    private void navigateToUser(@NonNull final String username) {
+    private void navigateToUser(@NonNull String username) {
         try {
-            final NavDirections direction = DirectMessageThreadFragmentDirections.actionToProfile().setUsername(username);
+            NavDirections direction = DirectMessageThreadFragmentDirections.actionToProfile().setUsername(username);
             NavHostFragment.findNavController(this).navigate(direction);
-        } catch (Exception e) {
-            Log.e(TAG, "navigateToUser: ", e);
+        } catch (final Exception e) {
+            Log.e(DirectMessageThreadFragment.TAG, "navigateToUser: ", e);
         }
     }
 
     @Override
-    public void onClick(final View view, final Emoji emoji) {
-        if (addReactionItem == null || emoji == null) return;
-        final LiveData<Resource<Object>> resourceLiveData = viewModel.sendReaction(addReactionItem, emoji);
-        resourceLiveData.observe(getViewLifecycleOwner(), directItemResource -> handleSentMessage(resourceLiveData));
+    public void onClick(View view, Emoji emoji) {
+        if (this.addReactionItem == null || emoji == null) return;
+        LiveData<Resource<Object>> resourceLiveData = this.viewModel.sendReaction(this.addReactionItem, emoji);
+        resourceLiveData.observe(this.getViewLifecycleOwner(), directItemResource -> this.handleSentMessage(resourceLiveData));
     }
 }

@@ -21,38 +21,38 @@ public class MultiZoomableControllerListener implements ZoomableController.Liste
     private final List<ZoomableController.Listener> mListeners = new ArrayList<>();
 
     @Override
-    public synchronized void onTransformBegin(Matrix transform) {
-        for (ZoomableController.Listener listener : mListeners) {
+    public synchronized void onTransformBegin(final Matrix transform) {
+        for (final ZoomableController.Listener listener : this.mListeners) {
             listener.onTransformBegin(transform);
         }
     }
 
     @Override
-    public synchronized void onTransformChanged(Matrix transform) {
-        for (ZoomableController.Listener listener : mListeners) {
+    public synchronized void onTransformChanged(final Matrix transform) {
+        for (final ZoomableController.Listener listener : this.mListeners) {
             listener.onTransformChanged(transform);
         }
     }
 
     @Override
-    public synchronized void onTransformEnd(Matrix transform) {
-        for (ZoomableController.Listener listener : mListeners) {
+    public synchronized void onTransformEnd(final Matrix transform) {
+        for (final ZoomableController.Listener listener : this.mListeners) {
             listener.onTransformEnd(transform);
         }
     }
 
     @Override
-    public void onTranslationLimited(final float offsetLeft, final float offsetTop) {
-        for (ZoomableController.Listener listener : mListeners) {
+    public void onTranslationLimited(float offsetLeft, float offsetTop) {
+        for (final ZoomableController.Listener listener : this.mListeners) {
             listener.onTranslationLimited(offsetLeft, offsetTop);
         }
     }
 
-    public synchronized void addListener(ZoomableController.Listener listener) {
-        mListeners.add(listener);
+    public synchronized void addListener(final ZoomableController.Listener listener) {
+        this.mListeners.add(listener);
     }
 
-    public synchronized void removeListener(ZoomableController.Listener listener) {
-        mListeners.remove(listener);
+    public synchronized void removeListener(final ZoomableController.Listener listener) {
+        this.mListeners.remove(listener);
     }
 }

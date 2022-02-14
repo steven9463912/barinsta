@@ -9,10 +9,10 @@ public class FloatProperty extends Property<Float> {
     private final float minValue;
     private final float maxValue;
 
-    public FloatProperty(@StringRes final int label,
-                         final float defaultValue,
-                         final float minValue,
-                         final float maxValue) {
+    public FloatProperty(@StringRes int label,
+                         float defaultValue,
+                         float minValue,
+                         float maxValue) {
 
         this.label = label;
         this.defaultValue = defaultValue;
@@ -20,30 +20,30 @@ public class FloatProperty extends Property<Float> {
         this.maxValue = maxValue;
     }
 
-    public FloatProperty(@StringRes final int label, final float value) {
+    public FloatProperty(@StringRes int label, float value) {
         this.label = label;
-        this.defaultValue = value;
-        this.minValue = value;
-        this.maxValue = value;
+        defaultValue = value;
+        minValue = value;
+        maxValue = value;
     }
 
     @Override
     public int getLabel() {
-        return label;
+        return this.label;
     }
 
     @Override
     public Float getDefaultValue() {
-        return defaultValue;
+        return this.defaultValue;
     }
 
     @Override
     public Float getMinValue() {
-        return minValue;
+        return this.minValue;
     }
 
     @Override
     public Float getMaxValue() {
-        return maxValue;
+        return this.maxValue;
     }
 }

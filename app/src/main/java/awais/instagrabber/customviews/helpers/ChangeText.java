@@ -91,9 +91,9 @@ public class ChangeText extends Transition {
      */
     public static final int CHANGE_BEHAVIOR_OUT_IN = 3;
     private static final String[] sTransitionProperties = {
-            PROPNAME_TEXT,
-            PROPNAME_TEXT_SELECTION_START,
-            PROPNAME_TEXT_SELECTION_END
+            ChangeText.PROPNAME_TEXT,
+            ChangeText.PROPNAME_TEXT_SELECTION_START,
+            ChangeText.PROPNAME_TEXT_SELECTION_END
     };
 
     /**
@@ -105,21 +105,21 @@ public class ChangeText extends Transition {
      *                       transition is run.
      * @return this textChange object.
      */
-    public ChangeText setChangeBehavior(int changeBehavior) {
-        if (changeBehavior >= CHANGE_BEHAVIOR_KEEP && changeBehavior <= CHANGE_BEHAVIOR_OUT_IN) {
-            mChangeBehavior = changeBehavior;
+    public ChangeText setChangeBehavior(final int changeBehavior) {
+        if (changeBehavior >= ChangeText.CHANGE_BEHAVIOR_KEEP && changeBehavior <= ChangeText.CHANGE_BEHAVIOR_OUT_IN) {
+            this.mChangeBehavior = changeBehavior;
         }
         return this;
     }
 
-    public ChangeText setCrossFade(final boolean crossFade) {
+    public ChangeText setCrossFade(boolean crossFade) {
         this.crossFade = crossFade;
         return this;
     }
 
     @Override
     public String[] getTransitionProperties() {
-        return sTransitionProperties;
+        return ChangeText.sTransitionProperties;
     }
 
     /**
@@ -129,110 +129,110 @@ public class ChangeText extends Transition {
      * {@link #CHANGE_BEHAVIOR_IN}, or {@link #CHANGE_BEHAVIOR_OUT_IN}.
      */
     public int getChangeBehavior() {
-        return mChangeBehavior;
+        return this.mChangeBehavior;
     }
 
-    private void captureValues(TransitionValues transitionValues) {
+    private void captureValues(final TransitionValues transitionValues) {
         if (transitionValues.view instanceof TextView) {
-            TextView textview = (TextView) transitionValues.view;
-            transitionValues.values.put(PROPNAME_TEXT, textview.getText());
+            final TextView textview = (TextView) transitionValues.view;
+            transitionValues.values.put(ChangeText.PROPNAME_TEXT, textview.getText());
             if (textview instanceof EditText) {
-                transitionValues.values.put(PROPNAME_TEXT_SELECTION_START,
+                transitionValues.values.put(ChangeText.PROPNAME_TEXT_SELECTION_START,
                                             textview.getSelectionStart());
-                transitionValues.values.put(PROPNAME_TEXT_SELECTION_END,
+                transitionValues.values.put(ChangeText.PROPNAME_TEXT_SELECTION_END,
                                             textview.getSelectionEnd());
             }
-            if (mChangeBehavior > CHANGE_BEHAVIOR_KEEP) {
-                transitionValues.values.put(PROPNAME_TEXT_COLOR, textview.getCurrentTextColor());
+            if (this.mChangeBehavior > ChangeText.CHANGE_BEHAVIOR_KEEP) {
+                transitionValues.values.put(ChangeText.PROPNAME_TEXT_COLOR, textview.getCurrentTextColor());
             }
         }
     }
 
     @Override
-    public void captureStartValues(@NonNull TransitionValues transitionValues) {
-        captureValues(transitionValues);
+    public void captureStartValues(@NonNull final TransitionValues transitionValues) {
+        this.captureValues(transitionValues);
     }
 
     @Override
-    public void captureEndValues(@NonNull TransitionValues transitionValues) {
-        captureValues(transitionValues);
+    public void captureEndValues(@NonNull final TransitionValues transitionValues) {
+        this.captureValues(transitionValues);
     }
 
     @Override
-    public Animator createAnimator(@NonNull ViewGroup sceneRoot, TransitionValues startValues,
-                                   TransitionValues endValues) {
+    public Animator createAnimator(@NonNull final ViewGroup sceneRoot, final TransitionValues startValues,
+                                   final TransitionValues endValues) {
         if (startValues == null || endValues == null ||
                 !(startValues.view instanceof TextView) || !(endValues.view instanceof TextView)) {
             return null;
         }
-        final TextView view = (TextView) endValues.view;
-        Map<String, Object> startVals = startValues.values;
-        Map<String, Object> endVals = endValues.values;
-        final CharSequence startText = startVals.get(PROPNAME_TEXT) != null ?
-                                       (CharSequence) startVals.get(PROPNAME_TEXT) : "";
-        final CharSequence endText = endVals.get(PROPNAME_TEXT) != null ?
-                                     (CharSequence) endVals.get(PROPNAME_TEXT) : "";
-        final int startSelectionStart;
-        int startSelectionEnd;
-        int endSelectionStart;
-        final int endSelectionEnd;
+        TextView view = (TextView) endValues.view;
+        final Map<String, Object> startVals = startValues.values;
+        final Map<String, Object> endVals = endValues.values;
+        CharSequence startText = startVals.get(ChangeText.PROPNAME_TEXT) != null ?
+                                       (CharSequence) startVals.get(ChangeText.PROPNAME_TEXT) : "";
+        CharSequence endText = endVals.get(ChangeText.PROPNAME_TEXT) != null ?
+                                     (CharSequence) endVals.get(ChangeText.PROPNAME_TEXT) : "";
+        int startSelectionStart;
+        final int startSelectionEnd;
+        final int endSelectionStart;
+        int endSelectionEnd;
         if (view instanceof EditText) {
-            startSelectionStart = startVals.get(PROPNAME_TEXT_SELECTION_START) != null ?
-                                  (Integer) startVals.get(PROPNAME_TEXT_SELECTION_START) : -1;
-            startSelectionEnd = startVals.get(PROPNAME_TEXT_SELECTION_END) != null ?
-                                (Integer) startVals.get(PROPNAME_TEXT_SELECTION_END) : startSelectionStart;
-            endSelectionStart = endVals.get(PROPNAME_TEXT_SELECTION_START) != null ?
-                                (Integer) endVals.get(PROPNAME_TEXT_SELECTION_START) : -1;
-            endSelectionEnd = endVals.get(PROPNAME_TEXT_SELECTION_END) != null ?
-                              (Integer) endVals.get(PROPNAME_TEXT_SELECTION_END) : endSelectionStart;
+            startSelectionStart = startVals.get(ChangeText.PROPNAME_TEXT_SELECTION_START) != null ?
+                                  (Integer) startVals.get(ChangeText.PROPNAME_TEXT_SELECTION_START) : -1;
+            startSelectionEnd = startVals.get(ChangeText.PROPNAME_TEXT_SELECTION_END) != null ?
+                                (Integer) startVals.get(ChangeText.PROPNAME_TEXT_SELECTION_END) : startSelectionStart;
+            endSelectionStart = endVals.get(ChangeText.PROPNAME_TEXT_SELECTION_START) != null ?
+                                (Integer) endVals.get(ChangeText.PROPNAME_TEXT_SELECTION_START) : -1;
+            endSelectionEnd = endVals.get(ChangeText.PROPNAME_TEXT_SELECTION_END) != null ?
+                              (Integer) endVals.get(ChangeText.PROPNAME_TEXT_SELECTION_END) : endSelectionStart;
         } else {
             startSelectionStart = startSelectionEnd = endSelectionStart = endSelectionEnd = -1;
         }
         if (!Objects.equals(startText, endText)) {
-            final int startColor;
-            final int endColor;
-            if (mChangeBehavior != CHANGE_BEHAVIOR_IN) {
+            int startColor;
+            int endColor;
+            if (this.mChangeBehavior != ChangeText.CHANGE_BEHAVIOR_IN) {
                 view.setText(startText);
                 if (view instanceof EditText) {
-                    setSelection(((EditText) view), startSelectionStart, startSelectionEnd);
+                    this.setSelection(((EditText) view), startSelectionStart, startSelectionEnd);
                 }
             }
-            Animator anim;
-            if (mChangeBehavior == CHANGE_BEHAVIOR_KEEP) {
+            final Animator anim;
+            if (this.mChangeBehavior == ChangeText.CHANGE_BEHAVIOR_KEEP) {
                 startColor = endColor = 0;
                 anim = ValueAnimator.ofFloat(0, 1);
                 anim.addListener(new AnimatorListenerAdapter() {
                     @Override
-                    public void onAnimationEnd(Animator animation) {
+                    public void onAnimationEnd(final Animator animation) {
                         if (Objects.equals(startText, view.getText())) {
                             // Only set if it hasn't been changed since anim started
                             view.setText(endText);
                             if (view instanceof EditText) {
-                                setSelection(((EditText) view), endSelectionStart, endSelectionEnd);
+                                ChangeText.this.setSelection(((EditText) view), endSelectionStart, endSelectionEnd);
                             }
                         }
                     }
                 });
             } else {
-                startColor = (Integer) startVals.get(PROPNAME_TEXT_COLOR);
-                endColor = (Integer) endVals.get(PROPNAME_TEXT_COLOR);
+                startColor = (Integer) startVals.get(ChangeText.PROPNAME_TEXT_COLOR);
+                endColor = (Integer) endVals.get(ChangeText.PROPNAME_TEXT_COLOR);
                 // Fade out start text
                 ValueAnimator outAnim = null, inAnim = null;
-                if (mChangeBehavior == CHANGE_BEHAVIOR_OUT_IN ||
-                        mChangeBehavior == CHANGE_BEHAVIOR_OUT) {
+                if (this.mChangeBehavior == ChangeText.CHANGE_BEHAVIOR_OUT_IN ||
+                        this.mChangeBehavior == ChangeText.CHANGE_BEHAVIOR_OUT) {
                     outAnim = ValueAnimator.ofInt(Color.alpha(startColor), 0);
                     outAnim.addUpdateListener(animation -> {
-                        int currAlpha = (Integer) animation.getAnimatedValue();
+                        final int currAlpha = (Integer) animation.getAnimatedValue();
                         view.setTextColor(currAlpha << 24 | startColor & 0xffffff);
                     });
                     outAnim.addListener(new AnimatorListenerAdapter() {
                         @Override
-                        public void onAnimationEnd(Animator animation) {
+                        public void onAnimationEnd(final Animator animation) {
                             if (Objects.equals(startText, view.getText())) {
                                 // Only set if it hasn't been changed since anim started
                                 view.setText(endText);
                                 if (view instanceof EditText) {
-                                    setSelection(((EditText) view), endSelectionStart,
+                                    ChangeText.this.setSelection(((EditText) view), endSelectionStart,
                                                  endSelectionEnd);
                                 }
                             }
@@ -241,16 +241,16 @@ public class ChangeText extends Transition {
                         }
                     });
                 }
-                if (mChangeBehavior == CHANGE_BEHAVIOR_OUT_IN ||
-                        mChangeBehavior == CHANGE_BEHAVIOR_IN) {
+                if (this.mChangeBehavior == ChangeText.CHANGE_BEHAVIOR_OUT_IN ||
+                        this.mChangeBehavior == ChangeText.CHANGE_BEHAVIOR_IN) {
                     inAnim = ValueAnimator.ofInt(0, Color.alpha(endColor));
                     inAnim.addUpdateListener(animation -> {
-                        int currAlpha = (Integer) animation.getAnimatedValue();
+                        final int currAlpha = (Integer) animation.getAnimatedValue();
                         view.setTextColor(currAlpha << 24 | endColor & 0xffffff);
                     });
                     inAnim.addListener(new AnimatorListenerAdapter() {
                         @Override
-                        public void onAnimationCancel(Animator animation) {
+                        public void onAnimationCancel(final Animator animation) {
                             // restore opaque alpha and correct end color
                             view.setTextColor(endColor);
                         }
@@ -258,8 +258,8 @@ public class ChangeText extends Transition {
                 }
                 if (outAnim != null && inAnim != null) {
                     anim = new AnimatorSet();
-                    final AnimatorSet animatorSet = (AnimatorSet) anim;
-                    if (crossFade) {
+                    AnimatorSet animatorSet = (AnimatorSet) anim;
+                    if (this.crossFade) {
                         animatorSet.playTogether(outAnim, inAnim);
                     } else {
                         animatorSet.playSequentially(outAnim, inAnim);
@@ -271,51 +271,51 @@ public class ChangeText extends Transition {
                     anim = inAnim;
                 }
             }
-            TransitionListener transitionListener = new TransitionListenerAdapter() {
+            final TransitionListener transitionListener = new TransitionListenerAdapter() {
                 int mPausedColor;
 
                 @Override
-                public void onTransitionPause(@NonNull Transition transition) {
-                    if (mChangeBehavior != CHANGE_BEHAVIOR_IN) {
+                public void onTransitionPause(@NonNull final Transition transition) {
+                    if (ChangeText.this.mChangeBehavior != ChangeText.CHANGE_BEHAVIOR_IN) {
                         view.setText(endText);
                         if (view instanceof EditText) {
-                            setSelection(((EditText) view), endSelectionStart, endSelectionEnd);
+                            ChangeText.this.setSelection(((EditText) view), endSelectionStart, endSelectionEnd);
                         }
                     }
-                    if (mChangeBehavior > CHANGE_BEHAVIOR_KEEP) {
-                        mPausedColor = view.getCurrentTextColor();
+                    if (ChangeText.this.mChangeBehavior > ChangeText.CHANGE_BEHAVIOR_KEEP) {
+                        this.mPausedColor = view.getCurrentTextColor();
                         view.setTextColor(endColor);
                     }
                 }
 
                 @Override
-                public void onTransitionResume(@NonNull Transition transition) {
-                    if (mChangeBehavior != CHANGE_BEHAVIOR_IN) {
+                public void onTransitionResume(@NonNull final Transition transition) {
+                    if (ChangeText.this.mChangeBehavior != ChangeText.CHANGE_BEHAVIOR_IN) {
                         view.setText(startText);
                         if (view instanceof EditText) {
-                            setSelection(((EditText) view), startSelectionStart, startSelectionEnd);
+                            ChangeText.this.setSelection(((EditText) view), startSelectionStart, startSelectionEnd);
                         }
                     }
-                    if (mChangeBehavior > CHANGE_BEHAVIOR_KEEP) {
-                        view.setTextColor(mPausedColor);
+                    if (ChangeText.this.mChangeBehavior > ChangeText.CHANGE_BEHAVIOR_KEEP) {
+                        view.setTextColor(this.mPausedColor);
                     }
                 }
 
                 @Override
-                public void onTransitionEnd(Transition transition) {
+                public void onTransitionEnd(final Transition transition) {
                     transition.removeListener(this);
                 }
             };
-            addListener(transitionListener);
+            this.addListener(transitionListener);
             if (BuildConfig.DEBUG) {
-                Log.d(LOG_TAG, "createAnimator returning " + anim);
+                Log.d(ChangeText.LOG_TAG, "createAnimator returning " + anim);
             }
             return anim;
         }
         return null;
     }
 
-    private void setSelection(EditText editText, int start, int end) {
+    private void setSelection(final EditText editText, final int start, final int end) {
         if (start >= 0 && end >= 0) {
             editText.setSelection(start, end);
         }

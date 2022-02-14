@@ -27,39 +27,39 @@ public class EmojiVariantManager {
     private static EmojiVariantManager instance;
 
     public static EmojiVariantManager getInstance() {
-        if (instance == null) {
-            synchronized (LOCK) {
-                if (instance == null) {
-                    instance = new EmojiVariantManager();
+        if (EmojiVariantManager.instance == null) {
+            synchronized (EmojiVariantManager.LOCK) {
+                if (EmojiVariantManager.instance == null) {
+                    EmojiVariantManager.instance = new EmojiVariantManager();
                 }
             }
         }
-        return instance;
+        return EmojiVariantManager.instance;
     }
 
     private EmojiVariantManager() {
-        final String variantsJson = Utils.settingsHelper.getString(PREF_EMOJI_VARIANTS);
+        String variantsJson = Utils.settingsHelper.getString(PREF_EMOJI_VARIANTS);
         if (TextUtils.isEmpty(variantsJson)) return;
         try {
-            final JSONObject variantsJSONObject = new JSONObject(variantsJson);
-            final Iterator<String> keys = variantsJSONObject.keys();
-            keys.forEachRemaining(s -> selectedVariantMap.put(s, variantsJSONObject.optString(s)));
-        } catch (JSONException e) {
-            Log.e(TAG, "EmojiVariantManager: ", e);
+            JSONObject variantsJSONObject = new JSONObject(variantsJson);
+            Iterator<String> keys = variantsJSONObject.keys();
+            keys.forEachRemaining(s -> this.selectedVariantMap.put(s, variantsJSONObject.optString(s)));
+        } catch (final JSONException e) {
+            Log.e(EmojiVariantManager.TAG, "EmojiVariantManager: ", e);
         }
     }
 
     @Nullable
-    public String getVariant(final String parentUnicode) {
-        return selectedVariantMap.get(parentUnicode);
+    public String getVariant(String parentUnicode) {
+        return this.selectedVariantMap.get(parentUnicode);
     }
 
-    public void setVariant(final String parent, final String variant) {
+    public void setVariant(String parent, String variant) {
         if (parent == null || variant == null) return;
-        selectedVariantMap.put(parent, variant);
-        appExecutors.getTasksThread().execute(() -> {
-            final JSONObject jsonObject = new JSONObject(selectedVariantMap);
-            final String json = jsonObject.toString();
+        this.selectedVariantMap.put(parent, variant);
+        this.appExecutors.getTasksThread().execute(() -> {
+            JSONObject jsonObject = new JSONObject(this.selectedVariantMap);
+            String json = jsonObject.toString();
             Utils.settingsHelper.putString(PREF_EMOJI_VARIANTS, json);
         });
     }

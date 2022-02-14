@@ -11,34 +11,34 @@ public final class FeedStoryViewHolder extends RecyclerView.ViewHolder {
 
     private final ItemHighlightBinding binding;
 
-    public FeedStoryViewHolder(final ItemHighlightBinding binding) {
+    public FeedStoryViewHolder(ItemHighlightBinding binding) {
         super(binding.getRoot());
         this.binding = binding;
     }
 
-    public void bind(final Story model,
-                     final int position,
-                     final FeedStoriesAdapter.OnFeedStoryClickListener listener) {
+    public void bind(Story model,
+                     int position,
+                     FeedStoriesAdapter.OnFeedStoryClickListener listener) {
         if (model == null) return;
-        binding.getRoot().setOnClickListener(v -> {
+        this.binding.getRoot().setOnClickListener(v -> {
             if (listener == null) return;
             listener.onFeedStoryClick(model, position);
         });
-        binding.getRoot().setOnLongClickListener(v -> {
+        this.binding.getRoot().setOnLongClickListener(v -> {
             if (listener != null) listener.onFeedStoryLongClick(model, position);
             return true;
         });
-        final User profileModel = model.getUser();
-        binding.title.setText(profileModel.getUsername());
-        final boolean isFullyRead =
+        User profileModel = model.getUser();
+        this.binding.title.setText(profileModel.getUsername());
+        boolean isFullyRead =
                 model.getSeen() != null &&
                 model.getSeen().equals(model.getLatestReelMedia());
-        binding.title.setAlpha(isFullyRead ? 0.5F : 1.0F);
-        binding.icon.setImageURI(profileModel.getProfilePicUrl());
-        binding.icon.setAlpha(isFullyRead ? 0.5F : 1.0F);
+        this.binding.title.setAlpha(isFullyRead ? 0.5F : 1.0F);
+        this.binding.icon.setImageURI(profileModel.getProfilePicUrl());
+        this.binding.icon.setAlpha(isFullyRead ? 0.5F : 1.0F);
 
-        if (model.getBroadcast() != null) binding.icon.setStoriesBorder(2);
-        else if (model.getHasBestiesMedia() == true) binding.icon.setStoriesBorder(1);
-        else binding.icon.setStoriesBorder(0);
+        if (model.getBroadcast() != null) this.binding.icon.setStoriesBorder(2);
+        else if (model.getHasBestiesMedia() == true) this.binding.icon.setStoriesBorder(1);
+        else this.binding.icon.setStoriesBorder(0);
     }
 }

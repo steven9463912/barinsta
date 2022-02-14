@@ -41,101 +41,101 @@ public class GifPickerBottomDialogFragment extends BottomSheetDialogFragment {
     private Debouncer<String> inputDebouncer;
 
     public static GifPickerBottomDialogFragment newInstance() {
-        final Bundle args = new Bundle();
-        final GifPickerBottomDialogFragment fragment = new GifPickerBottomDialogFragment();
+        Bundle args = new Bundle();
+        GifPickerBottomDialogFragment fragment = new GifPickerBottomDialogFragment();
         fragment.setArguments(args);
         return fragment;
     }
 
     @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setStyle(DialogFragment.STYLE_NORMAL, R.style.ThemeOverlay_Rounded_BottomSheetDialog);
-        final Debouncer.Callback<String> callback = new Debouncer.Callback<String>() {
+        this.setStyle(DialogFragment.STYLE_NORMAL, R.style.ThemeOverlay_Rounded_BottomSheetDialog);
+        Debouncer.Callback<String> callback = new Debouncer.Callback<String>() {
             @Override
-            public void call(final String key) {
-                final Editable text = binding.input.getText();
+            public void call(String key) {
+                Editable text = GifPickerBottomDialogFragment.this.binding.input.getText();
                 if (TextUtils.isEmpty(text)) {
-                    viewModel.search(null);
+                    GifPickerBottomDialogFragment.this.viewModel.search(null);
                     return;
                 }
-                viewModel.search(text.toString().trim());
+                GifPickerBottomDialogFragment.this.viewModel.search(text.toString().trim());
             }
 
             @Override
-            public void onError(final Throwable t) {
-                Log.e(TAG, "onError: ", t);
+            public void onError(Throwable t) {
+                Log.e(GifPickerBottomDialogFragment.TAG, "onError: ", t);
             }
         };
-        inputDebouncer = new Debouncer<>(callback, INPUT_DEBOUNCE_INTERVAL);
+        this.inputDebouncer = new Debouncer<>(callback, GifPickerBottomDialogFragment.INPUT_DEBOUNCE_INTERVAL);
     }
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable final Bundle savedInstanceState) {
-        binding = LayoutGifPickerBinding.inflate(inflater, container, false);
-        viewModel = new ViewModelProvider(this).get(GifPickerViewModel.class);
-        return binding.getRoot();
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        this.binding = LayoutGifPickerBinding.inflate(inflater, container, false);
+        this.viewModel = new ViewModelProvider(this).get(GifPickerViewModel.class);
+        return this.binding.getRoot();
     }
 
     @Override
-    public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
-        init();
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        this.init();
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        final Dialog dialog = getDialog();
+        Dialog dialog = this.getDialog();
         if (dialog == null) return;
-        final BottomSheetDialog bottomSheetDialog = (BottomSheetDialog) dialog;
-        final View bottomSheetInternal = bottomSheetDialog.findViewById(com.google.android.material.R.id.design_bottom_sheet);
+        BottomSheetDialog bottomSheetDialog = (BottomSheetDialog) dialog;
+        View bottomSheetInternal = bottomSheetDialog.findViewById(com.google.android.material.R.id.design_bottom_sheet);
         if (bottomSheetInternal == null) return;
         bottomSheetInternal.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
         bottomSheetInternal.requestLayout();
     }
 
     private void init() {
-        setupList();
-        setupInput();
-        setupObservers();
+        this.setupList();
+        this.setupInput();
+        this.setupObservers();
     }
 
     private void setupList() {
-        final Context context = getContext();
+        Context context = this.getContext();
         if (context == null) return;
-        binding.gifList.setLayoutManager(new GridLayoutManager(context, 3));
-        binding.gifList.setHasFixedSize(true);
-        gifItemsAdapter = new GifItemsAdapter(entry -> {
-            if (onSelectListener == null) return;
-            onSelectListener.onSelect(entry);
+        this.binding.gifList.setLayoutManager(new GridLayoutManager(context, 3));
+        this.binding.gifList.setHasFixedSize(true);
+        this.gifItemsAdapter = new GifItemsAdapter(entry -> {
+            if (this.onSelectListener == null) return;
+            this.onSelectListener.onSelect(entry);
         });
-        binding.gifList.setAdapter(gifItemsAdapter);
+        this.binding.gifList.setAdapter(this.gifItemsAdapter);
     }
 
     private void setupInput() {
-        binding.input.addTextChangedListener(new TextWatcherAdapter() {
+        this.binding.input.addTextChangedListener(new TextWatcherAdapter() {
             @Override
-            public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
-                inputDebouncer.call(INPUT_KEY);
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                GifPickerBottomDialogFragment.this.inputDebouncer.call(GifPickerBottomDialogFragment.INPUT_KEY);
             }
         });
     }
 
     private void setupObservers() {
-        viewModel.getImages().observe(getViewLifecycleOwner(), imagesResource -> {
+        this.viewModel.getImages().observe(this.getViewLifecycleOwner(), imagesResource -> {
             if (imagesResource == null) return;
             switch (imagesResource.status) {
                 case SUCCESS:
-                    gifItemsAdapter.submitList(imagesResource.data);
+                    this.gifItemsAdapter.submitList(imagesResource.data);
                     break;
                 case ERROR:
-                    final Context context = getContext();
+                    Context context = this.getContext();
                     if (context != null && imagesResource.message != null) {
-                        Snackbar.make(context, binding.getRoot(), imagesResource.message, BaseTransientBottomBar.LENGTH_LONG).show();
+                        Snackbar.make(context, this.binding.getRoot(), imagesResource.message, BaseTransientBottomBar.LENGTH_LONG).show();
                     }
                     if (context != null && imagesResource.resId != 0) {
-                        Snackbar.make(context, binding.getRoot(), getString(imagesResource.resId), BaseTransientBottomBar.LENGTH_LONG).show();
+                        Snackbar.make(context, this.binding.getRoot(), this.getString(imagesResource.resId), BaseTransientBottomBar.LENGTH_LONG).show();
                     }
                     break;
                 case LOADING:
@@ -144,7 +144,7 @@ public class GifPickerBottomDialogFragment extends BottomSheetDialogFragment {
         });
     }
 
-    public void setOnSelectListener(final OnSelectListener onSelectListener) {
+    public void setOnSelectListener(OnSelectListener onSelectListener) {
         this.onSelectListener = onSelectListener;
     }
 

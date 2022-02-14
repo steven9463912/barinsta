@@ -10,23 +10,23 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 public class InsetsNotifyingCoordinatorLayout extends CoordinatorLayout {
 
-    public InsetsNotifyingCoordinatorLayout(@NonNull final Context context) {
+    public InsetsNotifyingCoordinatorLayout(@NonNull Context context) {
         super(context);
     }
 
-    public InsetsNotifyingCoordinatorLayout(@NonNull final Context context, @Nullable final AttributeSet attrs) {
+    public InsetsNotifyingCoordinatorLayout(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public InsetsNotifyingCoordinatorLayout(@NonNull final Context context, @Nullable final AttributeSet attrs, final int defStyleAttr) {
+    public InsetsNotifyingCoordinatorLayout(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
     @Override
-    public WindowInsets onApplyWindowInsets(WindowInsets insets) {
-        int childCount = getChildCount();
+    public WindowInsets onApplyWindowInsets(final WindowInsets insets) {
+        final int childCount = this.getChildCount();
         for (int index = 0; index < childCount; index++) {
-            getChildAt(index).dispatchApplyWindowInsets(insets);
+            this.getChildAt(index).dispatchApplyWindowInsets(insets);
         }
         return insets;
     }

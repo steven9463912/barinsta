@@ -22,12 +22,12 @@ public class VoiceRecorder {
     private static final String TAG = VoiceRecorder.class.getSimpleName();
     private static final String FILE_PREFIX = "recording";
     private static final String EXTENSION = "mp4";
-    private static final String MIME_TYPE = MimeTypeMap.getSingleton().getMimeTypeFromExtension(EXTENSION);
+    private static final String MIME_TYPE = MimeTypeMap.getSingleton().getMimeTypeFromExtension(VoiceRecorder.EXTENSION);
     private static final int AUDIO_SAMPLE_RATE = 44100;
     private static final int AUDIO_BIT_DEPTH = 16;
-    private static final int AUDIO_BIT_RATE = AUDIO_SAMPLE_RATE * AUDIO_BIT_DEPTH;
+    private static final int AUDIO_BIT_RATE = VoiceRecorder.AUDIO_SAMPLE_RATE * VoiceRecorder.AUDIO_BIT_DEPTH;
     private static final String FILE_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS";
-    private static final DateTimeFormatter SIMPLE_DATE_FORMAT = DateTimeFormatter.ofPattern(FILE_FORMAT, Locale.US);
+    private static final DateTimeFormatter SIMPLE_DATE_FORMAT = DateTimeFormatter.ofPattern(VoiceRecorder.FILE_FORMAT, Locale.US);
 
     private final List<Float> waveform = new ArrayList<>();
     private final DocumentFile recordingsDir;
@@ -38,100 +38,100 @@ public class VoiceRecorder {
     private MaxAmpHandler maxAmpHandler;
     private boolean stopped;
 
-    public VoiceRecorder(@NonNull final DocumentFile recordingsDir, final VoiceRecorderCallback callback) {
+    public VoiceRecorder(@NonNull DocumentFile recordingsDir, VoiceRecorderCallback callback) {
         this.recordingsDir = recordingsDir;
         this.callback = callback;
     }
 
-    public void startRecording(final ContentResolver contentResolver) {
-        stopped = false;
+    public void startRecording(ContentResolver contentResolver) {
+        this.stopped = false;
         ParcelFileDescriptor parcelFileDescriptor = null;
         try {
-            recorder = new MediaRecorder();
-            recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-            recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-            deleteTempAudioFile();
-            audioTempFile = getAudioRecordFile();
-            parcelFileDescriptor = contentResolver.openFileDescriptor(audioTempFile.getUri(), "rwt");
-            recorder.setOutputFile(parcelFileDescriptor.getFileDescriptor());
-            recorder.setAudioEncoder(MediaRecorder.AudioEncoder.HE_AAC);
-            recorder.setAudioEncodingBitRate(AUDIO_BIT_RATE);
-            recorder.setAudioSamplingRate(AUDIO_SAMPLE_RATE);
-            recorder.prepare();
-            waveform.clear();
-            maxAmpHandler = new MaxAmpHandler(waveform);
-            recorder.start();
-            if (callback != null) {
-                callback.onStart();
+            this.recorder = new MediaRecorder();
+            this.recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+            this.recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+            this.deleteTempAudioFile();
+            this.audioTempFile = this.getAudioRecordFile();
+            parcelFileDescriptor = contentResolver.openFileDescriptor(this.audioTempFile.getUri(), "rwt");
+            this.recorder.setOutputFile(parcelFileDescriptor.getFileDescriptor());
+            this.recorder.setAudioEncoder(MediaRecorder.AudioEncoder.HE_AAC);
+            this.recorder.setAudioEncodingBitRate(VoiceRecorder.AUDIO_BIT_RATE);
+            this.recorder.setAudioSamplingRate(VoiceRecorder.AUDIO_SAMPLE_RATE);
+            this.recorder.prepare();
+            this.waveform.clear();
+            this.maxAmpHandler = new MaxAmpHandler(this.waveform);
+            this.recorder.start();
+            if (this.callback != null) {
+                this.callback.onStart();
             }
-            getMaxAmp();
-        } catch (Exception e) {
-            Log.e(TAG, "Audio recording failed", e);
-            deleteTempAudioFile();
+            this.getMaxAmp();
+        } catch (final Exception e) {
+            Log.e(VoiceRecorder.TAG, "Audio recording failed", e);
+            this.deleteTempAudioFile();
         } finally {
             if (parcelFileDescriptor != null) {
                 try {
                     parcelFileDescriptor.close();
-                } catch (IOException ignored) {}
+                } catch (final IOException ignored) {}
             }
         }
     }
 
-    public void stopRecording(final boolean cancelled) {
-        stopped = true;
-        if (maxAmpHandler != null) {
-            maxAmpHandler.removeCallbacks(getMaxAmpRunnable);
+    public void stopRecording(boolean cancelled) {
+        this.stopped = true;
+        if (this.maxAmpHandler != null) {
+            this.maxAmpHandler.removeCallbacks(this.getMaxAmpRunnable);
         }
-        if (recorder == null) {
-            if (callback != null) {
-                callback.onCancel();
+        if (this.recorder == null) {
+            if (this.callback != null) {
+                this.callback.onCancel();
             }
             return;
         }
         try {
-            recorder.stop();
-            recorder.release();
-            recorder = null;
+            this.recorder.stop();
+            this.recorder.release();
+            this.recorder = null;
             // processWaveForm();
-        } catch (Exception e) {
-            Log.e(TAG, "stopRecording: error", e);
-            deleteTempAudioFile();
+        } catch (final Exception e) {
+            Log.e(VoiceRecorder.TAG, "stopRecording: error", e);
+            this.deleteTempAudioFile();
         }
         if (cancelled) {
-            deleteTempAudioFile();
-            if (callback != null) {
-                callback.onCancel();
+            this.deleteTempAudioFile();
+            if (this.callback != null) {
+                this.callback.onCancel();
             }
             return;
         }
-        if (callback != null) {
-            callback.onComplete(new VoiceRecordingResult(MIME_TYPE, audioTempFile, waveform));
+        if (this.callback != null) {
+            this.callback.onComplete(new VoiceRecordingResult(VoiceRecorder.MIME_TYPE, this.audioTempFile, this.waveform));
         }
     }
 
     private static class MaxAmpHandler extends Handler {
         private final List<Float> waveform;
 
-        public MaxAmpHandler(final List<Float> waveform) {
+        public MaxAmpHandler(List<Float> waveform) {
             this.waveform = waveform;
         }
 
         @Override
-        public void handleMessage(@NonNull final Message msg) {
-            if (waveform == null) return;
-            waveform.add(msg.obj instanceof Float ? (Float) msg.obj : 0f);
+        public void handleMessage(@NonNull Message msg) {
+            if (this.waveform == null) return;
+            this.waveform.add(msg.obj instanceof Float ? (Float) msg.obj : 0f);
         }
     }
 
     private final Runnable getMaxAmpRunnable = this::getMaxAmp;
 
     private void getMaxAmp() {
-        if (stopped || recorder == null || maxAmpHandler == null) return;
-        final float value = (float) Math.pow(2.0d, (Math.log10((double) recorder.getMaxAmplitude() / 2700.0d) * 20.0d) / 6.0d);
-        maxAmpHandler.postDelayed(getMaxAmpRunnable, 100);
-        Message msg = Message.obtain();
+        if (this.stopped || this.recorder == null || this.maxAmpHandler == null) return;
+        float value = (float) Math.pow(2.0d, (Math.log10((double) this.recorder.getMaxAmplitude() / 2700.0d) * 20.0d) / 6.0d);
+        this.maxAmpHandler.postDelayed(this.getMaxAmpRunnable, 100);
+        final Message msg = Message.obtain();
         msg.obj = value;
-        maxAmpHandler.sendMessage(msg);
+        this.maxAmpHandler.sendMessage(msg);
     }
 
     // private void processWaveForm() {
@@ -152,25 +152,25 @@ public class VoiceRecorder {
 
     @NonNull
     private DocumentFile getAudioRecordFile() {
-        final String name = String.format("%s-%s.%s", FILE_PREFIX, LocalDateTime.now().format(SIMPLE_DATE_FORMAT), EXTENSION);
-        DocumentFile file = recordingsDir.findFile(name);
+        String name = String.format("%s-%s.%s", VoiceRecorder.FILE_PREFIX, LocalDateTime.now().format(VoiceRecorder.SIMPLE_DATE_FORMAT), VoiceRecorder.EXTENSION);
+        DocumentFile file = this.recordingsDir.findFile(name);
         if (file == null || !file.exists()) {
-            file = recordingsDir.createFile(MIME_TYPE, name);
+            file = this.recordingsDir.createFile(VoiceRecorder.MIME_TYPE, name);
         }
         return file;
     }
 
     private void deleteTempAudioFile() {
-        if (audioTempFile == null) {
+        if (this.audioTempFile == null) {
             //noinspection ResultOfMethodCallIgnored
-            getAudioRecordFile().delete();
+            this.getAudioRecordFile().delete();
             return;
         }
-        final boolean deleted = audioTempFile.delete();
+        boolean deleted = this.audioTempFile.delete();
         if (!deleted) {
-            Log.w(TAG, "stopRecording: file not deleted");
+            Log.w(VoiceRecorder.TAG, "stopRecording: file not deleted");
         }
-        audioTempFile = null;
+        this.audioTempFile = null;
     }
 
     public static class VoiceRecordingResult {
@@ -179,26 +179,26 @@ public class VoiceRecorder {
         private final List<Float> waveform;
         private final int samplingFreq = 10;
 
-        public VoiceRecordingResult(final String mimeType, final DocumentFile file, final List<Float> waveform) {
+        public VoiceRecordingResult(String mimeType, DocumentFile file, List<Float> waveform) {
             this.mimeType = mimeType;
             this.file = file;
             this.waveform = waveform;
         }
 
         public String getMimeType() {
-            return mimeType;
+            return this.mimeType;
         }
 
         public DocumentFile getFile() {
-            return file;
+            return this.file;
         }
 
         public List<Float> getWaveform() {
-            return waveform;
+            return this.waveform;
         }
 
         public int getSamplingFreq() {
-            return samplingFreq;
+            return this.samplingFreq;
         }
     }
 

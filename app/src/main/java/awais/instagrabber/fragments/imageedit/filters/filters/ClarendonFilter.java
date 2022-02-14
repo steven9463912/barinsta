@@ -13,12 +13,12 @@ public class ClarendonFilter extends Filter<GPUImageClarendonFilter> {
 
     public ClarendonFilter() {
         super(FiltersHelper.FilterType.CLARENDON, R.string.clarendon);
-        filter = new GPUImageClarendonFilter();
+        this.filter = new GPUImageClarendonFilter();
     }
 
     @Override
     public GPUImageClarendonFilter getInstance() {
-        return filter;
+        return this.filter;
     }
 
     @Override

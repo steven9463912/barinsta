@@ -11,7 +11,7 @@ public class GiphyGif {
     private final int isSticker;
     private final GiphyGifImages images;
 
-    public GiphyGif(final String type, final String id, final String title, final int isSticker, final GiphyGifImages images) {
+    public GiphyGif(String type, String id, String title, int isSticker, GiphyGifImages images) {
         this.type = type;
         this.id = id;
         this.title = title;
@@ -20,51 +20,51 @@ public class GiphyGif {
     }
 
     public String getType() {
-        return type;
+        return this.type;
     }
 
     public String getId() {
-        return id;
+        return this.id;
     }
 
     public String getTitle() {
-        return title;
+        return this.title;
     }
 
     public boolean isSticker() {
-        return isSticker ==  1;
+        return this.isSticker ==  1;
     }
 
     public GiphyGifImages getImages() {
-        return images;
+        return this.images;
     }
 
     @Override
-    public boolean equals(final Object o) {
+    public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        final GiphyGif giphyGif = (GiphyGif) o;
-        return isSticker == giphyGif.isSticker &&
-                Objects.equals(type, giphyGif.type) &&
-                Objects.equals(id, giphyGif.id) &&
-                Objects.equals(title, giphyGif.title) &&
-                Objects.equals(images, giphyGif.images);
+        if (o == null || this.getClass() != o.getClass()) return false;
+        GiphyGif giphyGif = (GiphyGif) o;
+        return this.isSticker == giphyGif.isSticker &&
+                Objects.equals(this.type, giphyGif.type) &&
+                Objects.equals(this.id, giphyGif.id) &&
+                Objects.equals(this.title, giphyGif.title) &&
+                Objects.equals(this.images, giphyGif.images);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, id, title, isSticker, images);
+        return Objects.hash(this.type, this.id, this.title, this.isSticker, this.images);
     }
 
     @NonNull
     @Override
     public String toString() {
         return "GiphyGif{" +
-                "type='" + type + '\'' +
-                ", id='" + id + '\'' +
-                ", title='" + title + '\'' +
-                ", isSticker=" + isSticker() +
-                ", images=" + images +
+                "type='" + this.type + '\'' +
+                ", id='" + this.id + '\'' +
+                ", title='" + this.title + '\'' +
+                ", isSticker=" + this.isSticker() +
+                ", images=" + this.images +
                 '}';
     }
 }
