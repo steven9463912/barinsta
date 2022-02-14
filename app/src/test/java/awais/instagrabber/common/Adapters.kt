@@ -35,7 +35,7 @@ open class FriendshipServiceAdapter : FriendshipService {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getList(userId: Long, type: String, queryParams: Map<String, String>): String {
+    override suspend fun getList(userId: Long, type: String, queryParams: Map<String, String>): FriendshipListFetchResponse {
         TODO("Not yet implemented")
     }
 
