@@ -24,7 +24,7 @@ open class StoriesRepository(private val service: StoriesService) {
         if (response?.broadcasts != null) {
             val length = response.broadcasts.size
             for (i in 0 until length) {
-                val broadcast = response.broadcasts.get(i)
+                val broadcast = response.broadcasts[i]
                 result.add(
                     Story(
                         broadcast.id,
@@ -46,10 +46,10 @@ open class StoriesRepository(private val service: StoriesService) {
         if (response?.tray != null) {
             val length = response.tray.size
             for (i in 0 until length) {
-                if (response.tray.get(i).user == null) {
+                if (response.tray[i].user == null) {
                     continue
                 }
-                result.add(response.tray.get(i))
+                result.add(response.tray[i])
             }
         }
         //result.addAll(response.tray)

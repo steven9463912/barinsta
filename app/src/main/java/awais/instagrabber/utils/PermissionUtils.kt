@@ -11,9 +11,9 @@ import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 
 object PermissionUtils {
-    val AUDIO_RECORD_PERMS = arrayOf(permission.RECORD_AUDIO)
-    val ATTACH_MEDIA_PERMS = arrayOf(permission.READ_EXTERNAL_STORAGE)
-    val CAMERA_PERMS = arrayOf(permission.CAMERA)
+    private val AUDIO_RECORD_PERMS = arrayOf(permission.RECORD_AUDIO)
+    private val ATTACH_MEDIA_PERMS = arrayOf(permission.READ_EXTERNAL_STORAGE)
+    private val CAMERA_PERMS = arrayOf(permission.CAMERA)
     @JvmStatic
     fun hasAudioRecordPerms(context: Context): Boolean {
         return PermissionChecker.checkSelfPermission(

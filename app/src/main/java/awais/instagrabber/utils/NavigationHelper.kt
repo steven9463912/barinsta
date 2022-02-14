@@ -161,10 +161,10 @@ private fun getOrderedNavRootIdsFromPref(navGraphNames: List<String>): Pair<List
         .filter(String::isNotBlank)
         .filter(navGraphNames::contains)
         .toList()
-    val graphNames = if (orderGraphNames.isEmpty()) {
+    val graphNames = orderGraphNames.ifEmpty {
         // Use top 5 entries for default list
         navGraphNames.subList(0, 5)
-    } else orderGraphNames
+    }
     return graphNames to graphNames.map(::getNavRootIdForGraphName)
 }
 

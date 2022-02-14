@@ -50,7 +50,7 @@ object LocaleUtils {
         wrapper.applyOverrideConfiguration(configuration)
     }
 
-    fun getCorrespondingLanguageCode(appLanguageSettings: String): String? {
+    private fun getCorrespondingLanguageCode(appLanguageSettings: String): String? {
         if (TextUtils.isEmpty(appLanguageSettings)) return null
         when (appLanguageSettings.toInt()) {
             1 -> return "en"

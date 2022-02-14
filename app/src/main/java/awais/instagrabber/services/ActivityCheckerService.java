@@ -34,9 +34,7 @@ public class ActivityCheckerService extends Service {
     private NotificationManagerCompat notificationManager;
 
     private final IBinder binder = new LocalBinder();
-    private final Runnable runnable = () -> {
-        newsService.fetchActivityCounts(cb);
-    };
+    private final Runnable runnable = () -> newsService.fetchActivityCounts(cb);
 
     public class LocalBinder extends Binder {
         public ActivityCheckerService getService() {

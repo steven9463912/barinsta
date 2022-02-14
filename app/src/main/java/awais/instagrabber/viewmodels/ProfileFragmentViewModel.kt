@@ -133,7 +133,7 @@ class ProfileFragmentViewModel(
             }
         }
     }
-    val profileCopy = profile
+    private val profileCopy = profile
 
     val currentUserProfileActionLiveData: LiveData<Triple<Resource<User?>, Resource<User?>, ProfileAction>> =
         object : MediatorLiveData<Triple<Resource<User?>, Resource<User?>, ProfileAction>>() {

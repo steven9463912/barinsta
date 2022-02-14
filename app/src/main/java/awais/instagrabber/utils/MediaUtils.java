@@ -54,8 +54,8 @@ public final class MediaUtils {
                     cursor.close();
                     listener.onLoad(new VideoInfo(
                             Long.parseLong(duration),
-                            Integer.valueOf(width),
-                            Integer.valueOf(height),
+                            Integer.parseInt(width),
+                            Integer.parseInt(height),
                             fileSize
                     ));
                     return;

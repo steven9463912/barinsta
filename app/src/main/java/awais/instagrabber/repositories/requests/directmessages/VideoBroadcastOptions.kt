@@ -5,7 +5,7 @@ import awais.instagrabber.models.enums.BroadcastItemType
 class VideoBroadcastOptions(
     clientContext: String,
     threadIdsOrUserIds: ThreadIdsOrUserIds,
-    val videoResult: String,
+    private val videoResult: String,
     val uploadId: String,
     val sampled: Boolean
 ) : BroadcastOptions(

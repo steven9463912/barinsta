@@ -10,7 +10,6 @@ import awais.instagrabber.repositories.responses.User;
 import awais.instagrabber.utils.CoroutineUtilsKt;
 import awais.instagrabber.webservices.GraphQLRepository;
 import awais.instagrabber.webservices.ProfileRepository;
-import awais.instagrabber.webservices.ServiceCallback;
 import kotlin.coroutines.Continuation;
 import kotlinx.coroutines.Dispatchers;
 

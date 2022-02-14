@@ -54,12 +54,9 @@ public class AnimatedZoomableController extends AbstractAnimatedZoomableControll
         getTransform().getValues(getStartValues());
         newTransform.getValues(getStopValues());
         mValueAnimator.addUpdateListener(
-                new ValueAnimator.AnimatorUpdateListener() {
-                    @Override
-                    public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                        calculateInterpolation(getWorkingTransform(), (float) valueAnimator.getAnimatedValue());
-                        AnimatedZoomableController.super.setTransform(getWorkingTransform());
-                    }
+                valueAnimator -> {
+                    calculateInterpolation(getWorkingTransform(), (float) valueAnimator.getAnimatedValue());
+                    AnimatedZoomableController.super.setTransform(getWorkingTransform());
                 });
         mValueAnimator.addListener(
                 new AnimatorListenerAdapter() {

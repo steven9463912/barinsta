@@ -54,7 +54,7 @@ public class NewsService {
                     callback.onSuccess(null);
                     return;
                 }
-                final List<Notification> result = new ArrayList<Notification>();
+                final List<Notification> result = new ArrayList<>();
                 final List<Notification> newStories = body.getNewStories();
                 if (newStories != null) result.addAll(newStories);
                 final List<Notification> oldStories = body.getOldStories();
@@ -110,7 +110,7 @@ public class NewsService {
                     callback.onSuccess(null);
                     return;
                 }
-                final List<AymlUser> aymlUsers = new ArrayList<AymlUser>();
+                final List<AymlUser> aymlUsers = new ArrayList<>();
                 final List<AymlUser> newSuggestions = body.getNewSuggestedUsers().getSuggestions();
                 if (newSuggestions != null) {
                     aymlUsers.addAll(newSuggestions);
@@ -166,23 +166,21 @@ public class NewsService {
                 final List<Notification> newsItems = body
                         .getUsers()
                         .stream()
-                        .map(u -> {
-                            return new Notification(
-                                    new NotificationArgs(
-                                            u.getSocialContext(),
-                                            null,
-                                            u.getPk(),
-                                            u.getProfilePicUrl(),
-                                            null,
-                                            0L,
-                                            u.getUsername(),
-                                            u.getFullName(),
-                                            u.isVerified()
-                                    ),
-                                    9999,
-                                    String.valueOf(u.getPk()) // placeholder
-                            );
-                        })
+                        .map(u -> new Notification(
+                                new NotificationArgs(
+                                        u.getSocialContext(),
+                                        null,
+                                        u.getPk(),
+                                        u.getProfilePicUrl(),
+                                        null,
+                                        0L,
+                                        u.getUsername(),
+                                        u.getFullName(),
+                                        u.isVerified()
+                                ),
+                                9999,
+                                String.valueOf(u.getPk()) // placeholder
+                        ))
                         .collect(Collectors.toList());
                 callback.onSuccess(newsItems);
             }

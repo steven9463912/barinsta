@@ -112,8 +112,8 @@ class FriendshipRepository(private val service: FriendshipService) {
         query: String?
     ): FriendshipListFetchResponse {
         val queryMap: MutableMap<String, String> = mutableMapOf()
-        if (!maxId.isNullOrEmpty()) queryMap.set("max_id", maxId)
-        if (!query.isNullOrEmpty()) queryMap.set("query", query)
+        if (!maxId.isNullOrEmpty()) queryMap["max_id"] = maxId
+        if (!query.isNullOrEmpty()) queryMap["query"] = query
         return service.getList(targetUserId, if (follower) "followers" else "following", queryMap.toMap())
     }
 

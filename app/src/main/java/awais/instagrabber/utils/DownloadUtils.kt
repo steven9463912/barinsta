@@ -88,10 +88,10 @@ object DownloadUtils {
         dirMap.clear()
     }
 
-    fun checkFiles(context: Context,
-                   parent: DocumentFile?,
-                   queries: Map<String, String>, // <file name, mime type>
-                   create: Boolean
+    private fun checkFiles(context: Context,
+                           parent: DocumentFile?,
+                           queries: Map<String, String>, // <file name, mime type>
+                           create: Boolean
     ): Map<String, DocumentFile?> {
         // first we'll find existing ones
         val result: MutableMap<String, DocumentFile?> = mutableMapOf()
@@ -104,33 +104,32 @@ object DownloadUtils {
                 DocumentsContract.Document.COLUMN_DOCUMENT_ID,
                 DocumentsContract.Document.COLUMN_MIME_TYPE
             ), null, null, null
-        )
-        if (docCursor == null) return result.toMap()
+        ) ?: return result.toMap()
         while (docCursor.moveToNext()) {
-            val q = queries.get(docCursor.getString(0))
+            val q = queries[docCursor.getString(0)]
             if (q == null || !docCursor.getString(2).equals(q)) continue
             val fileUri = DocumentsContract.buildDocumentUriUsingTree(parent.uri, docCursor.getString(1))
-            val dir = if (q.equals(MIME_DIR)) DocumentFile.fromTreeUri(context, fileUri)
+            val dir = if (q == MIME_DIR) DocumentFile.fromTreeUri(context, fileUri)
                       else DocumentFile.fromSingleUri(context, fileUri)
-            result.put(docCursor.getString(0), dir)
+            result[docCursor.getString(0)] = dir
             if (result.size >= queries.size) break
         }
         docCursor.close()
         // next we'll create inexistent ones, if necessary
         if (create) {
             for (k in queries) {
-                if (result.get(k.key) == null) {
-                    result.put(k.key, if (MIME_DIR.equals(k.value)) parent.createDirectory(k.key)
-                                      else parent.createFile(k.value, k.key))
+                if (result[k.key] == null) {
+                    result[k.key] = if (MIME_DIR == k.value) parent.createDirectory(k.key)
+                    else parent.createFile(k.value, k.key)
                 }
             }
         }
         return result.toMap()
     }
 
-    fun getRootDir(dir: String): DocumentFile? {
+    private fun getRootDir(dir: String): DocumentFile? {
         if (root == null) return null
-        return dirMap.get(dir)
+        return dirMap[dir]
     }
 
     @JvmStatic
@@ -146,9 +145,9 @@ object DownloadUtils {
         val editRoot = getRootDir(DIR_EDIT)
         if (sessionId == null) return editRoot
         return checkFiles(context,
-                          editRoot,
-                          mapOf(sessionId to MIME_DIR),
-                          true).get(sessionId)
+            editRoot,
+            mapOf(sessionId to MIME_DIR),
+            true)[sessionId]
     }
 
     @JvmStatic
@@ -167,9 +166,9 @@ object DownloadUtils {
         if (!Utils.settingsHelper.getBoolean(PreferenceKeys.DOWNLOAD_USER_FOLDER) || username.isNullOrEmpty())
             return downloadDir
         return checkFiles(context,
-                          downloadDir,
-                          mapOf(username to MIME_DIR),
-                          shouldCreate).get(username)
+            downloadDir,
+            mapOf(username to MIME_DIR),
+            shouldCreate)[username]
     }
 
     private val tempDir: DocumentFile?
@@ -262,7 +261,7 @@ object DownloadUtils {
 
             // if the filename contains special characters, we don't
             // consider it valid for our matching purposes:
-            if (!filename.isEmpty() &&
+            if (filename.isNotEmpty() &&
                 Pattern.matches("[a-zA-Z_0-9.\\-()%]+", filename)
             ) {
                 val dotPos = filename.lastIndexOf('.')
@@ -282,8 +281,7 @@ object DownloadUtils {
         if (user != null) {
             username = user.username
         }
-        val userFolder = getDownloadDir(context, username, false)
-        if (userFolder == null) return checkList
+        val userFolder = getDownloadDir(context, username, false) ?: return checkList
         when (media.type) {
             MediaItemType.MEDIA_TYPE_IMAGE, MediaItemType.MEDIA_TYPE_VIDEO -> {
                 val url =
@@ -293,7 +291,7 @@ object DownloadUtils {
                 val fileName = getDownloadSavePaths(media.code, url)
                 val fileNameWithUser = getDownloadSavePaths(media.code, url, username)
                 val files = checkFiles(context, userFolder, mapOf(fileName, fileNameWithUser), false)
-                checkList.add(files.size > 0)
+                checkList.add(files.isNotEmpty())
             }
             MediaItemType.MEDIA_TYPE_SLIDER -> {
                 val sliderItems = media.carouselMedia
@@ -308,14 +306,14 @@ object DownloadUtils {
                         ) else ResponseBodyUtils.getImageUrl(child)
                     val fileName = getDownloadChildSavePaths(media.code, i+1, url, "")
                     val fileNameWithUser = getDownloadChildSavePaths(media.code, i+1, url, username)
-                    fileNames.put(fileName.first, fileName.second)
-                    fileNames.put(fileNameWithUser.first, fileNameWithUser.second)
-                    filePairs.put(fileName.first, fileNameWithUser.first)
+                    fileNames[fileName.first] = fileName.second
+                    fileNames[fileNameWithUser.first] = fileNameWithUser.second
+                    filePairs[fileName.first] = fileNameWithUser.first
                     i++
                 }
                 val files = checkFiles(context, userFolder, fileNames, false)
                 for (p in filePairs) {
-                    checkList.add(files.get(p.key) != null || files.get(p.value) != null)
+                    checkList.add(files[p.key] != null || files[p.value] != null)
                 }
             }
             else -> {
@@ -369,7 +367,7 @@ object DownloadUtils {
                 && storyModel.user?.username != null
             ) storyModel.user.username + "_" else ""
         val fileName = usernamePrepend + baseFileName
-        var saveFile = checkFiles(context, downloadDir, mapOf(fileName to mimeType!!), true).get(fileName)
+        val saveFile = checkFiles(context, downloadDir, mapOf(fileName to mimeType!!), true)[fileName]
         download(context, url, saveFile)
     }
 
@@ -465,7 +463,7 @@ object DownloadUtils {
         }
         if (map.isEmpty() || fileMap.isEmpty()) return
         val resultMap: MutableMap<String, DocumentFile?> = mutableMapOf()
-        map.mapValuesTo(resultMap) { fileMap.get(it.value.first) }
+        map.mapValuesTo(resultMap) { fileMap[it.value.first] }
         download(context, resultMap)
     }
 
@@ -477,7 +475,7 @@ object DownloadUtils {
             MediaItemType.MEDIA_TYPE_VIDEO -> {
                 val videoVersions = media.videoVersions
                 var url: String? = null
-                if (videoVersions != null && !videoVersions.isEmpty()) {
+                if (videoVersions != null && videoVersions.isNotEmpty()) {
                     url = videoVersions[0].url
                 }
                 return url

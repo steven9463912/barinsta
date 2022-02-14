@@ -1,6 +1,5 @@
 package awais.instagrabber.utils;
 
-import android.app.Application;
 import android.content.ContentResolver;
 import android.media.MediaRecorder;
 import android.os.Handler;
@@ -13,7 +12,6 @@ import androidx.annotation.NonNull;
 import androidx.documentfile.provider.DocumentFile;
 
 import java.io.IOException;
-import java.io.File;
 import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime;
 import java.util.ArrayList;

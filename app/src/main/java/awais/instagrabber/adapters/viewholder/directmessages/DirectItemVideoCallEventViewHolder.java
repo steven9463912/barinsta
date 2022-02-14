@@ -1,6 +1,5 @@
 package awais.instagrabber.adapters.viewholder.directmessages;
 
-import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ClickableSpan;

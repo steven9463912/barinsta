@@ -17,7 +17,6 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.activity.OnBackPressedDispatcher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
@@ -35,7 +34,6 @@ import com.yalantis.ucrop.UCropActivity;
 import com.yalantis.ucrop.UCropFragment;
 import com.yalantis.ucrop.UCropFragmentCallback;
 
-import java.io.File;
 import java.util.List;
 
 import awais.instagrabber.R;
@@ -43,7 +41,6 @@ import awais.instagrabber.databinding.FragmentImageEditBinding;
 import awais.instagrabber.fragments.imageedit.filters.filters.Filter;
 import awais.instagrabber.models.SavedImageEditState;
 import awais.instagrabber.utils.AppExecutors;
-import awais.instagrabber.utils.Utils;
 import awais.instagrabber.viewmodels.ImageEditViewModel;
 
 public class ImageEditFragment extends Fragment {

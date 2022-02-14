@@ -5,7 +5,7 @@ import awais.instagrabber.models.enums.BroadcastItemType
 class PhotoBroadcastOptions(
     clientContext: String,
     threadIdsOrUserIds: ThreadIdsOrUserIds,
-    val allowFullAspectRatio: Boolean,
+    private val allowFullAspectRatio: Boolean,
     val uploadId: String
 ) : BroadcastOptions(
     clientContext,

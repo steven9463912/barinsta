@@ -37,10 +37,10 @@ public final class FollowAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         @Nullable
         @Override
         protected FilterResults performFiltering(final CharSequence filter) {
-            final List<User> filteredItems = new ArrayList<User>();
+            final List<User> filteredItems = new ArrayList<>();
             if (expandableListOriginal.groups == null || TextUtils.isEmpty(filter)) return null;
             final String query = filter.toString().toLowerCase();
-            final ArrayList<ExpandableGroup> groups = new ArrayList<ExpandableGroup>();
+            final ArrayList<ExpandableGroup> groups = new ArrayList<>();
             for (int x = 0; x < expandableListOriginal.groups.size(); ++x) {
                 final ExpandableGroup expandableGroup = expandableListOriginal.groups.get(x);
                 final String title = expandableGroup.getTitle();
@@ -70,8 +70,7 @@ public final class FollowAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 expandableList = expandableListOriginal;
             }
             else {
-                final ExpandableList filteredList = (ExpandableList) results.values;
-                expandableList = filteredList;
+                expandableList = (ExpandableList) results.values;
             }
             notifyDataSetChanged();
         }

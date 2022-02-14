@@ -1,9 +1,12 @@
 package awais.instagrabber.utils
 
 import java.util.*
+import kotlin.math.floor
+import kotlin.math.max
+import kotlin.math.min
 
 class CubicInterpolation @JvmOverloads constructor(array: FloatArray, cubicTension: Int = 0) {
-    private val array: FloatArray
+    private val array: FloatArray = Arrays.copyOf(array, array.size)
     private val tangentFactor: Int
     private val length: Int
     private fun getTangent(k: Int): Float {
@@ -11,7 +14,7 @@ class CubicInterpolation @JvmOverloads constructor(array: FloatArray, cubicTensi
     }
 
     fun interpolate(t: Float): Float {
-        val k = Math.floor(t.toDouble()).toInt()
+        val k = floor(t.toDouble()).toInt()
         val m = floatArrayOf(getTangent(k), getTangent(k + 1))
         val p = floatArrayOf(getClippedInput(k), getClippedInput(k + 1))
         val t1 = t - k
@@ -21,18 +24,17 @@ class CubicInterpolation @JvmOverloads constructor(array: FloatArray, cubicTensi
     }
 
     private fun getClippedInput(i: Int): Float {
-        return if (i >= 0 && i < length) {
+        return if (i in 0 until length) {
             array[i]
         } else array[clipClamp(i, length)]
     }
 
     private fun clipClamp(i: Int, n: Int): Int {
-        return Math.max(0, Math.min(i, n - 1))
+        return max(0, min(i, n - 1))
     }
 
     init {
-        this.array = Arrays.copyOf(array, array.size)
         length = array.size
-        tangentFactor = 1 - Math.max(0, Math.min(1, cubicTension))
+        tangentFactor = 1 - max(0, min(1, cubicTension))
     }
 }

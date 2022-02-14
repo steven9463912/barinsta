@@ -1,7 +1,5 @@
 package awais.instagrabber.fragments.imageedit.filters.custom;
 
-import jp.co.cyberagent.android.gpuimage.filter.GPUImageBrightnessFilter;
-import jp.co.cyberagent.android.gpuimage.filter.GPUImageContrastFilter;
 import jp.co.cyberagent.android.gpuimage.filter.GPUImageFilterGroup;
 import jp.co.cyberagent.android.gpuimage.filter.GPUImageHueFilter;
 import jp.co.cyberagent.android.gpuimage.filter.GPUImageSaturationFilter;

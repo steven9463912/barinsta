@@ -31,14 +31,12 @@ import awais.instagrabber.activities.MainActivity;
 import awais.instagrabber.adapters.SavedCollectionsAdapter;
 import awais.instagrabber.customviews.helpers.GridSpacingItemDecoration;
 import awais.instagrabber.databinding.FragmentSavedCollectionsBinding;
-import awais.instagrabber.repositories.responses.saved.CollectionsListResponse;
 import awais.instagrabber.utils.Constants;
 import awais.instagrabber.utils.CookieUtils;
 import awais.instagrabber.utils.CoroutineUtilsKt;
 import awais.instagrabber.utils.Utils;
 import awais.instagrabber.viewmodels.SavedCollectionsViewModel;
 import awais.instagrabber.webservices.ProfileRepository;
-import awais.instagrabber.webservices.ServiceCallback;
 
 import static awais.instagrabber.utils.Utils.settingsHelper;
 

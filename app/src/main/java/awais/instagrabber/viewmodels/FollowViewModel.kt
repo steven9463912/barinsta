@@ -41,7 +41,7 @@ class FollowViewModel : ViewModel() {
     val comparison: LiveData<Triple<List<User>, List<User>, List<User>>> =
         object : MediatorLiveData<Triple<List<User>, List<User>, List<User>>>() {
             init {
-                addSource(status) {
+                addSource(status) { it ->
                     if (it.first && it.second) {
                         val followersList = followers.value!!
                         val followingList = followings.value!!
@@ -49,11 +49,11 @@ class FollowViewModel : ViewModel() {
                         val mutual: MutableList<User> = mutableListOf()
                         val onlyFollowers: MutableList<User> = mutableListOf()
                         followersList.forEach {
-                            if (followingMap.get(it.pk) != null) mutual.add(it)
+                            if (followingMap[it.pk] != null) mutual.add(it)
                             else onlyFollowers.add(it)
                         }
                         val mutualMap = mutual.groupBy { it.pk }
-                        val onlyFollowing = followingList.filter { mutualMap.get(it.pk) == null }
+                        val onlyFollowing = followingList.filter { mutualMap[it.pk] == null }
                         postValue(Triple(mutual, onlyFollowing, onlyFollowers))
                     }
                 }

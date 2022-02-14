@@ -84,7 +84,7 @@ class DirectMessageSettingsFragment : Fragment(), ConfirmDialogFragmentCallback 
     }
 
     private fun setupObservers() {
-        viewModel.inputMode.observe(viewLifecycleOwner, { inputMode: Int? ->
+        viewModel.inputMode.observe(viewLifecycleOwner) { inputMode: Int? ->
             if (inputMode == null || inputMode == 0) return@observe
             if (inputMode == 1) {
                 binding.groupSettings.visibility = View.GONE
@@ -94,24 +94,33 @@ class DirectMessageSettingsFragment : Fragment(), ConfirmDialogFragmentCallback 
                 binding.muteMessagesLabel.visibility = View.GONE
                 binding.muteMessages.visibility = View.GONE
             }
-        })
+        }
         // Need to observe, so that getValue is correct
-        viewModel.getUsers().observe(viewLifecycleOwner, { })
-        viewModel.getLeftUsers().observe(viewLifecycleOwner, { })
-        viewModel.getUsersAndLeftUsers().observe(viewLifecycleOwner, { usersAdapter?.submitUsers(it.first, it.second) })
-        viewModel.getTitle().observe(viewLifecycleOwner, { binding.titleEdit.setText(it) })
-        viewModel.getAdminUserIds().observe(viewLifecycleOwner, { usersAdapter?.setAdminUserIds(it) })
-        viewModel.isMuted().observe(viewLifecycleOwner, { binding.muteMessages.isChecked = it })
-        viewModel.isPending().observe(viewLifecycleOwner, { binding.muteMessages.visibility = if (it) View.GONE else View.VISIBLE })
-        viewModel.isViewerAdmin().observe(viewLifecycleOwner, { setApprovalRelatedUI(it) })
-        viewModel.getApprovalRequiredToJoin().observe(viewLifecycleOwner, { binding.approvalRequired.isChecked = it })
-        viewModel.getPendingRequests().observe(viewLifecycleOwner, { setPendingRequests(it) })
-        viewModel.isGroup().observe(viewLifecycleOwner, { isGroup: Boolean -> setupSettings(isGroup) })
+        viewModel.getUsers().observe(viewLifecycleOwner) { }
+        viewModel.getLeftUsers().observe(viewLifecycleOwner) { }
+        viewModel.getUsersAndLeftUsers().observe(viewLifecycleOwner) {
+            usersAdapter?.submitUsers(
+                it.first,
+                it.second
+            )
+        }
+        viewModel.getTitle().observe(viewLifecycleOwner) { binding.titleEdit.setText(it) }
+        viewModel.getAdminUserIds().observe(viewLifecycleOwner) { usersAdapter?.setAdminUserIds(it) }
+        viewModel.isMuted().observe(viewLifecycleOwner) { binding.muteMessages.isChecked = it }
+        viewModel.isPending().observe(viewLifecycleOwner) {
+            binding.muteMessages.visibility = if (it) View.GONE else View.VISIBLE
+        }
+        viewModel.isViewerAdmin().observe(viewLifecycleOwner) { setApprovalRelatedUI(it) }
+        viewModel.getApprovalRequiredToJoin().observe(viewLifecycleOwner) {
+            binding.approvalRequired.isChecked = it
+        }
+        viewModel.getPendingRequests().observe(viewLifecycleOwner) { setPendingRequests(it) }
+        viewModel.isGroup().observe(viewLifecycleOwner) { isGroup: Boolean -> setupSettings(isGroup) }
         val navController = NavHostFragment.findNavController(this)
         val backStackEntry = navController.currentBackStackEntry
         if (backStackEntry != null) {
             val resultLiveData = backStackEntry.savedStateHandle.getLiveData<Any>("result")
-            resultLiveData.observe(viewLifecycleOwner, { result: Any? ->
+            resultLiveData.observe(viewLifecycleOwner) { result: Any? ->
                 if (result == null) return@observe
                 if (result is RankedRecipient) {
                     val user = getUser(result)
@@ -134,7 +143,7 @@ class DirectMessageSettingsFragment : Fragment(), ConfirmDialogFragmentCallback 
                         Snackbar.make(binding.root, e.message ?: "", Snackbar.LENGTH_LONG).show()
                     }
                 }
-            })
+            }
         }
     }
 
@@ -271,7 +280,7 @@ class DirectMessageSettingsFragment : Fragment(), ConfirmDialogFragmentCallback 
     }
 
     private fun handleSwitchChangeResource(resourceLiveData: LiveData<Resource<Any?>>, buttonView: CompoundButton) {
-        resourceLiveData.observe(viewLifecycleOwner, { resource: Resource<Any?>? ->
+        resourceLiveData.observe(viewLifecycleOwner) { resource: Resource<Any?>? ->
             if (resource == null) return@observe
             when (resource.status) {
                 Resource.Status.SUCCESS -> buttonView.isEnabled = true
@@ -287,7 +296,7 @@ class DirectMessageSettingsFragment : Fragment(), ConfirmDialogFragmentCallback 
                 }
                 Resource.Status.LOADING -> buttonView.isEnabled = false
             }
-        })
+        }
     }
 
     private fun setupMembers() {
@@ -369,7 +378,7 @@ class DirectMessageSettingsFragment : Fragment(), ConfirmDialogFragmentCallback 
     }
 
     private fun observeDetailsChange(resourceLiveData: LiveData<Resource<Any?>>) {
-        resourceLiveData.observe(viewLifecycleOwner, { resource: Resource<Any?>? ->
+        resourceLiveData.observe(viewLifecycleOwner) { resource: Resource<Any?>? ->
             if (resource == null) return@observe
             when (resource.status) {
                 Resource.Status.SUCCESS,
@@ -385,7 +394,7 @@ class DirectMessageSettingsFragment : Fragment(), ConfirmDialogFragmentCallback 
                     }
                 }
             }
-        })
+        }
     }
 
     private fun observeApprovalChange(
@@ -393,7 +402,7 @@ class DirectMessageSettingsFragment : Fragment(), ConfirmDialogFragmentCallback 
         position: Int,
         pendingUser: PendingUser,
     ) {
-        detailsChangeResourceLiveData.observe(viewLifecycleOwner, { resource: Resource<Any?>? ->
+        detailsChangeResourceLiveData.observe(viewLifecycleOwner) { resource: Resource<Any?>? ->
             if (resource == null) return@observe
             when (resource.status) {
                 Resource.Status.SUCCESS -> {
@@ -410,7 +419,7 @@ class DirectMessageSettingsFragment : Fragment(), ConfirmDialogFragmentCallback 
                 }
             }
             pendingUsersAdapter?.notifyItemChanged(position)
-        })
+        }
     }
 
     override fun onPositiveButtonClicked(requestCode: Int) {
@@ -423,7 +432,7 @@ class DirectMessageSettingsFragment : Fragment(), ConfirmDialogFragmentCallback 
         }
         if (requestCode == LEAVE_THREAD_REQUEST_CODE) {
             val resourceLiveData = viewModel.leave()
-            resourceLiveData.observe(viewLifecycleOwner, { resource: Resource<Any?>? ->
+            resourceLiveData.observe(viewLifecycleOwner) { resource: Resource<Any?>? ->
                 if (resource == null) return@observe
                 when (resource.status) {
                     Resource.Status.SUCCESS -> {
@@ -433,7 +442,8 @@ class DirectMessageSettingsFragment : Fragment(), ConfirmDialogFragmentCallback 
                     Resource.Status.ERROR -> {
                         binding.leave.isEnabled = true
                         if (resource.message != null) {
-                            Snackbar.make(binding.root, resource.message, Snackbar.LENGTH_LONG).show()
+                            Snackbar.make(binding.root, resource.message, Snackbar.LENGTH_LONG)
+                                .show()
                         }
                         if (resource.resId != 0) {
                             Snackbar.make(binding.root, resource.resId, Snackbar.LENGTH_LONG).show()
@@ -441,12 +451,12 @@ class DirectMessageSettingsFragment : Fragment(), ConfirmDialogFragmentCallback 
                     }
                     Resource.Status.LOADING -> binding.leave.isEnabled = false
                 }
-            })
+            }
             return
         }
         if (requestCode == END_THREAD_REQUEST_CODE) {
             val resourceLiveData = viewModel.end()
-            resourceLiveData.observe(viewLifecycleOwner, { resource: Resource<Any?>? ->
+            resourceLiveData.observe(viewLifecycleOwner) { resource: Resource<Any?>? ->
                 if (resource == null) return@observe
                 when (resource.status) {
                     Resource.Status.SUCCESS -> {
@@ -454,7 +464,8 @@ class DirectMessageSettingsFragment : Fragment(), ConfirmDialogFragmentCallback 
                     Resource.Status.ERROR -> {
                         binding.end.isEnabled = true
                         if (resource.message != null) {
-                            Snackbar.make(binding.root, resource.message, Snackbar.LENGTH_LONG).show()
+                            Snackbar.make(binding.root, resource.message, Snackbar.LENGTH_LONG)
+                                .show()
                         }
                         if (resource.resId != 0) {
                             Snackbar.make(binding.root, resource.resId, Snackbar.LENGTH_LONG).show()
@@ -462,7 +473,7 @@ class DirectMessageSettingsFragment : Fragment(), ConfirmDialogFragmentCallback 
                     }
                     Resource.Status.LOADING -> binding.end.isEnabled = false
                 }
-            })
+            }
         }
     }
 

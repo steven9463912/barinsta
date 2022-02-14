@@ -40,8 +40,8 @@ class DirectorySelectActivity : BaseLanguageActivity() {
     }
 
     private fun setupObservers() {
-        viewModel.message.observe(this, { message: String? -> binding.message.text = message })
-        viewModel.prevUri.observe(this, { prevUri: String? ->
+        viewModel.message.observe(this) { message: String? -> binding.message.text = message }
+        viewModel.prevUri.observe(this) { prevUri: String? ->
             if (prevUri == null) {
                 binding.prevUri.visibility = View.GONE
                 binding.message2.visibility = View.GONE
@@ -50,12 +50,14 @@ class DirectorySelectActivity : BaseLanguageActivity() {
             binding.prevUri.text = prevUri
             binding.prevUri.visibility = View.VISIBLE
             binding.message2.visibility = View.VISIBLE
-        })
-        viewModel.dirSuccess.observe(this, { success: Boolean -> binding.selectDir.visibility = if (success) View.GONE else View.VISIBLE })
-        viewModel.loading.observe(this, { loading: Boolean ->
+        }
+        viewModel.dirSuccess.observe(this) { success: Boolean ->
+            binding.selectDir.visibility = if (success) View.GONE else View.VISIBLE
+        }
+        viewModel.loading.observe(this) { loading: Boolean ->
             binding.message.visibility = if (loading) View.GONE else View.VISIBLE
             binding.loadingIndicator.visibility = if (loading) View.VISIBLE else View.GONE
-        })
+        }
     }
 
     private fun openDirectoryChooser() {

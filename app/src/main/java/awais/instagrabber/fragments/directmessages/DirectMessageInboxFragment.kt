@@ -105,30 +105,36 @@ class DirectMessageInboxFragment : Fragment(), OnRefreshListener {
     }
 
     private fun setupObservers() {
-        viewModel.threads.observe(viewLifecycleOwner, { list: List<DirectThread?> ->
+        viewModel.threads.observe(viewLifecycleOwner) { list: List<DirectThread?> ->
             inboxAdapter?.submitList(list) {
                 if (!scrollToTop) return@submitList
                 binding.inboxList.post { binding.inboxList.smoothScrollToPosition(0) }
                 scrollToTop = false
             }
-        })
-        viewModel.inbox.observe(viewLifecycleOwner, { inboxResource: Resource<DirectInbox?>? ->
+        }
+        viewModel.inbox.observe(viewLifecycleOwner) { inboxResource: Resource<DirectInbox?>? ->
             if (inboxResource == null) return@observe
             when (inboxResource.status) {
                 Resource.Status.SUCCESS -> binding.swipeRefreshLayout.isRefreshing = false
                 Resource.Status.ERROR -> {
                     if (inboxResource.message != null) {
-                        Snackbar.make(binding.root, inboxResource.message, Snackbar.LENGTH_LONG).show()
+                        Snackbar.make(binding.root, inboxResource.message, Snackbar.LENGTH_LONG)
+                            .show()
                     }
                     if (inboxResource.resId != 0) {
-                        Snackbar.make(binding.root, inboxResource.resId, Snackbar.LENGTH_LONG).show()
+                        Snackbar.make(binding.root, inboxResource.resId, Snackbar.LENGTH_LONG)
+                            .show()
                     }
                     binding.swipeRefreshLayout.isRefreshing = false
                 }
                 Resource.Status.LOADING -> binding.swipeRefreshLayout.isRefreshing = true
             }
-        })
-        viewModel.pendingRequestsTotal.observe(viewLifecycleOwner, { count: Int? -> attachPendingRequestsBadge(count) })
+        }
+        viewModel.pendingRequestsTotal.observe(viewLifecycleOwner) { count: Int? ->
+            attachPendingRequestsBadge(
+                count
+            )
+        }
     }
 
     @SuppressLint("UnsafeExperimentalUsageError", "UnsafeOptInUsageError", "RestrictedApi")

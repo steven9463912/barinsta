@@ -87,7 +87,7 @@ class DirectSettingsViewModel(
 
     fun addMembers(users: Set<User>): LiveData<Resource<Any?>> = threadManager.addMembers(users, viewModelScope)
 
-    fun removeMember(user: User): LiveData<Resource<Any?>> = threadManager.removeMember(user, viewModelScope)
+    private fun removeMember(user: User): LiveData<Resource<Any?>> = threadManager.removeMember(user, viewModelScope)
 
     private fun makeAdmin(user: User): LiveData<Resource<Any?>> = threadManager.makeAdmin(user, viewModelScope)
 

@@ -80,7 +80,7 @@ class MainActivity : BaseLanguageActivity() {
 
     private lateinit var toolbar: Toolbar
 
-    var currentTabs: List<Tab> = emptyList()
+    private var currentTabs: List<Tab> = emptyList()
         private set
     private var showBottomViewDestinations: List<Int> = emptyList()
 
@@ -191,11 +191,11 @@ class MainActivity : BaseLanguageActivity() {
     private fun initDmUnreadCount() {
         if (!isLoggedIn) return
         val directInboxViewModel = ViewModelProvider(this).get(DirectInboxViewModel::class.java)
-        directInboxViewModel.unseenCount.observe(this, { unseenCountResource: Resource<Int?>? ->
+        directInboxViewModel.unseenCount.observe(this) { unseenCountResource: Resource<Int?>? ->
             if (unseenCountResource == null) return@observe
             val unseenCount = unseenCountResource.data
             setNavBarDMUnreadCountBadge(unseenCount ?: 0)
-        })
+        }
     }
 
     private fun initSearchInput() {

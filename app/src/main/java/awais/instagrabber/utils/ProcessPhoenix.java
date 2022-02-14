@@ -83,7 +83,7 @@ public final class ProcessPhoenix extends Activity {
         super.onCreate(savedInstanceState);
 
         ArrayList<Intent> intents = getIntent().getParcelableArrayListExtra(KEY_RESTART_INTENTS);
-        startActivities(intents.toArray(new Intent[intents.size()]));
+        startActivities(intents.toArray(new Intent[0]));
         finish();
         Runtime.getRuntime().exit(0); // Kill kill kill!
     }

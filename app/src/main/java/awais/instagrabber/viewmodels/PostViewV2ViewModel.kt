@@ -214,7 +214,7 @@ class PostViewV2ViewModel : ViewModel() {
         return data
     }
 
-    fun unsave(): LiveData<Resource<Any?>> {
+    private fun unsave(): LiveData<Resource<Any?>> {
         val data = MutableLiveData<Resource<Any?>>()
         data.postValue(loading(null))
         if (!isLoggedIn) {

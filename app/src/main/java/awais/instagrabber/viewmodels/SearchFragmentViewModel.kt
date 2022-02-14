@@ -109,8 +109,7 @@ class SearchFragmentViewModel(application: Application) : AppStateViewModel(appl
             return
         }
         if (query == "@" || query == "#") return
-        val c: String
-        c = when (type) {
+        val c: String = when (type) {
             FavoriteType.TOP -> "blended"
             FavoriteType.USER -> "user"
             FavoriteType.HASHTAG -> "hashtag"
@@ -199,8 +198,7 @@ class SearchFragmentViewModel(application: Application) : AppStateViewModel(appl
     }
 
     private fun getLiveDataByType(type: FavoriteType): MutableLiveData<Resource<List<SearchItem>?>>? {
-        val liveData: MutableLiveData<Resource<List<SearchItem>?>>
-        liveData = when (type) {
+        val liveData: MutableLiveData<Resource<List<SearchItem>?>> = when (type) {
             FavoriteType.TOP -> topResults
             FavoriteType.USER -> userResults
             FavoriteType.HASHTAG -> hashtagResults
@@ -232,8 +230,7 @@ class SearchFragmentViewModel(application: Application) : AppStateViewModel(appl
         }
 
         // anonymous
-        val list: List<SearchItem>?
-        list = when (type) {
+        val list: List<SearchItem>? = when (type) {
             FavoriteType.TOP -> ImmutableList
                 .builder<SearchItem>()
                 .addAll(body.users ?: emptyList())

@@ -7,8 +7,8 @@ class VoiceBroadcastOptions(
     clientContext: String,
     threadIdsOrUserIds: ThreadIdsOrUserIds,
     val uploadId: String,
-    val waveform: List<Float>,
-    val waveformSamplingFrequencyHz: Int
+    private val waveform: List<Float>,
+    private val waveformSamplingFrequencyHz: Int
 ) : BroadcastOptions(clientContext, threadIdsOrUserIds, BroadcastItemType.VOICE) {
     override val formMap: Map<String, String>
         get() = mapOf(

@@ -21,8 +21,7 @@ object ThemeUtils {
                 Constants.PREF_LIGHT_THEME
             )
         val themeResId = context.resources.getIdentifier(themeResName, "style", context.packageName)
-        val finalThemeResId: Int
-        finalThemeResId = if (themeResId <= 0) {
+        val finalThemeResId: Int = if (themeResId <= 0) {
             // Nothing set in settings
             if (isNight) R.style.AppTheme_Dark_Black else R.style.AppTheme_Light_White
         } else themeResId
@@ -30,7 +29,7 @@ object ThemeUtils {
         context.setTheme(finalThemeResId)
     }
 
-    fun isNight(context: Context, themeCode: Int): Boolean {
+    private fun isNight(context: Context, themeCode: Int): Boolean {
         // check if setting is set to 'Dark'
         var isNight = themeCode == AppCompatDelegate.MODE_NIGHT_YES
         // if not dark check if themeCode is MODE_NIGHT_FOLLOW_SYSTEM or MODE_NIGHT_AUTO_BATTERY

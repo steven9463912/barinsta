@@ -101,19 +101,20 @@ class DirectPendingInboxFragment : Fragment(), OnRefreshListener {
             }
         }
         threadsObserver?.let { viewModel.threads.observe(fragmentActivity, it) }
-        viewModel.inbox.observe(viewLifecycleOwner, { inboxResource: Resource<DirectInbox?>? ->
+        viewModel.inbox.observe(viewLifecycleOwner) { inboxResource: Resource<DirectInbox?>? ->
             if (inboxResource == null) return@observe
             when (inboxResource.status) {
                 Resource.Status.SUCCESS -> binding.swipeRefreshLayout.isRefreshing = false
                 Resource.Status.ERROR -> {
                     if (inboxResource.message != null) {
-                        Snackbar.make(binding.root, inboxResource.message, Snackbar.LENGTH_LONG).show()
+                        Snackbar.make(binding.root, inboxResource.message, Snackbar.LENGTH_LONG)
+                            .show()
                     }
                     binding.swipeRefreshLayout.isRefreshing = false
                 }
                 Resource.Status.LOADING -> binding.swipeRefreshLayout.isRefreshing = true
             }
-        })
+        }
     }
 
     private fun removeViewModelObservers() {

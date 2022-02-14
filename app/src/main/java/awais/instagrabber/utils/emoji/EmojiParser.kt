@@ -40,9 +40,7 @@ class EmojiParser private constructor(context: Context) {
                 allEmojis = categoryMap
                     .flatMap { (_, emojiCategory) -> emojiCategory.emojis.values }
                     .flatMap { listOf(it) + it.variants }
-                    .filterNotNull()
-                    .map { it.unicode to it }
-                    .toMap()
+                    .filterNotNull().associateBy { it.unicode }
             }
         } catch (e: Exception) {
             Log.e(TAG, "EmojiParser: ", e)

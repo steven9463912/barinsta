@@ -7,6 +7,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 
+import java.util.Objects;
+
 import awais.instagrabber.adapters.viewholder.FeedStoryViewHolder;
 import awais.instagrabber.databinding.ItemHighlightBinding;
 import awais.instagrabber.repositories.responses.stories.Story;
@@ -22,7 +24,7 @@ public final class FeedStoriesAdapter extends ListAdapter<Story, FeedStoryViewHo
 
         @Override
         public boolean areContentsTheSame(@NonNull final Story oldItem, @NonNull final Story newItem) {
-            return oldItem.getId().equals(newItem.getId()) && oldItem.getSeen() == newItem.getSeen();
+            return oldItem.getId().equals(newItem.getId()) && Objects.equals(oldItem.getSeen(), newItem.getSeen());
         }
     };
 

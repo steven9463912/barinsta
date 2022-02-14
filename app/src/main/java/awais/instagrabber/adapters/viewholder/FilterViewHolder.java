@@ -55,16 +55,14 @@ public class FilterViewHolder extends RecyclerView.ViewHolder {
         final Bitmap bitmap = BitmapUtils.getBitmapFromMemCache(filterKey);
         if (bitmap == null) {
             final GPUImageFilter filter = item.getInstance();
-            appExecutors.getTasksThread().submit(() -> {
-                GPUImage.getBitmapForMultipleFilters(
-                        originalBitmap,
-                        ImmutableList.<GPUImageFilter>builder().add(filter).addAll(tuneFilters).build(),
-                        filteredBitmap -> {
-                            BitmapUtils.addBitmapToMemoryCache(filterKey, filteredBitmap, true);
-                            appExecutors.getMainThread().execute(() -> binding.getRoot().post(() -> binding.preview.setImageBitmap(filteredBitmap)));
-                        }
-                );
-            });
+            appExecutors.getTasksThread().submit(() -> GPUImage.getBitmapForMultipleFilters(
+                    originalBitmap,
+                    ImmutableList.<GPUImageFilter>builder().add(filter).addAll(tuneFilters).build(),
+                    filteredBitmap -> {
+                        BitmapUtils.addBitmapToMemoryCache(filterKey, filteredBitmap, true);
+                        appExecutors.getMainThread().execute(() -> binding.getRoot().post(() -> binding.preview.setImageBitmap(filteredBitmap)));
+                    }
+            ));
             return;
         }
         binding.getRoot().post(() -> binding.preview.setImageBitmap(bitmap));

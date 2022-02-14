@@ -8,11 +8,9 @@ import java.util.stream.Collectors;
 import awais.instagrabber.customviews.helpers.PostFetcher;
 import awais.instagrabber.interfaces.FetchListener;
 import awais.instagrabber.repositories.responses.Media;
-import awais.instagrabber.repositories.responses.discover.TopicalExploreFeedResponse;
 import awais.instagrabber.repositories.responses.WrappedMedia;
 import awais.instagrabber.utils.CoroutineUtilsKt;
 import awais.instagrabber.webservices.FeedRepository;
-import awais.instagrabber.webservices.ServiceCallback;
 
 public class DiscoverPostFetchService implements PostFetcher.PostFetchService {
     private static final String TAG = "DiscoverPostFetchService";

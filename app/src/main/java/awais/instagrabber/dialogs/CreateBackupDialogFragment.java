@@ -113,9 +113,7 @@ public class CreateBackupDialogFragment extends DialogFragment {
             if (imm == null) return;
             imm.hideSoftInputFromWindow(binding.etPassword.getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
         });
-        binding.btnSaveTo.setOnClickListener(v -> {
-            createFile();
-        });
+        binding.btnSaveTo.setOnClickListener(v -> createFile());
     }
 
     @Override

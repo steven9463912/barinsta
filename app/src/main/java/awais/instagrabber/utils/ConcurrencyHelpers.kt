@@ -181,7 +181,7 @@ class ControlledRunner<T> {
      * @param block the code to run if and only if no other task is currently running
      * @return the result of block, or if another task was running the result of that task instead.
      */
-    suspend fun joinPreviousOrRun(block: suspend () -> T): T {
+    private suspend fun joinPreviousOrRun(block: suspend () -> T): T {
         // fast path: if there's already an active task, just wait for it and return the result
         activeTask.get()?.let {
             return it.await()

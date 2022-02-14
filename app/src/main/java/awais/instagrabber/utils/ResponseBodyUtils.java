@@ -1,6 +1,5 @@
 package awais.instagrabber.utils;
 
-import android.net.Uri;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
@@ -140,7 +139,7 @@ public final class ResponseBodyUtils {
             width = dimensions.optInt("width");
         }
         String thumbnailUrl = null;
-        final List<MediaCandidate> candidates = new ArrayList<MediaCandidate>();
+        final List<MediaCandidate> candidates = new ArrayList<>();
         if (feedItem.has("display_resources") || feedItem.has("thumbnail_resources")) {
             final JSONArray displayResources = feedItem.has("display_resources")
                                                ? feedItem.getJSONArray("display_resources")

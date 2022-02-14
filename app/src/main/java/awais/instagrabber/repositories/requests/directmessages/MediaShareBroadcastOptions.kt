@@ -6,7 +6,7 @@ class MediaShareBroadcastOptions(
     clientContext: String,
     threadIdsOrUserIds: ThreadIdsOrUserIds,
     val mediaId: String,
-    val childId: String?
+    private val childId: String?
 ) : BroadcastOptions(
     clientContext,
     threadIdsOrUserIds,

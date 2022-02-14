@@ -51,7 +51,7 @@ object BitmapUtils {
      * @param reqHeight       Required height
      * @param addToCache      true if the loaded bitmap should be added to the mem cache
      */
-    suspend fun loadBitmap(
+    private suspend fun loadBitmap(
         contentResolver: ContentResolver?,
         uri: Uri?,
         reqWidth: Float,

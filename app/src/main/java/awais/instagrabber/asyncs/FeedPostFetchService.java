@@ -6,12 +6,10 @@ import java.util.List;
 import awais.instagrabber.customviews.helpers.PostFetcher;
 import awais.instagrabber.interfaces.FetchListener;
 import awais.instagrabber.repositories.responses.Media;
-import awais.instagrabber.repositories.responses.PostsFetchResponse;
 import awais.instagrabber.utils.Constants;
 import awais.instagrabber.utils.CookieUtils;
 import awais.instagrabber.utils.CoroutineUtilsKt;
 import awais.instagrabber.webservices.FeedRepository;
-import awais.instagrabber.webservices.ServiceCallback;
 
 import static awais.instagrabber.utils.Utils.settingsHelper;
 

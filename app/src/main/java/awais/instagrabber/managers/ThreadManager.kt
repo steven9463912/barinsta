@@ -102,7 +102,7 @@ class ThreadManager(
     val isGroup: LiveData<Boolean> by lazy { distinctUntilChanged(map(thread) { it?.isGroup ?: false }) }
     val isMuted: LiveData<Boolean> by lazy { distinctUntilChanged(map(thread) { it?.muted ?: false }) }
     val isApprovalRequiredToJoin: LiveData<Boolean> by lazy { distinctUntilChanged(map(thread) { it?.approvalRequiredForNewMembers ?: false }) }
-    val isMentionsMuted: LiveData<Boolean> by lazy { distinctUntilChanged(map(thread) { it?.mentionsMuted ?: false }) }
+    private val isMentionsMuted: LiveData<Boolean> by lazy { distinctUntilChanged(map(thread) { it?.mentionsMuted ?: false }) }
     val pendingRequestsCount: LiveData<Int> by lazy { distinctUntilChanged(map(_pendingRequests) { it?.totalParticipantRequests ?: 0 }) }
     val inviter: LiveData<User?> by lazy { distinctUntilChanged(map(thread) { it?.inviter }) }
 

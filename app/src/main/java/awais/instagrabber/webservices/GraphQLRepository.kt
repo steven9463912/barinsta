@@ -183,7 +183,7 @@ open class GraphQLRepository(private val service: GraphQLService) {
             val body = JSONObject(
                 response
                     .split("<script type=\"text/javascript\">window._sharedData = ").get(1)
-                    .split("</script>").get(0)
+                    .split("</script>")[0]
                     .trim().replace(Regex("\\};$"), "}")
             )
             val userJson = body
@@ -247,9 +247,10 @@ open class GraphQLRepository(private val service: GraphQLService) {
         tag: String,
     ): Hashtag {
         val response = service.getTag(tag)
-        val body = JSONObject(response
-            .split("<script type=\"text/javascript\">window._sharedData = ").get(1)
-            .split("</script>").get(0)
+        val body = JSONObject(
+            response
+                .split("<script type=\"text/javascript\">window._sharedData = ").get(1)
+                .split("</script>")[0]
             .trim().replace(Regex("\\};$"), "}"))
             .getJSONObject("entry_data")
             .getJSONArray("TagPage")
@@ -271,8 +272,9 @@ open class GraphQLRepository(private val service: GraphQLService) {
         locationId: Long,
     ): Location {
         val response = service.getLocation(locationId)
-        val body = JSONObject(response
-            .split("<script type=\"text/javascript\">window._sharedData = ", "</script>").get(1)
+        val body = JSONObject(
+            response
+                .split("<script type=\"text/javascript\">window._sharedData = ", "</script>")[1]
             .trim().replace(Regex("};$"), "}"))
             .getJSONObject("entry_data")
             .getJSONArray("LocationsPage")

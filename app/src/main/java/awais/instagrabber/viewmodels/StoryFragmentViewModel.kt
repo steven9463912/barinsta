@@ -76,7 +76,7 @@ class StoryFragmentViewModel : ViewModel() {
             pagination.postValue(StoryPaginationType.DO_NOTHING)
             return
         }
-        if (story.items == null || story.items.size == 0) {
+        if (story.items == null || story.items.isEmpty()) {
             pagination.postValue(StoryPaginationType.ERROR)
             return
         }
@@ -90,14 +90,14 @@ class StoryFragmentViewModel : ViewModel() {
         }
         currentIndex.postValue(index)
         val story: Story? = currentStory.value
-        val media = story!!.items!!.get(index)
+        val media = story!!.items!![index]
         currentMedia.postValue(media)
         date.postValue(media.date)
         type.postValue(media.type)
         initStickers(media)
     }
 
-    fun setSingleMedia(media: StoryMedia) {
+    private fun setSingleMedia(media: StoryMedia) {
         currentStory.postValue(null)
         currentIndex.postValue(0)
         currentMedia.postValue(media)
@@ -141,7 +141,7 @@ class StoryFragmentViewModel : ViewModel() {
                 Triple(it.location?.name ?: "", it.location?.pk?.toString(10), FavoriteType.LOCATION)
             })
         reelMentions.postValue(mentions.filterNot { it.second.isNullOrEmpty() } .distinct())
-        return !mentions.isEmpty()
+        return mentions.isNotEmpty()
     }
 
     private fun setPoll(media: StoryMedia): Boolean {
@@ -156,7 +156,7 @@ class StoryFragmentViewModel : ViewModel() {
 
     private fun setQuestion(media: StoryMedia): Boolean {
         val questionSticker = media.storyQuestions?.get(0)?.questionSticker ?: return false
-        if (questionSticker.questionType.equals("music")) return false
+        if (questionSticker.questionType == "music") return false
         question.postValue(questionSticker)
         return true
     }
@@ -289,12 +289,12 @@ class StoryFragmentViewModel : ViewModel() {
                     oldPoll.pollId,
                     w
                 )
-                if (!"ok".equals(response.status))
+                if ("ok" != response.status)
                     throw Exception("Instagram returned status \"" + response.status + "\"")
-                val tally = oldPoll.tallies.get(w)
+                val tally = oldPoll.tallies[w]
                 val newTally = tally.copy(count = tally.count + 1)
                 val newTallies = oldPoll.tallies.toMutableList()
-                newTallies.set(w, newTally)
+                newTallies[w] = newTally
                 poll.postValue(oldPoll.copy(viewerVote = w, tallies = newTallies.toList()))
                 data.postValue(success(null))
             }
@@ -319,12 +319,12 @@ class StoryFragmentViewModel : ViewModel() {
                     oldQuiz.quizId,
                     w
                 )
-                if (!"ok".equals(response.status))
+                if ("ok" != response.status)
                     throw Exception("Instagram returned status \"" + response.status + "\"")
-                val tally = oldQuiz.tallies.get(w)
+                val tally = oldQuiz.tallies[w]
                 val newTally = tally.copy(count = tally.count + 1)
                 val newTallies = oldQuiz.tallies.toMutableList()
-                newTallies.set(w, newTally)
+                newTallies[w] = newTally
                 quiz.postValue(oldQuiz.copy(viewerAnswer = w, tallies = newTallies.toList()))
                 data.postValue(success(null))
             }
@@ -348,7 +348,7 @@ class StoryFragmentViewModel : ViewModel() {
                     question.value!!.questionId,
                     a
                 )
-                if (!"ok".equals(response.status))
+                if ("ok" != response.status)
                     throw Exception("Instagram returned status \"" + response.status + "\"")
                 data.postValue(success(null))
             }
@@ -373,7 +373,7 @@ class StoryFragmentViewModel : ViewModel() {
                     oldSlider.sliderId,
                     a
                 )
-                if (!"ok".equals(response.status))
+                if ("ok" != response.status)
                     throw Exception("Instagram returned status \"" + response.status + "\"")
                 val newVoteCount = (oldSlider.sliderVoteCount ?: 0) + 1
                 val newAverage = if (oldSlider.sliderVoteAverage == null) a
