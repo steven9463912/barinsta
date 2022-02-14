@@ -40,7 +40,7 @@ jobs:
     - name: Build with Gradle (1)
       run: gradle wrapper
     - name: Build with Gradle (2)
-      run: ./gradlew build
+      run: ./gradlew build -x test
       
     - name: git add
       run: git add .
