@@ -1,17 +1,10 @@
 package awais.instagrabber.webservices
 
-import awais.instagrabber.repositories.HashtagService
+import awais.instagrabber.repositories.LocationService
 import awais.instagrabber.repositories.responses.Location
-import awais.instagrabber.repositories.responses.LocationFeedResponse
-import awais.instagrabber.repositories.responses.Place
 import awais.instagrabber.repositories.responses.PostsFetchResponse
 import awais.instagrabber.utils.TextUtils.isEmpty
-import awais.instagrabber.repositories.LocationService
-import awais.instagrabber.webservices.RetrofitFactory.retrofit
 import com.google.common.collect.ImmutableMap
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 open class LocationRepository(private val repository: LocationService) {
     suspend fun fetchPosts(locationId: Long, maxId: String): PostsFetchResponse? {

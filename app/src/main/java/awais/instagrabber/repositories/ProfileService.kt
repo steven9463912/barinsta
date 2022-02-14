@@ -3,7 +3,6 @@ package awais.instagrabber.repositories
 import awais.instagrabber.repositories.responses.UserFeedResponse
 import awais.instagrabber.repositories.responses.WrappedFeedResponse
 import awais.instagrabber.repositories.responses.saved.CollectionsListResponse
-import retrofit2.Call
 import retrofit2.http.*
 
 interface ProfileService {

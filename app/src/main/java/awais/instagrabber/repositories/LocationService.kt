@@ -1,9 +1,8 @@
 package awais.instagrabber.repositories
 
-import retrofit2.http.GET
-import awais.instagrabber.repositories.responses.Place
 import awais.instagrabber.repositories.responses.LocationFeedResponse
-import retrofit2.Call
+import awais.instagrabber.repositories.responses.Place
+import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.QueryMap
 

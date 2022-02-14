@@ -2,7 +2,6 @@ package awais.instagrabber.repositories
 
 import awais.instagrabber.repositories.responses.Hashtag
 import awais.instagrabber.repositories.responses.TagFeedResponse
-import retrofit2.Call
 import retrofit2.http.*
 
 interface HashtagService {

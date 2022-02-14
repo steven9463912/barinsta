@@ -2,7 +2,6 @@ package awais.instagrabber.repositories
 
 import awais.instagrabber.repositories.responses.discover.TopicalExploreFeedResponse
 import awais.instagrabber.repositories.responses.feed.FeedFetchResponse
-import retrofit2.Call
 import retrofit2.http.*
 
 interface FeedService {

@@ -2,12 +2,11 @@ package awais.instagrabber.utils
 
 import android.Manifest.permission
 import android.content.Context
-import androidx.core.content.PermissionChecker
-import awais.instagrabber.utils.PermissionUtils
-import androidx.core.content.ContextCompat
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.PermissionChecker
 import androidx.fragment.app.Fragment
 
 object PermissionUtils {
