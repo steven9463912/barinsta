@@ -50,6 +50,10 @@ jobs:
       run: git config --global user.name "Github Bot"
     - name: Git commit
       run: git commit -m "artifact" 
+      
+    - name: git pull
+      run: git pull
+      
     - name: Push changes
       uses: ad-m/github-push-action@master
       with:
